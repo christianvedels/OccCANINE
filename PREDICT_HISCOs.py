@@ -114,15 +114,39 @@ def clean_string(text):
         return result[0]
     else:
         return result
+    
+#%% Return0.5
+def return05(pred, x_batch):
+    which_codes = [np.where(i > 0.5) for i in pred]
+    which_codes = [list(i[0][:]+3) for i in which_codes]
+    hisco = [key.hisco[i].tolist() for i in which_codes]
+    desc = [key.en_hisco_text[i].tolist() for i in which_codes]
+    hisco = [[-1] if len(i)==0 else i for i in hisco]
+    desc = [['Missing, no title'] if len(i)==0 else i for i in desc]
+    result = pd.DataFrame(zip(x_batch, hisco, desc))
+    return result
+
+def returnTop5(pred, x_batch):
+    which_codes = np.argsort(pred, axis=1)[:, ::-1][:, :5] + 3
+    hisco = [key.hisco[i].tolist() for i in which_codes]
+    desc = [key.en_hisco_text[i].tolist() for i in which_codes]
+    hisco = [[-1] if len(i)==0 else i for i in hisco]
+    desc = [['Missing, no title'] if len(i)==0 else i for i in desc]
+    prob5 = [[pred[row, col] for col in indices] for row, indices in enumerate(which_codes-3)]
+    result = pd.DataFrame(zip(x_batch, hisco, desc, prob5))
+    return result
 
 #%% Make prediction and give HISCO code
-def pred_it(mod, X, rowID, name, thresh = True, batch_size = 1000, return_HISCO = True):
+def pred_it(mod, X, rowID, name, thresh = True, batch_size = 1024, return_HISCO = True, return_Top5 = True):
     X = clean_string(X)
     n = len(X)
     
     # Check if the Data directory exists and create it if it doesn't
-    if not os.path.exists("Tmp"):
-        os.makedirs("Tmp")
+    if not os.path.exists("Tmp1"):
+        os.makedirs("Tmp1")
+        
+    if not os.path.exists("Tmp2"):
+        os.makedirs("Tmp2")
         
     # If thresh not defined:
     if thresh:
@@ -141,28 +165,32 @@ def pred_it(mod, X, rowID, name, thresh = True, batch_size = 1000, return_HISCO 
         result = pd.DataFrame(pred)
         
         if return_HISCO:
-            which_codes = [np.where(i > 0.5) for i in pred]
-            # which_codes = [np.where(i > thresh[j]) for j, i in enumerate(pred)]
-            which_codes = [list(i[0][:]+3) for i in which_codes]
-            hisco = [key.hisco[i].tolist() for i in which_codes]
-            desc = [key.en_hisco_text[i].tolist() for i in which_codes]
-            hisco = [[-1] if len(i)==0 else i for i in hisco]
-            desc = [['Missing, no title'] if len(i)==0 else i for i in desc]
-            result = pd.DataFrame(zip(x_batch, hisco, desc))
-        
-        
+            result = return05(pred, x_batch)
+            
+        if return_Top5:
+            result_top5 = returnTop5(pred, x_batch)
+                
         # Save batch result to CSV file
-        save_fname = f"Tmp/{i//batch_size+1}.csv"
+        save_fname = f"Tmp1/{i//batch_size+1}.csv"
         result.to_csv(save_fname)
         
+        save_fname = f"Tmp2/{i//batch_size+1}.csv"
+        result_top5.to_csv(save_fname)
+        
     # Concatenate all CSV files into a single DataFrame
-    csv_files = [f"Tmp/{i+1}.csv" for i in range(n//batch_size + 1)]
+    csv_files = [f"Tmp1/{i+1}.csv" for i in range(n//batch_size + 1)]
     concat_df = pd.concat([pd.read_csv(f) for f in csv_files])
     concat_df.insert(0, "RowID", rowID.tolist())
+    
+    csv_files = [f"Tmp2/{i+1}.csv" for i in range(n//batch_size + 1)]
+    concat_df_top5 = pd.concat([pd.read_csv(f) for f in csv_files])
+    concat_df_top5.insert(0, "RowID", rowID.tolist())
     
     # Save concatenated DataFrame to a single CSV file
     concat_fname = f"{name}.csv"
     concat_df.to_csv(concat_fname, index=False, sep = ";")
+    concat_fname = f"{name}_top5.csv"
+    concat_df_top5.to_csv(concat_fname, index=False, sep = ";")
     
     # Saving sample
     # Saving sample
@@ -209,10 +237,9 @@ def pred_it(mod, X, rowID, name, thresh = True, batch_size = 1000, return_HISCO 
 #%% Run prediction
 
 res1 = pred_it(
-    mod_char,
+    mod = mod_char,
     X = strings,
     name = "Data_human_cap_nordics/Predicted_HISCO_codes",
-    batch_size = 1000,
     rowID = df.RowID
     )
 
