@@ -1,5 +1,5 @@
 # Functions
-# Date started:   2023-05-23
-# Auhtors:        Christian Vedel [christian-vs@sam.sdu.dk],
+# Created:  2023-05-23
+# Authors:  Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:        Contains all the functions used in data cleaning
+# Purpose:  Contains all the functions used in data cleaning
