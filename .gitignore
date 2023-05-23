@@ -7,3 +7,8 @@ Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes_sample100_q
 Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes_top5.csv
 Training_data/DK_CENSUS.csv
 Training_data/UK_MARIAGE_CERTIFICATES.csv
+.Rproj.user
+Data/Raw_data/DK_CENSUS_DATA.Rdata
+Data/Raw_data/EN_MARIAGE_CERTIFICATES.csv
+Data/Raw_data/ipumsi_00001.dat
+HISCO clean.Rproj
