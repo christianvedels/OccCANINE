@@ -31,3 +31,7 @@ Data/Raw_data/HSN_HISCO_release_2020_02.csv
 Data/Raw_data/lndn1866_01.csv
 Data/Raw_data/Occupation Matrix BHMD_3001.xlsx
 Data/Raw_data/SWEDISH_CEDAR HISCO.txt
+Data/Training_data/DK_census_train.csv
+Data/Validation_data/DK_census_val.csv
+Data_cleaning_scripts/002_Cleaning_DK_census.R
+Data/Test_data/DK_census_test.csv
