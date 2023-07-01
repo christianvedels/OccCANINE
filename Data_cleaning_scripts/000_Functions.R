@@ -165,6 +165,12 @@ write_csv0 = function(x, fname){
 Save_train_val_test = function(x, Name){
   the_cats = x$split %>% unique()
   
+  # Update RowID to contain Name
+  x = x %>% 
+    mutate(
+      RowID = paste0(Name, RowID)
+    )
+  
   # Filter data
   x_test = x %>% 
     filter(split == "Test")
