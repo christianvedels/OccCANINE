@@ -9,6 +9,18 @@
 'Raw_data', 'Test_data' and 'Training_data' are each too large to redistribute via github. Each of these directories contains a text-file 'DROPBOX.txt' with a dropbox link to where the file can be downloaded.
 
 
+### Structure of training data
+| Variable              | Description                                                                                              |
+|-----------------------|----------------------------------------------------------------------------------------------------------|
+| Year | Year of observaiton, if any |
+| RowID | Unique ID for every observation |
+|occ1 | Occupational description string |
+|hisco_[x] | All hisco codes, which apply - up to 5 (x $\in$ 1:5) |
+|code_[x] | Hisco code translated to integer codes 0:1920 |
+|split | String describing if this is 'train', 'val1', 'val2' or 'test' |
+
+
+
 ## Updates
 
 ### 2023-07-01
