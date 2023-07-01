@@ -14,16 +14,16 @@ library(foreach)
 library(stringi)
 library(tm)
 
-# ==== Load data ====
+# # ==== Load data ====
 # load("Data/Raw_data/DK_CENSUS_DATA.Rdata")
 # all_data = merged_data
 # rm(merged_data)
 # 
-# Toy data in script development
-# set.seed(20)
-# all_data = all_data %>% sample_frac(0.01)
-
-# ==== Data cleaning 1 ====
+# # Toy data in script development
+# # set.seed(20)
+# # all_data = all_data %>% sample_frac(0.01)
+# 
+# # ==== Data cleaning 1 ====
 # occ_data = all_data %>%
 #   mutate(
 #     hisco_1 = as.character(hisco_1),
@@ -53,17 +53,17 @@ library(tm)
 # occ_data = occ_data %>% as.data.frame()
 # 
 # # Select relevant data
-# occ_data = occ_data %>% 
+# occ_data = occ_data %>%
 #   rename(
 #     occ1 = new_occ_string
-#   ) %>% 
+#   ) %>%
 #   select(Year, RowID, occ1, hisco_1:hisco_5, Household_status, Occupation)
 # 
 # # Save this processing stage
 # save(occ_data, file = "Data/Tmp_data/Tmp_dk_census1.Rdata")
 # load("Data/Tmp_data/Tmp_dk_census1.Rdata")
-
-# ==== Data cleaning 2 ====
+# 
+# # ==== Data cleaning 2 ====
 # # tmp_funky1: Makes NAs -1
 # tmp_funky1 = function(x) ifelse(is.na(x)|x == "", -1, x)
 # 
@@ -71,34 +71,34 @@ library(tm)
 # occ_data = occ_data0 %>%
 #   mutate(
 #     labelled = hisco_1 != ""
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     labelled = ifelse(is.na(hisco_1), FALSE, labelled)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     Occupation = ifelse(is.na(Occupation), "", Occupation),
 #     Household_status = ifelse(is.na(Household_status), "", Household_status),
 #     occ1 = ifelse(is.na(occ1), "", occ1)
-#   ) %>% 
+#   ) %>%
 #   mutate( # Remove scandi letters
 #     occ1 = occ1 %>% sub_scandi()
-#   ) %>% 
+#   ) %>%
 #   mutate( # To lower
 #     occ1 = tolower(occ1)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     hisco_1 = tmp_funky1(hisco_1),
 #     hisco_2 = tmp_funky1(hisco_2),
 #     hisco_3 = tmp_funky1(hisco_3),
 #     hisco_4 = tmp_funky1(hisco_4),
 #     hisco_5 = tmp_funky1(hisco_5)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     occ1 = gsub('[[:punct:] ]+',' ', occ1)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     occ1 = trimws(occ1)
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     occ1 = ifelse(occ1 == "", " ", occ1)
 #   )
@@ -114,62 +114,62 @@ library(tm)
 # }
 # 
 # tmp220903 = function(x){
-#   x = x %>% 
-#     unlist() %>% 
-#     unique() %>% 
-#     sort() %>% 
+#   x = x %>%
+#     unlist() %>%
+#     unique() %>%
+#     sort() %>%
 #     rev()
-#   
+# 
 #   # pad
 #   res = rep("-1", 5)
 #   for(j in 1:length(x)){
 #     res[j] = x[j]
 #   }
-#   
+# 
 #   res = shuffle_codes(res)
-#   
+# 
 #   return(res)
 # }
 # 
 # occ_data =
-#   occ_data %>% 
+#   occ_data %>%
 #   rowwise() %>%
 #   mutate(
 #     tmp = list(c(hisco_1, hisco_2, hisco_3, hisco_4, hisco_5))
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     tmp = list(tmp220903(tmp))
-#   ) %>% 
+#   ) %>%
 #   mutate(
 #     hisco_1 = tmp[1],
 #     hisco_2 = tmp[2],
 #     hisco_3 = tmp[3],
 #     hisco_4 = tmp[4],
 #     hisco_5 = tmp[5]
-#   ) %>% ungroup() %>% 
+#   ) %>% ungroup() %>%
 #   select(-tmp)
 # 
 # save(occ_data, file = "Data/Tmp_data/Tmp_dk_census2.Rdata")
-load("Data/Tmp_data/Tmp_dk_census2.Rdata")
-
-# ==== Labelled unlabelled data ====
-# Years with labeling
-labelled_years = occ_data %>% 
-  group_by(Year) %>%
-  summarise(
-    na_label_pct = sum(hisco_1 == "-1")/n()
-  ) %>% 
-  filter(
-    na_label_pct<1
-  ) %>% 
-  select(Year) %>% 
-  unlist()
-
-# 1787, 1834, 1845 and 1880 has labels
-occ_data = occ_data %>% 
-  mutate(
-    labelled = ifelse(Year %in% labelled_years, 1, 0)
-  )
+# load("Data/Tmp_data/Tmp_dk_census2.Rdata")
+# 
+# # ==== Labelled unlabelled data ====
+# # Years with labeling
+# labelled_years = occ_data %>% 
+#   group_by(Year) %>%
+#   summarise(
+#     na_label_pct = sum(hisco_1 == "-1")/n()
+#   ) %>% 
+#   filter(
+#     na_label_pct<1
+#   ) %>% 
+#   select(Year) %>% 
+#   unlist()
+# 
+# # 1787, 1834, 1845 and 1880 has labels
+# occ_data = occ_data %>% 
+#   mutate(
+#     labelled = ifelse(Year %in% labelled_years, 1, 0)
+#   )
 
 # ==== Verified unlabelled data ====
 # The original labels in this data is from a regex procedure. A central concern
