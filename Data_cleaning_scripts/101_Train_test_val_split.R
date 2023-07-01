@@ -34,7 +34,3 @@ DK_census = DK_census %>%
 # ==== Save data ====
 DK_census %>% 
   Save_train_val_test("DK_census")
-
-# ==== Delete content of tmp folder ====
-unlink("Data/Tmp_data/Clean_DK_census.Rdata")
-
