@@ -22,6 +22,7 @@ set.seed(20)
 train_test_split = sample(space, 10^7, replace = TRUE)
 
 # ==== Add split and clean data ====
+set.seed(20)
 DK_census = DK_census %>% 
   # Delete unused vars:
   select(-Household_status, -Occupation, -labelled) %>% 
