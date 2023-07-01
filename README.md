@@ -11,6 +11,9 @@
 
 ## Updates
 
+### 2023-07-01
+- DK training data ready
+
 ### 2023-05-30
 - Added train/test/val split to DK census data
 - Added NA-padding to assets and DK census cleaning such that NA and no occupation are treated differently
