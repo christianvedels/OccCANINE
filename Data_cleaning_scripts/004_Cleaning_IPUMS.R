@@ -4,4 +4,4 @@
 #
 # Purpose:    This script cleans ipums data
 #
-# Output:     Training data, validation data, test data
+# Output:     Clean tmp version of the inputted data

@@ -11,6 +11,14 @@
 
 ## Updates
 
+### 2023-05-30
+- Added train/test/val split to DK census data
+- Added NA-padding to assets and DK census cleaning such that NA and no occupation are treated differently
+
+### 2023-05-29
+- Added manually verified observations with no occupation from the Danish census data
+- Finished Danish census data cleaning script
+
 ### 2023-05-23 
 - Copy pasted content from old version of the project
 - Added blank data cleaning scripts
