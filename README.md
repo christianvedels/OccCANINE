@@ -23,6 +23,9 @@
 
 ## Updates
 
+### 2023-07-06
+- Added proff of concept XML-RoBERTa model
+
 ### 2023-07-01
 - DK training data ready
 
