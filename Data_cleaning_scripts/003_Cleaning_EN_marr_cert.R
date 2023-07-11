@@ -98,3 +98,13 @@ data0 = data0 %>%
 
 # Load verified no occupation
 no_occ = readxl::read_excel("Data/Manual_data/Verified_no_occupation_DK_census.xlsx")
+
+
+
+df_n = df %>% 
+  group_by(code1) %>% 
+  count() %>% 
+  filter(n>1)
+
+df %>% 
+  filter(code1 %in% df_n$code1)
