@@ -1,67 +1,84 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul  6 13:18:34 2023
+Created on Wed Aug  2 09:58:40 2023
 
-@author: chris
-Based on: https://medium.com/@keruchen/train-a-xlm-roberta-model-for-text-classification-on-pytorch-4ccf0b30f762
+@author: christian-vs
 """
 
-#%% Libraries
-import os
-import numpy as np
-import pandas as pd
+# %% Parameters
+n_epochs = 10 # The networks trains a maximum of these epochs
 
+sample_size = 4
+batch_size = 16
+
+# %% Import packages
+import pandas as pd
+import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-
+import os
+import random as r
 from transformers import AutoTokenizer
 
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-
-#%% Detect GPU
-# check if we have cuda installed
-if torch.cuda.is_available():
-    # to use GPU
+# %% Check cuda availability
+is_cuda = torch.cuda.is_available()
+if is_cuda:
     device = torch.device("cuda")
-    print('There are %d GPU(s) available.' % torch.cuda.device_count())
-    print('GPU is:', torch.cuda.get_device_name(0))
+    print("GPU is available")
 else:
-    print('No GPU available, using the CPU instead.')
     device = torch.device("cpu")
+    print("GPU not available, CPU used")
+
+# device = torch.device("cpu")    
 
 #%% Load data
 if os.environ['COMPUTERNAME'] == 'SAM-126260':
-    os.chdir('D:/Dropbox/PhD/HISCO/HISCO clean')
+    os.chdir('D:/Dropbox/PhD/HISCO clean')
 else:
     os.chdir('C:/Users/chris/Dropbox/PhD/HISCO clean')
 print(os.getcwd())
 
 fname = "Data/Training_data/DK_census_train.csv"
-df = pd.read_csv(fname, encoding = "UTF-8", sep = ","
-                 # , nrows = 10000
-                 )
+df = pd.read_csv(fname, encoding = "UTF-8")
 
-# Load keys
-key = pd.read_csv("Data/Key.csv")
+# Subset to larger toy data
+r.seed(20)
+df = df.sample(10**sample_size)
 
-#%% Remove rare categories
 
-# # Group by 'code1' and count occurrences
-df_n = df.groupby('code1').size().reset_index(name='n')
+# # %% Resample
+# # Count the number of occurrences for each class in 'code1', 'code2', 'code3', 'code4', 'code5'
+# all_class_columns = ['code1', 'code2', 'code3', 'code4', 'code5']
+# class_counts = df[all_class_columns].stack().value_counts()
 
-# # Filter rows where count is greater than 1
-df_n = df_n[df_n['n'] > 1]
+# # Identify the classes with occurrences less than 1000 and more than 10% of the data
+# classes_less_than_1000 = class_counts.index[class_counts < 1000]
+# classes_more_than_10_percent = class_counts.index[class_counts > df.shape[0] * 0.1]
 
-# # Filter rows in df where 'code1' is in df_n['code1']
-df = df[df['code1'].isin(df_n['code1'])]
+# for i in classes_less_than_1000:
+#     i
 
-# Convert to string
-df.code1 = df.code1.astype(str)
-df.code2 = df.code2.astype(str)
-df.code3 = df.code3.astype(str)
-df.code4 = df.code4.astype(str)
-df.code5 = df.code5.astype(str)
+
+
+
+
+# # Upsample classes with occurrences less than 1000 to 1000 samples
+# for col in ['code1', 'code2', 'code3', 'code4', 'code5']:
+#     mask = df[col].isin(classes_less_than_1000)  # Filter rows where the class code is in small classes
+#     small_class_indices = df[mask].index.tolist()  # Get indices of rows with small classes
+#     upsampled_rows = df.loc[r.choices(small_class_indices, k=1000 - len(small_class_indices))]
+#     df = pd.concat([df, upsampled_rows])
+
+# # Downsample classes with occurrences more than 10% to 10% of the data
+# for col in ['code1', 'code2', 'code3', 'code4', 'code5']:
+#     mask = df[col].isin(classes_more_than_10_percent)  # Filter rows where the class code is in large classes
+#     large_class_indices = df[mask].index.tolist()  # Get indices of rows with large classes
+#     downsampled_rows = df.loc[r.sample(large_class_indices, k=int(df.shape[0] * 0.1))]
+#     df = pd.concat([df, downsampled_rows])
+
+# # Shuffle the dataframe to ensure the order is random
+# df = df.sample(frac=1).reset_index(drop=True)
+
 
 #%% Tokenizer
 tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
@@ -98,26 +115,79 @@ tokenized_feature = tokenizer.batch_encode_plus(
                             return_tensors = 'pt'       
                    )
 
-#%% Structure target
-# convert label into numeric 
-target = df.code1.values.tolist()
-le = LabelEncoder()
-le.fit(target)
-target_num = le.transform(target)
+# %% Preprocessesing
+tokenizer("huusmand og fisker mand")
 
-#%% Train/test split
-train_inputs, validation_inputs, train_labels, validation_labels, train_masks, validation_masks = train_test_split(
-    tokenized_feature['input_ids'],
-    target_num,
-    tokenized_feature['attention_mask'],
-    random_state=20, 
-    test_size=0.05, 
-    stratify=target_num
+# MAX_LEN = 512
+MAX_LEN = 64
+tokenized_feature = tokenizer.batch_encode_plus(
+    # Sentences to encode
+    df['occ1'].tolist(),
+    # Add '[CLS]' and '[SEP]'
+    add_special_tokens = True,
+    # Add empty tokens if len(text)<MAX_LEN
+    padding = 'max_length',
+    # Truncate all sentences to max length
+    truncation=True,
+    # Set the maximum length
+    max_length = MAX_LEN, 
+    # Return attention mask
+    return_attention_mask = True,
+    # Return pytorch tensors
+    return_tensors = 'pt'       
     )
 
-#%% Dataloader
-# define batch_size
-batch_size = 16
+# %% Labels to list
+# Each person can have up to 5 occupations
+df_codes = df[["code1", "code2", "code3", "code4", "code5"]]
+
+# Load binarizer
+# from sklearn.preprocessing import MultiLabelBinarizer
+# one_hot_labels = MultiLabelBinarizer()
+
+# Binarize
+labels_list = df_codes.values.tolist()
+
+# Build outcome matrix
+# Convert the given list to a NumPy array
+labels_array = np.array(labels_list)
+
+# Find the maximum integer value in the given array
+max_value = int(np.nanmax(labels_array))
+
+# Construct the NxK matrix
+N = len(labels_list)
+K = max_value + 1
+labels = np.zeros((N, K), dtype=int)
+
+for i, row in enumerate(labels_list):
+    for value in row:
+        if not np.isnan(value):
+            labels[i, int(value)] = 1
+
+
+# The columns 0-2 contains all those labelled as having 'no occupation'.
+# But since any individuals is encoded with up 5 occupations, and any one o
+# these can be 'no occupation' it occurs erroneously with high frequency.
+# Fix: Check if any other occupation is positve.
+
+# Iterate through each row of the array
+for row in labels:
+    # Check if the value in the first column is '1'
+    if row[2] == 1 | row[1] == 1 | row[0] == 1:
+        # Check if there are any positive values in the remaining row (excluding the first column)
+        if np.any(row[3:]>0):
+            # Set the first column to '0' if positive values are found
+            row[0] = 0
+
+labels = labels.astype(float)
+
+# %% Prepare data
+from sklearn.model_selection import train_test_split
+train_inputs, validation_inputs, train_labels, validation_labels, train_masks, validation_masks = train_test_split(
+    tokenized_feature['input_ids'], labels, tokenized_feature['attention_mask'], random_state=20, test_size=0.2
+    )
+
 # Create the DataLoader for our training set
 train_data = TensorDataset(train_inputs, train_masks, torch.tensor(train_labels))
 train_sampler = RandomSampler(train_data)
@@ -127,45 +197,51 @@ validation_data = TensorDataset(validation_inputs, validation_masks, torch.tenso
 validation_sampler = SequentialSampler(validation_data)
 validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
 
-
-#%% BertForSequenceClassification
+# %% Define model
 from transformers import XLMRobertaForSequenceClassification, AdamW, get_linear_schedule_with_warmup
 model = XLMRobertaForSequenceClassification.from_pretrained(
     "xlm-roberta-base", 
     # Specify number of classes
-    num_labels = len(set(target)), 
+    num_labels = labels.shape[1], 
     # Whether the model returns attentions weights
     output_attentions = False,
     # Whether the model returns all hidden-states 
-    output_hidden_states = False
+    output_hidden_states = False,
+    problem_type="multi_label_classification"
 )
 
+# Adapt model size to the tokens added:
 model.resize_token_embeddings(len(tokenizer))
 
-#%% Optimizer & Learning Rate Scheduler
+# Optimizer & Learning Rate Scheduler
 optimizer = AdamW(model.parameters(),
-                  lr = 2e-5, 
-                  eps = 1e-8 
+                  lr = 3e-1, 
+                  eps = 1e-16
                 )
 
 # Number of training epochs
-epochs = 100000
+epochs = n_epochs
 # Total number of training steps is number of batches * number of epochs.
-total_steps = len(train_dataloader) * epochs
+total_steps = len(df['occ1'].tolist()) * epochs
 # Create the learning rate scheduler
 scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_warmup_steps = 0,
                                             num_training_steps = total_steps)
 
+# tell pytorch to run this model on GPU
 model.cuda()
+# model.to('cpu')
 
-#%% Train
+# %% Training
+
+# Training
 import time
 # Store the average loss after each epoch 
 loss_values = []
+
 # number of total steps for each epoch
-print('total steps per epoch: ',  len(train_dataloader) / batch_size)
-# looping over epochs
+print('total steps per epoch: ',  len(df['occ1'].tolist()) / batch_size)
+# looping over epoch
 for epoch_i in range(0, epochs):
     
     print('training on epoch: ', epoch_i)
@@ -190,7 +266,6 @@ for epoch_i in range(0, epochs):
                         labels=b_labels)
         # get loss
         loss = outputs[0]
-        
         # total loss
         total_loss += loss.item()
         # clip the norm of the gradients to 1.0.
@@ -200,58 +275,16 @@ for epoch_i in range(0, epochs):
         # update learning rate 
         scheduler.step()
         
-        # Progress update every 50 step 
-        if step % 50 == 0 and not step == 0:
-            print('training on step: ', step, 'of')
-            print('total time used is: {0:.2f} s'.format(time.time() - t0))
-            print('loss: ', loss.item())
+        # Progress update every 10 steps
+        if step % 10 == 0 and not step == 0:
+            print(
+                'training on step: ', step, 
+                '; loss:', np.round(loss.item(), 4) ,
+                # 'total time used is: {0:.2f} s'.format(time.time() - t0),
+                end = '\n'
+                )
     # Calculate the average loss over the training data.
     avg_train_loss = total_loss / len(train_dataloader)
-    # Store the loss value for plotting the learning curve.
+    # Store the loss value for plotting the learning curve..
     loss_values.append(avg_train_loss)
-    print("-----> average training loss: {0:.2f}".format(avg_train_loss))
-
-#%% Test
-# Test
-import numpy as np
-t0 = time.time()
-# model in validation mode
-model.eval()
-# save prediction
-predictions,true_labels =[],[]
-i = 0
-# evaluate data for one epoch
-for batch in validation_dataloader:
-    # Add batch to GPU
-    batch = tuple(t.to(device) for t in batch)
-    # Unpack the inputs from our dataloader
-    b_input_ids, b_input_mask, b_labels = batch
-    # validation
-    with torch.no_grad():
-        outputs = model(b_input_ids,
-                        token_type_ids=None,
-                        attention_mask=b_input_mask)
-    # get output
-    logits = outputs[0]
-    # move logits and labels to CPU
-    logits = logits.detach().cpu().numpy()
-    label_ids = b_labels.to('cpu').numpy()
-    final_prediction = np.argmax(logits, axis=-1).flatten()
-    predictions.append(final_prediction)
-    true_labels.append(label_ids)
-    print('Batch', i)
-    i += 1
-    
-print('total time used is: {0:.2f} s'.format(time.time() - t0))
-
-#%% Convert to labels
-# convert numeric label to string
-final_prediction_list = le.inverse_transform(np.concatenate(predictions))
-final_truelabel_list = le.inverse_transform(np.concatenate(true_labels))
-
-#%% Eval
-from sklearn.metrics import confusion_matrix, classification_report
-cr = classification_report(final_truelabel_list, 
-                           final_prediction_list, 
-                           output_dict=False)
-print(cr)
+    print("average training loss: {0:.2f}".format(avg_train_loss))
