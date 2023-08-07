@@ -6,15 +6,18 @@ https://huggingface.co/papluca/xlm-roberta-base-language-detection
 https://colab.research.google.com/drive/15LJTckS6gU3RQOmjLqxVNBmbsBdnUEvl?usp=sharing#scrollTo=V_gbHRmNHEWU
 
 https://github.com/abhimishra91/transformers-tutorials/blob/master/transformers_multi_label_classification.ipynb
+https://colab.research.google.com/drive/1U7SX7jNYsNQG5BY1xEQQHu48Pn6Vgnyt?usp=sharing
 
 @author: christian-vs
 """
-
-# %% Parameters
-n_epochs = 10 # The networks trains a maximum of these epochs
-
-sample_size = 3
-batch_size = 16
+# %% Key vars
+training_data = "DK_CENSUS"
+sample_size = 5 # 10 to the power of this
+MAX_LEN = 200
+TRAIN_BATCH_SIZE = 8
+VALID_BATCH_SIZE = 4
+EPOCHS = 100
+LEARNING_RATE = 1e-05
 
 # %% Import packages
 import pandas as pd
@@ -33,8 +36,10 @@ from transformers import (
 )
 import transformers
 from sklearn.metrics import f1_score, accuracy_score, classification_report
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import string
 
 # %% Check cuda availability
 is_cuda = torch.cuda.is_available()
@@ -54,7 +59,11 @@ else:
     os.chdir('C:/Users/chris/Dropbox/PhD/HISCO clean')
 print(os.getcwd())
 
-fname = "Data/Training_data/DK_census_train.csv"
+if(training_data == "DK_CENSUS"):
+    fname = "Data/Training_data/DK_census_train.csv"
+else:
+    raise Exception("This is not implemented yet")
+
 df = pd.read_csv(fname, encoding = "UTF-8")
 
 key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
@@ -65,15 +74,31 @@ key = dict(key)
 label2id = key
 id2label = {v: k for k, v in label2id.items()}
  
+# %% Downsapmling "no occupation"
+# Reduce no occ rows
+# A large share is 'no occupation' this presents a balancing problem
+# These have the code '2'
+category_counts = df['code1'].value_counts() 
+print(category_counts)
+next_largest_cat = category_counts.tolist()[1]
 
+# Split df into df with occ and df wih no occ
+df_noocc = df[df.code1 == 2]
+df_occ = df[df.code1 != 2]
+
+# Downsample no occ
+df
+
+
+
+# %%
 # Subset to smaller
 if(10**sample_size < df.shape[0]):
     r.seed(20)
     df = df.sample(10**sample_size)
 
-# Remove no occ
-# df = df[df.code1==2]
 
+# %% Test val split
 # Split into internal test/train/val
 train_ratio = 0.75
 validation_ratio = 0.15
@@ -148,32 +173,98 @@ labels_test = labels_to_bin(df_test, max_value = max_val)
 #%% Tokenizer
 tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
 
-# %% Key vars
-MAX_LEN = 200
-TRAIN_BATCH_SIZE = 8
-VALID_BATCH_SIZE = 4
-EPOCHS = 10
-LEARNING_RATE = 1e-05
+# Now we need to update the tokenizer with words it has not seen before
+# List of unique words
+all_text = ' '.join(df.occ1.tolist())
+words_list = all_text.split()
+unique_words = set(words_list)
+
+# Add tokens for missing words
+tokenizer.add_tokens(list(unique_words))
+
+# %% Attacker
+
+# List of unique words
+all_text = ' '.join(df['occ1'].tolist())
+words_list = all_text.split()
+
+def Attacker(x_string, alt_prob = 0.1, insert_words = True):
+    
+    # breakpoint()
+    
+    x_string = [x_string]    
+    x_string_copy = x_string.copy()
+    
+    if(alt_prob == 0): # Then don't waste time
+        return(x_string_copy)
+    
+    # Alter chars
+    for i in range(len(x_string_copy)):
+        # alt_prob probability that nothing will happen to the string
+        if r.random() < alt_prob:
+            continue
+        
+        string_i = x_string_copy[i]
+       
+        num_letters = len(string_i)
+        num_replacements = int(num_letters * alt_prob)
+        
+        indices_to_replace = r.sample(range(num_letters), num_replacements)
+        
+        # Convert string to list of characters
+        chars = list(string_i)
+        
+        for j in indices_to_replace:
+            chars[j] =  r.choice(string.ascii_lowercase) # replace with a random letter
+            
+        string_i = ''.join(chars)
+               
+        x_string_copy[i] = string_i
+        
+    if insert_words:
+        for i in range(len(x_string_copy)):
+            if r.random() < alt_prob: # Only make this affect alt_prob of cases
+                # Word list
+                occ_as_word_list = x_string_copy[i].split()
+                                
+                # Random word
+                random_word = r.choice(words_list)
+                                
+                # choose a random index to insert the word
+                insert_index = r.randint(0, len(occ_as_word_list))
+
+                # insert the word into the list
+                occ_as_word_list.insert(insert_index, random_word)
+                
+                x_string_copy[i] = " ".join(occ_as_word_list)
+                    
+    return(x_string_copy[0][0])
 
 # %% Defining CustomDataset 
 # (https://github.com/abhimishra91/transformers-tutorials/blob/master/transformers_multi_label_classification.ipynb)
 
 class CustomDataset(Dataset):
 
-    def __init__(self, dataframe, tokenizer, max_len, Labels):
+    def __init__(self, dataframe, tokenizer, max_len, Labels, alt_prob = 0, insert_words = False):
         self.tokenizer = tokenizer
         self._data = dataframe
         self.occ1 = dataframe.occ1
         self.targets = Labels
         self.max_len = max_len
+        self.alt_prob = alt_prob # Probability of text alteration in Attacker()
+        self.insert_words = insert_words # Should random word insertation occur in Attacker()
 
     def __len__(self):
         return len(self.occ1)
 
     def __getitem__(self, index):
         occ1 = str(self.occ1[index])
-        occ1 = " ".join(occ1.split())
-
+        
+        # Attack text
+        occ1 = Attacker(occ1, alt_prob = self.alt_prob, insert_words = self.insert_words)
+        # breakpoint()
+        occ1 = " ".join(occ1[0].split())
+        
         inputs = self.tokenizer.encode_plus(
             occ1,
             None,
@@ -198,8 +289,8 @@ class CustomDataset(Dataset):
     
 # %% Creating the dataset and dataloader for the neural network
 
-training_set = CustomDataset(df_train, tokenizer, MAX_LEN, labels_train)
-testing_set = CustomDataset(df_val, tokenizer, MAX_LEN, labels_val)
+training_set = CustomDataset(df_train, tokenizer, MAX_LEN, labels_train, alt_prob = 0.2, insert_words = True)
+testing_set = CustomDataset(df_val, tokenizer, MAX_LEN, labels_val, alt_prob = 0)
 
 # %% Train params
 train_params = {'batch_size': TRAIN_BATCH_SIZE,
@@ -218,10 +309,16 @@ testing_loader = DataLoader(testing_set, **test_params)
 
 # %% Model class
 
+base_model = transformers.XLMRobertaModel.from_pretrained('xlm-roberta-base')
+
+# Adapt model size to the tokens added:
+base_model.resize_token_embeddings(len(tokenizer))
+
+# Define class
 class xmlRoBERTaClass(torch.nn.Module):
     def __init__(self):
         super(xmlRoBERTaClass, self).__init__()
-        self.l1 = transformers.XLMRobertaModel.from_pretrained('xlm-roberta-base')
+        self.l1 = base_model
         self.l2 = torch.nn.Dropout(0.3)
         self.l3 = torch.nn.Linear(768, len(key))
     
@@ -233,6 +330,7 @@ class xmlRoBERTaClass(torch.nn.Module):
         output = self.l3(output_2)
         return output
 
+# Make instance
 model = xmlRoBERTaClass()
 model.to(device)
 
@@ -289,8 +387,6 @@ val_losses = []
 
 def train(epoch):
     model.train()
-    
-    # Validation after each epoch
     val_loss = validate(model, testing_loader, loss_fn)
     print(f"Validation Loss: {val_loss}")
     
@@ -308,8 +404,14 @@ def train(epoch):
         val_losses.append(val_loss) # Add each step to have plot to follow
         
         # Update to console and plot
-        if _%1==0:
+        if _%20==0:
             print(f'Step: {_}, Epoch: {epoch}, Loss:  {loss.item()}')
+            
+            # Validation
+            val_loss = validate(model, testing_loader, loss_fn)
+            print(f"Validation Loss: {val_loss}")
+            val_losses[_] = val_loss
+            
             plot_progress(losses, val_losses, step=_)
         
         optimizer.zero_grad()
@@ -319,11 +421,75 @@ def train(epoch):
 
 for epoch in range(EPOCHS):
     train(epoch)
+    
+    
+# %% Validation
+def validation_and_metrics():
+    model.eval()
+    fin_targets = []
+    fin_outputs = []
+    with torch.no_grad():
+        for _, data in enumerate(testing_loader, 0):
+            ids = data['ids'].to(device, dtype=torch.long)
+            mask = data['mask'].to(device, dtype=torch.long)
+            targets = data['targets'].to(device, dtype=torch.float)
+            outputs = model(ids, mask)
+            fin_targets.extend(targets.cpu().detach().numpy().tolist())
+            fin_outputs.extend(torch.sigmoid(outputs).cpu().detach().numpy().tolist())
+
+    fin_outputs = np.array(fin_outputs) >= 0.5
+    accuracy = metrics.accuracy_score(fin_targets, fin_outputs)
+    f1_score_micro = metrics.f1_score(fin_targets, fin_outputs, average='micro')
+    f1_score_macro = metrics.f1_score(fin_targets, fin_outputs, average='macro')
+
+    print("Final Validation Metrics:")
+    print(f"Accuracy Score = {accuracy}")
+    print(f"F1 Score (Micro) = {f1_score_micro}")
+    print(f"F1 Score (Macro) = {f1_score_macro}")
+
+# %% Run validation
+validation_and_metrics()
+
+# %% Construct prediction function
+def predict_hiscos(strings):
+    x = tokenizer(
+        strings,
+        max_length=MAX_LEN,
+        pad_to_max_length=True,
+        return_tensors="pt"
+    )
+    ids = x["input_ids"]
+    mask = x["attention_mask"]
+    logits = model(ids, mask)
+    sigmoid = torch.nn.Sigmoid()
+    probs = sigmoid(logits.squeeze().cpu())
+    predictions = np.zeros(probs.shape)
+    predictions[np.where(probs >= 0.5)] = 1
+    predicted_indices = np.where(predictions == 1)[1]
+    predicted_labels = [key[i] for i in predicted_indices]
+    return(predicted_labels)
 
 
+# %% Run predictions
+predict_hiscos(df.occ1[1:100].tolist())
 
+    
+# %% Create a directory to save the model
+path = "Trained_models/XMLRoBERTa_"+training_data+"_sample_size"+str(sample_size)
+path_vocab = path+"/vocab"
+if not os.path.exists(path):
+    os.makedirs(path)
+    
+if not os.path.exists(path_vocab):
+    os.makedirs(path_vocab)
 
+# Save the trained model
+output_model_file = path+"/model.bin"
+output_vocab_file = path_vocab
 
+model_to_save = model
+torch.save(model_to_save, output_model_file)
+tokenizer.save_vocabulary(output_vocab_file)
 
 
 
