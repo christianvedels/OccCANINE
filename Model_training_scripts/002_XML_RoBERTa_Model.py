@@ -34,17 +34,17 @@ of words in the training data.
 """
 # %% Key vars
 model_domain = "DK_CENSUS"
-sample_size = 3 # 10 to the power of this
-MAX_LEN = 200
+sample_size = 4 # 10 to the power of this
+MAX_LEN = 128
 TRAIN_BATCH_SIZE = 16
 VALID_BATCH_SIZE = 16
-EPOCHS = 2
+EPOCHS = 100
 LEARNING_RATE = 1e-03
-PRINT_VAL_FREQ = 20 # How many steps between reports to console, validation and plots are updated
+PRINT_VAL_FREQ = 50 # How many steps between reports to console, validation and plots are updated
 
 MDL = 'xlm-roberta-base' # Base model to fine tune from
 
-toyrun = True # Reduces the labels to only 3 possible outcomes for a simpler toyrun
+toyrun = False # Reduces the labels to only 3 possible outcomes for a simpler toyrun
 
 # %% Import packages
 import pandas as pd
@@ -410,7 +410,7 @@ def plot_progress(train_losses, val_losses, step, phase):
     plt.figure(figsize=(8, 6))
     plt.plot(train_losses, color='blue', label='Training Loss')
     plt.plot(val_losses, color='red', label='Validation Loss')
-    plt.axhline(y=total_bce, color='gray', linestyle='dotted', label='Reference loss')
+    plt.axhline(y=total_bce, color='black', linestyle='dotted', label='Reference loss')
     plt.xlabel('Iterations')
     plt.ylabel('Loss')
     plt.title(f'Training and Validation Loss Progress (phase {phase})')
