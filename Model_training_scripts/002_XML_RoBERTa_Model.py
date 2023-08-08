@@ -2,22 +2,49 @@
 """
 Created on Wed Aug  2 09:58:40 2023
 
+Inpriration
 https://huggingface.co/papluca/xlm-roberta-base-language-detection
 https://colab.research.google.com/drive/15LJTckS6gU3RQOmjLqxVNBmbsBdnUEvl?usp=sharing#scrollTo=V_gbHRmNHEWU
-
 https://github.com/abhimishra91/transformers-tutorials/blob/master/transformers_multi_label_classification.ipynb
 https://colab.research.google.com/drive/1U7SX7jNYsNQG5BY1xEQQHu48Pn6Vgnyt?usp=sharing
+
+**Reference loss:**
+A problem is that a good local minimum is to guess for the probability of each 
+class. The reference loss reflects this. It is the loss obtained from simply 
+guessing the frequency of each of the classes. We want our network to not be 
+stuck here. If the loss reamins around the level of the reference loss, then it
+indicates that it is stuck in a local minimum.
+
+**Downsampling:**
+Another problem is unbalancedness. This is mostly a problem for the HISCO code '-1',
+which encodes 'no occupation'. E.g. for Danish census data this is around 70% of the data. 
+This causes guessing '-1' to be a strong local minimum. This is adressed by downsampling
+this category such that it represents an equal number of observations as the second most
+frequent category.
+
+**Attakcer()**
+This function 'attacks' the text in the spirit of but much simpler than the 
+TextAttack library (https://textattack.readthedocs.io/en/latest/).
+The function randomly changes letters according to an 'alt_probability'.
+The function also randomly inserts a word in a random location in each string, 
+with the same 'alt_probability'. The words are drawn from the distribution
+of words in the training data. 
 
 @author: christian-vs
 """
 # %% Key vars
-training_data = "DK_CENSUS"
-sample_size = 5 # 10 to the power of this
+model_domain = "DK_CENSUS"
+sample_size = 3 # 10 to the power of this
 MAX_LEN = 200
-TRAIN_BATCH_SIZE = 8
-VALID_BATCH_SIZE = 4
-EPOCHS = 100
-LEARNING_RATE = 1e-05
+TRAIN_BATCH_SIZE = 16
+VALID_BATCH_SIZE = 16
+EPOCHS = 2
+LEARNING_RATE = 1e-03
+PRINT_VAL_FREQ = 20 # How many steps between reports to console, validation and plots are updated
+
+MDL = 'xlm-roberta-base' # Base model to fine tune from
+
+toyrun = True # Reduces the labels to only 3 possible outcomes for a simpler toyrun
 
 # %% Import packages
 import pandas as pd
@@ -50,16 +77,18 @@ else:
     device = torch.device("cpu")
     print("GPU not available, CPU used")
 
-device = torch.device("cpu")    
+device = torch.device("cpu")  
 
-#%% Load data
+# %% Set wd()
 if os.environ['COMPUTERNAME'] == 'SAM-126260':
     os.chdir('D:/Dropbox/PhD/HISCO clean')
 else:
     os.chdir('C:/Users/chris/Dropbox/PhD/HISCO clean')
-print(os.getcwd())
+print(os.getcwd())  
 
-if(training_data == "DK_CENSUS"):
+#%% Load data
+# Loads given domain 
+if(model_domain == "DK_CENSUS"):
     fname = "Data/Training_data/DK_census_train.csv"
 else:
     raise Exception("This is not implemented yet")
@@ -86,35 +115,37 @@ next_largest_cat = category_counts.tolist()[1]
 df_noocc = df[df.code1 == 2]
 df_occ = df[df.code1 != 2]
 
-# Downsample no occ
-df
+# Downsample to size of next largest cat
+df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
 
+# Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
+df = pd.concat([df_noocc, df_occ], ignore_index=True)
+df = df.sample(frac=1, random_state=20)  # Shuffle the rows
 
+# Print new counts
+category_counts = df['code1'].value_counts() 
+print(category_counts)
 
 # %%
 # Subset to smaller
 if(10**sample_size < df.shape[0]):
     r.seed(20)
-    df = df.sample(10**sample_size)
+    df = df.sample(10**sample_size, random_state=20)
 
 
 # %% Test val split
 # Split into internal test/train/val
-train_ratio = 0.75
-validation_ratio = 0.15
-test_ratio = 0.10
+if(sample_size>4):
+    TEST_SIZE = 10**4
+else:
+    TEST_SIZE = 0.1
 
-# train is now 75% of the entire data set
-df_train, df_test = train_test_split(df, test_size=1 - train_ratio)
-
-# test is now 10% of the initial data set
-# validation is now 15% of the initial data set
-df_val, df_test = train_test_split(df_test, test_size=test_ratio/(test_ratio + validation_ratio)) 
-print(f"Train / valid / test samples: {len(df_train)} / {len(df_val)} / {len(df_test)}")
+df_train, df_test = train_test_split(df, test_size= TEST_SIZE)
 
 df_train = df_train.reset_index(drop=True)
-df_val = df_val.reset_index(drop=True)
 df_test = df_test.reset_index(drop=True)
+
+print(f"Train / test samples: {len(df_train)} / {len(df_test)}")
 
 # %% Labels to list
 # Each person can have up to 5 occupations. This part converts this into binary representation in a NxK matrix
@@ -167,11 +198,36 @@ def labels_to_bin(df, max_value):
 max_val = len(key)
 labels_bin = labels_to_bin(df, max_value = max_val)
 labels_train = labels_to_bin(df_train, max_value = max_val)
-labels_val = labels_to_bin(df_val, max_value = max_val)
 labels_test = labels_to_bin(df_test, max_value = max_val)
 
-#%% Tokenizer
-tokenizer = AutoTokenizer.from_pretrained('xlm-roberta-base')
+if(toyrun):
+    labels_bin = labels_bin[:, :3]
+    labels_train = labels_train[:, :3]
+    labels_test = labels_test[:, :3]
+
+# Add to df
+df['labels'] = labels_bin.tolist()
+df_train['labels'] = labels_train.tolist()
+df_test['labels'] = labels_test.tolist()
+
+# %% Naive loss
+# Step 1: Calculate the probabilities for each class (frequency of occurrence)
+probs = np.mean(labels_train, axis=0)
+
+# Step 2: Calculate the binary cross entropy for each class with epsilon to avoid divide by zero and log of zero
+epsilon = 1e-9
+probs = np.clip(probs, epsilon, 1 - epsilon)  # Clip probabilities to be in range [epsilon, 1-epsilon]
+
+# BCE formula: -y * log(p) - (1-y) * log(1-p)
+bce_per_class = -(labels_train * np.log(probs) + (1 - labels_train) * np.log(1 - probs))
+
+# Step 3: Sum up the binary cross entropy values for all classes
+total_bce = np.mean(bce_per_class)
+
+print("Binary Cross Entropy when guessing frequencies:", total_bce)
+
+#%% Tokenizer updates
+tokenizer = AutoTokenizer.from_pretrained(MDL)
 
 # Now we need to update the tokenizer with words it has not seen before
 # List of unique words
@@ -245,11 +301,11 @@ def Attacker(x_string, alt_prob = 0.1, insert_words = True):
 
 class CustomDataset(Dataset):
 
-    def __init__(self, dataframe, tokenizer, max_len, Labels, alt_prob = 0, insert_words = False):
+    def __init__(self, dataframe, tokenizer, max_len, alt_prob = 0, insert_words = False):
         self.tokenizer = tokenizer
         self._data = dataframe
         self.occ1 = dataframe.occ1
-        self.targets = Labels
+        self.targets = dataframe.labels
         self.max_len = max_len
         self.alt_prob = alt_prob # Probability of text alteration in Attacker()
         self.insert_words = insert_words # Should random word insertation occur in Attacker()
@@ -289,8 +345,8 @@ class CustomDataset(Dataset):
     
 # %% Creating the dataset and dataloader for the neural network
 
-training_set = CustomDataset(df_train, tokenizer, MAX_LEN, labels_train, alt_prob = 0.2, insert_words = True)
-testing_set = CustomDataset(df_val, tokenizer, MAX_LEN, labels_val, alt_prob = 0)
+training_set = CustomDataset(df_train, tokenizer, MAX_LEN, alt_prob = 0.2, insert_words = True)
+testing_set = CustomDataset(df_test, tokenizer, MAX_LEN, alt_prob = 0)
 
 # %% Train params
 train_params = {'batch_size': TRAIN_BATCH_SIZE,
@@ -308,19 +364,18 @@ testing_loader = DataLoader(testing_set, **test_params)
 
 
 # %% Model class
-
-base_model = transformers.XLMRobertaModel.from_pretrained('xlm-roberta-base')
+base_model = transformers.XLMRobertaModel.from_pretrained(MDL)
 
 # Adapt model size to the tokens added:
 base_model.resize_token_embeddings(len(tokenizer))
 
 # Define class
 class xmlRoBERTaClass(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, heads):
         super(xmlRoBERTaClass, self).__init__()
         self.l1 = base_model
-        self.l2 = torch.nn.Dropout(0.3)
-        self.l3 = torch.nn.Linear(768, len(key))
+        self.l2 = torch.nn.Dropout(0.5)
+        self.l3 = torch.nn.Linear(768, heads)
     
     def forward(self, ids, mask):
         # breakpoint()
@@ -331,23 +386,34 @@ class xmlRoBERTaClass(torch.nn.Module):
         return output
 
 # Make instance
-model = xmlRoBERTaClass()
+model = xmlRoBERTaClass(heads = len(key))
+
+if(toyrun):
+    model = xmlRoBERTaClass(heads = 3)
+
+# Freeeze base layer
+# Freeze base model's parameters
+for param in model.l1.parameters():
+    param.requires_grad = False
+
+# Send to device
 model.to(device)
 
 # %% Loss and optimizer
 def loss_fn(outputs, targets):
     return torch.nn.BCEWithLogitsLoss()(outputs, targets)
 
-optimizer = torch.optim.Adam(params =  model.parameters(), lr=LEARNING_RATE)
+optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=LEARNING_RATE)
 
 # %% Plot progress
-def plot_progress(train_losses, val_losses, step):
+def plot_progress(train_losses, val_losses, step, phase):
     plt.figure(figsize=(8, 6))
     plt.plot(train_losses, color='blue', label='Training Loss')
     plt.plot(val_losses, color='red', label='Validation Loss')
+    plt.axhline(y=total_bce, color='gray', linestyle='dotted', label='Reference loss')
     plt.xlabel('Iterations')
     plt.ylabel('Loss')
-    plt.title('Training and Validation Loss Progress')
+    plt.title(f'Training and Validation Loss Progress (phase {phase})')
     plt.legend()
     plt.grid(True)   
     
@@ -355,7 +421,7 @@ def plot_progress(train_losses, val_losses, step):
     if not os.path.exists("Tmp traning plots"):
        os.makedirs("Tmp traning plots")
     # Save the plot as an image in the folder
-    plt.savefig(f"Tmp traning plots/loss_{step}.png")
+    plt.savefig(f"Tmp traning plots/loss_{model_domain}_sample_size_{sample_size}_phase_{phase}_{step}.png")
     plt.show()
     plt.close()
 
@@ -369,7 +435,6 @@ def validate(model, data_loader, loss_fn):
         for _, data in enumerate(data_loader, 0):
             ids = data['ids'].to(device, dtype=torch.long)
             mask = data['mask'].to(device, dtype=torch.long)
-            token_type_ids = data['token_type_ids'].to(device, dtype=torch.long)
             targets = data['targets'].to(device, dtype=torch.float)
 
             outputs = model(ids, mask)
@@ -381,14 +446,15 @@ def validate(model, data_loader, loss_fn):
     avg_loss = total_loss / num_batches
     return avg_loss
 
+
+
 # %% Fine tuning
 losses = []
 val_losses = []
 
-def train(epoch):
+def train(epoch, phase):
     model.train()
     val_loss = validate(model, testing_loader, loss_fn)
-    print(f"Validation Loss: {val_loss}")
     
     for _,data in enumerate(training_loader, 0):
         ids = data['ids'].to(device, dtype = torch.long)
@@ -404,23 +470,62 @@ def train(epoch):
         val_losses.append(val_loss) # Add each step to have plot to follow
         
         # Update to console and plot
-        if _%20==0:
-            print(f'Step: {_}, Epoch: {epoch}, Loss:  {loss.item()}')
+        if _%PRINT_VAL_FREQ==0:
+            print(f'Phase: {phase}, Step: {_}, Epoch: {epoch}, Loss:  {loss.item()}, reference: {total_bce}')
             
             # Validation
             val_loss = validate(model, testing_loader, loss_fn)
             print(f"Validation Loss: {val_loss}")
             val_losses[_] = val_loss
             
-            plot_progress(losses, val_losses, step=_)
+            plot_progress(losses, val_losses, step=_, phase = phase)
         
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
+# %% Phase 1: Fine tune top layers
+# This will generally only learn to guess for the frequency of each class
+# regardless of the data it is fed. 
+best_val_loss = float('inf')
+patience = 3  # Number of epochs without improvement to tolerate
+no_improvement_count = 0
 
 for epoch in range(EPOCHS):
-    train(epoch)
+    train(epoch, phase = 1)
+    val_loss = validate(model, testing_loader, loss_fn)
+    print(f"Validation Loss after phase 1 epoch {epoch}: {val_loss}")
+
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        no_improvement_count = 0
+    else:
+        no_improvement_count += 1
+        if no_improvement_count >= patience:
+            print(f"No improvement in validation loss for {patience} epochs. Phase 1 ends.")
+            break
+    
+ # %% Phase 2: Fine-tune entire model for specified number of epochs   
+# Unfreeze all parameters for the second phase
+for param in model.parameters():
+    param.requires_grad = True
+    
+# Set loss and val loss empty
+losses_phase1 = losses.copy()
+val_losses_phase1 = val_losses.copy()
+losses = []
+val_losses = []
+
+# Set learning rate for the second phase
+second_phase_lr = 1e-2 * LEARNING_RATE
+
+# Reset optimizer for second phase
+optimizer = torch.optim.AdamW(model.parameters(), lr = second_phase_lr)  # Adjust learning rate as needed
+
+for epoch in range(EPOCHS):
+    train(epoch, phase = 2)
+    val_loss = validate(model, testing_loader, loss_fn)
+    print(f"Validation Loss after phase 2 epoch {epoch}: {val_loss}")
     
     
 # %% Validation
@@ -450,47 +555,22 @@ def validation_and_metrics():
 # %% Run validation
 validation_and_metrics()
 
-# %% Construct prediction function
-def predict_hiscos(strings):
-    x = tokenizer(
-        strings,
-        max_length=MAX_LEN,
-        pad_to_max_length=True,
-        return_tensors="pt"
-    )
-    ids = x["input_ids"]
-    mask = x["attention_mask"]
-    logits = model(ids, mask)
-    sigmoid = torch.nn.Sigmoid()
-    probs = sigmoid(logits.squeeze().cpu())
-    predictions = np.zeros(probs.shape)
-    predictions[np.where(probs >= 0.5)] = 1
-    predicted_indices = np.where(predictions == 1)[1]
-    predicted_labels = [key[i] for i in predicted_indices]
-    return(predicted_labels)
-
-
-# %% Run predictions
-predict_hiscos(df.occ1[1:100].tolist())
-
-    
-# %% Create a directory to save the model
-path = "Trained_models/XMLRoBERTa_"+training_data+"_sample_size"+str(sample_size)
-path_vocab = path+"/vocab"
+# %% Save finetuned model
+path = "Trained_models/XMLRoBERTa_"+model_domain+"_sample_size"+str(sample_size)
+path_tokenizer = path+"/tokenizer"
 if not os.path.exists(path):
     os.makedirs(path)
     
-if not os.path.exists(path_vocab):
-    os.makedirs(path_vocab)
+if not os.path.exists(path_tokenizer):
+    os.makedirs(path_tokenizer)
 
 # Save the trained model
 output_model_file = path+"/model.bin"
-output_vocab_file = path_vocab
+output_tokenizer_file = path_tokenizer
 
 model_to_save = model
 torch.save(model_to_save, output_model_file)
-tokenizer.save_vocabulary(output_vocab_file)
-
+tokenizer.save_pretrained(output_tokenizer_file)
 
 
 
