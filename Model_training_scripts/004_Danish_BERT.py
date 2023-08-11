@@ -1,0 +1,554 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug 11 12:10:16 2023
+
+https://www.kaggle.com/code/prakharrathi25/sentiment-analysis-using-bert
+@author: chris
+"""
+#%%
+model_domain = "DK_CENSUS"
+sample_size = 3 # 10 to the power of this
+MDL = 'Maltehb/danish-bert-botxo' # https://huggingface.co/Maltehb/danish-bert-botxo
+EPOCHS = 1000
+BATCH_SIZE = 16
+
+# %%
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from pylab import rcParams
+import matplotlib.pyplot as plt
+from matplotlib import rc
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report, f1_score
+from collections import defaultdict
+from textwrap import wrap
+import random as r
+
+# Torch ML libraries
+import transformers
+from transformers import BertModel, BertTokenizer, AdamW, get_linear_schedule_with_warmup
+import torch
+from torch import nn, optim
+from torch.utils.data import Dataset, DataLoader
+
+# Misc.
+import warnings
+warnings.filterwarnings('ignore')
+
+
+
+# %%
+import os
+if os.environ['COMPUTERNAME'] == 'SAM-126260':
+    os.chdir('D:/Dropbox/PhD/HISCO clean')
+elif os.environ['COMPUTERNAME'] == 'DESKTOP-7BUTU8I':
+    os.chdir('C:/Users/chris/Dropbox/PhD/HISCO clean')
+else:
+    raise Exception("Please define dir for this computer")
+print(os.getcwd())  
+
+
+# %% 
+# Set intial variables and constants
+# %config InlineBackend.figure_format='retina'
+
+# Graph Designs
+sns.set(style='whitegrid', palette='muted', font_scale=1.2)
+HAPPY_COLORS_PALETTE = ["#01BEFE", "#FFDD00", "#FF7D00", "#FF006D", "#ADFF02", "#8F00FF"]
+sns.set_palette(sns.color_palette(HAPPY_COLORS_PALETTE))
+rcParams['figure.figsize'] = 12, 8
+
+# Random seed for reproducibilty
+RANDOM_SEED = 42
+np.random.seed(RANDOM_SEED)
+torch.manual_seed(RANDOM_SEED)
+
+# Set GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = "cpu"
+
+# %%
+# df = pd.read_csv('archive/reviews.csv')
+# df.shape
+
+# df.head()
+
+# # Let's check for missing values 
+# df.isnull().sum()
+
+if(model_domain == "DK_CENSUS"):
+    fname = "Data/Training_data/DK_census_train.csv"
+else:
+    raise Exception("This is not implemented yet")
+
+df = pd.read_csv(fname, encoding = "UTF-8")
+
+key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
+key = key[1:]
+key = zip(key.code, key.hisco)
+key = list(key)
+key = dict(key)
+label2id = key
+id2label = {v: k for k, v in label2id.items()}
+
+# %% Downsapmling "no occupation"
+# Reduce no occ rows
+# A large share is 'no occupation' this presents a balancing problem
+# These have the code '2'
+category_counts = df['code1'].value_counts() 
+print(category_counts)
+next_largest_cat = category_counts.tolist()[1]
+
+# Split df into df with occ and df wih no occ
+df_noocc = df[df.code1 == 2]
+df_occ = df[df.code1 != 2]
+
+# Downsample to size of next largest cat
+df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
+
+# Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
+df = pd.concat([df_noocc, df_occ], ignore_index=True)
+df = df.sample(frac=1, random_state=20)  # Shuffle the rows
+
+# Print new counts
+category_counts = df['code1'].value_counts() 
+print(category_counts)
+
+# %%
+# Subset to smaller
+if(10**sample_size < df.shape[0]):
+    r.seed(20)
+    df = df.sample(10**sample_size, random_state=20)
+
+# %%
+# Create a count plot
+sns.countplot(data=df, x='code1')
+plt.xlabel('Occupations')
+plt.ylabel('Count')
+plt.title('Distribution of Occupations')
+plt.show()
+
+# %% 
+# # Function to convert score to sentiment
+# def to_sentiment(rating):
+    
+#     rating = int(rating)
+    
+#     # Convert to class
+#     if rating <= 2:
+#         return 0
+#     elif rating == 3:
+#         return 1
+#     else:
+#         return 2
+
+# # Apply to the dataset 
+# df['sentiment'] = df.score.apply(to_sentiment)
+
+# # Plot the distribution
+# class_names = ['negative', 'neutral', 'positive']
+# ax = sns.countplot(data = df, x = 'sentiment')
+# plt.xlabel('review sentiment')
+# ax.set_xticklabels(class_names)
+
+
+# %%
+# Set the model name
+MODEL_NAME = MDL
+
+# Build a BERT based tokenizer
+tokenizer = BertTokenizer.from_pretrained(MODEL_NAME)
+
+# Some of the common BERT tokens
+print(tokenizer.sep_token, tokenizer.sep_token_id) # marker for ending of a sentence
+print(tokenizer.cls_token, tokenizer.cls_token_id) # start of each sentence, so BERT knows we’re doing classification
+print(tokenizer.pad_token, tokenizer.pad_token_id) # special token for padding
+print(tokenizer.unk_token, tokenizer.unk_token_id) # tokens not found in training set 
+
+# Store length of each review 
+token_lens = []
+
+# Iterate through the content slide
+for txt in df.occ1:
+    tokens = tokenizer.encode(txt, max_length=512)
+    token_lens.append(len(tokens))
+    
+# plot the distribution of review lengths 
+sns.distplot(token_lens)
+plt.xlim([0, 256]);
+plt.xlabel('Token count')
+
+MAX_LEN = 50
+
+# %% Labels to bin function
+def labels_to_bin(df, max_value):
+    df_codes = df[["code1", "code2", "code3", "code4", "code5"]]
+
+    # Binarize
+    labels_list = df_codes.values.tolist()
+
+    # == Build outcome matrix ==
+    # Convert the given list to a NumPy array
+    labels_array = np.array(labels_list)
+
+    # Construct the NxK matrix
+    N = len(labels_list)
+    K = max_value
+    labels = np.zeros((N, K), dtype=int)
+
+    for i, row in enumerate(labels_list):
+        for value in row:
+            if not np.isnan(value):
+                labels[i, int(value)] = 1
+
+
+    # The columns 0-2 contains all those labelled as having 'no occupation'.
+    # But since any individuals is encoded with up 5 occupations, and any one o
+    # these can be 'no occupation' it occurs erroneously with high frequency.
+    # Fix: Check if any other occupation is positve.
+    # Iterate through each row of the array
+    for row in labels:
+        # Check if the value in the first column is '1'
+        if row[2] == 1 | row[1] == 1 | row[0] == 1:
+            # Check if there are any positive values in the remaining row (excluding the first column)
+            if np.any(row[3:]>0):
+                # Set the first column to '0' if positive values are found
+                row[0] = 0
+
+    labels = labels.astype(float)
+    
+    # Convert each row of the array to a 1D list
+    # labels = [row.tolist() for row in labels]
+    
+    return(labels)
+
+
+#%% Dataset
+class OCCDataset(Dataset):
+    # Constructor Function 
+    def __init__(self, occ1, df, tokenizer, max_len, n_classes):
+        self.occ1 = occ1
+        self.df = df
+        self.tokenizer = tokenizer
+        self.max_len = max_len
+        self.targets = labels_to_bin(df, n_classes)
+    
+    # Length magic method
+    def __len__(self):
+        return len(self.occ1)
+    
+    # get item magic method
+    def __getitem__(self, item):
+        occ1 = str(self.occ1[item])
+        target = self.targets[item]
+        
+        # Encoded format to be returned 
+        encoding = self.tokenizer.encode_plus(
+            occ1,
+            add_special_tokens=True,
+            max_length=self.max_len,
+            return_token_type_ids=False,
+            pad_to_max_length=True,
+            return_attention_mask=True,
+            return_tensors='pt',
+        )
+        
+        return {
+            'occ1': occ1,
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
+            'targets': torch.tensor(target, dtype=torch.long)
+        }
+
+# %%
+df_train, df_test = train_test_split(df, test_size=0.2, random_state=RANDOM_SEED)
+df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=RANDOM_SEED)
+
+
+print(df_train.shape, df_val.shape, df_test.shape)
+
+# %% Dataloader
+def create_data_loader(df, tokenizer, max_len, batch_size,n_classes):
+    ds = OCCDataset(
+        occ1=df.occ1.to_numpy(),
+        df=df,
+        tokenizer=tokenizer,
+        max_len=max_len,
+        n_classes=n_classes
+    )
+    
+    return DataLoader(
+        ds,
+        batch_size=batch_size,
+        num_workers=0
+    )
+
+# %%
+# Create train, test and val data loaders
+N_CLASSES = max(df.code1)+1
+train_data_loader = create_data_loader(df_train, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
+val_data_loader = create_data_loader(df_val, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
+test_data_loader = create_data_loader(df_test, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
+
+# %%
+# Examples 
+data = next(iter(train_data_loader))
+print(data.keys())
+
+print(data['occ1'])
+print(data['input_ids'].shape)
+print(data['attention_mask'].shape)
+print(data['targets'].shape)
+print(data['targets'][0])
+
+# %%
+# Load the basic BERT model 
+bert_model = BertModel.from_pretrained(MODEL_NAME)
+
+# %%
+# Build the Sentiment Classifier class 
+class OccupationClassifier(nn.Module):
+    
+    # Constructor class 
+    def __init__(self, n_classes):
+        super(OccupationClassifier, self).__init__()
+        self.bert = BertModel.from_pretrained(MODEL_NAME)
+        self.drop = nn.Dropout(p=0.5)
+        self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
+    
+    # Forward propagaion class
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(
+          input_ids=input_ids,
+          attention_mask=attention_mask
+        )
+        pooled_output = outputs.pooler_output
+        
+        #  Add a dropout layer 
+        output = self.drop(pooled_output)
+        return self.out(output)
+    
+# %%
+# Instantiate the model and move to classifier
+model = OccupationClassifier(N_CLASSES)
+model = model.to(device)
+
+# %%
+# Number of hidden units
+print(bert_model.config.hidden_size)
+
+# %% 
+# Optimizer Adam 
+optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
+
+total_steps = len(train_data_loader) * EPOCHS
+
+scheduler = get_linear_schedule_with_warmup(
+    optimizer,
+    num_warmup_steps=0,
+    num_training_steps=total_steps
+)
+
+# Set the loss function 
+loss_fn = nn.CrossEntropyLoss().to(device)
+loss_fn = nn.BCEWithLogitsLoss().to(device)
+
+# %%
+# Function for a single training iteration
+def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_examples):
+    model = model.train()
+    losses = []
+    correct_predictions = 0
+    
+    for batch_idx, d in enumerate(data_loader):
+        input_ids = d["input_ids"].to(device)
+        attention_mask = d["attention_mask"].to(device)
+        targets = d['targets'].to(device, dtype=torch.float)
+        
+        outputs = model(
+            input_ids=input_ids,
+            attention_mask=attention_mask
+        )
+        
+        loss = loss_fn(outputs, targets)
+        
+        # breakpoint()
+        # Calculate correct predictions using threshold
+        preds = torch.sigmoid(outputs)
+        threshold = 0.5  # You can adjust this threshold based on your use case
+        predicted_labels = (preds > threshold).float()
+        # breakpoint()
+        test = f1_score(predicted_labels.cpu().numpy(), targets.cpu().numpy(), average = 'micro')
+        correct_predictions += test
+        
+        losses.append(loss.item())
+        
+        # Backward prop
+        loss.backward()
+        
+        # Gradient Descent
+        nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        optimizer.step()
+        scheduler.step()
+        optimizer.zero_grad()
+        
+        # Print current batch number and loss, overwriting previous output
+        # print(f"Batch [{batch_idx+1}/{len(data_loader)}] - Loss: {loss.item():.4f}", end="\r", flush=True)
+    
+    return correct_predictions / n_examples, np.mean(losses)
+
+# %%
+def eval_model(model, data_loader, loss_fn, device, n_examples):
+    model = model.eval()
+    
+    losses = []
+    correct_predictions = 0
+    
+    with torch.no_grad():
+        for d in data_loader:
+            input_ids = d["input_ids"].to(device)
+            attention_mask = d["attention_mask"].to(device)
+            targets = d['targets'].to(device, dtype=torch.float)
+            
+            # Get model ouptuts
+            outputs = model(
+                input_ids=input_ids,
+                attention_mask=attention_mask
+            )
+            
+            loss = loss_fn(outputs, targets)
+            losses.append(loss.item())
+            
+            # Calculate correct predictions using threshold
+            preds = torch.sigmoid(outputs)
+            threshold = 0.5  # You can adjust this threshold based on your use case
+            predicted_labels = (preds > threshold).float()
+            test = f1_score(predicted_labels.cpu().numpy(), targets.cpu().numpy(), average = 'micro')
+            correct_predictions += test
+            
+            
+            
+    return correct_predictions / n_examples, np.mean(losses)
+
+# %%
+
+history = defaultdict(list)
+best_accuracy = 0
+
+for epoch in range(EPOCHS):
+    
+    # Show details 
+    print(f"Epoch {epoch + 1}/{EPOCHS}")
+    print("-" * 10)
+    
+    train_acc, train_loss = train_epoch(
+        model,
+        train_data_loader,
+        loss_fn,
+        optimizer,
+        device,
+        scheduler,
+        len(df_train)
+    )
+    
+    print(f"Train loss {train_loss} accuracy {train_acc}")
+    
+    # Get model performance (accuracy and loss)
+    val_acc, val_loss = eval_model(
+        model,
+        val_data_loader,
+        loss_fn,
+        device,
+        len(df_val)
+    )
+    
+    print(f"Val   loss {val_loss} accuracy {val_acc}")
+    print()
+    
+    history['train_acc'].append(train_acc)
+    history['train_loss'].append(train_loss)
+    history['val_acc'].append(val_acc)
+    history['val_loss'].append(val_loss)
+    
+    # If we beat prev performance
+    if val_acc > best_accuracy:
+        torch.save(model.state_dict(), 'best_model_state.bin')
+        best_accuracy = val_acc
+        
+# %%
+# Plot training and validation accuracy
+
+history['train_acc'] = [tensor.cpu().item() for tensor in history['train_acc']]
+history['val_acc'] = [tensor.cpu().item() for tensor in history['val_acc']]
+
+plt.plot(history['train_acc'], label='train accuracy')
+plt.plot(history['val_acc'], label='validation accuracy')
+
+# Graph chars
+plt.title('Training history')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend()
+plt.ylim([0, 1]);
+
+# %% Model evaluiation
+test_acc, _ = eval_model(
+  model,
+  test_data_loader,
+  loss_fn,
+  device,
+  len(df_test)
+)
+
+test_acc.item()
+
+# %%
+def get_predictions(model, data_loader):
+    model = model.eval()
+
+    review_texts = []
+    predictions = []
+    prediction_probs = []
+    real_values = []
+
+    with torch.no_grad():
+        for d in data_loader:
+            texts = d["occ1"]
+            input_ids = d["input_ids"].to(device)
+            attention_mask = d["attention_mask"].to(device)
+            targets = d["targets"].to(device)
+
+            # Get outouts
+            outputs = model(
+                input_ids=input_ids,
+                attention_mask=attention_mask
+            )
+            preds = torch.sigmoid(outputs)
+            threshold = 0.5  # You can adjust this threshold based on your use case
+            predicted_labels = (preds > threshold).float()
+
+            review_texts.extend(texts)
+            predictions.extend(predicted_labels)
+            prediction_probs.extend(outputs)
+            real_values.extend(targets)
+
+    predictions = torch.stack(predictions).cpu()
+    prediction_probs = torch.stack(prediction_probs).cpu()
+    real_values = torch.stack(real_values).cpu()
+
+    return review_texts, predictions, prediction_probs, real_values
+
+# %%
+y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
+    model,
+    test_data_loader
+)
+
+#%%
+report = classification_report(y_test, y_pred, output_dict=True)
+report_filtered = {key: value for key, value in report.items() if not all(v == 0 for v in value.values())}
+
+for key, value in report_filtered.items():
+    print(f"{key}: {value}")
