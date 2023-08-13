@@ -97,14 +97,48 @@ data0 = data0 %>%
 #   write_csv2("Data/Manual_data/Verified_no_occupation_UK_marr_cert.csv")
 
 # Load verified no occupation
-no_occ = readxl::read_excel("Data/Manual_data/Verified_no_occupation_DK_census.xlsx")
+no_occ = readxl::read_excel("Data/Manual_data/Verified_no_occupation_UK_marr_cert.xlsx")
 
+# Select relevant
+no_occ = no_occ %>% 
+  filter(verified == 1) %>% 
+  select(occ1, n) %>% 
+  mutate(hisco = "-1")
 
+# Expand
+no_occ = foreach(i = 1:NROW(no_occ), .combine = "bind_rows") %do% {
+  data.frame(
+    occ1 = rep(no_occ$occ1[i], no_occ$n[i]),
+    hisco = -1
+  )
+}
 
-df_n = df %>% 
-  group_by(code1) %>% 
-  count() %>% 
-  filter(n>1)
+set.seed(20)
+no_occ = no_occ %>% sample_frac(1)
 
-df %>% 
-  filter(code1 %in% df_n$code1)
+# Merge
+set.seed(20)
+data1 = data0 %>% 
+  filter(!is.na(hisco)) %>% 
+  bind_rows(no_occ) %>% 
+  sample_frac(1)
+
+# Add empty vars for format til conform
+data1 = data1 %>% 
+  rename(
+    hisco_1 = hisco
+  ) %>% 
+  mutate(
+    hisco_2 = " ",
+    hisco_3 = " ",
+    hisco_4 = " ",
+    hisco_5 = " ",
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    RowID = 1:n()
+  ) %>% 
+  select(-n)
+
+# ==== Save data ====
+save(data1, file = "Data/Tmp_data/Clean_EN_marr_cert.Rdata")

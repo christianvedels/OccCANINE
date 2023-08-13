@@ -23,6 +23,9 @@
 
 ## Updates
 
+### 2023-08-13
+- Englinsh mariage certificate data ready for training
+
 ### 2023-07-06
 - Added proff of concept XML-RoBERTa model
 
