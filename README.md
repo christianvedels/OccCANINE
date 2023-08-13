@@ -24,7 +24,8 @@
 ## Updates
 
 ### 2023-08-13
-- Englinsh mariage certificate data ready for training
+- English marriage certificate data ready for training
+- 004_Danish_BERT.py now runs. But the code is a mess
 
 ### 2023-07-06
 - Added proff of concept XML-RoBERTa model

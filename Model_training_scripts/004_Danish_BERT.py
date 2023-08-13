@@ -2,8 +2,28 @@
 """
 Created on Fri Aug 11 12:10:16 2023
 
-https://www.kaggle.com/code/prakharrathi25/sentiment-analysis-using-bert
-@author: chris
+**Reference loss:**
+A problem is that a good local minimum is to guess for the probability of each 
+class. The reference loss reflects this. It is the loss obtained from simply 
+guessing the frequency of each of the classes. We want our network to not be 
+stuck here. If the loss reamins around the level of the reference loss, then it
+indicates that it is stuck in that local minimum. 
+
+**Downsampling:**
+Another problem is unbalancedness. This is mostly a problem for the HISCO code '-1',
+which encodes 'no occupation'. E.g. for Danish census data this is around 70% of the data. 
+This causes guessing '-1' to be a strong local minimum. This is adressed by downsampling
+this category such that it represents an equal number of observations as the second most
+frequent category.
+
+**Attakcer()**
+This function 'attacks' the text in the spirit of but much simpler than the 
+TextAttack library (https://textattack.readthedocs.io/en/latest/).
+The function randomly changes letters according to an 'alt_probability'.
+The function also randomly inserts a word in a random location in each string, 
+with the same 'alt_probability'. The words are drawn from the distribution
+of words in the training data. 
+
 """
 #%%
 model_domain = "HSN_DATABASE"
@@ -92,6 +112,10 @@ else:
 
 df = pd.read_csv(fname, encoding = "UTF-8")
 
+# Handle na strings
+df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
+
+# Key
 key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
 key = key[1:]
 key = zip(key.code, key.hisco)
@@ -304,7 +328,7 @@ print(data['targets'][0])
 
 # %%
 # Load the basic BERT model 
-bert_model = BertModel.from_pretrained(MODEL_NAME)
+bert_model = BertModel.from_pretrained(MDL)
 
 # %%
 # Build the Sentiment Classifier class 
@@ -313,7 +337,7 @@ class OccupationClassifier(nn.Module):
     # Constructor class 
     def __init__(self, n_classes):
         super(OccupationClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained(MODEL_NAME)
+        self.bert = bert_model
         self.drop = nn.Dropout(p=0.5)
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
     
