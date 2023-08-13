@@ -40,3 +40,9 @@ Tmp traning plots/
 tmp/
 Litterature/
 Trained_models/
+Manual_data/
+Raw_data/
+Test_data/
+Tmp_data/
+Training_data/
+Validation_data/
