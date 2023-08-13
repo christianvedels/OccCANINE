@@ -15,6 +15,7 @@ source("Data_cleaning_scripts/000_Functions.R")
 # ==== Load data ====
 DK_census = loadRData("Data/Tmp_data/Clean_DK_census.Rdata")
 EN_marr   = loadRData("Data/Tmp_data/Clean_EN_marr_cert.Rdata")
+HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
 
 # ==== Train test val split ====
 # Generate common long vector of samples train, val, test
@@ -42,9 +43,21 @@ EN_marr = EN_marr %>%
   Validate_split() %>% 
   Keep_only_relevant()
 
+set.seed(20)
+HSN_data = HSN_data %>% 
+  # Reshuffle
+  sample_frac(1) %>% 
+  mutate(split = train_test_split[1:n()]) %>% 
+  Validate_split() %>% 
+  Keep_only_relevant()
+
+
 # ==== Save data ====
 DK_census %>% 
   Save_train_val_test("DK_census")
 
 EN_marr %>% 
   Save_train_val_test("EN_marr_cert")
+
+HSN_data %>% 
+  Save_train_val_test("HSN_database")

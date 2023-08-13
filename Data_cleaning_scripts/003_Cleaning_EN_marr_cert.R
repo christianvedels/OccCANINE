@@ -138,7 +138,36 @@ data1 = data1 %>%
   mutate(
     RowID = 1:n()
   ) %>% 
-  select(-n)
+  select(-n) %>% 
+  mutate(hisco_1 = as.character(hisco_1))
+
+# ==== Encode with key ====
+load("Data/Key.Rdata")
+
+key = key %>% select(hisco, code)
+
+# Add code
+data1 = data1 %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
 
 # ==== Save data ====
 save(data1, file = "Data/Tmp_data/Clean_EN_marr_cert.Rdata")
