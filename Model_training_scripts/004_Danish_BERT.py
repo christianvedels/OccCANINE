@@ -6,11 +6,21 @@ https://www.kaggle.com/code/prakharrathi25/sentiment-analysis-using-bert
 @author: chris
 """
 #%%
-model_domain = "DK_CENSUS"
-sample_size = 3 # 10 to the power of this
-MDL = 'Maltehb/danish-bert-botxo' # https://huggingface.co/Maltehb/danish-bert-botxo
+model_domain = "HSN_DATABASE"
+sample_size = 4 # 10 to the power of this
 EPOCHS = 1000
 BATCH_SIZE = 16
+
+# %% BERT finetune based on model_domain
+if(model_domain == "DK_CENSUS"):
+    MDL = 'Maltehb/danish-bert-botxo' # https://huggingface.co/Maltehb/danish-bert-botxo
+elif(model_domain == "EN_MARR_CERT"):
+    MDL = "bert-base-uncased" 
+elif(model_domain == "HSN_DATABASE"):
+    MDL = "GroNLP/bert-base-dutch-cased"
+else:
+    raise Exception("This is not implemented yet")
+
 
 # %%
 # Import necessary libraries
@@ -21,7 +31,7 @@ from pylab import rcParams
 import matplotlib.pyplot as plt
 from matplotlib import rc
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report, f1_score
+from sklearn.metrics import confusion_matrix, classification_report, f1_score, accuracy_score
 from collections import defaultdict
 from textwrap import wrap
 import random as r
@@ -70,16 +80,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = "cpu"
 
 # %%
-# df = pd.read_csv('archive/reviews.csv')
-# df.shape
-
-# df.head()
-
-# # Let's check for missing values 
-# df.isnull().sum()
-
+# Loads given domain 
 if(model_domain == "DK_CENSUS"):
     fname = "Data/Training_data/DK_census_train.csv"
+elif(model_domain == "EN_MARR_CERT"):
+    fname = "Data/Training_data/EN_marr_cert_train.csv" 
+elif(model_domain == "HSN_DATABASE"):
+    fname = "Data/Training_data/HSN_database_train.csv"
 else:
     raise Exception("This is not implemented yet")
 
@@ -99,22 +106,24 @@ id2label = {v: k for k, v in label2id.items()}
 # These have the code '2'
 category_counts = df['code1'].value_counts() 
 print(category_counts)
+# largest_cat = category_counts.index[0]
 next_largest_cat = category_counts.tolist()[1]
 
 # Split df into df with occ and df wih no occ
 df_noocc = df[df.code1 == 2]
 df_occ = df[df.code1 != 2]
 
-# Downsample to size of next largest cat
-df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
+# Downsample to size of next largest cat if it is the largest
+if(df_noocc.shape[0]>df_occ.shape[0]):
+    df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
 
-# Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
-df = pd.concat([df_noocc, df_occ], ignore_index=True)
-df = df.sample(frac=1, random_state=20)  # Shuffle the rows
+    # Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
+    df = pd.concat([df_noocc, df_occ], ignore_index=True)
+    df = df.sample(frac=1, random_state=20)  # Shuffle the rows
 
-# Print new counts
-category_counts = df['code1'].value_counts() 
-print(category_counts)
+    # Print new counts
+    category_counts = df['code1'].value_counts() 
+    print(category_counts)
 
 # %%
 # Subset to smaller
@@ -130,36 +139,9 @@ plt.ylabel('Count')
 plt.title('Distribution of Occupations')
 plt.show()
 
-# %% 
-# # Function to convert score to sentiment
-# def to_sentiment(rating):
-    
-#     rating = int(rating)
-    
-#     # Convert to class
-#     if rating <= 2:
-#         return 0
-#     elif rating == 3:
-#         return 1
-#     else:
-#         return 2
-
-# # Apply to the dataset 
-# df['sentiment'] = df.score.apply(to_sentiment)
-
-# # Plot the distribution
-# class_names = ['negative', 'neutral', 'positive']
-# ax = sns.countplot(data = df, x = 'sentiment')
-# plt.xlabel('review sentiment')
-# ax.set_xticklabels(class_names)
-
-
 # %%
-# Set the model name
-MODEL_NAME = MDL
-
 # Build a BERT based tokenizer
-tokenizer = BertTokenizer.from_pretrained(MODEL_NAME)
+tokenizer = BertTokenizer.from_pretrained(MDL)
 
 # Some of the common BERT tokens
 print(tokenizer.sep_token, tokenizer.sep_token_id) # marker for ending of a sentence
@@ -224,6 +206,23 @@ def labels_to_bin(df, max_value):
     
     return(labels)
 
+
+# %% Naive loss
+# Step 1: Calculate the probabilities for each class (frequency of occurrence)
+labels = labels_to_bin(df, max(df.code1)+1)
+probs = np.mean(labels, axis=0)
+
+# Step 2: Calculate the binary cross entropy for each class with epsilon to avoid divide by zero and log of zero
+epsilon = 1e-9
+probs = np.clip(probs, epsilon, 1 - epsilon)  # Clip probabilities to be in range [epsilon, 1-epsilon]
+
+# BCE formula: -y * log(p) - (1-y) * log(1-p)
+bce_per_class = -(labels * np.log(probs) + (1 - labels) * np.log(1 - probs))
+
+# Step 3: Sum up the binary cross entropy values for all classes
+total_bce = np.mean(bce_per_class)
+
+print("Binary Cross Entropy when guessing frequencies:", total_bce)
 
 #%% Dataset
 class OCCDataset(Dataset):
@@ -380,7 +379,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_exa
         threshold = 0.5  # You can adjust this threshold based on your use case
         predicted_labels = (preds > threshold).float()
         # breakpoint()
-        test = f1_score(predicted_labels.cpu().numpy(), targets.cpu().numpy(), average = 'micro')
+        test = Mult_accuracy(predicted_labels, targets)
         correct_predictions += test
         
         losses.append(loss.item())
@@ -425,14 +424,49 @@ def eval_model(model, data_loader, loss_fn, device, n_examples):
             preds = torch.sigmoid(outputs)
             threshold = 0.5  # You can adjust this threshold based on your use case
             predicted_labels = (preds > threshold).float()
-            test = f1_score(predicted_labels.cpu().numpy(), targets.cpu().numpy(), average = 'micro')
+            test = Mult_accuracy(predicted_labels, targets)
             correct_predictions += test
             
             
             
     return correct_predictions / n_examples, np.mean(losses)
 
-# %%
+# %% Plot training
+def plot_progress(train_losses, val_losses, step):
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(train_losses, color='blue', label='Training Loss')
+    plt.plot(val_losses, color='red', label='Validation Loss')
+    plt.axhline(y=total_bce, color='black', linestyle='dotted', label='Reference loss')
+    plt.xlabel('Iterations')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss Progress')
+    plt.legend()
+    plt.grid(True)   
+    
+    # Create the "Tmp progress" folder if it doesn't exist
+    if not os.path.exists("Tmp traning plots"):
+       os.makedirs("Tmp traning plots")
+    # Save the plot as an image in the folder
+    plt.savefig(f"Tmp traning plots/loss_BERT_{model_domain}_sample_size_{sample_size}.png")
+    plt.show()
+    plt.close()
+
+# %% mult_accuracy
+# Mult_accuracy
+
+def Mult_accuracy(y_pred, y_true):
+    y_pred = y_pred.cpu().numpy()
+    y_pred = [np.where(row == 1)[0].tolist() for row in y_pred]
+    y_true = y_true.cpu().numpy()
+    y_true = [np.where(row == 1)[0].tolist() for row in y_true]
+    
+    equal_lists = [inner_list1 == inner_list2 for inner_list1, inner_list2 in zip(y_pred, y_true)]
+    res = np.sum(equal_lists)
+    
+    return res # Returns the number of correctly predicted sets of labels
+
+# %% Train
 
 history = defaultdict(list)
 best_accuracy = 0
@@ -465,12 +499,16 @@ for epoch in range(EPOCHS):
     )
     
     print(f"Val   loss {val_loss} accuracy {val_acc}")
-    print()
+    
     
     history['train_acc'].append(train_acc)
     history['train_loss'].append(train_loss)
     history['val_acc'].append(val_acc)
     history['val_loss'].append(val_loss)
+    
+    # Make plot
+    plot_progress(history['train_loss'], history['val_loss'], step=0)
+      
     
     # If we beat prev performance
     if val_acc > best_accuracy:
@@ -480,8 +518,8 @@ for epoch in range(EPOCHS):
 # %%
 # Plot training and validation accuracy
 
-history['train_acc'] = [tensor.cpu().item() for tensor in history['train_acc']]
-history['val_acc'] = [tensor.cpu().item() for tensor in history['val_acc']]
+# history['train_acc'] = [tensor.cpu().item() for tensor in history['train_acc']]
+# history['val_acc'] = [tensor.cpu().item() for tensor in history['val_acc']]
 
 plt.plot(history['train_acc'], label='train accuracy')
 plt.plot(history['val_acc'], label='validation accuracy')
