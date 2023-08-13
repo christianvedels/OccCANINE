@@ -106,5 +106,9 @@ occ_data = occ_data %>%
   ) %>% 
   rename(code5 = code)
 
+occ_data = occ_data %>% 
+  ungroup() %>% 
+  mutate(RowID = 1:n())
+
 # ==== Save data ====
 save(occ_data, file = "Data/Tmp_data/Clean_HSN_database.Rdata")
