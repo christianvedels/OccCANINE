@@ -26,8 +26,14 @@ of words in the training data.
 
 """
 #%%
-model_domain = "HSN_DATABASE"
-sample_size = 4 # 10 to the power of this
+
+# Which training data is used for the model
+# model_domain = "HSN_DATABASE"
+# model_domain = "DK_CENSUS"
+model_domain = "EN_MARR_CERT"
+
+# Parameters
+sample_size = 4 # 10 to the power of this is used for training
 EPOCHS = 1000
 BATCH_SIZE = 16
 
@@ -64,10 +70,7 @@ from torch import nn, optim
 from torch.utils.data import Dataset, DataLoader
 
 # Misc.
-import warnings
-warnings.filterwarnings('ignore')
-
-
+import string
 
 # %%
 import os
@@ -196,12 +199,9 @@ def labels_to_bin(df, max_value):
     labels_list = df_codes.values.tolist()
 
     # == Build outcome matrix ==
-    # Convert the given list to a NumPy array
-    labels_array = np.array(labels_list)
-
     # Construct the NxK matrix
     N = len(labels_list)
-    K = max_value
+    K = int(max_value)
     labels = np.zeros((N, K), dtype=int)
 
     for i, row in enumerate(labels_list):
@@ -248,15 +248,75 @@ total_bce = np.mean(bce_per_class)
 
 print("Binary Cross Entropy when guessing frequencies:", total_bce)
 
+# %% Attacker
+
+# List of unique words
+all_text = ' '.join(df['occ1'].tolist())
+words_list = all_text.split()
+
+def Attacker(x_string, alt_prob = 0.1, insert_words = True):
+    
+    # breakpoint()
+    
+    x_string = [x_string]    
+    x_string_copy = x_string.copy()
+    
+    if(alt_prob == 0): # Then don't waste time
+        return(x_string_copy)
+    
+    # Alter chars
+    for i in range(len(x_string_copy)):
+        # alt_prob probability that nothing will happen to the string
+        if r.random() < alt_prob:
+            continue
+        
+        string_i = x_string_copy[i]
+       
+        num_letters = len(string_i)
+        num_replacements = int(num_letters * alt_prob)
+        
+        indices_to_replace = r.sample(range(num_letters), num_replacements)
+        
+        # Convert string to list of characters
+        chars = list(string_i)
+        
+        for j in indices_to_replace:
+            chars[j] =  r.choice(string.ascii_lowercase) # replace with a random letter
+            
+        string_i = ''.join(chars)
+               
+        x_string_copy[i] = string_i
+        
+    if insert_words:
+        for i in range(len(x_string_copy)):
+            if r.random() < alt_prob: # Only make this affect alt_prob of cases
+                # Word list
+                occ_as_word_list = x_string_copy[i].split()
+                                
+                # Random word
+                random_word = r.choice(words_list)
+                                
+                # choose a random index to insert the word
+                insert_index = r.randint(0, len(occ_as_word_list))
+
+                # insert the word into the list
+                occ_as_word_list.insert(insert_index, random_word)
+                
+                x_string_copy[i] = " ".join(occ_as_word_list)
+                    
+    return(x_string_copy[0][0])
+
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
-    def __init__(self, occ1, df, tokenizer, max_len, n_classes):
+    def __init__(self, occ1, df, tokenizer, max_len, n_classes, alt_prob = 0, insert_words = False):
         self.occ1 = occ1
         self.df = df
         self.tokenizer = tokenizer
         self.max_len = max_len
         self.targets = labels_to_bin(df, n_classes)
+        self.alt_prob = alt_prob # Probability of text alteration in Attacker()
+        self.insert_words = insert_words # Should random word insertation occur in Attacker()
     
     # Length magic method
     def __len__(self):
@@ -266,6 +326,9 @@ class OCCDataset(Dataset):
     def __getitem__(self, item):
         occ1 = str(self.occ1[item])
         target = self.targets[item]
+        
+        # Implement Attack() here
+        occ1 = Attacker(occ1, alt_prob = self.alt_prob, insert_words = self.insert_words)
         
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(
@@ -289,17 +352,18 @@ class OCCDataset(Dataset):
 df_train, df_test = train_test_split(df, test_size=0.2, random_state=RANDOM_SEED)
 df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=RANDOM_SEED)
 
-
 print(df_train.shape, df_val.shape, df_test.shape)
 
 # %% Dataloader
-def create_data_loader(df, tokenizer, max_len, batch_size,n_classes):
+def create_data_loader(df, tokenizer, max_len, batch_size,n_classes, alt_prob = 0, insert_words = False):
     ds = OCCDataset(
         occ1=df.occ1.to_numpy(),
         df=df,
         tokenizer=tokenizer,
         max_len=max_len,
-        n_classes=n_classes
+        n_classes=n_classes,
+        alt_prob = alt_prob, 
+        insert_words = insert_words
     )
     
     return DataLoader(
@@ -311,7 +375,7 @@ def create_data_loader(df, tokenizer, max_len, batch_size,n_classes):
 # %%
 # Create train, test and val data loaders
 N_CLASSES = max(df.code1)+1
-train_data_loader = create_data_loader(df_train, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
+train_data_loader = create_data_loader(df_train, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES, alt_prob = 0.2, insert_words = True)
 val_data_loader = create_data_loader(df_val, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
 test_data_loader = create_data_loader(df_test, tokenizer, MAX_LEN, BATCH_SIZE, N_CLASSES)
 
@@ -355,7 +419,7 @@ class OccupationClassifier(nn.Module):
     
 # %%
 # Instantiate the model and move to classifier
-model = OccupationClassifier(N_CLASSES)
+model = OccupationClassifier(int(N_CLASSES))
 model = model.to(device)
 
 # %%
@@ -462,7 +526,7 @@ def plot_progress(train_losses, val_losses, step):
     plt.plot(train_losses, color='blue', label='Training Loss')
     plt.plot(val_losses, color='red', label='Validation Loss')
     plt.axhline(y=total_bce, color='black', linestyle='dotted', label='Reference loss')
-    plt.xlabel('Iterations')
+    plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.title('Training and Validation Loss Progress')
     plt.legend()
@@ -511,7 +575,7 @@ for epoch in range(EPOCHS):
         len(df_train)
     )
     
-    print(f"Train loss {train_loss} accuracy {train_acc}")
+    print(f"Train loss {train_loss}, accuracy {train_acc}")
     
     # Get model performance (accuracy and loss)
     val_acc, val_loss = eval_model(
@@ -522,7 +586,9 @@ for epoch in range(EPOCHS):
         len(df_val)
     )
     
-    print(f"Val   loss {val_loss} accuracy {val_acc}")
+    print(f"Val   loss {val_loss}, accuracy {val_acc}")
+    
+    print(f"Reference loss: {total_bce}")
     
     
     history['train_acc'].append(train_acc)
@@ -536,7 +602,10 @@ for epoch in range(EPOCHS):
     
     # If we beat prev performance
     if val_acc > best_accuracy:
-        torch.save(model.state_dict(), 'best_model_state.bin')
+        torch.save(
+            model.state_dict(), 
+            f'Trained_models/BERT_{model_domain}_sample_size_{sample_size}.bin'
+            )
         best_accuracy = val_acc
         
 # %%
