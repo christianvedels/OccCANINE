@@ -165,6 +165,12 @@ write_csv0 = function(x, fname){
 Save_train_val_test = function(x, Name){
   the_cats = x$split %>% unique()
   
+  # Replace NA in occ string
+  x = x %>% 
+    mutate(
+      occ1 = ifelse(is.na(occ1), " ", occ1)
+    )
+  
   # Update RowID to contain Name
   x = x %>% 
     mutate(
