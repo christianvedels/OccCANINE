@@ -13,7 +13,8 @@ A problem is that a good local minimum is to guess for the probability of each
 class. The reference loss reflects this. It is the loss obtained from simply 
 guessing the frequency of each of the classes. We want our network to not be 
 stuck here. If the loss reamins around the level of the reference loss, then it
-indicates that it is stuck in a local minimum.
+indicates that it is stuck in that local minimum. In training loss-reference is
+reported. 
 
 **Downsampling:**
 Another problem is unbalancedness. This is mostly a problem for the HISCO code '-1',
@@ -33,18 +34,18 @@ of words in the training data.
 @author: christian-vs
 """
 # %% Key vars
-model_domain = "DK_CENSUS"
+model_domain = "EN_MARR_CERT"
 sample_size = 4 # 10 to the power of this
-MAX_LEN = 128
-TRAIN_BATCH_SIZE = 16
-VALID_BATCH_SIZE = 16
+MAX_LEN = 10 #128
+TRAIN_BATCH_SIZE = 64
+VALID_BATCH_SIZE = 64
 EPOCHS = 100
 LEARNING_RATE = 1e-03
-PRINT_VAL_FREQ = 50 # How many steps between reports to console, validation and plots are updated
+PRINT_VAL_FREQ = 200 # How many steps between reports to console, validation and plots are updated
 
 MDL = 'xlm-roberta-base' # Base model to fine tune from
 
-toyrun = False # Reduces the labels to only 3 possible outcomes for a simpler toyrun
+toyrun = False # False # Reduces the labels to only 3 possible outcomes for a simpler toyrun
 
 # %% Import packages
 import pandas as pd
@@ -77,19 +78,24 @@ else:
     device = torch.device("cpu")
     print("GPU not available, CPU used")
 
-device = torch.device("cpu")  
+# if toyrun:
+#     device = torch.device("cpu")  
 
 # %% Set wd()
 if os.environ['COMPUTERNAME'] == 'SAM-126260':
     os.chdir('D:/Dropbox/PhD/HISCO clean')
-else:
+elif os.environ['COMPUTERNAME'] == 'DESKTOP-7BUTU8I':
     os.chdir('C:/Users/chris/Dropbox/PhD/HISCO clean')
+else:
+    raise Exception("Please define dir for this computer")
 print(os.getcwd())  
 
 #%% Load data
 # Loads given domain 
 if(model_domain == "DK_CENSUS"):
     fname = "Data/Training_data/DK_census_train.csv"
+elif(model_domain == "EN_MARR_CERT"):
+    fname = "Data/Training_data/EN_marr_cert_train.csv" 
 else:
     raise Exception("This is not implemented yet")
 
@@ -109,22 +115,26 @@ id2label = {v: k for k, v in label2id.items()}
 # These have the code '2'
 category_counts = df['code1'].value_counts() 
 print(category_counts)
+# largest_cat = category_counts.index[0]
 next_largest_cat = category_counts.tolist()[1]
 
 # Split df into df with occ and df wih no occ
 df_noocc = df[df.code1 == 2]
 df_occ = df[df.code1 != 2]
 
-# Downsample to size of next largest cat
-df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
+# Downsample to size of next largest cat if it is the largest
+if(df_noocc.shape[0]>df_occ.shape[0]):
+    df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
 
-# Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
-df = pd.concat([df_noocc, df_occ], ignore_index=True)
-df = df.sample(frac=1, random_state=20)  # Shuffle the rows
+    # Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
+    df = pd.concat([df_noocc, df_occ], ignore_index=True)
+    df = df.sample(frac=1, random_state=20)  # Shuffle the rows
 
-# Print new counts
-category_counts = df['code1'].value_counts() 
-print(category_counts)
+    # Print new counts
+    category_counts = df['code1'].value_counts() 
+    print(category_counts)
+    
+
 
 # %%
 # Subset to smaller
@@ -296,6 +306,11 @@ def Attacker(x_string, alt_prob = 0.1, insert_words = True):
                     
     return(x_string_copy[0][0])
 
+# %% Validate data flow
+# Function to test data flow validity
+def validate_data_flow(text, tokens):
+    return 0
+
 # %% Defining CustomDataset 
 # (https://github.com/abhimishra91/transformers-tutorials/blob/master/transformers_multi_label_classification.ipynb)
 
@@ -393,8 +408,8 @@ if(toyrun):
 
 # Freeeze base layer
 # Freeze base model's parameters
-for param in model.l1.parameters():
-    param.requires_grad = False
+# for param in model.l1.parameters():
+#     param.requires_grad = False
 
 # Send to device
 model.to(device)
@@ -407,6 +422,11 @@ optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, model.parameters
 
 # %% Plot progress
 def plot_progress(train_losses, val_losses, step, phase):
+    # Remove first observation (large loss)
+    if(len(train_losses)>1):
+        train_losses = train_losses[1:]
+        val_losses = val_losses[1:]
+    
     plt.figure(figsize=(8, 6))
     plt.plot(train_losses, color='blue', label='Training Loss')
     plt.plot(val_losses, color='red', label='Validation Loss')
@@ -421,7 +441,7 @@ def plot_progress(train_losses, val_losses, step, phase):
     if not os.path.exists("Tmp traning plots"):
        os.makedirs("Tmp traning plots")
     # Save the plot as an image in the folder
-    plt.savefig(f"Tmp traning plots/loss_{model_domain}_sample_size_{sample_size}_phase_{phase}_{step}.png")
+    plt.savefig(f"Tmp traning plots/loss_XML_RoBERTa_{model_domain}_sample_size_{sample_size}_phase_{phase}.png")
     plt.show()
     plt.close()
 
@@ -452,7 +472,7 @@ def validate(model, data_loader, loss_fn):
 losses = []
 val_losses = []
 
-def train(epoch, phase):
+def train(epoch, phase, plot = True):
     model.train()
     val_loss = validate(model, testing_loader, loss_fn)
     
@@ -471,53 +491,57 @@ def train(epoch, phase):
         
         # Update to console and plot
         if _%PRINT_VAL_FREQ==0:
-            print(f'Phase: {phase}, Step: {_}, Epoch: {epoch}, Loss:  {loss.item()}, reference: {total_bce}')
+            print(f'Phase: {phase}, Step: {_}, Epoch: {epoch}, Loss:  {loss.item()}, reference: {loss.item()-total_bce}')
             
             # Validation
             val_loss = validate(model, testing_loader, loss_fn)
             print(f"Validation Loss: {val_loss}")
             val_losses[_] = val_loss
             
-            plot_progress(losses, val_losses, step=_, phase = phase)
+            if(plot):
+                plot_progress(losses, val_losses, step=len(losses), phase = phase)
         
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-# %% Phase 1: Fine tune top layers
-# This will generally only learn to guess for the frequency of each class
-# regardless of the data it is fed. 
-best_val_loss = float('inf')
-patience = 3  # Number of epochs without improvement to tolerate
-no_improvement_count = 0
+# # %% Phase 1: Fine tune top layers
+# # This will generally only learn to guess for the frequency of each class
+# # regardless of the data it is fed. 
+# best_val_loss = float('inf')
+# patience = 5  # Number of epochs without improvement to tolerate
+# no_improvement_count = 0
 
-for epoch in range(EPOCHS):
-    train(epoch, phase = 1)
-    val_loss = validate(model, testing_loader, loss_fn)
-    print(f"Validation Loss after phase 1 epoch {epoch}: {val_loss}")
+# for epoch in range(EPOCHS):
+#     train(epoch, phase = 1)
+#     val_loss = validate(model, testing_loader, loss_fn)
+#     print(f"Validation Loss after phase 1 epoch {epoch}: {val_loss}")
 
-    if val_loss < best_val_loss:
-        best_val_loss = val_loss
-        no_improvement_count = 0
-    else:
-        no_improvement_count += 1
-        if no_improvement_count >= patience:
-            print(f"No improvement in validation loss for {patience} epochs. Phase 1 ends.")
-            break
+#     if val_loss < best_val_loss:
+#         best_val_loss = val_loss
+#         no_improvement_count = 0
+#     else:
+#         no_improvement_count += 1
+#         if no_improvement_count >= patience:
+#             print(f"No improvement in validation loss for {patience} epochs. Phase 1 ends.")
+#             break
     
  # %% Phase 2: Fine-tune entire model for specified number of epochs   
 # Unfreeze all parameters for the second phase
-for param in model.parameters():
-    param.requires_grad = True
+# Restarted at Phase: 2, Step: 4800, Epoch: 13, Loss:  0.0022352219093590975, reference: 3.7577130249450124e-05
+# for param in model.parameters():
+#     param.requires_grad = True
     
 # Set loss and val loss empty
+train(1, 1, False)
+
 losses_phase1 = losses.copy()
 val_losses_phase1 = val_losses.copy()
 losses = []
 val_losses = []
 
 # Set learning rate for the second phase
-second_phase_lr = 1e-2 * LEARNING_RATE
+second_phase_lr = 1e-1 * LEARNING_RATE
 
 # Reset optimizer for second phase
 optimizer = torch.optim.AdamW(model.parameters(), lr = second_phase_lr)  # Adjust learning rate as needed
