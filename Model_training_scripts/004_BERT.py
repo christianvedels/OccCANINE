@@ -16,6 +16,12 @@ This causes guessing '-1' to be a strong local minimum. This is adressed by down
 this category such that it represents an equal number of observations as the second most
 frequent category.
 
+**Upsampling:**
+Equally there are many labels which are incredibily rare. This causes any 
+learning in these labels to not be rewarded with any discernable probability. 
+As such to contributes to the local minimum problem. All rare labels are
+upsampled to 'UPSAMPLE_MINIMUM'.
+
 **Attakcer()**
 This function 'attacks' the text in the spirit of but much simpler than the 
 TextAttack library (https://textattack.readthedocs.io/en/latest/).
@@ -25,7 +31,7 @@ with the same 'alt_probability'. The words are drawn from the distribution
 of words in the training data. 
 
 """
-#%%
+#%% Hyperparameters
 
 # Which training data is used for the model
 # model_domain = "HSN_DATABASE"
@@ -34,8 +40,10 @@ model_domain = "EN_MARR_CERT"
 
 # Parameters
 sample_size = 4 # 10 to the power of this is used for training
-EPOCHS = 1000
-BATCH_SIZE = 16
+EPOCHS = 10000
+BATCH_SIZE = 128
+LEARNING_RATE = 2e-3
+UPSAMPLE_MINIMUM = 10000
 
 # %% BERT finetune based on model_domain
 if(model_domain == "DK_CENSUS"):
@@ -128,36 +136,73 @@ label2id = key
 id2label = {v: k for k, v in label2id.items()}
 
 # %% Downsapmling "no occupation"
-# Reduce no occ rows
-# A large share is 'no occupation' this presents a balancing problem
-# These have the code '2'
-category_counts = df['code1'].value_counts() 
-print(category_counts)
-# largest_cat = category_counts.index[0]
-next_largest_cat = category_counts.tolist()[1]
+# Find the largest category
+category_counts = df['code1'].value_counts()
 
-# Split df into df with occ and df wih no occ
-df_noocc = df[df.code1 == 2]
-df_occ = df[df.code1 != 2]
+# Make plot
+sns.distplot(category_counts.tolist())
+plt.xlabel('Labels count (log scale)')
+plt.xscale('log')
+plt.show()
+
+# Downsample
+largest_category = category_counts.index[0]
+second_largest_size = next_largest_cat = category_counts.tolist()[1]
+
+# Split df into df with the largest category and df with other categories
+df_largest = df[df.code1 == largest_category]
+df_other = df[df.code1 != largest_category]
 
 # Downsample to size of next largest cat if it is the largest
-if(df_noocc.shape[0]>df_occ.shape[0]):
-    df_noocc = df_noocc.sample(next_largest_cat, random_state=20)
+df_largest = df_largest.sample(second_largest_size, random_state=20)
 
-    # Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
-    df = pd.concat([df_noocc, df_occ], ignore_index=True)
-    df = df.sample(frac=1, random_state=20)  # Shuffle the rows
+# Merge 'df_noocc' and 'df_occ' into 'df' and shuffle data
+df = pd.concat([df_largest, df_other], ignore_index=True)
+df = df.sample(frac=1, random_state=20)  # Shuffle the rows
 
-    # Print new counts
-    category_counts = df['code1'].value_counts() 
-    print(category_counts)
+# Print new counts
+category_counts = df['code1'].value_counts() 
+print(category_counts)
+    
+    
+# %% Upsampling the remaining data
+# Labels with less than UPSAMPLE_MINIMUM have an UPSAMPLE_MINIMUM observations
+# added to the data
+df_original = df.copy()
+
+# Initialize an empty DataFrame to store upsampled samples
+upsampled_df = pd.DataFrame()
+
+# Loop through unique classes (excluding the 'no occupation' class)
+for class_label in df['code1'].unique():
+    class_samples = df[df['code1'] == class_label]
+    if(class_samples.shape[0]==0):
+        continue
+    if(class_samples.shape[0]<UPSAMPLE_MINIMUM):
+        print(f"Upsampling: {class_samples.shape[0]} --> {UPSAMPLE_MINIMUM+class_samples.shape[0]}")
+        oversampled_samples = class_samples.sample(UPSAMPLE_MINIMUM, replace=True, random_state=20)
+        upsampled_df = pd.concat([upsampled_df, oversampled_samples], ignore_index=True)
+
+# Combine upsampled data with 'no occupation' downsampled data
+df = pd.concat([df, upsampled_df], ignore_index=True)
+df = df.sample(frac=1, random_state=20)  # Shuffle the rows again
+
+# Print new counts after upsampling
+category_counts = df['code1'].value_counts() 
+print(category_counts)
+
+# Make plot
+sns.distplot(category_counts.tolist())
+plt.xlabel('Labels count (log scale)')
+plt.xscale('log')
+plt.show()
 
 # %%
 # Subset to smaller
 if(10**sample_size < df.shape[0]):
     r.seed(20)
     df = df.sample(10**sample_size, random_state=20)
-
+    
 # %%
 # Create a count plot
 sns.countplot(data=df, x='code1')
@@ -184,7 +229,7 @@ for txt in df.occ1:
     tokens = tokenizer.encode(txt, max_length=512)
     token_lens.append(len(tokens))
     
-# plot the distribution of review lengths 
+# plot the distribution of occ description length
 sns.distplot(token_lens)
 plt.xlim([0, 256]);
 plt.xlabel('Token count')
@@ -251,7 +296,7 @@ print("Binary Cross Entropy when guessing frequencies:", total_bce)
 # %% Attacker
 
 # List of unique words
-all_text = ' '.join(df['occ1'].tolist())
+all_text = ' '.join(df_original['occ1'].tolist())
 words_list = all_text.split()
 
 def Attacker(x_string, alt_prob = 0.1, insert_words = True):
@@ -428,7 +473,7 @@ print(bert_model.config.hidden_size)
 
 # %% 
 # Optimizer Adam 
-optimizer = AdamW(model.parameters(), lr=2e-5, correct_bias=False)
+optimizer = AdamW(model.parameters(), lr=LEARNING_RATE, correct_bias=False)
 
 total_steps = len(train_data_loader) * EPOCHS
 
@@ -439,7 +484,6 @@ scheduler = get_linear_schedule_with_warmup(
 )
 
 # Set the loss function 
-loss_fn = nn.CrossEntropyLoss().to(device)
 loss_fn = nn.BCEWithLogitsLoss().to(device)
 
 # %%
@@ -448,6 +492,8 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_exa
     model = model.train()
     losses = []
     correct_predictions = 0
+    
+    print("Training:", end = " ")
     
     for batch_idx, d in enumerate(data_loader):
         input_ids = d["input_ids"].to(device)
@@ -461,12 +507,10 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_exa
         
         loss = loss_fn(outputs, targets)
         
-        # breakpoint()
         # Calculate correct predictions using threshold
         preds = torch.sigmoid(outputs)
         threshold = 0.5  # You can adjust this threshold based on your use case
         predicted_labels = (preds > threshold).float()
-        # breakpoint()
         test = Mult_accuracy(predicted_labels, targets)
         correct_predictions += test
         
@@ -481,8 +525,9 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_exa
         scheduler.step()
         optimizer.zero_grad()
         
-        # Print current batch number and loss, overwriting previous output
-        # print(f"Batch [{batch_idx+1}/{len(data_loader)}] - Loss: {loss.item():.4f}", end="\r", flush=True)
+        print(":",end = "")
+        
+    print("]")
     
     return correct_predictions / n_examples, np.mean(losses)
 
@@ -559,12 +604,24 @@ def Mult_accuracy(y_pred, y_true):
 history = defaultdict(list)
 best_accuracy = 0
 
+# Train first epoch
+train_acc, train_loss = train_epoch(
+    model,
+    train_data_loader,
+    loss_fn,
+    optimizer,
+    device,
+    scheduler,
+    len(df_train)
+)
+
+# Training loop
 for epoch in range(EPOCHS):
     
     # Show details 
+    print("----------")
     print(f"Epoch {epoch + 1}/{EPOCHS}")
-    print("-" * 10)
-    
+        
     train_acc, train_loss = train_epoch(
         model,
         train_data_loader,
