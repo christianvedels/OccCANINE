@@ -17,15 +17,12 @@ library(tm)
 library(ipumsr)
 
 # # ==== Load data ====
-ddi = read_ipums_ddi("Data/Raw_data/ipumsi_00001.xml")
+ddi = read_ipums_ddi("Data/Raw_data/ipumsi_00002.xml")
 all_data = read_ipums_micro(ddi)
 
 # Toy data in script development
-# set.seed(20)
-# all_data = all_data %>% sample_n(10^6)
-
-all_data = all_data %>% 
-  filter(OCCSTRNG == "")
+set.seed(20)
+all_data = all_data %>% sample_n(10^6)
 
 all_data %>% 
   group_by(COUNTRY) %>% 
@@ -72,7 +69,7 @@ all_data = all_data %>%
 # Norway is missing household position variable, where a lot of information is
 
 # Manual look at data
-CNT = "United States"
+CNT = "Norway"
 all_data %>% 
   filter(COUNTRY == CNT) %>% View()
 
@@ -87,7 +84,14 @@ all_data %>%
     HISCO = ifelse(HISCO == 99999, -1, HISCO)
   )
 
-# # # ==== Data cleaning 1 ====
+
+
+# # # ==== Data cleaning ====
+# Fixing norway
+stop("Fix Norway")
+
+# Standardizing strings and var names
+NROW(all_data)
 all_data = all_data %>%
   mutate(
     HISCO = as.character(HISCO)
@@ -99,7 +103,7 @@ all_data = all_data %>%
     occ1 = Original,
     hisco_1 = HISCO
   ) %>% 
-  filter(OCCSTRNG != "")
+  filter(occ1 != "")
 
 all_data = all_data %>% as.data.frame()
 
