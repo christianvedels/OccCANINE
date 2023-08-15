@@ -46,7 +46,7 @@ for b in range(2, 8):
         # model_domain = "EN_MARR_CERT"
 
         # Parameters
-        sample_size = 4 # 10 to the power of this is used for training
+        sample_size = 5 # 10 to the power of this is used for training
         EPOCHS = 100
         BATCH_SIZE = 2**b
         LEARNING_RATE = 2*10**-k
