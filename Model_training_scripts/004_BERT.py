@@ -177,34 +177,34 @@ for b in range(3, 8):
         # %% Upsampling the remaining data
         # Labels with less than UPSAMPLE_MINIMUM have an UPSAMPLE_MINIMUM observations
         # added to the data
-        # df_original = df.copy()
+        df_original = df.copy()
 
-        # # Initialize an empty DataFrame to store upsampled samples
-        # upsampled_df = pd.DataFrame()
+        # Initialize an empty DataFrame to store upsampled samples
+        upsampled_df = pd.DataFrame()
 
-        # # Loop through unique classes (excluding the 'no occupation' class)
-        # for class_label in df['code1'].unique():
-        #     class_samples = df[df['code1'] == class_label]
-        #     if(class_samples.shape[0]==0):
-        #         continue
-        #     if(class_samples.shape[0]<UPSAMPLE_MINIMUM):
-        #         print(f"Upsampling: {class_samples.shape[0]} --> {UPSAMPLE_MINIMUM+class_samples.shape[0]}")
-        #         oversampled_samples = class_samples.sample(UPSAMPLE_MINIMUM, replace=True, random_state=20)
-        #         upsampled_df = pd.concat([upsampled_df, oversampled_samples], ignore_index=True)
+        # Loop through unique classes (excluding the 'no occupation' class)
+        for class_label in df['code1'].unique():
+            class_samples = df[df['code1'] == class_label]
+            if(class_samples.shape[0]==0):
+                continue
+            if(class_samples.shape[0]<UPSAMPLE_MINIMUM):
+                print(f"Upsampling: {class_samples.shape[0]} --> {UPSAMPLE_MINIMUM+class_samples.shape[0]}")
+                oversampled_samples = class_samples.sample(UPSAMPLE_MINIMUM, replace=True, random_state=20)
+                upsampled_df = pd.concat([upsampled_df, oversampled_samples], ignore_index=True)
 
-        # # Combine upsampled data with 'no occupation' downsampled data
-        # df = pd.concat([df, upsampled_df], ignore_index=True)
-        # df = df.sample(frac=1, random_state=20)  # Shuffle the rows again
+        # Combine upsampled data with 'no occupation' downsampled data
+        df = pd.concat([df, upsampled_df], ignore_index=True)
+        df = df.sample(frac=1, random_state=20)  # Shuffle the rows again
 
-        # # Print new counts after upsampling
-        # category_counts = df['code1'].value_counts() 
-        # print(category_counts)
+        # Print new counts after upsampling
+        category_counts = df['code1'].value_counts() 
+        print(category_counts)
 
-        # # Make plot
-        # sns.distplot(category_counts.tolist())
-        # plt.xlabel('Labels count (log scale)')
-        # plt.xscale('log')
-        # plt.show()
+        # Make plot
+        sns.distplot(category_counts.tolist())
+        plt.xlabel('Labels count (log scale)')
+        plt.xscale('log')
+        plt.show()
 
         # %%
         # Subset to smaller
