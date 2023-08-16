@@ -1,0 +1,1 @@
+new-item . -name set_working_directory.bat -type "file" -value "cd C:\Users\chris\Dropbox\PhD\HISCO clean"
