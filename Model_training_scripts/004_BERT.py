@@ -36,7 +36,7 @@ BERT hyperparameter reccomendations:
     https://datascience.stackexchange.com/questions/64583/what-are-the-good-parameter-ranges-for-bert-hyperparameters-while-finetuning-it
 
 """
-for b in range(2, 8):
+for b in range(3, 8):
     for k in range(3, 7):
         #%% Hyperparameters
 
@@ -46,13 +46,13 @@ for b in range(2, 8):
         # model_domain = "EN_MARR_CERT"
 
         # Parameters
-        sample_size = 5 # 10 to the power of this is used for training
-        EPOCHS = 100
+        sample_size = 4 # 10 to the power of this is used for training
+        EPOCHS = 1000
         BATCH_SIZE = 2**b
         LEARNING_RATE = 2*10**-k
         UPSAMPLE_MINIMUM = 1000
         ALT_PROB = 0.1
-        DROPOUT_RATE = 0.3
+        DROPOUT_RATE = 0 #0.3
 
         # %% BERT finetune based on model_domain
         if(model_domain == "DK_CENSUS"):
@@ -177,34 +177,34 @@ for b in range(2, 8):
         # %% Upsampling the remaining data
         # Labels with less than UPSAMPLE_MINIMUM have an UPSAMPLE_MINIMUM observations
         # added to the data
-        df_original = df.copy()
+        # df_original = df.copy()
 
-        # Initialize an empty DataFrame to store upsampled samples
-        upsampled_df = pd.DataFrame()
+        # # Initialize an empty DataFrame to store upsampled samples
+        # upsampled_df = pd.DataFrame()
 
-        # Loop through unique classes (excluding the 'no occupation' class)
-        for class_label in df['code1'].unique():
-            class_samples = df[df['code1'] == class_label]
-            if(class_samples.shape[0]==0):
-                continue
-            if(class_samples.shape[0]<UPSAMPLE_MINIMUM):
-                print(f"Upsampling: {class_samples.shape[0]} --> {UPSAMPLE_MINIMUM+class_samples.shape[0]}")
-                oversampled_samples = class_samples.sample(UPSAMPLE_MINIMUM, replace=True, random_state=20)
-                upsampled_df = pd.concat([upsampled_df, oversampled_samples], ignore_index=True)
+        # # Loop through unique classes (excluding the 'no occupation' class)
+        # for class_label in df['code1'].unique():
+        #     class_samples = df[df['code1'] == class_label]
+        #     if(class_samples.shape[0]==0):
+        #         continue
+        #     if(class_samples.shape[0]<UPSAMPLE_MINIMUM):
+        #         print(f"Upsampling: {class_samples.shape[0]} --> {UPSAMPLE_MINIMUM+class_samples.shape[0]}")
+        #         oversampled_samples = class_samples.sample(UPSAMPLE_MINIMUM, replace=True, random_state=20)
+        #         upsampled_df = pd.concat([upsampled_df, oversampled_samples], ignore_index=True)
 
-        # Combine upsampled data with 'no occupation' downsampled data
-        df = pd.concat([df, upsampled_df], ignore_index=True)
-        df = df.sample(frac=1, random_state=20)  # Shuffle the rows again
+        # # Combine upsampled data with 'no occupation' downsampled data
+        # df = pd.concat([df, upsampled_df], ignore_index=True)
+        # df = df.sample(frac=1, random_state=20)  # Shuffle the rows again
 
-        # Print new counts after upsampling
-        category_counts = df['code1'].value_counts() 
-        print(category_counts)
+        # # Print new counts after upsampling
+        # category_counts = df['code1'].value_counts() 
+        # print(category_counts)
 
-        # Make plot
-        sns.distplot(category_counts.tolist())
-        plt.xlabel('Labels count (log scale)')
-        plt.xscale('log')
-        plt.show()
+        # # Make plot
+        # sns.distplot(category_counts.tolist())
+        # plt.xlabel('Labels count (log scale)')
+        # plt.xscale('log')
+        # plt.show()
 
         # %%
         # Subset to smaller
@@ -313,7 +313,7 @@ for b in range(2, 8):
         # %% Attacker
 
         # List of unique words
-        all_text = ' '.join(df_original['occ1'].tolist())
+        all_text = ' '.join(df['occ1'].tolist())
         words_list = all_text.split()
 
         def Attacker(x_string, alt_prob = 0.1, insert_words = True):
@@ -644,7 +644,7 @@ for b in range(2, 8):
             print("----------")
             print(f"Epoch {epoch + 1}/{EPOCHS}")
             
-            if(train_loss < 0.9*total_bce): # Switch when below reference loss
+            if(train_loss < 0.5*total_bce): # Switch when below reference loss
                 if(attack_count==0):
                     print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
                     attack_count = 1
