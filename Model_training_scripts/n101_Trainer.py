@@ -144,7 +144,8 @@ def trainer_loop(
         optimizer,
         device,
         scheduler,
-        verbose = False
+        verbose = False,
+        switch_attack = 0.75
         ):
     history = defaultdict(list)
     best_accuracy = 0
@@ -185,7 +186,7 @@ def trainer_loop(
         
         print(f"Train loss {train_loss}, accuracy {train_acc}")    
         
-        if(train_loss < 0.5*reference_loss):
+        if(train_loss < switch_attack*reference_loss):
             attack_switch = True
             print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
             
