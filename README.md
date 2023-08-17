@@ -23,12 +23,15 @@
 
 ## Updates
 
+### 2023-08-17
+- Refactored all model training code entrance point is 'n201_TrainBERT.py'
+
 ### 2023-08-13
 - English marriage certificate data ready for training
 - 004_Danish_BERT.py now runs. But the code is a mess
 
 ### 2023-07-06
-- Added proff of concept XML-RoBERTa model
+- Added proof of concept XML-RoBERTa model
 
 ### 2023-07-01
 - DK training data ready
