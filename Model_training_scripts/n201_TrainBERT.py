@@ -19,9 +19,9 @@ MODEL_DOMAIN = "DK_CENSUS"
 # MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
-SAMPLE_SIZE = 5 # 10 to the power of this is used for training
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
 EPOCHS = 1000
-BATCH_SIZE = 2**7
+BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
