@@ -36,7 +36,8 @@ Data/Validation_data/DK_census_val.csv
 Data_cleaning_scripts/002_Cleaning_DK_census.R
 Data/Test_data/DK_census_test.csv
 .RDataTmp
-Tmp traning plots/
+Tmp training plots/
+Tmp training plots/old
 tmp/
 Litterature/
 Trained_models/
