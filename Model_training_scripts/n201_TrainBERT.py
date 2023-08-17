@@ -20,8 +20,8 @@ MODEL_DOMAIN = "DK_CENSUS"
 
 # Parameters
 SAMPLE_SIZE = 5 # 10 to the power of this is used for training
-EPOCHS = 200
-BATCH_SIZE = 2**5
+EPOCHS = 1000
+BATCH_SIZE = 2**7
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
@@ -40,7 +40,7 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import classification_report
 
 #%% Load modules
-from n001_Models import *
+from n001_BERT_models import *
 from n002_Attacker import *
 from n101_Trainer import *
 from n102_DataLoader import *
