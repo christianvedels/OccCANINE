@@ -80,14 +80,14 @@ class AttackerClass:
         return(x_string_copy)
 
         
-# %%
-import sys
-from n102_DataLoader import *
+# # %%
+# import sys
+# from n102_DataLoader import *
 
-df, key = ReadData(MODEL_DOMAIN)
+# df, key = ReadData(MODEL_DOMAIN)
 
-attacker = AttackerClass(df)
+# attacker = AttackerClass(df)
 
-attacker.attack(df.occ1.tolist(), 0.1)
+# attacker.attack(df.occ1.tolist(), 0.1)
 
     

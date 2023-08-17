@@ -199,7 +199,7 @@ def ReadData(
         sample_size = 4,
         verbose = False
         ):
-    df, key = read_data(model_domain = MODEL_DOMAIN)
+    df, key = read_data(model_domain = model_domain)
     df = resample(df, downsample_top1=downsample_top1, upsample_below=upsample_below, verbose=verbose)
     df = subset_to_smaller(df, sample_size=sample_size)
     

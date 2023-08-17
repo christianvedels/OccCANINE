@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['Model_training_scripts\\n000_Functions.py', 'Model_training_scripts\\n001_Models.py', 'Model_training_scripts\\n002_Attacker.py', 'Model_training_scripts\\n102_DataLoader.py', 'Model_training_scripts\\n201_TrainBERT.py', 'Model_training_scripts\\004_BERT.py', 'Model_training_scripts\\tmp.py']
+recent_files = ['Model_training_scripts\\n001_Models.py', 'Model_training_scripts\\n002_Attacker.py', 'Model_training_scripts\\n102_DataLoader.py', 'Model_training_scripts\\n101_Trainer.py', 'Model_training_scripts\\n201_TrainBERT.py', 'Model_training_scripts\\004_BERT.py']
 
 [main]
 version = 0.2.0

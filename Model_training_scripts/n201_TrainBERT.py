@@ -19,15 +19,17 @@ MODEL_DOMAIN = "DK_CENSUS"
 # MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
-SAMPLE_SIZE = 4 # 10 to the power of this is used for training
-EPOCHS = 1000
+SAMPLE_SIZE = 5 # 10 to the power of this is used for training
+EPOCHS = 200
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
-UPSAMPLE_MINIMUM = 1000
+UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 50 # Number of tokens to use
+
+MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 #%% Libraries
 # Import necessary libraries
@@ -35,9 +37,11 @@ import numpy as np
 import pandas as pd
 import torch
 from transformers import AdamW, get_linear_schedule_with_warmup
+from sklearn.metrics import classification_report
 
 #%% Load modules
 from n001_Models import *
+from n002_Attacker import *
 from n101_Trainer import *
 from n102_DataLoader import *
 
@@ -87,7 +91,7 @@ loss_fn = nn.BCEWithLogitsLoss().to(device)
 model = trainer_loop(
     model = model, 
     epochs = EPOCHS, 
-    model_name = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}', 
+    model_name = MODEL_NAME, 
     data = data, 
     loss_fn = loss_fn, 
     reference_loss = data['reference_loss'], 
@@ -95,5 +99,27 @@ model = trainer_loop(
     device = device, 
     scheduler = scheduler
     )
+
+
+# %% Load best model instance
+# Define the path to the saved binary file
+model_path = '../Trained_models/'+MODEL_NAME+'.bin'
+
+# Load the model
+loaded_state = torch.load(model_path)
+model.load_state_dict(loaded_state)
+
+# %%
+y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
+    model,
+    data['data_loader_test'],
+    device = device
+)
+report = classification_report(y_test, y_pred, output_dict=True)
+
+print_report(report, MODEL_NAME)
+
+
+
 
 
