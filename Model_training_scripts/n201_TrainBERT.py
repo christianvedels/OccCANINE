@@ -41,7 +41,7 @@ from sklearn.metrics import classification_report
 
 #%% Load modules
 from n001_BERT_models import *
-from n002_Attacker import *
+from n100_Attacker import *
 from n101_Trainer import *
 from n102_DataLoader import *
 
