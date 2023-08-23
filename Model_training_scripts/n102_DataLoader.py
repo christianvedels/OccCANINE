@@ -33,6 +33,7 @@ def train_path(model_domain):
 
 #%% Read_data
 def read_data(model_domain):
+    # breakpoint()
     fname = train_path(model_domain)
     
     df = pd.read_csv(fname, encoding = "UTF-8")
@@ -368,7 +369,7 @@ def Load_data(
     tokenizer = update_tokenizer(tokenizer, df)
 
     # Calculate number of classes
-    N_CLASSES = len(key)-1
+    N_CLASSES = len(key)
     
     # Define attakcer instance
     attacker = AttackerClass(df)
@@ -408,8 +409,7 @@ def Load_data(
 from n001_BERT_models import *
 from n100_Attacker import *
 
-# data_loader_train, data_loader_train_attack, data_loader_val, data_loader_test, tokenizer, N_CLASSES, key = Load_data()
+# model_domain = "EN_MARR_CERT"
 
-
-# labels_bin 
+# df, key = read_data(model_domain)
 

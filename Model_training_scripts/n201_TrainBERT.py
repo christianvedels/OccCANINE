@@ -14,13 +14,13 @@ os.chdir(script_directory)
 #%% Hyperparameters
 
 # Which training data is used for the model
-# MODEL_DOMAIN = "HSN_DATABASE"
-MODEL_DOMAIN = "DK_CENSUS"
+MODEL_DOMAIN = "HSN_DATABASE"
+# MODEL_DOMAIN = "DK_CENSUS"
 # MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
-SAMPLE_SIZE = 10 # 10 to the power of this is used for training
-EPOCHS = 1000
+SAMPLE_SIZE = 5 # 10 to the power of this is used for training
+EPOCHS = 200
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -62,8 +62,8 @@ data = Load_data(
     )
 
 # # Sanity check
-# for d in data['data_loader_train_attack']: 
-#     print(d['occ1'][0][0])
+for d in data['data_loader_train_attack']: 
+    print(d['occ1'][0][0])
     
 # data['reference_loss']
 
@@ -107,11 +107,17 @@ model_path = '../Trained_models/'+MODEL_NAME+'.bin'
 
 # Load the model
 loaded_state = torch.load(model_path)
-model.load_state_dict(loaded_state)
+model_best = BERTOccupationClassifier(
+    n_classes = data['N_CLASSES'], 
+    model_domain = MODEL_DOMAIN, 
+    tokenizer = data['tokenizer'], 
+    dropout_rate = DROPOUT_RATE
+    )
+model_best.load_state_dict(loaded_state)
 
 # %%
 y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
-    model,
+    model_best,
     data['data_loader_test'],
     device = device
 )

@@ -11,7 +11,7 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
 
-MODEL_DOMAIN = "DK_CENSUS"
+# MODEL_DOMAIN = "DK_CENSUS"
 
 # %% Libraries
 import torch
@@ -187,8 +187,10 @@ def trainer_loop(
         print(f"Train loss {train_loss}, accuracy {train_acc}")    
         
         if(train_loss < switch_attack*reference_loss):
+            if(not(attack_switch)):
+                print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
             attack_switch = True
-            print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
+            
             
         # Get model performance (accuracy and loss)
         val_acc, val_loss = eval_model(
@@ -267,6 +269,8 @@ def get_predictions(model, data_loader, device):
 # %% Print report
 # Convert the report dictionary to a string
 def print_report(report, model_name):
+    # Filter report to remove zero entries (zero support)
+    report = {key: value for key, value in report.items() if not all(v == 0 for v in value.values())}
     # breakpoint()
     report_str = ""
     for label, metrics in report.items():
