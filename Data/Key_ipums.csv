@@ -1,0 +1,717 @@
+en_hisco_text,hisco,code
+empty, ,NA
+Chemists,1100,0
+Physicists,1200,1
+Physical scientists nec,1300,2
+Physical science assistants and technicians,1400,3
+"Professional engineers, specialisation unknown",2000,4
+Architects,2100,5
+Civil engineers,2200,6
+Electrical engineers,2300,7
+"Mechanical engineers, general or nfs",2410,8
+Industrial machinery or tools engineers,2420,9
+"Mechanical engineer (motors and engines, except marine)",2430,10
+Marine engineers,2440,11
+Ship construction engineers,2450,12
+"Heating, ventilation and refrigeration engineers",2460,13
+Other mechanical engineers,2490,14
+Chemical engineers,2500,15
+Metallurgists and assayers,2600,16
+Mining engineers,2700,17
+Industrial engineers,2800,18
+Professional engineers nec,2900,19
+"Surveyors, general and nfs",3010,20
+Land surveyors,3020,21
+Mine surveyors,3030,22
+Hydrographic surveyors,3040,23
+Other surveyors,3090,24
+Draughtsmen,3100,25
+"Technician, specialisation unknown",3200,26
+Technicians,3210,27
+Civil engineering technicians,3220,28
+Electrical engineering technicians,3230,29
+Mechanical engineering technicians,3240,30
+Chemical engineering technicals,3250,31
+Metallurgical technicians,3260,32
+Mining technicians,3270,33
+Engineering technicians nec,3290,34
+Ship's deck officer or pilot,4200,35
+Ships officers nfs,4210,36
+Ship's masters and captains (sea),4220,37
+Ship's masters and captains (sea or inland waterways),4230,38
+Ship's masters and captains (inland waterways),4240,39
+Ship's navigating officers and ship's mates,4250,40
+Ship and boat pilots,4260,41
+Marine superintendents (deck),4270,42
+Other ship deck officers and pilots,4290,43
+Ship's engineers,4300,44
+"Biologists, botanists, zoologists and related scientists",5100,45
+Medical scientists,5200,46
+Agronomists and related scientists,5300,47
+Life sciences technicians,5400,48
+Medical doctors and surgeons,6100,49
+Medical doctors and physicians (UK: Medical doctors only),6110,50
+Surgeons,6130,51
+Specialised physicians,6140,52
+Specialised surgeons,6150,53
+Public health physicians,6160,54
+Oculist,6170,55
+"Medical doctors, nec",6190,56
+Dentists,6200,57
+Veterinarians,6300,58
+Pharmacists,6400,59
+Medical and related assistants,6500,60
+Trained nurses,7110,61
+Nurses nfs,7210,62
+"Medical nurses, untrained or level of training unknown",7220,63
+Midwives,7320,64
+Monthly nurses,7330,65
+Opticians and optometrists,7500,66
+Healers and therapists nec,7600,67
+Osteopaths,7920,68
+Chiropractors,7930,69
+Sanitarians,7940,70
+"Other medical, dental, veterinary and related workers",7990,71
+"Mathematicians and actuaries, etc.",8000,72
+Economists,9000,73
+Accountants,11010,74
+Auditors,11020,75
+Accountants nec,11090,76
+Lawyers,12110,77
+Barristers,12120,78
+Solicitors,12130,79
+Judge,12200,80
+Justice of the peace,12220,81
+Notary,12300,82
+"Jurists (except lawyer, judge or solicitor)",12900,83
+Teachers in higher education,13100,84
+Teachers not in higher education,13200,85
+Teachers (unspecified),13210,86
+Teachers (secondary),13220,87
+Teachers (primary),13230,88
+Teachers (pre-primary),13240,89
+Teachers (of the disabled),13250,90
+School administrators and principals,13300,91
+Governesses,13920,92
+Other teaching personnel,13990,93
+Ministers of religion,14120,94
+Missionaries,14130,95
+Members of religious orders,14140,96
+Other ministers of religion,14190,97
+Workers in religion nec,14900,98
+Authors,15100,99
+Editors,15220,100
+"Journalists, reporters and correspondents",15230,101
+Others writers,15900,102
+Artists nfs and art teachers,16110,103
+Sculptors,16120,104
+Artistic painters,16130,105
+Cartoonists,16140,106
+Engravers and etchers (artistic),16150,107
+Other specified creative artists,16190,108
+Designers,16200,109
+Photographers,16300,110
+Engravers,16400,111
+Musical performers and musicians nfs,17120,112
+Music teachers,17130,113
+Others in music,17190,114
+Dancers and dancing teachers,17200,115
+Actors and related workers,17300,116
+"Producers, performing arts",17400,117
+Performing artists nec,17900,118
+"Athletes, sportsmen and related workers",18000,119
+"Librarians, archivists and curators",19100,120
+Social scientists and historians,19200,121
+Social workers,19300,122
+"Interpreters, translators and philologists",19500,123
+Patent agents,19920,124
+Underwriters,19930,125
+"Other professional, technical and related workers nec",19990,126
+Legislative officials and heads of government,20100,127
+Government administrators,20200,128
+"Proprietors, nfs",21110,129
+"Executive officers, nfs (U.S. only)",21112,130
+Manufacturers nfs,21120,131
+Executive officers of manufacturing concerns nfs,21122,132
+Manufacturers or proprietors of specified manufacturing concerns,21130,133
+Executive officers of specified manufacturing concerns,21132,134
+"Proprietor, mining, quarrying, oil and natural gas extraction",21140,135
+Oil producer,21141,136
+Executive officers of extractive industry,21142,137
+"Proprietor, railway company",21150,138
+Executive officers of railway concerns,21152,139
+"Proprietor, other transport and communications",21160,140
+Executive officer of other transport and communications,21162,141
+"Proprietor, public utilities (i.e., water, gas, etc.)",21170,142
+Executive officer of public utilities,21172,143
+"Proprietor, finance",21180,144
+Executive officer finance company,21182,145
+Other owners of large scale productive enterprises,21190,146
+Executive officers of other large scale productive enterprises,21192,147
+Publisher,21194,148
+Contractors nfs,21210,149
+Construction contractors,21220,150
+Builders,21230,151
+Other specified contractors,21290,152
+Capitalists,21330,153
+Speculators,21340,154
+Investors nec,21390,155
+Superintendents and managers nfs,22110,156
+"Superintendents and managers, manufacturing",22120,157
+"Superintendents and managers, mining, quarrying, etc.",22130,158
+"Superintendents and managers, railways",22140,159
+"Superintendents and managers, other transport and communications",22150,160
+"Superintendents and managers, public utilities",22160,161
+"Superintendents and managers, construction, except railway construction",22170,162
+"Superintendents and managers, commerce",22180,163
+"Superintendents and managers, nec",22190,164
+Foremen and supervisors nfs,23110,165
+"Foremen and supervisors, manufacturing",23120,166
+"Foremen and supervisors, mining",23130,167
+"Foremen and supervisors, railways",23140,168
+"Foremen and supervisors, other transport and communications",23150,169
+"Foremen and supervisors, public utilities",23160,170
+"Foremen and supervisors, construction, except railway construction",23170,171
+"Foremen and supervisors, commerce",23180,172
+"Foremen and supervisors, nec",23190,173
+"Inspectors of manufactories, companies etc.",24100,174
+"Civil servants, title unknown",31010,175
+Tax collectors,31020,176
+Tax assessors,31030,177
+Customs officers,31040,178
+Postmasters or postmistresses,31050,179
+Clerks of court and other court clerks,31060,180
+"Government functionaries, nec",31090,181
+"Typists, stenographers and secretaries",32000,182
+Bookkeepers and bookkeeping clerks,33120,183
+"Cashiers, bank or office",33130,184
+Bank clerks,33140,185
+Bank tellers (US),33142,186
+Money collector,33150,187
+Cash desk cashier,33160,188
+Toll collectors,33170,189
+Collector (cash or account),33180,190
+"Bookkeeping, account and cash handling workers nec",33190,191
+Railway clerks (UK) and railway agents (CA/US),33210,192
+Baggage agents and baggage men,33220,193
+"Agent, water transport (principally steamship and steamboat)",33320,194
+"Agent, land transport (non-rail)",33330,195
+Office machine operators,34000,196
+"Conductors, nfs",36010,197
+Railway guards (UK) and railroad conductors (US/CAN),36020,198
+Sleeping- or pullman-car attendants,36030,199
+"Bus, tram or streetcar conductors",36040,200
+"Transport conductors, nec",36090,201
+"Postal, mail and telegraph clerks",37020,202
+"Mail carriers, aka postmen (UK)",37030,203
+Messengers,37040,204
+Mail sorters,37050,205
+"Post office, mail, and message workers nec",37090,206
+Tel. operator,38010,207
+Telephone operator,38020,208
+Telegraph operator,38030,209
+Other telephone/telegraph operators,38090,210
+"Clerk, nfs",39000,211
+"Stock, weight and shipping clerks",39100,212
+Stock records clerk,39130,213
+"Office clerks, specialisation unknown",39310,214
+Correspondence clerks,39320,215
+Legal clerks,39340,216
+Insurance clerks,39350,217
+Other correspondence and reporting clerks,39390,218
+Hotel clerk or other receptionist,39400,219
+Library and filing clerks,39500,220
+"Railroad, railway clerk",39600,221
+"Timekeepers, railway",39720,222
+"Timekeepers, factory",39730,223
+"Timekeepers, undefined and nec",39790,224
+Other specified clerks,39900,225
+Proofreader,39990,226
+"Sales workers, nfs",40000,227
+"Working proprietors, nfs",41000,228
+"Dealer, merchant etc. (wholesale and retail trade)",41010,229
+"Merchants, specified large-scale wholesaleing",41015,230
+Hirers out,41020,231
+Buyers,42000,232
+Buyers nec,42200,233
+Agents nfs,43010,234
+Commercial travellers,43020,235
+Manufacturers and sales agents,43030,236
+Other specialized agents,43090,237
+"Insurance, real state or securities salesmen, nfs",44110,238
+Insurance salesmen and agents,44120,239
+Real estate agents,44130,240
+Brokers,44140,241
+Stockbrokers,44150,242
+Patent Agents,44160,243
+"Insurance, real estate and securities salesmen nec",44190,244
+Advertising salesmen,44200,245
+Auctioneers,44320,246
+Appraisers,44330,247
+"Salespeople, wholesale or retail trade",45120,248
+Clerks in shops and stores,45130,249
+Fashion models,45140,250
+"Other sales personnel men, shop assistants and demonstrators",45190,251
+"Street sellers, pedlars and hawkers, non-food items",45220,252
+"Street sellers, pedlars and hawkers, food items",45230,253
+Newsvendors,45240,254
+Canvassers,45250,255
+Other street traders for coffee and food,45290,256
+Pawnbrokers,49020,257
+"Scrap and junk dealers, scavengers",49030,258
+"Street vendors, canvassers and news vendors, newsvendors",49040,259
+Dealers and salesworkers nec,49090,260
+Hotel keepers and managers,51020,261
+Restaurant keepers and managers,51030,262
+Boarding and lodging house keepers and managers,51040,263
+"Pub, saloon, tavern and coffee house keepers",51050,264
+Ship's pursers,51060,265
+Other hospitality and entertainment keepers and managers,51090,266
+Housekeeper,52020,267
+Stewards,52030,268
+Matrons,52040,269
+Butlers,52050,270
+Other housekeeping service supervisors,52090,271
+Cooks,53100,272
+Cook (domestic) UK only,53101,273
+Cook (not domestic),53102,274
+Ship's cooks,53103,275
+Waiter or waitress,53220,276
+Bartender,53230,277
+Other food and drink service workers,53290,278
+Servants nfs,54010,279
+House servants nfs and maids,54020,280
+Personal servants and valets,54030,281
+Nursemaids,54040,282
+Companions,54050,283
+Chambermaids and room attendants,54060,284
+Other specified servants,54090,285
+Caretakers and janitors,55100,286
+Charworkers,55200,287
+Window cleaners,55230,288
+Chimney sweeps,55240,289
+Refuse collectors and removers,55250,290
+"Other charworkers, cleaners and related workers",55290,291
+Washing and laundry services,56000,292
+Hairdressers,57020,293
+Barbers,57030,294
+Bath attendants,57040,295
+"Other barbers, hairdressers and related workers",57090,296
+Firefighters,58100,297
+"Policemen and detectives, employer unknown",58210,298
+"Policemen and detectives, public service",58220,299
+"Policemen and detectives, private service",58230,300
+Sheriffs and their deputies,58240,301
+Other law enforcement officers,58290,302
+Watchmen and guards,58300,303
+"Military, rank unknown",58410,304
+Military officers,58420,305
+Other members of the armed forces,58430,306
+Prison keepers and guards,58500,307
+Other protective service workers,58900,308
+Guides,59100,309
+Undertakers and embalmers,59200,310
+Prostitutes,59300,311
+Bookmakers (sport),59920,312
+Croupiers,59930,313
+Nursing aids and attendents,59940,314
+Errand boys and errand girls,59950,315
+Practical aid (veterinary),59960,316
+Other service workers nec,59990,317
+General farmers and farmers nfs,61110,318
+Husbandmen or cottars,61115,319
+Female farmer,61117,320
+Major landowner,61120,321
+Field crop farmers,61220,322
+Orchardists and fruit farmers,61230,323
+Market gardeners,61240,324
+Nurserymen and florists,61250,325
+Livestock farmers,61260,326
+Dairy farmers,61270,327
+Poultry farmers,61280,328
+Other specialised farmers,61290,329
+Farmer and fisherman,61320,330
+Cottar and fisherman,61330,331
+"Farm managers, foremen and supervisors nfs",61400,332
+"Farm workers, specialisation unknown",62110,333
+Farmer's sons and other male relatives,62113,334
+Farm workers (field crop and vegetables),62200,335
+"Farm labourers, orchard and fruit farm workers",62300,336
+"Livestock workers, general or nfs",62410,337
+"Cattle workers, except specified dairy",62420,338
+Sheep workers,62430,339
+Pig workers,62440,340
+Fur-bearing animal workers,62450,341
+Horse workers,62460,342
+Grooms and horse keepers (domestic),62461,343
+Grooms and horse keepers (not domestic),62463,344
+Horse breaker,62470,345
+"Livestock workers, nec",62490,346
+Farm workers (dairy),62500,347
+Farm workers (poultry),62600,348
+Gardeners nfs,62710,349
+Gardener (domestic),62711,350
+Gardener (not domestic),62713,351
+Market garden labourers,62720,352
+Nursery labourers,62730,353
+Landscape gardeners,62740,354
+Other nursery workers and gardeners,62790,355
+Farm machinery operators,62800,356
+"Other animal workers e.g., dogs, elephants",62920,357
+"Other plant workers e.g., gathers of herbs etc.",62930,358
+"Groundskeepers, etc.",62940,359
+Others in agricultural or husbandry,62990,360
+"Woodsmen and workers in the woods, nfs",63110,361
+"Lumbermen, loggers and kindred workers",63120,362
+River drivers,63130,363
+Wood cutters and choppers,63140,364
+Others in logging and wood cutting,63190,365
+Foresters and wood wardens,63220,366
+Forestry workers,63230,367
+Timber cruisers,63240,368
+Forest fire-fighters,63250,369
+Other forestry workers,63290,370
+Fishermen,64100,371
+Fish farm workers,64920,372
+Oyster farm workers,64930,373
+Whale hunters,64940,374
+Whale or seal hunters,64950,375
+Seal hunters,64960,376
+Trappers or hunters,64970,377
+"Other fishermen, hunters and related workers",64990,378
+Miners,71120,379
+Quarrymen,71130,380
+Others working in mines and quarries,71190,381
+Mineral or stone treaters,71200,382
+"Well drillers, borers and related workers",71300,383
+"Metal workers, specialisation unknown",72000,384
+Metal smelter and furnacemen,72100,385
+Metal rollers,72200,386
+"Metal melters and reheaters, and workers in metal melting mills",72300,387
+Metal casters and workers in metal casting plants,72400,388
+Metal moulders and coremakers,72500,389
+"Metal annealers, temperers and hardeners",72600,390
+Metal drawers and workers in metal drawing,72700,391
+Metal platers and coaters,72800,392
+Other (specialised) metal workers,72900,393
+Wood treaters,73100,394
+Sawyers and other titled wood/sawmill operatives,73200,395
+Papermill machine operators and paper makers,73300,396
+"Chemical workers, product nfs",74000,397
+Drug workers,74100,398
+Gunpowder and explosive makers,74200,399
+Charcoal burners,74320,400
+Coal gas makers,74330,401
+Tar makers,74340,402
+"Other coal product makers e.g., coke",74390,403
+Salt makers,74420,404
+Alkali and soda makers,74430,405
+Oil mill workers,74500,406
+Paint and varnish makers,74620,407
+Dye makers,74630,408
+"Ink, blacking, colouring, etc., makers",74640,409
+"Tallow chandlers, candle makers and grease makers",74720,410
+Soap and perfume makers,74730,411
+"Glue, size and gelatine makers",74740,412
+Wax and polish makers,74750,413
+Fertilizer and manure makers,74920,414
+Starch makers,74930,415
+Turpentine makers,74940,416
+Specified chemical workers nec,74990,417
+"Textile workers, specialisation unknown",75000,418
+Fibre preparers,75100,419
+"Spinners, doublers, twisters and winders",75200,420
+Weaving and knitting-machine setters and pattern-card preparers,75300,421
+Weavers,75400,422
+Knitters,75500,423
+"Bleachers, dyer or textile product finisher",75600,424
+Rope makers,75700,425
+Net maker,75920,426
+Other specialised textile workers nec,75990,427
+"Tanners or fellmongers, specialisation unknown",76110,428
+Fellmongers,76120,429
+Tanners,76130,430
+Leather curriers and finishers,76140,431
+Other specified leather curers,76190,432
+Fur and pelt dressers,76200,433
+Millers and related workers,77100,434
+Sugar refiners,77200,435
+Butchers,77310,436
+Pork butchers,77320,437
+"Slaughterer, meat cutters or meat packer",77340,438
+Sausage makers,77350,439
+Fish butchers,77360,440
+Meat cannery workers and other meat preservers (not sausages),77380,441
+Other workers in meat preparation,77390,442
+Cannery workers and other food preservers,77400,443
+"Butter, cheese and dairy product makers",77500,444
+Baker and confectioner,77610,445
+Bakers,77620,446
+Confectioners and pastry makers,77630,447
+Candy makers,77640,448
+Chocolate makers,77650,449
+Other baked goods makers,77690,450
+"Tea, coffee and cocoa preparers",77700,451
+Brewers,77820,452
+Maltsters,77830,453
+Wine workers,77840,454
+Vinegar makers and workers,77850,455
+Distillers,77860,456
+Makers of soft drinks,77870,457
+Bottlers,77880,458
+Other drinks makers and workers,77890,459
+Other food and beverage processors,77990,460
+Tobacco preparers and tobacco factory workers,78100,461
+Cigar makers,78200,462
+Cigarette makers,78300,463
+Other tobacco product makers,78400,464
+Tailors and tailoresses,79120,465
+Dressmakers,79130,466
+Other garment makers,79190,467
+Furriers and fur workers,79200,468
+Milliners,79320,469
+Hat makers,79330,470
+Straw hat makers,79340,471
+Other hat makers,79390,472
+Glove makers and related workers,79400,473
+Seamstresses,79520,474
+Sewers and sewing machine operators,79530,475
+Embroiderers,79540,476
+Others hand sewers,79590,477
+Upholsterers (except vehicle),79620,478
+Vehicle trimmers and upholsterers,79630,479
+Mattress makers,79640,480
+Others working in upholstery jobs,79690,481
+"Sail, tent and awning makers",79920,482
+Umbrella makers,79930,483
+Artificial flower makers,79940,484
+Other cloth and related product manufacturing workers,79990,485
+Boot and shoe makers and repairers,80100,486
+Specialised occupations in the boot and shoe making industry,80200,487
+Saddlers and harness makers,80320,488
+Trunk or bag maker,80330,489
+Other leather goods makers,80390,490
+Cabinet makers,81120,491
+Chair makers,81130,492
+Wicker furniture makers,81140,493
+Other furniture makers,81190,494
+Woodworkers,81210,495
+"Sawyers, woodworking",81220,496
+Wood turners and handle makers,81230,497
+Wood planers,81240,498
+Wood carvers,81250,499
+Other woodworking machine operators,81290,500
+"Coach, carriage and wagon makers",81300,501
+Wheelwrights and cartwrights,81400,502
+"Coopers, hoop makers and benders",81500,503
+Clog makers,81600,504
+Box makers nfs,81710,505
+Wooden box makers,81720,506
+Paper box makers,81730,507
+Box makers nec,81790,508
+Wooden tool makers,81920,509
+Ski makers,81930,510
+Other makers of wooden products,81990,511
+Stone carvers or cutters and stone yard workers,82000,512
+Blacksmiths,83120,513
+Hammersmiths,83130,514
+Forgemen,83140,515
+Farriers or horseshoers,83150,516
+Specialised makers of forged metal products,83160,517
+"Other blacksmiths, hammermen and forgeing-press operators",83190,518
+Tool makers nfs,83210,519
+Tool and die makers,83220,520
+Pattern makers nfs and nec,83230,521
+Other tool makers and metal markers,83290,522
+Metalworking machine operators,83310,523
+Metal turners,83320,524
+Other metal working machine operators,83390,525
+Machinists,83400,526
+Metal polishers and finishers,83520,527
+Metal grinders and sharpeners,83530,528
+Cutlers and cutting instrument makers,83540,529
+"Cutler (knives, forks, spoon)",83550,530
+"Other metal grinders, polishers and tool sharpeners nec",83590,531
+Gunsmiths,83600,532
+Locksmiths,83700,533
+Saw makers,83820,534
+"Saw, spade, shovel and half wood/half metal agricultural instrument type things",83830,535
+Chain makers,83840,536
+Nailer and nail makers,83850,537
+Wire makers,83860,538
+Other metal workers nec,83890,539
+Mechanics,84110,540
+Millwrights,84120,541
+"Machine makers, builders and fitters",84130,542
+Engine and locomotive builders,84140,543
+Sewing machine makers and builders,84150,544
+Other machinery fitters and machine assemblers,84190,545
+Watch and clock makers,84220,546
+Optical instrument makers and workers (not opticians),84230,547
+Other specialized instrument makers (not musical instrument makers),84290,548
+Bicycle makers,84300,549
+"Motor vehicle manufacturing and repair workers, specialization unknown",84400,550
+Automobile manufacturing workers,84460,551
+Others in machinery,84900,552
+Electrical fitters and electrical equipment assemblers,85100,553
+Electricians and  wiremen,85500,554
+Telephone and telegraph installers,85600,555
+"Linesmen: telephone, telegraph and electric",85700,556
+Electrical products inspector or tester,85920,557
+Other electrical fitters and related electrical workers,85990,558
+Plumbers,87120,559
+Pipe fitters,87130,560
+Welders,87220,561
+Braziers,87230,562
+Flamecutter,87250,563
+"Other welders, braziers, solderers",87290,564
+"Sheet metal worker, general",87320,565
+Coppersmith or copperware maker,87330,566
+"Tinsmith, tinner or tinker",87340,567
+Boilermaker,87350,568
+Other sheet metal workers,87390,569
+Structural metal workers,87420,570
+Rivetters nec,87430,571
+Other structural metal preparers and erectors,87490,572
+Ship and boat builders,87520,573
+Shipwrights and ship joiners,87530,574
+Ship's carpenters,87540,575
+"Block, mast and tackle makers",87550,576
+Caulker,87560,577
+Other ship builders,87590,578
+Jewellers,88020,579
+Goldsmith,88030,580
+Silversmith,88040,581
+Working with gems and stones,88050,582
+Other jewellery and precious metal workers,88090,583
+Glass makers,89120,584
+Glass bottle makers,89130,585
+Other specific glass makers,89190,586
+Pottery and porcelain makers and workers,89200,587
+Brick and tile makers,89300,588
+"Glass engravers, etchers and finishers",89400,589
+Pottery and porcelain painters,89500,590
+Cement makers,89620,591
+Lime burners,89630,592
+Clay-based products makers,89700,593
+Rubber product makers,90100,594
+Tire makers and vulcanisers,90200,595
+"Paper and paperboard products makers, except boxes",91020,596
+Other paper product makers,91090,597
+Paper and paper board product makers,91100,598
+Printers nec,92000,599
+Printers nfs,92110,600
+Compositors,92120,601
+Other compositors and typesetters,92190,602
+Lithographic printers,92200,603
+Stereotypers and electrotypers,92300,604
+Lithographers,92400,605
+Photo-engravers,92500,606
+Bookbinders and related workers,92600,607
+Textile printers,92800,608
+Other printers and related workers,92900,609
+"Painters, nfs",93110,610
+"Painters, construction",93120,611
+"Painters, ship",93130,612
+Other specialised painters nec,93190,613
+Decorators,93200,614
+Lacquerers and enamellers,93320,615
+Japanners,93330,616
+Gilders,93400,617
+Musical instrument maker nfs,94110,618
+Piano maker,94120,619
+Piano tuner,94130,620
+Organ builder,94140,621
+Other musical instrument makers and tuner,94190,622
+Basket makers,94220,623
+Brush makers,94230,624
+Broom makers,94240,625
+Bristle and straw workers nec,94290,626
+Non-metallic mineral product makers,94300,627
+"Other production or related worker, specialisation unknown",94910,628
+"Animal stuffers, taxidermists and shell workers",94920,629
+Linoleum makers and floor cloth makers,94930,630
+Toy and doll makers,94940,631
+Production and related workers nec,94990,632
+Mason nfs or combined,95110,633
+Bricklayers,95120,634
+Stone masons,95130,635
+Plasterers,95140,636
+Paviours,95150,637
+Marble mason,95160,638
+Others in construction,95190,639
+Cement masons and finishers,95200,640
+"Roofer, specialisation unknown",95310,641
+Slate and tile roofers,95320,642
+Thatchers,95330,643
+Other roofers,95390,644
+Carpenter and joiner,95410,645
+Carpenters,95420,646
+Joiners,95430,647
+Scaffolders,95440,648
+Other wooden construction workers,95490,649
+Pipe coverers and insulators,95600,650
+Glaziers,95700,651
+Construction workers nec,95910,652
+Paperhangers,95920,653
+Carpet planners,95930,654
+Whitewashers,95940,655
+Demolition workers,95950,656
+Marblers,95960,657
+Others in building construction,95990,658
+Electricity generators,96100,659
+Engineers (US) nfs,96220,660
+Stationary engineers and engine men,96230,661
+Stationary firemen and firemen nfs,96240,662
+Other stationary engine and related equipment operators,96900,663
+Ship boat loaders and dock workers,97120,664
+Railway freight handlers,97130,665
+Porters,97140,666
+Packers,97150,667
+Other freight handlers,97190,668
+Riggers nec or nfs,97210,669
+Ship riggers,97220,670
+Crane and hoist operators,97300,671
+"Navvy, excavator and diggers, nfs",97410,672
+"Road builders, workers and labourers",97420,673
+"Railway builders, workers and labourers",97430,674
+"Waterway and harbour builders, workers and labourers",97440,675
+"Other road, railway and related construction labourers",97490,676
+Material handling equipment operators nec,97900,677
+Seamen,98120,678
+Boatmen and canalmen,98130,679
+"Other crew of boats, ships, etc.",98190,680
+Ship's engine men,98200,681
+Railway/railroad locomotive operators,98300,682
+Railway/railroad engineers and enginemen,98320,683
+Railway/railroad firemen and stokers,98330,684
+Railway brakemen,98420,685
+Railway signallers,98430,686
+Railway switchmen and shunters,98440,687
+Others skilled railway workers,98490,688
+"Drivers, nec",98510,689
+Drivers (private),98520,690
+"Drivers (personal, for hire)",98530,691
+Drivers (public),98540,692
+Delivery men and drivers of goods,98550,693
+Drivers (general haulage),98560,694
+Carter (agricultural),98562,695
+"Teamsters (inc. mine driver, etc.)",98570,696
+Others drivers,98590,697
+Lock and gate keepers,98700,698
+Lock keepers,98720,699
+Gate keepers,98730,700
+Other transport equipment operators,98900,701
+Labourers nfs,99120,702
+Common labourers or general labourers,99130,703
+"Day labourers (e.g., journalier)",99140,704
+Worker nfs,99150,705
+Factory labourers (unspecified),99200,706
+Occupational title unclassifiable,99300,707
+Assistants nfs,99420,708
+Helpers nfs,99430,709
+Helpers of relative or helping at home,99440,710
+Apprentices nfs,99450,711
+Ambiguous responses,99500,712
+Alternative occupation (Sweden),99998,713
+No occupation/unknown,99999,714

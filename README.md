@@ -23,6 +23,9 @@
 
 ## Updates
 
+### 2023-08-24
+- IPUMS has their own adapted HISCO system. Added a 'key_ipums.csv' based on this
+
 ### 2023-08-17
 - Refactored all model training code entrance point is 'n201_TrainBERT.py'
 
