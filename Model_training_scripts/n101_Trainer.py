@@ -227,6 +227,9 @@ def trainer_loop(
                 '../Trained_models/'+model_name+'.bin'
                 )
             best_accuracy = val_acc
+            
+            tokenizer_save_path = '../Trained_models/' + model_name + '_tokenizer'
+            data['tokenizer'].save_pretrained(tokenizer_save_path)
         
     return model, history
 
