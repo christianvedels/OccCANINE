@@ -14,13 +14,13 @@ os.chdir(script_directory)
 #%% Hyperparameters
 
 # Which training data is used for the model
-MODEL_DOMAIN = "HSN_DATABASE"
+# MODEL_DOMAIN = "HSN_DATABASE"
 # MODEL_DOMAIN = "DK_CENSUS"
-# MODEL_DOMAIN = "EN_MARR_CERT"
+MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
 SAMPLE_SIZE = 5 # 10 to the power of this is used for training
-EPOCHS = 200
+EPOCHS = 500
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -114,6 +114,7 @@ model_best = BERTOccupationClassifier(
     dropout_rate = DROPOUT_RATE
     )
 model_best.load_state_dict(loaded_state)
+model_best.to(device)
 
 # %%
 y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
