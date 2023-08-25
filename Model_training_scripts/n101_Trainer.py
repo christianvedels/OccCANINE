@@ -222,6 +222,7 @@ def trainer_loop(
 
         # If we beat prev performance
         if val_acc > best_accuracy:
+            print("Saved improved model")
             torch.save(
                 model.state_dict(), 
                 '../Trained_models/'+model_name+'.bin'
