@@ -4,6 +4,9 @@ Created on Thu Aug 24 16:04:32 2023
 
 @author: christian-vs
 """
+import os
+script_directory = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_directory)
 
 # %% Libraries and modules
 from n001_BERT_models import *
