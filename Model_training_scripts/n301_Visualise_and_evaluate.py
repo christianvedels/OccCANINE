@@ -14,6 +14,7 @@ from n101_Trainer import *
 from n102_DataLoader import *
 from n100_Attacker import AttackerClass
 import pandas as pd
+from transformers import AutoTokenizer
 
 #%% Hyperparameters
 
@@ -74,10 +75,11 @@ model_best.load_state_dict(loaded_state)
 model_best.eval()
 
 # %% Load tokenizer
-# INSERT TOKENIZER LOADING CODE HERE
+tokenizer_save_path = '../Trained_models/' + MODEL_NAME + '_tokenizer'
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
 
 # Temp code 
-tokenizer = data['tokenizer']
+# tokenizer = data['tokenizer']
 test = "This is a sentence"
 
 tokenizer(test)
@@ -110,7 +112,7 @@ def Attention_Viz(sentence, layer = 0):
     attention_weights = outputs.attentions
 
     # predictions
-    get_predictions(inputs)
+    # get_predictions(inputs)
     
     layer = 0  # Choose the layer to visualize (0 to num_layers - 1)
     num_heads = attention_weights[layer][0].shape[0]
@@ -132,6 +134,85 @@ def Attention_Viz(sentence, layer = 0):
     
     plt.tight_layout()
     plt.show()
+    
+# %% Attention_Viz average
+def Attention_Viz(sentence, layer = 0):
+    inputs = tokenizer(sentence, return_tensors='pt', padding=True, truncation=True)
+        
+    with torch.no_grad():
+        outputs = model_best.bert(
+            input_ids=inputs['input_ids'],
+            attention_mask=inputs['attention_mask'],
+            output_attentions=True
+        )
+    attention_weights = outputs.attentions
+
+    # predictions
+    # get_predictions(inputs)
+    
+    layer = 0  # Choose the layer to visualize (0 to num_layers - 1)
+    num_heads = attention_weights[layer][0].shape[0]
+    
+    # Plot parameters
+    rows = 3
+    cols = num_heads // rows
+    plt.figure(figsize=(15, 10))
+
+    for head in range(num_heads):
+        plt.subplot(rows, cols, head + 1)
+        attention = attention_weights[layer][0][head].squeeze().cpu().numpy()
+        plt.imshow(attention, cmap='viridis', aspect='auto')
+        plt.title(f'Head {head}')
+        plt.xticks(range(len(inputs['input_ids'][0])), tokenizer.convert_ids_to_tokens(inputs['input_ids'][0]), rotation=45)
+        plt.yticks(range(len(inputs['input_ids'][0])), tokenizer.convert_ids_to_tokens(inputs['input_ids'][0]))
+        if head == 0:
+            plt.ylabel(f'Layer {layer}')
+    
+    plt.tight_layout()
+    plt.show()
+    
+# %%
+def Attention_Viz2(sentence):
+    # breakpoint()
+    inputs = tokenizer(sentence, return_tensors='pt', padding=True, truncation=True)
+    
+    with torch.no_grad():
+        outputs = model_best.bert(
+            input_ids=inputs['input_ids'],
+            attention_mask=inputs['attention_mask'],
+            output_attentions=True
+        )
+    attention_weights = outputs.attentions
+    
+    # Calculate the mean attention score for each word across all layers
+    mean_attention_scores = []
+    for layer_attention in attention_weights:
+        layer_mean_attention = torch.mean(layer_attention, dim=(1, 2))
+        mean_attention_scores.append(layer_mean_attention)
+    
+    # breakpoint()
+    mean_attention_scores = torch.stack(mean_attention_scores).cpu().numpy()
+    mean_attention_scores = mean_attention_scores.mean(axis=0)
+    
+    # Convert input_ids to a NumPy array
+    input_ids_np = inputs['input_ids'].numpy()
+    
+    # Get the tokens from the input
+    tokens = tokenizer.convert_ids_to_tokens(input_ids_np[0])
+    
+    # Create a bar plot
+    plt.figure(figsize=(10, 6))
+    plt.bar(tokens, mean_attention_scores[0])
+    plt.xticks(rotation=45, ha='right')
+    plt.xlabel('Tokens')
+    plt.ylabel('Mean Attention Score')
+    plt.title('Average Attention Score for Each Token')
+    plt.tight_layout()
+    
+    # Save the plot
+    # plt.savefig('average_attention_scores.png')
+    plt.show()
+
     
     
 # %% Run it
@@ -158,3 +239,5 @@ attacker = AttackerClass(df)
 
 Attention_Viz(attacker.attack(examples[5]), layer = 0)
  
+Attention_Viz2('no longer active but used to be a blacksmith')
+Attention_Viz2(examples[4])
