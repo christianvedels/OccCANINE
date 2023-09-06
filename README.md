@@ -17,11 +17,16 @@
 |occ1 | Occupational description string |
 |hisco_[x] | All hisco codes, which apply - up to 5 (x $\in$ 1:5) |
 |code_[x] | Hisco code translated to integer codes 0:1920 |
+|lang | What language is it? |
 |split | String describing if this is 'train', 'val1', 'val2' or 'test' |
 
 
 
+
 ## Updates
+
+### 2023-09-06
+- Added 'language' as a column in all training data
 
 ### 2023-08-24
 - IPUMS has their own adapted HISCO system. Added a 'key_ipums.csv' based on this

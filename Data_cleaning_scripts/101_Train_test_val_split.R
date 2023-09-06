@@ -18,10 +18,13 @@ EN_marr   = loadRData("Data/Tmp_data/Clean_EN_marr_cert.Rdata")
 HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
 
 # ==== Train test val split ====
+# This following is done to make sure that train/test/val split is entirely reproducible
 # Generate common long vector of samples train, val, test
-space = c(rep("Train",7), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
-set.seed(20)
-train_test_split = sample(space, 10^7, replace = TRUE)
+# space = c(rep("Train",7), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
+# set.seed(20)
+# train_test_split = sample(space, 10^7, replace = TRUE)
+# save(train_test_split, file = "Data/Manual_data/Random_sequence.Rdata")
+load("Data/Manual_data/Random_sequence.Rdata")
 
 # ==== Add split and clean data ====
 set.seed(20)
@@ -54,10 +57,10 @@ HSN_data = HSN_data %>%
 
 # ==== Save data ====
 DK_census %>% 
-  Save_train_val_test("DK_census")
+  Save_train_val_test("DK_census", "da")
 
 EN_marr %>% 
-  Save_train_val_test("EN_marr_cert")
+  Save_train_val_test("EN_marr_cert", "en")
 
 HSN_data %>% 
-  Save_train_val_test("HSN_database")
+  Save_train_val_test("HSN_database", "nl")

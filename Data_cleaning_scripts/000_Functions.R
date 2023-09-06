@@ -159,10 +159,17 @@ write_csv0 = function(x, fname){
 
 # ==== Save_train_val_test ====
 # Saves train test val data
-# x:    Data containing 'split'
-# Name  Name of the data. Will be saved as [Name]_[x].csv, where x is test, train, etc.
+# x:        Data containing 'split'
+# Name      Name of the data. Will be saved as [Name]_[x].csv, where x is test, train, etc.
+# language: Language 'da', 'en', 'nl' or 'se', ...
 
-Save_train_val_test = function(x, Name){
+Save_train_val_test = function(x, Name, language = NA){
+  # Throw error if incorrect language
+  valid_languages = c('da', 'en', 'nl', 'se', 'no')
+  if(language %in% valid_languages){
+    stop("Provide correct language")
+  }
+  
   the_cats = x$split %>% unique()
   
   # Replace NA in occ string
@@ -174,7 +181,8 @@ Save_train_val_test = function(x, Name){
   # Update RowID to contain Name
   x = x %>% 
     mutate(
-      RowID = paste0(Name, RowID)
+      RowID = paste0(Name, RowID),
+      lang = language
     )
   
   # Filter data
