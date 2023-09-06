@@ -166,7 +166,7 @@ write_csv0 = function(x, fname){
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
   valid_languages = c('da', 'en', 'nl', 'se', 'no')
-  if(language %in% valid_languages){
+  if(!language %in% valid_languages){
     stop("Provide correct language")
   }
   
@@ -204,4 +204,29 @@ Save_train_val_test = function(x, Name, language = NA){
     write_csv0(fname_val)
   x_train %>% 
     write_csv0(fname_train)
+}
+
+
+# ==== upsample() ====
+# Upsamples data approximately by x amount
+# x: Data to usample
+# n: Factor by which to upsamples (to closest 1000)
+
+upsample = function(x, n, verbose = FALSE){
+
+  target_samples = n*NROW(x)
+  missing_samples = target_samples - NROW(x)
+  
+  while(missing_samples>0){
+    x = x %>% 
+      sample_n(1000) %>% 
+      bind_rows(x)
+    
+    if(verbose){
+      cat("\nAdded 1000 samples")
+    }
+    missing_samples = target_samples - NROW(x)
+  }
+  
+  return(x)
 }
