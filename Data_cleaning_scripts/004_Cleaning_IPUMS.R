@@ -15,10 +15,18 @@ library(stringi)
 library(stringr)
 library(tm)
 library(ipumsr)
+library(fst)
 
 # # ==== Load data ====
-ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
-all_data = read_ipums_micro(ddi)
+if(file.exists("Data/Tmp_data/IPUMS_tmp")){ # Read uncompressed if it exists
+  all_data = read_fst("Data/tmp_census.fst") 
+} else {
+  ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
+  all_data = read_ipums_micro(ddi)
+  write_fst(all_data, "Data/Tmp_data/IPUMS_tmp", compress = 0) 
+}
+
+
 
 # Toy data in script development
 set.seed(20)
@@ -78,21 +86,23 @@ all_data %>%
   group_by(OCCSTRNG == "") %>% 
   count()
 
-# Fix inconsistency in "no occupation" encoding
-all_data %>% 
-  mutate(
-    HISCO = ifelse(HISCO == 99999, -1, HISCO)
-  )
+# # Fix inconsistency in "no occupation" encoding
+# all_data %>% 
+#   mutate(
+#     HISCO = ifelse(HISCO == 99999, -1, HISCO)
+#   )
 
 
 
-# # # ==== Data cleaning ====
+# # # ==== Norway ====
 # Fixing norway
-stop("Fix Norway")
+# stop("Fix Norway")
+norway = all_data %>% 
+  filter(COUNTRY == "Norway")
 
 # Standardizing strings and var names
 NROW(all_data)
-all_data = all_data %>%
+norway = norway %>%
   mutate(
     HISCO = as.character(HISCO)
   ) %>%
@@ -103,17 +113,47 @@ all_data = all_data %>%
     occ1 = Original,
     hisco_1 = HISCO
   ) %>% 
-  filter(occ1 != "")
+  filter(occ1 != "") %>% 
+  select(occ1, hisco_1) %>%
+  mutate( # Remove scandi letters
+    occ1 = occ1 %>% sub_scandi()
+  )
 
-all_data = all_data %>% as.data.frame()
+norway = norway %>% as.data.frame()
 
 # NA padding
-all_data = all_data %>%
+norway = norway %>%
   mutate(
     hisco_2 = " ",
     hisco_3 = " ",
     hisco_4 = " ",
     hisco_5 = " "
+  )
+
+# Check against valid list
+load("Data/Key.Rdata")
+
+key = key %>% select(hisco, code)
+
+# Remove data not in key (erronoeous data somehow)
+norway %>% 
+  filter(!hisco_1 %in% key$hisco)
+
+n1 = NROW(norway)
+norway = norway %>% 
+  filter(hisco_1 %in% key$hisco) %>% 
+  filter(hisco_2 %in% key$hisco) %>% 
+  filter(hisco_3 %in% key$hisco) %>% 
+  filter(hisco_4 %in% key$hisco) %>% 
+  filter(hisco_5 %in% key$hisco)
+
+NROW(norway) - n1 # 151 observations
+
+# Change 99999 to -1
+
+norway = norway %>%
+  mutate(
+    hisco_1 = ifelse(hisco_1 == 99999, -1, hisco_1)
   )
 
 # ==== Some simple descriptive stats ====
