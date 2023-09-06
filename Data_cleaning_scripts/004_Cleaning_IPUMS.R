@@ -17,7 +17,7 @@ library(tm)
 library(ipumsr)
 
 # # ==== Load data ====
-ddi = read_ipums_ddi("Data/Raw_data/ipumsi_00002.xml")
+ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
 all_data = read_ipums_micro(ddi)
 
 # Toy data in script development
