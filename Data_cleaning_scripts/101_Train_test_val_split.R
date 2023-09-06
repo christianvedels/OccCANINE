@@ -16,11 +16,12 @@ source("Data_cleaning_scripts/000_Functions.R")
 
 # Danish data
 DK_census = loadRData("Data/Tmp_data/Clean_DK_census.Rdata")
-DK_cedar = loadRData("Data/Tmp_data/Clean_DK_cedar_translation.Rdata")
+DK_cedar  = loadRData("Data/Tmp_data/Clean_DK_cedar_translation.Rdata")
 DK_orsted = loadRData("Data/Tmp_data/Clean_DK_orsted.Rdata")
 
 # English data
 EN_marr   = loadRData("Data/Tmp_data/Clean_EN_marr_cert.Rdata")
+EN_parish = loadRData("Data/Tmp_data/Clean_EN_parish_records.Rdata")
 
 # Dutch data
 HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
@@ -74,6 +75,15 @@ EN_marr = EN_marr %>%
   Keep_only_relevant()
 
 set.seed(20)
+EN_parish = EN_parish %>% 
+  # Reshuffle
+  sample_frac(1) %>% 
+  mutate(split = train_test_split[1:n()]) %>% 
+  Validate_split() %>% 
+  Keep_only_relevant()
+
+# Dutch data
+set.seed(20)
 HSN_data = HSN_data %>% 
   # Reshuffle
   sample_frac(1) %>% 
@@ -100,10 +110,11 @@ DK_cedar %>%
 DK_orsted %>% 
   Save_train_val_test("DK_orsted", "da")
 
-
 # English data
 EN_marr %>% 
   Save_train_val_test("EN_marr_cert", "en")
+EN_parish %>% 
+  Save_train_val_test("EN_parish", "en")
 
 # Dutch data
 HSN_data %>% 
@@ -112,4 +123,15 @@ HSN_data %>%
 # Swedish data
 SE_chalmers %>% 
   Save_train_val_test("SE_chalmers", "se")
+
+# ==== Training data stats ====
+# Total training data
+total = lapply(
+  list(DK_census, DK_cedar, DK_orsted, EN_marr, HSN_data, SE_chalmers),
+  function(x){NROW(x)}
+) %>% 
+  unlist() %>% 
+  sum()
+
+cat("\nTotal training data", total/10^6, "mil. observations")
   
