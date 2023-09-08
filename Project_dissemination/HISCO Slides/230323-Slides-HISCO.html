@@ -44,14 +44,14 @@ class: center, inverse
 
 #### Twitter: @ChristianVedel,
 #### Email: christian-vs@sam.sdu.dk
-#### Updated 2023-09-07 
+#### Updated 2023-09-08 
 
 ---
 
 # Introduction
 .pull-left[
 ### Motivation
-- Labelling is tedious, expensive and error-prone  
+- Manual labelling of data is tedious, expensive and error-prone  
 - We collectively poor thousands of hours into similar work
 - 4 mil. `\(\rightarrow\)` 96k `\(\rightarrow\)` 605 days of work 
 
@@ -258,8 +258,8 @@ string_to_hisco("The train's fireman")
 
 ### Results for fewer samples
 
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bf7a69cb5b677fc9b63d" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bf7a69cb5b677fc9b63d">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["10^3","10^3","10^3","10^4","10^4","10^4","10^5","10^5","10^5","All","All","10^5","All"],[0,0.2,0.5,0,0.2,0.5,0,0.2,0.5,0,0.2,0.2,0.2],["DK","DK","DK","DK","DK","DK","DK","DK","DK","DK","DK","UK","UK"],[0.698,0.877,0.842,0.831,0.9360000000000001,0.947,0.959,0.966,0.963,0.967,0.972,0.96,0.973],[0.6889999999999999,0.887,0.866,0.907,0.949,0.959,0.971,0.972,0.974,0.973,0.975,0.961,0.972],[0.707,0.867,0.82,0.768,0.924,0.9360000000000001,0.948,0.96,0.953,0.962,0.971,0.96,0.974]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>sample_size<\/th>\n      <th>aug. prob.<\/th>\n      <th>source<\/th>\n      <th>f1<\/th>\n      <th>precision<\/th>\n      <th>recall<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-98bfa87f9362861cd65d" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-98bfa87f9362861cd65d">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13"],["10^3","10^3","10^3","10^4","10^4","10^4","10^5","10^5","10^5","All","All","10^5","All"],[0,0.2,0.5,0,0.2,0.5,0,0.2,0.5,0,0.2,0.2,0.2],["DK","DK","DK","DK","DK","DK","DK","DK","DK","DK","DK","UK","UK"],[0.698,0.877,0.842,0.831,0.9360000000000001,0.947,0.959,0.966,0.963,0.967,0.972,0.96,0.973],[0.6889999999999999,0.887,0.866,0.907,0.949,0.959,0.971,0.972,0.974,0.973,0.975,0.961,0.972],[0.707,0.867,0.82,0.768,0.924,0.9360000000000001,0.948,0.96,0.953,0.962,0.971,0.96,0.974]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>sample_size<\/th>\n      <th>aug. prob.<\/th>\n      <th>source<\/th>\n      <th>f1<\/th>\n      <th>precision<\/th>\n      <th>recall<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -272,8 +272,8 @@ string_to_hisco("The train's fireman")
 ---
 # The performance (6/7)
 ### What about SES scores?
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-5658a9941197f54086c4" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5658a9941197f54086c4">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["1","2","3","4"],["hisclass","hisclass_5","socpo","hiscam_u1"],[0.00161509,0.00203475,-0.0361373,-0.000976822],[0.480137,0.202318,2.71758,1.55728],[0.480139,0.202328,2.71782,1.55728],[1,1,1,37.18],[13,5,42,99]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Statistic<\/th>\n      <th>Bias<\/th>\n      <th>Standard_error<\/th>\n      <th>RMSE<\/th>\n      <th>min<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2e02d4c117b992007af0" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2e02d4c117b992007af0">{"x":{"filter":"none","vertical":false,"fillContainer":false,"data":[["1","2","3","4"],["hisclass","hisclass_5","socpo","hiscam_u1"],[0.00161509,0.00203475,-0.0361373,-0.000976822],[0.480137,0.202318,2.71758,1.55728],[0.480139,0.202328,2.71782,1.55728],[1,1,1,37.18],[13,5,42,99]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Statistic<\/th>\n      <th>Bias<\/th>\n      <th>Standard_error<\/th>\n      <th>RMSE<\/th>\n      <th>min<\/th>\n      <th>max<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":8,"columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[8,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 
 ---
 # Performance (7/7) 

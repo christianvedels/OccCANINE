@@ -44,7 +44,7 @@ class: center, inverse
 # Introduction
 .pull-left[
 ### Motivation
-- Labelling is tedious, expensive and error-prone  
+- Manual labelling of data is tedious, expensive and error-prone  
 - We collectively poor thousands of hours into similar work
 - 4 mil. $\rightarrow$ 96k $\rightarrow$ 605 days of work 
 
