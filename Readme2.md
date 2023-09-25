@@ -8,7 +8,7 @@
 ### Verify the pytorch installation and that it is running on cuda 11.8
 `python -c "import torch; print(torch.cuda.get_device_name(0))`
 
-## Install transformers and other packages
+## Install transformers
 `pip install transformers`
 
 ## Install other packages
