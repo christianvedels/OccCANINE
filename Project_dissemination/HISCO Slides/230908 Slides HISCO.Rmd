@@ -73,6 +73,17 @@ class: center, inverse
 
 ![HISCO](Figures/HISCO structure.png)
 
+---
+# Data example
+```{r echo=FALSE}
+load("Data_example_presentation.Rdata")
+rownames(tmp) = NULL
+
+DT::datatable(
+  tmp,
+  fillContainer = FALSE, options = list(pageLength = 8)
+)
+```
 
 ---
 .pull-left[

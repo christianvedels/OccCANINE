@@ -29,6 +29,13 @@ HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
 # Swedish data
 SE_chalmers = loadRData("Data/Tmp_data/Clean_SE_chalmers.Rdata")
 
+
+# Data example for presentation 
+set.seed(20)
+tmp = EN_marr %>% 
+  sample_n(1000) %>% 
+  distinct(occ1, hisco_1) # 
+save(tmp, file = "Project_dissemination/HISCO Slides/Data_example_presentation.Rdata")
 # ==== Train test val split ====
 # This following is done to make sure that train/test/val split is entirely reproducible
 # Generate common long vector of samples train, val, test
