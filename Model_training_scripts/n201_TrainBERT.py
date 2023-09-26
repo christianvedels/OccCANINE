@@ -8,15 +8,15 @@ This script fine tunes a BERT model to classify occupational descriptions as
 @author: chris
 """
 import os
-script_directory = os.path.dirname(os.path.abspath(__file__))
+script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 #%% Hyperparameters
 
 # Which training data is used for the model
 # MODEL_DOMAIN = "HSN_DATABASE"
-# MODEL_DOMAIN = "DK_CENSUS"
-MODEL_DOMAIN = "EN_MARR_CERT"
+MODEL_DOMAIN = "DK_CENSUS"
+#MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
 SAMPLE_SIZE = 5 # 10 to the power of this is used for training
