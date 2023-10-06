@@ -40,7 +40,7 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import classification_report
 
 #%% Load modules
-from n001_BERT_models import *
+from n001_Model_assets import *
 from n100_Attacker import *
 from n101_Trainer import *
 from n102_DataLoader import *
@@ -62,8 +62,8 @@ data = Load_data(
     )
 
 # # Sanity check
-for d in data['data_loader_train_attack']: 
-    print(d['occ1'][0][0])
+# for d in data['data_loader_train_attack']: 
+#     print(d['occ1'][0][0])
     
 # data['reference_loss']
 
