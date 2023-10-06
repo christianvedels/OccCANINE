@@ -54,6 +54,7 @@ def update_tokenizer(tokenizer, df):
     unique_words = set(words_list)
     all_lang_words = set(df.lang)
     unique_words.update(all_lang_words)
+    unique_words.update("UNK") # Unknown language token
     # Add tokens for missing words
     tokenizer.add_tokens(list(unique_words))
     
@@ -63,7 +64,10 @@ def update_tokenizer(tokenizer, df):
 def getModel(model_domain, tokenizer):
     MDL = modelPath(model_domain)
     # Load the basic BERT model 
-    model = BertModel.from_pretrained(MDL)
+    if model_domain == "Multilingual":
+        model = XLMRobertaModel.from_pretrained(MDL)
+    else:
+        model = BertModel.from_pretrained(MDL)
     
     # Adapt model size to the tokens added:
     model.resize_token_embeddings(len(tokenizer))
@@ -95,11 +99,11 @@ class BERTOccupationClassifier(nn.Module):
     
 # %%
 # Build the Sentiment Classifier class 
-class XML_RoBERTa_OccupationClassifier(nn.Module):
+class XMLRoBERTaOccupationClassifier(nn.Module):
     
     # Constructor class 
     def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
-        super(XML_RoBERTa_OccupationClassifier, self).__init__()
+        super(XMLRoBERTaOccupationClassifier, self).__init__()
         self.basemodel = getModel(model_domain, tokenizer)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)

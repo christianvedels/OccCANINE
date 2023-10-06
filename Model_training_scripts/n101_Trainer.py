@@ -2,7 +2,6 @@
 """
 Created on Wed Aug 16 13:33:15 2023
 
-@author: chris
 """
 
 # Set path to file path
@@ -152,7 +151,8 @@ def trainer_loop(
     attack_switch = False
     
     # Train first epoch before plotting anything
-    train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=verbose)
+    # print("Started training one epoch as warmup")
+    # train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=verbose)
   
     # Training loop
     for epoch in range(epochs):

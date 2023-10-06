@@ -20,10 +20,19 @@
 |lang | What language is it? |
 |split | String describing if this is 'train', 'val1', 'val2' or 'test' |
 
+## Overview of training data and sources
+| Source file name | Observations | Description          | Reference    |
+|------------------|--------------|----------------------|--------------|
+| DK_census_[a].csv| 4,673,892    | Danish census data from the Danish Demographic Database. This also contains HISCO codes for some census years | Clausen (2015) |
 
+a $\in$ {train, test, val}
 
 
 ## Updates
+
+### 2023-10-06
+- Added XML-RoBERTa with language strings in 0.75 of cases 
+- Updated the rest of model training scripts accordingly
 
 ### 2023-09-06
 - Added 'language' as a column in all training data

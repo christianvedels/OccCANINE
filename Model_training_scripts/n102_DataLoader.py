@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Aug 16 13:31:41 2023
-
+https://medium.com/@keruchen/train-a-xlm-roberta-model-for-text-classification-on-pytorch-4ccf0b30f762
 @author: chris
 """
 import os
@@ -26,18 +26,77 @@ def train_path(model_domain):
         fname = "../Data/Training_data/EN_marr_cert_train.csv" 
     elif(model_domain == "HSN_DATABASE"):
         fname = "../Data/Training_data/HSN_database_train.csv"
+    elif(model_domain == "Multilingual"):
+        fname = "../Data/Training_data"
     else:
         raise Exception("This is not implemented yet")
         
     return fname
 
+#%% check_csv_column_consistency
+def check_csv_column_consistency(folder_path):
+    # Get a list of CSV files in the specified folder
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+
+    if not csv_files:
+        print("No CSV files found in the specified folder.")
+        return
+
+    # Read the first CSV file to get its column names
+    first_file_path = os.path.join(folder_path, csv_files[0])
+    first_df = pd.read_csv(first_file_path)
+    first_columns = set(first_df.columns)
+
+    # Initialize a variable to track whether all files have consistent columns
+    consistent_columns = True
+
+    # Check the columns of the remaining CSV files
+    for file in csv_files[1:]:
+        file_path = os.path.join(folder_path, file)
+        df = pd.read_csv(file_path, nrows=10)
+        if set(df.columns) != first_columns:
+            consistent_columns = False
+            print(f"Columns in '{file}' are not consistent with the first file.")
+
+    # if consistent_columns:
+    #     print("All CSV files in the folder have the same columns.")
+    # else:
+    #     print("Not all CSV files have the same columns.")
+        
+    return consistent_columns
+
+# # Usage example
+# check_csv_column_consistency(train_path(model_domain))
+
 #%% Read_data
 def read_data(model_domain):
     # breakpoint()
-    fname = train_path(model_domain)
+    if(model_domain == "Multilingual"):
+        fname = train_path(model_domain)
+        fnames = os.listdir(fname)
+        
+        # Check that all csv's have the same columns
+        consistent_data = check_csv_column_consistency(fname)
+        if not consistent_data:
+            raise Exception("Problem in training data consistency. See above")
+        
+        # Initialize an empty dataframe to store the data
+        combined_df = pd.DataFrame()
+        # Loop through the file list and read each CSV file into the combined dataframe
+        for file in fnames:
+            if file.endswith(".csv"):  # Make sure the file is a CSV file
+                file_path = os.path.join(fname, file)  # Replace with the actual path to your folder
+                # df = pd.read_csv(file_path)
+                df = pd.read_csv(file_path)
+                combined_df = pd.concat([combined_df, df])
+                print("\nRead "+file)
+                
+        df = combined_df
+        
+    else:
+        fname = train_path(model_domain)
+        df = pd.read_csv(fname, encoding = "UTF-8")
     
-    df = pd.read_csv(fname, encoding = "UTF-8")
-
     # Handle na strings
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
 
@@ -49,6 +108,9 @@ def read_data(model_domain):
     key = dict(key)
     
     return df, key
+
+
+# df, key = read_data(model_domain)
     
 #%% Resample()
 def resample(
@@ -218,7 +280,17 @@ def TrainTestVal(df, verbose = False):
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
-    def __init__(self, df, tokenizer, attacker, max_len, n_classes, alt_prob = 0, insert_words = False):
+    def __init__(
+            self, 
+            df, 
+            tokenizer, 
+            attacker, 
+            max_len, 
+            n_classes, 
+            alt_prob = 0, 
+            insert_words = False, 
+            unk_lang_prob = 0.25 # Probability of changing lang to 'unknown'
+            ):
         self.occ1 = df.occ1.tolist()
         self.df = df
         self.tokenizer = tokenizer
@@ -227,6 +299,8 @@ class OCCDataset(Dataset):
         self.attacker = attacker
         self.alt_prob = alt_prob # Probability of text alteration in Attacker()
         self.insert_words = insert_words # Should random word insertation occur in Attacker()
+        self.lang = df.lang.tolist()
+        self.unk_lang_prob = unk_lang_prob
     
     # Length magic method
     def __len__(self):
@@ -237,6 +311,7 @@ class OCCDataset(Dataset):
         # breakpoint()
         occ1 = str(self.occ1[item])
         target = self.targets[item]
+        lang = self.lang[item]
         
         # Implement Attack() here
         occ1 = self.attacker.attack(
@@ -245,9 +320,18 @@ class OCCDataset(Dataset):
             insert_words = self.insert_words
             )
         
+        # breakpoint()
+        # Change lanuage to 'unknown' = "UNK" in some cases
+        if(r.random()<self.unk_lang_prob):
+            lang = "UNK"
+        
+        occ1 = str(occ1).strip("'[]'")
+        # Implement random change to lang 'unknown' here:
+        cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+        
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(
-            occ1,
+            cat_sequence,
             add_special_tokens=True,
             padding = 'max_length',
             max_length = self.max_len,
@@ -257,7 +341,7 @@ class OCCDataset(Dataset):
         )
         
         return {
-            'occ1': occ1,
+            'occ1': cat_sequence,
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
             'targets': torch.tensor(target, dtype=torch.long)
@@ -406,7 +490,7 @@ def Load_data(
     }
 
 #%%
-from n001_BERT_models import *
+from n001_Model_assets import *
 from n100_Attacker import *
 
 # model_domain = "EN_MARR_CERT"
