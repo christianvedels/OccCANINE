@@ -185,6 +185,12 @@ Save_train_val_test = function(x, Name, language = NA){
       lang = language
     )
   
+  # Add na year if it is missing
+  if((!"Year" %in% names(x))){
+    x = x %>% 
+      mutate(Year = NA)
+  }
+  
   # Filter data
   x_test = x %>% 
     filter(split == "Test")

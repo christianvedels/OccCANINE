@@ -13,7 +13,7 @@ library(tidyverse)
 library(foreach)
 
 # ==== Load data ====
-all_data = read.csv("Data/Raw_data/EN_MARIAGE_CERTIFICATES.csv")
+all_data = read.csv("Data/Raw_data/English Marriage Certificates/EN_MARIAGE_CERTIFICATES.csv")
 
 # Select relevant vars 
 all_data = all_data %>% select(occraw, hisco, n)
