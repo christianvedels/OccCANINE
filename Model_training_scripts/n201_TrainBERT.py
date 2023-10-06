@@ -62,8 +62,8 @@ data = Load_data(
     )
 
 # # Sanity check
-for d in data['data_loader_train_attack']: 
-    print(d['occ1'][0][0])
+#for d in data['data_loader_train_attack']: 
+#    print(d['occ1'][0][0])
     
 # data['reference_loss']
 
