@@ -54,7 +54,7 @@ def update_tokenizer(tokenizer, df):
     unique_words = set(words_list)
     all_lang_words = set(df.lang)
     unique_words.update(all_lang_words)
-    unique_words.update("UNK") # Unknown language token
+    unique_words.update("unk") # Unknown language token
     # Add tokens for missing words
     tokenizer.add_tokens(list(unique_words))
     
