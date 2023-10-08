@@ -15,8 +15,8 @@ os.chdir(script_directory)
 MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 10
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+EPOCHS = 50
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -103,7 +103,7 @@ model_path = '../Trained_models/'+MODEL_NAME+'.bin'
 
 # Load the model
 loaded_state = torch.load(model_path)
-model_best = XML_RoBERTa_OccupationClassifier(
+model_best = XMLRoBERTaOccupationClassifier(
     n_classes = data['N_CLASSES'], 
     model_domain = MODEL_DOMAIN, 
     tokenizer = data['tokenizer'], 
