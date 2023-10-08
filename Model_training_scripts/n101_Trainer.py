@@ -150,9 +150,9 @@ def trainer_loop(
     best_accuracy = 0
     attack_switch = False
     
-    # Train first epoch before plotting anything
+    # # Train first epoch before plotting anything
     # print("Started training one epoch as warmup")
-    # train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=verbose)
+    # train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=True)
   
     # Training loop
     for epoch in range(epochs):
