@@ -1,0 +1,3 @@
+Please extract the current occupation from the following Danish text, if available. Exclude any former occupation details. The occupation should be the current one. If there is no occupation then I want you to provide me that as an answer and return "no occupation". Please return the results in JSON. Please explain nothing. Just return the JSON.
+
+"Kammerherre har i 5te år været amtmænd over Sorø Amt, hvoraf han herved allerunderdanigst ansøgningmer afgået med 300 rd. pension, samt herløw til Xhyrscech efter faderens død."

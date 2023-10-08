@@ -2,7 +2,6 @@
 """
 Created on Wed Aug 16 13:33:15 2023
 
-@author: chris
 """
 
 # Set path to file path
@@ -26,10 +25,10 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
     model = model.train()
     losses = []
     correct_predictions = 0
-    
+        
     if verbose:
         print("Training:", end = " ")
-    
+                    
     for batch_idx, d in enumerate(data_loader):
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
@@ -151,8 +150,9 @@ def trainer_loop(
     best_accuracy = 0
     attack_switch = False
     
-    # Train first epoch before plotting anything
-    train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=verbose)
+    # # Train first epoch before plotting anything
+    # print("Started training one epoch as warmup")
+    # train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=True)
   
     # Training loop
     for epoch in range(epochs):

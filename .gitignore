@@ -48,3 +48,6 @@ Tmp_data/
 Training_data/
 Validation_data/
 .RDataTmp1
+.spyproject/config/backups/workspace.ini.bak
+.spyproject/config/backups/workspace.ini.bak
+.spyproject/config/workspace.ini

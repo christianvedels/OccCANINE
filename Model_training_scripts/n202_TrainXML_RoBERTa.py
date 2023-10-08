@@ -1,35 +1,31 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Aug 16 13:34:23 2023
-This script fine tunes a BERT model to classify occupational descriptions as 
-
-
-
-@author: chris
+Train XML Roberta
 """
 import os
-script_directory = os.path.dirname(os.path.abspath(__name__))
+script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
 #%% Hyperparameters
 
 # Which training data is used for the model
 # MODEL_DOMAIN = "HSN_DATABASE"
-MODEL_DOMAIN = "DK_CENSUS"
-#MODEL_DOMAIN = "EN_MARR_CERT"
+# MODEL_DOMAIN = "DK_CENSUS"
+# MODEL_DOMAIN = "EN_MARR_CERT"
+MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 5 # 10 to the power of this is used for training
-EPOCHS = 500
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+EPOCHS = 50
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
-MAX_LEN = 50 # Number of tokens to use
+MAX_LEN = 64 # Number of tokens to use
 
-MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+MODEL_NAME = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 #%% Libraries
 # Import necessary libraries
@@ -61,16 +57,16 @@ data = Load_data(
     verbose = False
     )
 
-# # Sanity check
+# Sanity check
 # for d in data['data_loader_train_attack']: 
-#    print(d['occ1'][0][0])
+#     print(d['occ1'][0])
     
 # data['reference_loss']
 
 # %% Load model
-model = BERTOccupationClassifier(
+model = XMLRoBERTaOccupationClassifier(
+    model_domain = MODEL_DOMAIN,
     n_classes = data['N_CLASSES'], 
-    model_domain = MODEL_DOMAIN, 
     tokenizer = data['tokenizer'], 
     dropout_rate = DROPOUT_RATE
     )
@@ -107,7 +103,7 @@ model_path = '../Trained_models/'+MODEL_NAME+'.bin'
 
 # Load the model
 loaded_state = torch.load(model_path)
-model_best = BERTOccupationClassifier(
+model_best = XMLRoBERTaOccupationClassifier(
     n_classes = data['N_CLASSES'], 
     model_domain = MODEL_DOMAIN, 
     tokenizer = data['tokenizer'], 
