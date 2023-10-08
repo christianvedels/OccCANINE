@@ -5,7 +5,7 @@ https://medium.com/@keruchen/train-a-xlm-roberta-model-for-text-classification-o
 @author: chris
 """
 import os
-script_directory = os.path.dirname(os.path.abspath(__file__))
+script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 #%% Libraries

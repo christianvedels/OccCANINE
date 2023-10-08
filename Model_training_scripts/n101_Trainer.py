@@ -129,7 +129,7 @@ def plot_progress(train_losses, val_losses, train_acc, val_acc, reference_loss, 
     
     # Save the plot as an image in the folder
     plt.savefig("../Tmp training plots/" + model_name + ".png")
-    plt.show()
+    #plt.show()
     plt.close()
 
 # %% Trainer loop
