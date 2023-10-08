@@ -86,8 +86,8 @@ def read_data(model_domain):
         for file in fnames:
             if file.endswith(".csv"):  # Make sure the file is a CSV file
                 file_path = os.path.join(fname, file)  # Replace with the actual path to your folder
-                # df = pd.read_csv(file_path)
                 df = pd.read_csv(file_path)
+                # df = pd.read_csv(file_path, nrows = 100)
                 combined_df = pd.concat([combined_df, df])
                 print("\nRead "+file)
                 
@@ -106,6 +106,10 @@ def read_data(model_domain):
     key = zip(key.code, key.hisco)
     key = list(key)
     key = dict(key)
+    
+    ### LONG TEXT TO GENERATE ERROR
+    # df.occ1 = "kammerherre hab pai 5te aar waeret amkmand ower srmvancew hworwra hanhefter alledxnderdanigst ansoegningmer afgaaet med 300 rd pension ltamherrlwtil xhyrscech efter faderens doed"
+    ###
     
     return df, key
 
@@ -321,9 +325,9 @@ class OCCDataset(Dataset):
             )
         
         # breakpoint()
-        # Change lanuage to 'unknown' = "UNK" in some cases
+        # Change lanuage to 'unknown' = "unk" in some cases
         if(r.random()<self.unk_lang_prob):
-            lang = "UNK"
+            lang = "unk"
         
         occ1 = str(occ1).strip("'[]'")
         # Implement random change to lang 'unknown' here:
@@ -338,7 +342,16 @@ class OCCDataset(Dataset):
             return_token_type_ids=False,
             return_attention_mask=True,
             return_tensors='pt',
+            truncation = True
         )
+        
+        # Try to see if the following error can be caught here:
+        # return torch.stack(batch, 0, out=out)
+        #    RuntimeError: stack expects each tensor to be equal size, but got [63] at entry 0 and [50] at entry 1
+        if encoding['input_ids'].shape[1] != self.max_len:
+            # breakpoint()
+            print(cat_sequence+" had shape: "+str(encoding['input_ids'].shape))
+            print("This might cause an error")
         
         return {
             'occ1': cat_sequence,
