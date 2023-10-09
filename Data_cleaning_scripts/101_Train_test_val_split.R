@@ -14,7 +14,7 @@ source("Data_cleaning_scripts/000_Functions.R")
 
 # ==== Load data ====
 
-# Danish data
+# # Danish data
 DK_census = loadRData("Data/Tmp_data/Clean_DK_census.Rdata")
 DK_cedar  = loadRData("Data/Tmp_data/Clean_DK_cedar_translation.Rdata")
 DK_orsted = loadRData("Data/Tmp_data/Clean_DK_orsted.Rdata")
@@ -28,14 +28,15 @@ HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
 
 # Swedish data
 SE_chalmers = loadRData("Data/Tmp_data/Clean_SE_chalmers.Rdata")
+SE_cedar = loadRData("Data/Tmp_data/Clean_CEDAR_SE.Rdata")
 
 
 # Data example for presentation 
-set.seed(20)
-tmp = EN_marr %>% 
-  sample_n(1000) %>% 
-  distinct(occ1, hisco_1) # 
-save(tmp, file = "Project_dissemination/HISCO Slides/Data_example_presentation.Rdata")
+# set.seed(20)
+# tmp = EN_marr %>% 
+#   sample_n(1000) %>% 
+#   distinct(occ1, hisco_1) # 
+# save(tmp, file = "Project_dissemination/HISCO Slides/Data_example_presentation.Rdata")
 # ==== Train test val split ====
 # This following is done to make sure that train/test/val split is entirely reproducible
 # Generate common long vector of samples train, val, test
@@ -49,92 +50,104 @@ load("Data/Manual_data/Random_sequence.Rdata")
 
 # Danish data
 set.seed(20)
-DK_census = DK_census %>% 
+DK_census = DK_census %>%
   # Delete unused vars:
-  select(-Household_status, -Occupation, -labelled) %>% 
+  select(-Household_status, -Occupation, -labelled) %>%
   # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 set.seed(20)
-DK_cedar = DK_cedar %>% 
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+DK_cedar = DK_cedar %>%
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 set.seed(20)
-DK_orsted = DK_orsted %>% 
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+DK_orsted = DK_orsted %>%
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 # English data
 set.seed(20)
-EN_marr = EN_marr %>% 
+EN_marr = EN_marr %>%
   # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 set.seed(20)
-EN_parish = EN_parish %>% 
+EN_parish = EN_parish %>%
   # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 # Dutch data
 set.seed(20)
-HSN_data = HSN_data %>% 
+HSN_data = HSN_data %>%
   # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
   Keep_only_relevant()
 
 # Swedish data
 set.seed(20)
-SE_chalmers = SE_chalmers %>% 
+SE_chalmers = SE_chalmers %>%
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
+  Keep_only_relevant()
+
+set.seed(20)
+SE_cedar = SE_cedar %>% 
   sample_frac(1) %>% 
   mutate(split = train_test_split[1:n()]) %>% 
   Validate_split() %>% 
   Keep_only_relevant()
 
 # ==== Save data ====
-# Danish data
-DK_census %>% 
-  Save_train_val_test("DK_census", "da")
-
-DK_cedar %>% 
-  Save_train_val_test("DK_cedar", "da")
-
-DK_orsted %>% 
-  Save_train_val_test("DK_orsted", "da")
-
-# English data
-EN_marr %>% 
-  Save_train_val_test("EN_marr_cert", "en")
-EN_parish %>% 
-  Save_train_val_test("EN_parish", "en")
-
-# Dutch data
-HSN_data %>% 
-  Save_train_val_test("HSN_database", "nl")
-
-# Swedish data
-SE_chalmers %>% 
-  Save_train_val_test("SE_chalmers", "se")
+# # Danish data
+# DK_census %>% 
+#   Save_train_val_test("DK_census", "da")
+# 
+# DK_cedar %>% 
+#   Save_train_val_test("DK_cedar", "da")
+# 
+# DK_orsted %>% 
+#   Save_train_val_test("DK_orsted", "da")
+# 
+# # English data
+# EN_marr %>% 
+#   Save_train_val_test("EN_marr_cert", "en")
+# EN_parish %>% 
+#   Save_train_val_test("EN_parish", "en")
+# 
+# # Dutch data
+# HSN_data %>% 
+#   Save_train_val_test("HSN_database", "nl")
+# 
+# # Swedish data
+# SE_chalmers %>% 
+#   Save_train_val_test("SE_chalmers", "se")
+# 
+# SE_cedar %>% 
+#   Save_train_val_test("SE_cedar", "se")
 
 # ==== Training data stats ====
 # Total training data
 total = lapply(
-  list(DK_census, DK_cedar, DK_orsted, EN_marr, HSN_data, SE_chalmers),
+  list(
+    DK_census, DK_cedar, DK_orsted, EN_marr, HSN_data, SE_chalmers, SE_cedar
+  ),
   function(x){NROW(x)}
 ) %>% 
   unlist() %>% 
