@@ -19,7 +19,7 @@ MODEL_DOMAIN = "DK_CENSUS"
 #MODEL_DOMAIN = "EN_MARR_CERT"
 
 # Parameters
-SAMPLE_SIZE = 5 # 10 to the power of this is used for training
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
 EPOCHS = 500
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
@@ -36,8 +36,10 @@ MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_
 import numpy as np
 import pandas as pd
 import torch
-from transformers import AdamW, get_linear_schedule_with_warmup
+#from transformers import AdamW, get_linear_schedule_with_warmup
+from transformers import get_linear_schedule_with_warmup
 from sklearn.metrics import classification_report
+from torch.optim import AdamW
 
 #%% Load modules
 from n001_BERT_models import *

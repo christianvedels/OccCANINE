@@ -56,7 +56,9 @@ def bert_model(model_domain, tokenizer):
     bert_model = BertModel.from_pretrained(MDL)
     
     # Adapt model size to the tokens added:
-    bert_model.resize_token_embeddings(len(tokenizer))
+    #resize_token_embeddings method and set it to a multiple of 8, which is the number of 
+    #Tensor Cores in an NVIDIA A40 GPU.
+    bert_model.resize_token_embeddings(len(tokenizer),pad_to_multiple_of=48) 
     
     return bert_model
 
