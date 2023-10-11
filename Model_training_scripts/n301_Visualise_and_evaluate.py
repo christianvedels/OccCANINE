@@ -9,7 +9,7 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
 # %% Libraries and modules
-from n001_BERT_models import *
+from n001_Model_assets import *
 from n101_Trainer import *
 from n102_DataLoader import *
 from n100_Attacker import AttackerClass
@@ -21,10 +21,11 @@ from transformers import AutoTokenizer
 # Which training data is used for the model
 # MODEL_DOMAIN = "HSN_DATABASE"
 # MODEL_DOMAIN = "DK_CENSUS"
-MODEL_DOMAIN = "EN_MARR_CERT"
+# MODEL_DOMAIN = "EN_MARR_CERT"
+MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 5 # 10 to the power of this is used for training
+SAMPLE_SIZE = 6 # 10 to the power of this is used for training
 EPOCHS = 500
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
@@ -32,9 +33,12 @@ UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
-MAX_LEN = 50 # Number of tokens to use
+MAX_LEN = 64 # Number of tokens to use
 
-MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+if MODEL_DOMAIN == "Multilingual":
+    MODEL_NAME = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+else: 
+    MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,27 +56,9 @@ data = Load_data(
     verbose = False
     )
 
-# # Sanity check
-for d in data['data_loader_train_attack']: 
-    print(d['occ1'][0][0])
-
-# %% Load best model instance
-# Define the path to the saved binary file
-model_path = '../Trained_models/'+MODEL_NAME+'.bin'
-
-# Load the model
-loaded_state = torch.load(model_path)
-model_best = BERTOccupationClassifier(
-    n_classes = data['N_CLASSES'], 
-    model_domain = MODEL_DOMAIN, 
-    tokenizer = data['tokenizer'], 
-    dropout_rate = DROPOUT_RATE
-    )
-model_best.load_state_dict(loaded_state)
-# model_best.to(device)
-
-# Set model to evaluation mode
-model_best.eval()
+# # # Sanity check
+# for d in data['data_loader_train_attack']: 
+#     print(d['occ1'][0][0])
 
 # %% Load tokenizer
 tokenizer_save_path = '../Trained_models/' + MODEL_NAME + '_tokenizer'
@@ -83,6 +69,36 @@ tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
 test = "This is a sentence"
 
 tokenizer(test)
+
+# %% Load best model instance
+# Define the path to the saved binary file
+model_path = '../Trained_models/'+MODEL_NAME+'.bin'
+
+# Load the model
+loaded_state = torch.load(model_path)
+
+if MODEL_DOMAIN == "Multilingual":
+    model_best = XMLRoBERTaOccupationClassifier(
+        n_classes = data['N_CLASSES'], 
+        model_domain = MODEL_DOMAIN, 
+        tokenizer = tokenizer, 
+        dropout_rate = DROPOUT_RATE
+        )
+else:
+    model_best = BERTOccupationClassifier(
+        n_classes = data['N_CLASSES'], 
+        model_domain = MODEL_DOMAIN, 
+        tokenizer = tokenizer, 
+        dropout_rate = DROPOUT_RATE
+    )
+    
+model_best.load_state_dict(loaded_state)
+
+model_best.to(device)
+# Set model to evaluation mode
+model_best.eval()
+
+
 
 # %% Get model prediction
 def get_predictions(inputs):
@@ -213,15 +229,25 @@ def Attention_Viz2(sentence):
     # plt.savefig('average_attention_scores.png')
     plt.show()
 
-    
+# %%
+import n101_Trainer as t
+
+y_occ_texts, y_pred, y_pred_probs, y_test = t.get_predictions(
+    model_best,
+    data['data_loader_test'],
+    device
+)
+report = classification_report(y_test, y_pred, output_dict=True)
+
+print_report(report, MODEL_NAME)
     
 # %% Run it
 # Get example
-examples = []
-for d in data['data_loader_test']:
-    examples.extend(d['occ1'][0])
+# examples = []
+# for d in data['data_loader_test']:
+#     examples.extend(d['occ1'][0])
     
-df = pd.DataFrame({'occ1': examples})
+# df = pd.DataFrame({'occ1': examples})
     
 
 examples = [    
@@ -233,6 +259,32 @@ examples = [
     'forestry commission worker', 
     'coal and provision dealer'
     ]
+
+examples = [Concat_string(x, "unk") for x in examples]
+
+for e in examples:
+    inputs = tokenizer.encode_plus(
+        e,
+        add_special_tokens=True,
+        padding = 'max_length',
+        max_length = MAX_LEN,
+        return_token_type_ids=False,
+        return_attention_mask=True,
+        return_tensors='pt',
+        truncation = True
+    )
+    
+    print(inputs)
+
+
+input_ids = inputs['input_ids']
+attention_mask = inputs["attention_mask"]
+ 
+with torch.no_grad():
+    logits = model_best(input_ids, attention_mask)
+predicted_probs = torch.sigmoid(logits)
+threshold = 0.5  # You can adjust this threshold based on your use case
+predicted_labels = [key[i] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
 
 
 attacker = AttackerClass(df)

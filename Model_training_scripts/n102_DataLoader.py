@@ -281,6 +281,15 @@ def TrainTestVal(df, verbose = False):
         
     return df_train, df_val, df_test
 
+# %% Concat_string
+# Makes one string with language and then occupational description
+def Concat_string(occ1, lang):
+    occ1 = str(occ1).strip("'[]'")
+    # Implement random change to lang 'unknown' here:
+    cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+    
+    return(cat_sequence)
+
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
@@ -331,7 +340,7 @@ class OCCDataset(Dataset):
         
         occ1 = str(occ1).strip("'[]'")
         # Implement random change to lang 'unknown' here:
-        cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+        cat_sequence = Concat_string(occ1, lang)
         
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(

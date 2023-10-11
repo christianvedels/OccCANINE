@@ -96,31 +96,30 @@ model = trainer_loop(
     scheduler = scheduler
     )
 
+# # %% Load best model instance
+# # Define the path to the saved binary file
+# model_path = '../Trained_models/'+MODEL_NAME+'.bin'
 
-# %% Load best model instance
-# Define the path to the saved binary file
-model_path = '../Trained_models/'+MODEL_NAME+'.bin'
+# # Load the model
+# loaded_state = torch.load(model_path)
+# model_best = XMLRoBERTaOccupationClassifier(
+#     n_classes = data['N_CLASSES'], 
+#     model_domain = MODEL_DOMAIN, 
+#     tokenizer = data['tokenizer'], 
+#     dropout_rate = DROPOUT_RATE
+#     )
+# model_best.load_state_dict(loaded_state)
+# model_best.to(device)
 
-# Load the model
-loaded_state = torch.load(model_path)
-model_best = XMLRoBERTaOccupationClassifier(
-    n_classes = data['N_CLASSES'], 
-    model_domain = MODEL_DOMAIN, 
-    tokenizer = data['tokenizer'], 
-    dropout_rate = DROPOUT_RATE
-    )
-model_best.load_state_dict(loaded_state)
-model_best.to(device)
+# # %%
+# y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
+#     model_best,
+#     data['data_loader_test'],
+#     device = device
+# )
+# report = classification_report(y_test, y_pred, output_dict=True)
 
-# %%
-y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
-    model_best,
-    data['data_loader_test'],
-    device = device
-)
-report = classification_report(y_test, y_pred, output_dict=True)
-
-print_report(report, MODEL_NAME)
+# print_report(report, MODEL_NAME)
 
 
 
