@@ -30,6 +30,12 @@ a $\in$ {train, test, val}
 
 ## Updates
 
+### 2023-10-11
+- Started writing evaluation scripts. They don't work yet.
+
+### 2023-10-08
+- XML-RoBERTa works. The entry point is 'n202_TrainXML_RoBERTa.py'
+
 ### 2023-10-06
 - Added XML-RoBERTa with language strings in 0.75 of cases 
 - Updated the rest of model training scripts accordingly
