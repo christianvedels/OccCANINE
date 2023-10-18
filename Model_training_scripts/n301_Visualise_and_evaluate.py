@@ -40,8 +40,13 @@ if MODEL_DOMAIN == "Multilingual":
 else: 
     MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
+BATCH_SIZE = 2 # Actual batch size used other than the name
+
+key0 = pd.read_csv("../Data/Key.csv")
+
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 
 # %% Load data + tokenizer
 data = Load_data(
@@ -156,7 +161,7 @@ def Attention_Viz(sentence, layer = 0):
     inputs = tokenizer(sentence, return_tensors='pt', padding=True, truncation=True)
         
     with torch.no_grad():
-        outputs = model_best.bert(
+        outputs = model_best.basemodel(
             input_ids=inputs['input_ids'],
             attention_mask=inputs['attention_mask'],
             output_attentions=True
@@ -185,7 +190,21 @@ def Attention_Viz(sentence, layer = 0):
             plt.ylabel(f'Layer {layer}')
     
     plt.tight_layout()
+    plt.savefig('Tmp_attention_plots/Attention.png')
     plt.show()
+    
+    input_ids = inputs['input_ids']
+    attention_mask = inputs["attention_mask"]
+    
+    # breakpoint()
+    # Get prediction
+    with torch.no_grad():
+        logits = model_best(input_ids, attention_mask)
+    predicted_probs = torch.sigmoid(logits)
+    threshold = 0.5  # You can adjust this threshold based on your use case
+    predicted_labels = [key[i] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
+    predicted_labels0 = [key0.en_hisco_text[i+1] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
+    print(predicted_labels, predicted_labels0)
     
 # %%
 def Attention_Viz2(sentence):
@@ -193,7 +212,7 @@ def Attention_Viz2(sentence):
     inputs = tokenizer(sentence, return_tensors='pt', padding=True, truncation=True)
     
     with torch.no_grad():
-        outputs = model_best.bert(
+        outputs = model_best.basemodel(
             input_ids=inputs['input_ids'],
             attention_mask=inputs['attention_mask'],
             output_attentions=True
@@ -226,7 +245,7 @@ def Attention_Viz2(sentence):
     plt.tight_layout()
     
     # Save the plot
-    # plt.savefig('average_attention_scores.png')
+    plt.savefig('Tmp_attention_plots/'+sentence+".png")
     plt.show()
 
 # %%
@@ -250,46 +269,40 @@ print_report(report, MODEL_NAME)
 # df = pd.DataFrame({'occ1': examples})
     
 
-examples = [    
-    'block printer', 
-    'post office official', 
-    'private 2/5 lincoln reg', 
-    'brass polisher', 
-    'in the coast guard service', 
-    'forestry commission worker', 
-    'coal and provision dealer'
+examples = [   
+    # "farmer"
+    'no longer active but used to be a blacksmith'
+    # ,
+    # 'block printer', 
+    # 'post office official', 
+    # 'private 2/5 lincoln reg', 
+    # 'brass polisher', 
+    # 'in the coast guard service', 
+    # 'forestry commission worker', 
+    # 'coal and provision dealer'
     ]
 
 examples = [Concat_string(x, "unk") for x in examples]
 
-for e in examples:
-    inputs = tokenizer.encode_plus(
-        e,
-        add_special_tokens=True,
-        padding = 'max_length',
-        max_length = MAX_LEN,
-        return_token_type_ids=False,
-        return_attention_mask=True,
-        return_tensors='pt',
-        truncation = True
-    )
-    
-    print(inputs)
+inputs = examples[0]
 
+inputs = tokenizer(inputs, return_tensors='pt', padding=True, truncation=True)
 
 input_ids = inputs['input_ids']
 attention_mask = inputs["attention_mask"]
+
+key = data['key']
  
 with torch.no_grad():
     logits = model_best(input_ids, attention_mask)
 predicted_probs = torch.sigmoid(logits)
 threshold = 0.5  # You can adjust this threshold based on your use case
 predicted_labels = [key[i] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
-
+print(predicted_labels)
 
 attacker = AttackerClass(df)
 
-Attention_Viz(attacker.attack(examples[5]), layer = 0)
+Attention_Viz(Concat_string('no longer active but used to be a blacksmith', "en"))
  
-Attention_Viz2('no longer active but used to be a blacksmith')
+Attention_Viz2(Concat_string('no longer active but used to be a blacksmith', "en"))
 Attention_Viz2(examples[4])
