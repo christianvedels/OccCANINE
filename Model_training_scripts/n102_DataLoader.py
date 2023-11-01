@@ -33,6 +33,20 @@ def train_path(model_domain):
         
     return fname
 
+def val_path(model_domain):
+    if(model_domain == "DK_CENSUS"):
+        fname = "../Data/Validation_data/DK_census_val.csv"
+    elif(model_domain == "EN_MARR_CERT"):
+        fname = "../Data/Validation_data/EN_marr_cert_val.csv" 
+    elif(model_domain == "HSN_DATABASE"):
+        fname = "../Data/Validation_data/HSN_database_val.csv"
+    elif(model_domain == "Multilingual"):
+        fname = "../Data/Validation_data"
+    else:
+        raise Exception("This is not implemented yet")
+        
+    return fname
+
 #%% check_csv_column_consistency
 def check_csv_column_consistency(folder_path):
     # Get a list of CSV files in the specified folder
@@ -69,10 +83,18 @@ def check_csv_column_consistency(folder_path):
 # check_csv_column_consistency(train_path(model_domain))
 
 #%% Read_data
-def read_data(model_domain):
+def read_data(model_domain, data_type = "Train"):
     # breakpoint()
     if(model_domain == "Multilingual"):
-        fname = train_path(model_domain)
+        
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+        
         fnames = os.listdir(fname)
         
         # Check that all csv's have the same columns
@@ -94,7 +116,14 @@ def read_data(model_domain):
         df = combined_df
         
     else:
-        fname = train_path(model_domain)
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+           
         df = pd.read_csv(fname, encoding = "UTF-8")
     
     # Handle na strings
@@ -518,4 +547,20 @@ from n100_Attacker import *
 # model_domain = "EN_MARR_CERT"
 
 # df, key = read_data(model_domain)
+
+
+# %% Load_val
+# Simple loader for validation data
+
+def Load_val(model_domain, sample_size=6):
+    df, key = read_data(model_domain)
+    
+    df_bin = labels_to_bin(df, max(df.code1)+1)
+    
+    df = subset_to_smaller(df, sample_size=sample_size)
+    
+    return df, df_bin
+
+x = Load_val("Multilingual")
+
 

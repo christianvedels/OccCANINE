@@ -237,7 +237,7 @@ def trainer_loop(
 # %%
 def get_predictions(model, data_loader, device):
     
-    breakpoint()
+    # breakpoint()
     model = model.eval()
 
     occ1 = []
