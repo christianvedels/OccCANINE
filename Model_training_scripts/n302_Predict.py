@@ -41,8 +41,6 @@ if MODEL_DOMAIN == "Multilingual":
 else: 
     MODEL_NAME = f'BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
-BATCH_SIZE = 2 # Actual batch size used other than the name
-
 key0 = pd.read_csv("../Data/Key.csv")
 
 #%% Device
@@ -60,6 +58,11 @@ data = Load_data(
     insert_words = INSERT_WORDS,
     batch_size = BATCH_SIZE,
     verbose = False
+    )
+
+data_val = Load_val(
+    model_domain = MODEL_DOMAIN,
+    sample_size = SAMPLE_SIZE
     )
 
 # # # Sanity check
@@ -108,44 +111,76 @@ model_best.eval()
 
 # %% Get model prediction
 def get_predictions(inputs):
-    # Get model's prediction for the attacked example
+    predicted_labels = []
+    BATCH_SIZE0 = BATCH_SIZE*16
     
-    input_ids = inputs['input_ids']
-    attention_mask = inputs["attention_mask"]
-    
-    with torch.no_grad():
-        logits = model_best(input_ids, attention_mask)
-    predicted_probs = torch.sigmoid(logits)
-    threshold = 0.5  # You can adjust this threshold based on your use case
-    predicted_labels = [key[i] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
+    total_batches = (len(inputs) + BATCH_SIZE0 - 1) // BATCH_SIZE0  # Calculate the total number of batches
+
+    for batch_num, i in enumerate(range(0, len(inputs), BATCH_SIZE0), 1):
+        batch_inputs = inputs[i:i + BATCH_SIZE0]
+
+        # Tokenize the batch of inputs
+        batch_tokenized = tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
+
+        batch_input_ids = batch_tokenized['input_ids']
+        batch_attention_mask = batch_tokenized['attention_mask']
+
+        with torch.no_grad():
+            batch_logits = model_best(batch_input_ids, batch_attention_mask)
+
+        batch_predicted_probs = torch.sigmoid(batch_logits)
+        threshold = 0.5  # You can adjust this threshold based on your use case
+
+        for probs in batch_predicted_probs:
+            labels = [key[i] for i, prob in enumerate(probs) if prob > threshold]
+            predicted_labels.append(labels)
+
+        if batch_num % 5 == 0:
+            print(f"Processed batch {batch_num} out of {total_batches} batches")
+
     return predicted_labels
 
     
 # %% Run it
-
-
-
-examples = [Concat_string(x, "unk") for x in examples]
-
-inputs = examples[0]
-
-inputs = tokenizer(inputs, return_tensors='pt', padding=True, truncation=True)
-
-input_ids = inputs['input_ids']
-attention_mask = inputs["attention_mask"]
-
 key = data['key']
- 
-with torch.no_grad():
-    logits = model_best(input_ids, attention_mask)
-predicted_probs = torch.sigmoid(logits)
-threshold = 0.5  # You can adjust this threshold based on your use case
-predicted_labels = [key[i] for i, prob in enumerate(predicted_probs[0]) if prob > threshold]
-print(predicted_labels)
+x0 = get_predictions(
+    inputs=data_val[0]['concat_string0'].tolist()
+    )
 
-attacker = AttackerClass(df)
+x1 = get_predictions(
+    inputs=data_val[0]['concat_string1'].tolist()
+    )
 
-Attention_Viz(Concat_string('no longer active but used to be a blacksmith', "en"))
- 
-Attention_Viz2(Concat_string('no longer active but used to be a blacksmith', "en"))
-Attention_Viz2(examples[4])
+
+# %% Convert to df
+def convert_to_df(code_list, ID = 0):
+    for i, code_element in enumerate(code_list):
+        code_list[i] = code_element + [''] * (5 - len(code_element))
+
+    # Create a DataFrame
+    df = pd.DataFrame(
+        code_list, 
+        columns=[f'hisco_pred1_{ID}', f'hisco_pred2_{ID}', f'hisco_pred3_{ID}', f'hisco_pred4_{ID}', f'hisco_pred5_{ID}']
+        )
+    
+    return df
+
+df0 = convert_to_df(x0, 0)
+df1 = convert_to_df(x1, 1)
+# Reset the index of the original DataFrames
+df0 = df0.reset_index(drop=True)
+df1 = df1.reset_index(drop=True)
+
+# Concatenate the DataFrames along the columns
+joined_df = pd.concat([df0, df1], axis=1)
+
+# If df_data also has a multi-column index, reset its index as well
+df_data = data_val[0].reset_index(drop=True)
+
+# Concatenate df_data and joined_df along the columns
+resulting_df = pd.concat([df_data, joined_df], axis=1)
+
+# %% Save
+fname = f'../Data/Predictions/XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}.csv' 
+
+resulting_df.to_csv(fname, index = False)

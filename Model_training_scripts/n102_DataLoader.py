@@ -552,15 +552,19 @@ from n100_Attacker import *
 # %% Load_val
 # Simple loader for validation data
 
-def Load_val(model_domain, sample_size=6):
+def Load_val(model_domain, sample_size):
     df, key = read_data(model_domain)
     
-    df_bin = labels_to_bin(df, max(df.code1)+1)
-    
+    # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)
     
+    df['concat_string0'] = [Concat_string(occ1, lang) for occ1, lang in zip(df['occ1'].tolist(), df['lang'].tolist())]
+    df['concat_string1'] = [Concat_string(occ1, 'unk') for occ1 in df['occ1'].tolist()]
+    
+    # Make binary output matrix
+    df_bin = labels_to_bin(df, max(df.code1)+1)
+        
     return df, df_bin
 
-x = Load_val("Multilingual")
 
 
