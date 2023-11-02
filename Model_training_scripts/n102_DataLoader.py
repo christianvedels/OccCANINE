@@ -553,7 +553,7 @@ from n100_Attacker import *
 # Simple loader for validation data
 
 def Load_val(model_domain, sample_size):
-    df, key = read_data(model_domain)
+    df, key = read_data(model_domain, data_type = "Validation")
     
     # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)
@@ -564,7 +564,7 @@ def Load_val(model_domain, sample_size):
     # Make binary output matrix
     df_bin = labels_to_bin(df, max(df.code1)+1)
         
-    return df, df_bin
+    return key, df, df_bin
 
 
 
