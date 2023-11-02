@@ -45,29 +45,14 @@ key0 = pd.read_csv("../Data/Key.csv")
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device = "cpu"
+# device = "cpu"
 
 # %% Load data + tokenizer
-data = Load_data(
-    model_domain = MODEL_DOMAIN,
-    downsample_top1 = True,
-    upsample_below = UPSAMPLE_MINIMUM,
-    sample_size = SAMPLE_SIZE,
-    max_len = MAX_LEN,
-    alt_prob = ALT_PROB,
-    insert_words = INSERT_WORDS,
-    batch_size = BATCH_SIZE,
-    verbose = False
-    )
 
-data_val = Load_val(
+key, df, df_bin = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = SAMPLE_SIZE
+    sample_size = 5 # SAMPLE_SIZE
     )
-
-# # # Sanity check
-# for d in data['data_loader_train_attack']: 
-#     print(d['occ1'][0][0])
 
 # %% Load tokenizer
 tokenizer_save_path = '../Trained_models/' + MODEL_NAME + '_tokenizer'
@@ -88,14 +73,14 @@ loaded_state = torch.load(model_path)
 
 if MODEL_DOMAIN == "Multilingual":
     model_best = XMLRoBERTaOccupationClassifier(
-        n_classes = data['N_CLASSES'], 
+        n_classes = len(key), 
         model_domain = MODEL_DOMAIN, 
         tokenizer = tokenizer, 
         dropout_rate = DROPOUT_RATE
         )
 else:
     model_best = BERTOccupationClassifier(
-        n_classes = data['N_CLASSES'], 
+        n_classes = len(key), 
         model_domain = MODEL_DOMAIN, 
         tokenizer = tokenizer, 
         dropout_rate = DROPOUT_RATE
@@ -112,7 +97,7 @@ model_best.eval()
 # %% Get model prediction
 def get_predictions(inputs):
     predicted_labels = []
-    BATCH_SIZE0 = BATCH_SIZE*16
+    BATCH_SIZE0 = BATCH_SIZE*16 # Prediction can handle larger batch size
     
     total_batches = (len(inputs) + BATCH_SIZE0 - 1) // BATCH_SIZE0  # Calculate the total number of batches
 
@@ -122,33 +107,32 @@ def get_predictions(inputs):
         # Tokenize the batch of inputs
         batch_tokenized = tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
 
-        batch_input_ids = batch_tokenized['input_ids']
-        batch_attention_mask = batch_tokenized['attention_mask']
+        batch_input_ids = batch_tokenized['input_ids'].to(device)
+        batch_attention_mask = batch_tokenized['attention_mask'].to(device)
 
         with torch.no_grad():
             batch_logits = model_best(batch_input_ids, batch_attention_mask)
-
-        batch_predicted_probs = torch.sigmoid(batch_logits)
+            
+        batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
         threshold = 0.5  # You can adjust this threshold based on your use case
 
         for probs in batch_predicted_probs:
             labels = [key[i] for i, prob in enumerate(probs) if prob > threshold]
             predicted_labels.append(labels)
 
-        if batch_num % 5 == 0:
+        if batch_num % 1 == 0:
             print(f"Processed batch {batch_num} out of {total_batches} batches")
 
     return predicted_labels
 
     
 # %% Run it
-key = data['key']
 x0 = get_predictions(
-    inputs=data_val[0]['concat_string0'].tolist()
+    inputs=df['concat_string0'].tolist()
     )
 
 x1 = get_predictions(
-    inputs=data_val[0]['concat_string1'].tolist()
+    inputs=df['concat_string1'].tolist()
     )
 
 
