@@ -248,9 +248,9 @@ def tnseit(x, the_type = "no_lang"):
     plt.show()
     
 tnseit(x0, "with_lang")
-tnseit(x1, "no_lang")
+# tnseit(x1, "no_lang")
 tnseit(x0_raw, "with_lang_raw")
-tnseit(x1_raw, "no_lang_raw")
+# tnseit(x1_raw, "no_lang_raw")
     
 
 
