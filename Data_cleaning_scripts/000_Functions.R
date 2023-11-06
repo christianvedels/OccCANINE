@@ -167,7 +167,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }

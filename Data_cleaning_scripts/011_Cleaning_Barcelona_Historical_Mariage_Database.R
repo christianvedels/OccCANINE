@@ -128,6 +128,23 @@ data1 = data0 %>%
 data1 = data1 %>% 
   drop_na(occ1)
 
+# Fix no occ
+funky = function(x){
+  ifelse(
+    x %in% c(-101:(-106)),
+    -1,
+    x
+  )
+}
+data1 = data1 %>% 
+  mutate(
+    hisco_1 = funky(hisco_1),
+    hisco_2 = funky(hisco_2),
+    hisco_3 = funky(hisco_3),
+    hisco_4 = funky(hisco_4),
+    hisco_5 = funky(hisco_5)
+  )
+
 # ==== Check against authoritative HISCO list ====
 load("Data/Key.Rdata")
 
@@ -145,7 +162,7 @@ data1 = data1 %>%
   filter(hisco_4 %in% key$hisco) %>% 
   filter(hisco_5 %in% key$hisco)
 
-NROW(data1) - n1 # 98 observations
+NROW(data1) - n1 # 21405 observations
 
 # Turn into character
 data1 = data1 %>% 
@@ -180,4 +197,4 @@ data1 = data1 %>%
   mutate(RowID = 1:n())
 
 # ==== Save ====
-save(data1, file = "Data/Tmp_data/.Rdata")
+save(data1, file = "Data/Tmp_data/Clean_CA_BCN.Rdata")

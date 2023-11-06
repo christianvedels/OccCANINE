@@ -23,7 +23,7 @@ source("Data_cleaning_scripts/000_Functions.R")
 # EN_marr   = loadRData("Data/Tmp_data/Clean_EN_marr_cert.Rdata")
 # EN_parish = loadRData("Data/Tmp_data/Clean_EN_parish_records.Rdata")
 # EN_loc    = loadRData("Data/Tmp_data/Clean_LOC_EN.Rdata")
-EN_oclack = loadRData("Data/Tmp_data/Clean_O_CLACK.Rdata")
+# EN_oclack = loadRData("Data/Tmp_data/Clean_O_CLACK.Rdata")
 # 
 # # Dutch data
 # HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
@@ -32,6 +32,12 @@ EN_oclack = loadRData("Data/Tmp_data/Clean_O_CLACK.Rdata")
 # SE_chalmers = loadRData("Data/Tmp_data/Clean_SE_chalmers.Rdata")
 # SE_cedar = loadRData("Data/Tmp_data/Clean_CEDAR_SE.Rdata")
 # SE_swedpop = loadRData("Data/Tmp_data/Clean_SWEDPOP_SE.Rdata")
+# 
+# # French data
+# FR_desc = loadRData("Data/Tmp_data/Clean_French_desc.Rdata")
+# 
+# Catalan
+CA_BCN = loadRData("Data/Tmp_data/Clean_CA_BCN.Rdata")
 
 
 # Data example for presentation 
@@ -101,13 +107,13 @@ load("Data/Manual_data/Random_sequence.Rdata")
 #   Validate_split() %>%
 #   Keep_only_relevant()
 # 
-set.seed(20)
-EN_oclack = EN_oclack %>%
-  # Reshuffle
-  sample_frac(1) %>%
-  mutate(split = train_test_split[1:n()]) %>%
-  Validate_split() %>%
-  Keep_only_relevant()
+# set.seed(20)
+# EN_oclack = EN_oclack %>%
+#   # Reshuffle
+#   sample_frac(1) %>%
+#   mutate(split = train_test_split[1:n()]) %>%
+#   Validate_split() %>%
+#   Keep_only_relevant()
 # 
 # # Dutch data
 # set.seed(20)
@@ -139,6 +145,24 @@ EN_oclack = EN_oclack %>%
 #   mutate(split = train_test_split[1:n()]) %>% 
 #   Validate_split() %>% 
 #   Keep_only_relevant()
+#
+# # French data
+# set.seed(20)
+# FR_desc = FR_desc %>%
+#   # Reshuffle
+#   sample_frac(1) %>%
+#   mutate(split = train_test_split[1:n()]) %>%
+#   Validate_split() %>%
+#   Keep_only_relevant()
+# 
+# # Catalan data
+set.seed(20)
+CA_BCN = CA_BCN %>%
+  # Reshuffle
+  sample_frac(1) %>%
+  mutate(split = train_test_split[1:n()]) %>%
+  Validate_split() %>%
+  Keep_only_relevant()
 
 # ==== Save data ====
 # # Danish data
@@ -158,8 +182,8 @@ EN_oclack = EN_oclack %>%
 #   Save_train_val_test("EN_parish", "en")
 # EN_loc %>%
 #   Save_train_val_test("EN_loc", "en")
-EN_oclack %>%
-  Save_train_val_test("EN_oclack", "en")
+# EN_oclack %>%
+#   Save_train_val_test("EN_oclack", "en")
 # 
 # # Dutch data
 # HSN_data %>% 
@@ -174,6 +198,14 @@ EN_oclack %>%
 # 
 # SE_swedpop %>%
 #   Save_train_val_test("SE_swedpop", "se")
+# 
+# # French data
+# FR_desc %>%
+#   Save_train_val_test("FR_desc", "fr")
+# 
+# Catalan data
+CA_BCN %>%
+  Save_train_val_test("CA_bcn", "ca")
 
 # ==== Training data stats ====
 # # Total training data
@@ -187,4 +219,14 @@ EN_oclack %>%
 #   sum()
 # 
 # cat("\nTotal training data", total/10^6, "mil. observations")
-  
+# 
+fs = list.files("Data/Training_data", pattern = ".csv", full.names = TRUE)
+fs0 = list.files("Data/Training_data", pattern = ".csv")
+x = foreach(f = fs, .combine = "bind_rows") %do% {
+  x = read_csv(f) %>% NROW()
+  data.frame(n = x)
+} %>% mutate(f = fs0)
+bigN = x$n %>% sum()
+cat(round(bigN/1000000,3), "million observations in training data")
+
+x %>% arrange(n)
