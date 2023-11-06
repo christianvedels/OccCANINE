@@ -51,7 +51,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 key, df, df_bin = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = 5 # SAMPLE_SIZE
+    sample_size = 5, # SAMPLE_SIZE
+    toyload = False
     )
 
 # %% Load tokenizer

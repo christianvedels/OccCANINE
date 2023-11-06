@@ -20,7 +20,8 @@ sub_scandi = function(x){
                      "ö",
                      "Ö",
                      "ä",
-                     "Ä")
+                     "Ä",
+                     "ñ")
   
   replacement = c("Ae",
                   "ae",
@@ -31,7 +32,8 @@ sub_scandi = function(x){
                   "oe",
                   "Oe",
                   "ae",
-                  "Ae"
+                  "Ae",
+                  "n"
   )
   
   for(i in 1:length(scandi_letters)){
@@ -235,4 +237,34 @@ upsample = function(x, n, verbose = FALSE){
   }
   
   return(x)
+}
+
+# ==== Concat_strings_lang ====
+Concat_strings_lang = function(x, and = "och"){
+  if(length(na.omit(x))<=1){
+    return(x[1])
+  }
+  
+  for(i in seq(length(x))){
+    if(is.na(x[i])){
+      break
+    }
+    if(i==1){
+      res = x[i]
+    } else {
+      res = paste0(res, " ", and, " ", x[i])
+    }
+  }
+  
+  if(length(res)!=1){
+    print(x)
+    stop("Too long")
+  }
+  
+  return(res)
+}
+
+# ==== NA_str ====
+NA_str = function(x){
+  ifelse(is.na(x), " ", as.character(x))
 }

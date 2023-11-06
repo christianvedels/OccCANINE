@@ -83,7 +83,7 @@ def check_csv_column_consistency(folder_path):
 # check_csv_column_consistency(train_path(model_domain))
 
 #%% Read_data
-def read_data(model_domain, data_type = "Train"):
+def read_data(model_domain, data_type = "Train", toyload = False):
     # breakpoint()
     if(model_domain == "Multilingual"):
         
@@ -108,8 +108,12 @@ def read_data(model_domain, data_type = "Train"):
         for file in fnames:
             if file.endswith(".csv"):  # Make sure the file is a CSV file
                 file_path = os.path.join(fname, file)  # Replace with the actual path to your folder
-                df = pd.read_csv(file_path)
-                # df = pd.read_csv(file_path, nrows = 100)
+                
+                if toyload:
+                    df = pd.read_csv(file_path, nrows = 100)
+                else: 
+                    df = pd.read_csv(file_path)
+        
                 combined_df = pd.concat([combined_df, df])
                 print("\nRead "+file)
                 
@@ -124,7 +128,10 @@ def read_data(model_domain, data_type = "Train"):
         else:
            raise Exception("data_type not implemented yet")
            
-        df = pd.read_csv(fname, encoding = "UTF-8")
+        if toyload:
+            df = pd.read_csv(file_path, nrows = 100)
+        else: 
+            df = pd.read_csv(file_path)
     
     # Handle na strings
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
@@ -486,7 +493,9 @@ def Load_data(
         alt_prob = 0.1,
         insert_words = True,
         batch_size = 16,
-        verbose = False
+        verbose = False,
+        toyload = False,
+        tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
         ):
     
     # Load data
@@ -499,9 +508,10 @@ def Load_data(
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
 
-    # Load tokenizer
-    tokenizer = load_tokenizer(model_domain)
-    tokenizer = update_tokenizer(tokenizer, df)
+    # Load tokenizer (if non is provided)
+    if tokenizer == "No tokenizer":
+        tokenizer = load_tokenizer(model_domain)
+        tokenizer = update_tokenizer(tokenizer, df)
 
     # Calculate number of classes
     N_CLASSES = len(key)
@@ -552,8 +562,8 @@ from n100_Attacker import *
 # %% Load_val
 # Simple loader for validation data
 
-def Load_val(model_domain, sample_size):
-    df, key = read_data(model_domain, data_type = "Validation")
+def Load_val(model_domain, sample_size, toyload = False):
+    df, key = read_data(model_domain, data_type = "Validation", toyload = toyload)
     
     # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)

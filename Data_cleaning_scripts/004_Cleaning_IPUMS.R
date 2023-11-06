@@ -19,14 +19,34 @@ library(fst)
 
 # # ==== Load data ====
 if(file.exists("Data/Tmp_data/IPUMS_tmp")){ # Read uncompressed if it exists
-  all_data = read_fst("Data/tmp_census.fst") 
+  all_data = read_fst("Data/Tmp_data/IPUMS_tmp") 
 } else {
   ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
   all_data = read_ipums_micro(ddi)
+  
+  # Fix weird labels
+  fixIt = function(x){
+    x = as_factor(x)
+    x = as.character(x)
+  }
+  
+  tmp_key = ipums_val_labels(all_data$OCCHISCO)
+  
+  all_data = all_data %>% 
+    mutate(
+      COUNTRY = fixIt(COUNTRY),
+      SAMPLE = fixIt(SAMPLE),
+      MARST = fixIt(MARST),
+      MARSTD = fixIt(MARSTD),
+      OCCHISCO = fixIt(OCCHISCO)
+    ) %>% 
+    left_join(tmp_key, by = c("OCCHISCO"="lbl")) %>% 
+    rename(HISCO = val)
+  
   write_fst(all_data, "Data/Tmp_data/IPUMS_tmp", compress = 0) 
 }
 
-
+cross_walk = read_csv("Data/Raw_data/O-clack/n2h_2.csv")
 
 # Toy data in script development
 set.seed(20)
@@ -37,25 +57,6 @@ all_data %>%
   count() %>% 
   ungroup() %>% 
   mutate(pct = n/sum(n))
-
-# Fix weird labels
-fixIt = function(x){
-  x = as_factor(x)
-  x = as.character(x)
-}
-
-tmp_key = ipums_val_labels(all_data$OCCHISCO)
-
-all_data = all_data %>% 
-  mutate(
-    COUNTRY = fixIt(COUNTRY),
-    SAMPLE = fixIt(SAMPLE),
-    MARST = fixIt(MARST),
-    MARSTD = fixIt(MARSTD),
-    OCCHISCO = fixIt(OCCHISCO)
-  ) %>% 
-  left_join(tmp_key, by = c("OCCHISCO"="lbl")) %>% 
-  rename(HISCO = val)
 
 # ==== List countries ====
 all_data$COUNTRY %>% unique() %>% sort()

@@ -8,6 +8,14 @@
 ### Large files
 'Raw_data', 'Test_data' and 'Training_data' are each too large to redistribute via github. Each of these directories contains a text-file 'DROPBOX.txt' with a dropbox link to where the file can be downloaded.
 
+## Data cleaning
+Data cleaning scripts are found in 'Data_cleaning_scripts'. Everything runs in numeric order the scripts name.
+
+- '000_Function.R' contains functions shared across all data cleaning.  
+- '001_Assets_for_cleaning.R' generates assets for data cleaning to avoid miscelaneous difference in key features. E.g. the encoding of hisco to 1 to N encoding.  
+- '00[x]_...R' when x>1 cleans individual data sources. Each of these save one file 'Clean_....Rdata' containing cleaned data to use in the final following step.  
+- '101_Train_test_val_split.R' makes everything consistent and save training, validation and test data
+
 
 ### Structure of training data
 | Variable              | Description                                                                                              |
@@ -29,6 +37,12 @@ a $\in$ {train, test, val}
 
 
 ## Updates
+
+### 2023-11-06
+- Added evaluation scripts
+- Added several more languages 
+- Added retrain scripts
+- Added embedding visualisation 
 
 ### 2023-10-11
 - Started writing evaluation scripts. They don't work yet.
