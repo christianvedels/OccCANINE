@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 """
+Created on Sun Nov  5 21:20:40 2023
+
+This script retrains the model with e.g. additional data
+
+@author: chris
+"""
+# -*- coding: utf-8 -*-
+"""
 Train XML Roberta
 """
 import os
@@ -9,14 +17,11 @@ os.chdir(script_directory)
 #%% Hyperparameters
 
 # Which training data is used for the model
-# MODEL_DOMAIN = "HSN_DATABASE"
-# MODEL_DOMAIN = "DK_CENSUS"
-# MODEL_DOMAIN = "EN_MARR_CERT"
 MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 10 # 10 to the power of this is used for training
-EPOCHS = 50
+SAMPLE_SIZE = 6 # 10 to the power of this is used for training
+EPOCHS = 500
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -25,7 +30,13 @@ INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 64 # Number of tokens to use
 
-MODEL_NAME = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+import datetime
+current_date = datetime.datetime.now().strftime("%y%m%d")
+if MODEL_DOMAIN == "Multilingual":
+    MODEL_NAME_start = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+    MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+else: 
+    MODEL_NAME = f'{current_date}_BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 #%% Libraries
 # Import necessary libraries
@@ -34,6 +45,7 @@ import pandas as pd
 import torch
 from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import classification_report
+from transformers import AutoTokenizer
 
 #%% Load modules
 from n001_Model_assets import *
@@ -43,6 +55,16 @@ from n102_DataLoader import *
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# %% Load tokenizer
+tokenizer_save_path = '../Trained_models/' + MODEL_NAME_start + '_tokenizer'
+tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
+
+# Temp code 
+# tokenizer = data['tokenizer']
+test = "This is a sentence"
+
+tokenizer(test)
 
 # %% Load data + tokenizer
 data = Load_data(
@@ -54,22 +76,27 @@ data = Load_data(
     alt_prob = ALT_PROB,
     insert_words = INSERT_WORDS,
     batch_size = BATCH_SIZE,
-    verbose = False
+    verbose = False,
+    # toyload=True,
+    tokenizer=tokenizer
     )
 
-# Sanity check
-# for d in data['data_loader_train_attack']: 
-#     print(d['occ1'][0])
-    
-# data['reference_loss']
+# %% Load best model instance
+# Define the path to the saved binary file
+model_path = '../Trained_models/'+MODEL_NAME_start+'.bin'
 
-# %% Load model
+# Load the model
+loaded_state = torch.load(model_path)
+
 model = XMLRoBERTaOccupationClassifier(
-    model_domain = MODEL_DOMAIN,
-    n_classes = data['N_CLASSES'], 
-    tokenizer = data['tokenizer'], 
+    n_classes = len(data['key']), 
+    model_domain = MODEL_DOMAIN, 
+    tokenizer = tokenizer, 
     dropout_rate = DROPOUT_RATE
     )
+    
+model.load_state_dict(loaded_state)
+
 model.to(device)
 
 #%% Optimizer and learning scheduler
@@ -120,6 +147,7 @@ model = trainer_loop(
 # report = classification_report(y_test, y_pred, output_dict=True)
 
 # print_report(report, MODEL_NAME)
+
 
 
 

@@ -33,6 +33,20 @@ def train_path(model_domain):
         
     return fname
 
+def val_path(model_domain):
+    if(model_domain == "DK_CENSUS"):
+        fname = "../Data/Validation_data/DK_census_val.csv"
+    elif(model_domain == "EN_MARR_CERT"):
+        fname = "../Data/Validation_data/EN_marr_cert_val.csv" 
+    elif(model_domain == "HSN_DATABASE"):
+        fname = "../Data/Validation_data/HSN_database_val.csv"
+    elif(model_domain == "Multilingual"):
+        fname = "../Data/Validation_data"
+    else:
+        raise Exception("This is not implemented yet")
+        
+    return fname
+
 #%% check_csv_column_consistency
 def check_csv_column_consistency(folder_path):
     # Get a list of CSV files in the specified folder
@@ -69,10 +83,18 @@ def check_csv_column_consistency(folder_path):
 # check_csv_column_consistency(train_path(model_domain))
 
 #%% Read_data
-def read_data(model_domain):
+def read_data(model_domain, data_type = "Train", toyload = False):
     # breakpoint()
     if(model_domain == "Multilingual"):
-        fname = train_path(model_domain)
+        
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+        
         fnames = os.listdir(fname)
         
         # Check that all csv's have the same columns
@@ -86,16 +108,30 @@ def read_data(model_domain):
         for file in fnames:
             if file.endswith(".csv"):  # Make sure the file is a CSV file
                 file_path = os.path.join(fname, file)  # Replace with the actual path to your folder
-                df = pd.read_csv(file_path)
-                # df = pd.read_csv(file_path, nrows = 100)
+                
+                if toyload:
+                    df = pd.read_csv(file_path, nrows = 100)
+                else: 
+                    df = pd.read_csv(file_path)
+        
                 combined_df = pd.concat([combined_df, df])
                 print("\nRead "+file)
                 
         df = combined_df
         
     else:
-        fname = train_path(model_domain)
-        df = pd.read_csv(fname, encoding = "UTF-8")
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+           
+        if toyload:
+            df = pd.read_csv(file_path, nrows = 100)
+        else: 
+            df = pd.read_csv(file_path)
     
     # Handle na strings
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
@@ -281,6 +317,15 @@ def TrainTestVal(df, verbose = False):
         
     return df_train, df_val, df_test
 
+# %% Concat_string
+# Makes one string with language and then occupational description
+def Concat_string(occ1, lang):
+    occ1 = str(occ1).strip("'[]'")
+    # Implement random change to lang 'unknown' here:
+    cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+    
+    return(cat_sequence)
+
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
@@ -331,7 +376,7 @@ class OCCDataset(Dataset):
         
         occ1 = str(occ1).strip("'[]'")
         # Implement random change to lang 'unknown' here:
-        cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+        cat_sequence = Concat_string(occ1, lang)
         
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(
@@ -448,7 +493,9 @@ def Load_data(
         alt_prob = 0.1,
         insert_words = True,
         batch_size = 16,
-        verbose = False
+        verbose = False,
+        toyload = False,
+        tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
         ):
     
     # Load data
@@ -461,9 +508,10 @@ def Load_data(
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
 
-    # Load tokenizer
-    tokenizer = load_tokenizer(model_domain)
-    tokenizer = update_tokenizer(tokenizer, df)
+    # Load tokenizer (if non is provided)
+    if tokenizer == "No tokenizer":
+        tokenizer = load_tokenizer(model_domain)
+        tokenizer = update_tokenizer(tokenizer, df)
 
     # Calculate number of classes
     N_CLASSES = len(key)
@@ -509,4 +557,24 @@ from n100_Attacker import *
 # model_domain = "EN_MARR_CERT"
 
 # df, key = read_data(model_domain)
+
+
+# %% Load_val
+# Simple loader for validation data
+
+def Load_val(model_domain, sample_size, toyload = False):
+    df, key = read_data(model_domain, data_type = "Validation", toyload = toyload)
+    
+    # Subset to smaller
+    df = subset_to_smaller(df, sample_size=sample_size)
+    
+    df['concat_string0'] = [Concat_string(occ1, lang) for occ1, lang in zip(df['occ1'].tolist(), df['lang'].tolist())]
+    df['concat_string1'] = [Concat_string(occ1, 'unk') for occ1 in df['occ1'].tolist()]
+    
+    # Make binary output matrix
+    df_bin = labels_to_bin(df, max(df.code1)+1)
+        
+    return key, df, df_bin
+
+
 

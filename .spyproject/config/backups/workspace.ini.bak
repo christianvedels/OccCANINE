@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['Model_training_scripts\\n101_Trainer.py', 'Model_training_scripts\\n001_Model_assets.py', 'Model_training_scripts\\n102_DataLoader.py', 'Model_training_scripts\\n202_TrainXML_RoBERTa.py', 'Model_training_scripts\\n100_Attacker.py', 'Model_training_scripts\\n201_TrainBERT.py']
+recent_files = ['Model_training_scripts\\n302_Predict.py']
 
 [main]
 version = 0.2.0
