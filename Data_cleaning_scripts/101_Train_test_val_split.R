@@ -11,17 +11,18 @@
 # ==== Libraries ====
 library(tidyverse)
 source("Data_cleaning_scripts/000_Functions.R")
+library(foreach)
 
 # ==== Train test val split (run once ever) ====
 # This following is done to make sure that train/test/val split is entirely reproducible
 # Generate common long vector of samples train, val, test
-# space = c(rep("Train",7), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
+# space = c(rep("Train",17), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
 # set.seed(20)
 # train_test_split = sample(space, 10^7, replace = TRUE)
 # save(train_test_split, file = "Data/Manual_data/Random_sequence.Rdata")
 # load("Data/Manual_data/Random_sequence.Rdata")
 # # Add more random draws (the first was not enough)
-# space = c(rep("Train",7), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
+# space = c(rep("Train",17), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
 # set.seed(20)
 # train_test_split1 = sample(space, 10^8, replace = TRUE)
 # train_test_split = c(train_test_split, train_test_split1)
@@ -39,6 +40,14 @@ pipeline = function(x, name, lang){
   
   cat("\nLoading", x)
   x = loadRData(x)
+  
+  if(name %in% c("EN_uk_ipums", "EN_us_ipums")){
+    # These are downsampled to not dominate training
+    x = x %>% 
+      select(-RowID) %>% 
+      distinct() %>% 
+      mutate(RowID = 1:n())
+  }
   
   load("Data/Manual_data/Random_sequence_long.Rdata")
   set.seed(20)
@@ -207,11 +216,17 @@ x = foreach(f = fs, .combine = "bind_rows") %do% {
   x = read_csv(f) %>% NROW()
   data.frame(n = x)
 } %>% mutate(f = fs0)
-bigN = x$n %>% sum()
-cat(round(bigN/1000000,3), "million observations in training data")
 
-x %>% 
+
+x = x %>% 
   arrange(n) %>% 
   mutate(
-    all_n = round(n * 1/0.7)
-  )
+    all_n = round(n * 1/0.85)
+  ) %>% 
+  mutate(pct = round(100*n/sum(n), 3)) %>% 
+  mutate(holdout = all_n - n)
+
+bign = x$n %>% sum()
+bigN = x$all_n %>% sum()
+cat(round(bign/1000000,3), "mil. training observations of", round(bigN/1000000,3), "mil. in total")
+print(x)
