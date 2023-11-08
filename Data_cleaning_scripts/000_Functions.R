@@ -11,6 +11,10 @@
 # x: Character to clean
 
 sub_scandi = function(x){
+  x = stri_trans_general(x, "Latin-ASCII")
+  return(x)
+  
+  # Legacy code
   scandi_letters = c("Æ",
                      "æ",
                      "Ø",
@@ -21,7 +25,16 @@ sub_scandi = function(x){
                      "Ö",
                      "ä",
                      "Ä",
-                     "ñ")
+                     "ñ",
+                     "Ó",
+                     "ó",
+                     "ð",
+                     "þ",
+                     "ü",
+                     "á",
+                     "í",
+                     "û",
+                     "ú")
   
   replacement = c("Ae",
                   "ae",
@@ -33,7 +46,17 @@ sub_scandi = function(x){
                   "Oe",
                   "ae",
                   "Ae",
-                  "n"
+                  "n",
+                  "O",
+                  "o",
+                  "th",
+                  "th",
+                  "y",
+                  "a",
+                  "i",
+                  "u",
+                  "u"
+                  
   )
   
   for(i in 1:length(scandi_letters)){
@@ -167,7 +190,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -267,4 +290,10 @@ Concat_strings_lang = function(x, and = "och"){
 # ==== NA_str ====
 NA_str = function(x){
   ifelse(is.na(x), " ", as.character(x))
+}
+
+# ==== translate ====
+# Translates with a key
+translate = function(x, key){
+  x
 }

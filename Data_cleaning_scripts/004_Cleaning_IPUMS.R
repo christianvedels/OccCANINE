@@ -18,249 +18,256 @@ library(ipumsr)
 library(fst)
 
 # # ==== Load data ====
-if(file.exists("Data/Tmp_data/IPUMS_tmp")){ # Read uncompressed if it exists
-  all_data = read_fst("Data/Tmp_data/IPUMS_tmp") 
-} else {
-  ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
-  all_data = read_ipums_micro(ddi)
-  
-  # Fix weird labels
-  fixIt = function(x){
-    x = as_factor(x)
-    x = as.character(x)
-  }
-  
-  tmp_key = ipums_val_labels(all_data$OCCHISCO)
-  
-  all_data = all_data %>% 
-    mutate(
-      COUNTRY = fixIt(COUNTRY),
-      SAMPLE = fixIt(SAMPLE),
-      MARST = fixIt(MARST),
-      MARSTD = fixIt(MARSTD),
-      OCCHISCO = fixIt(OCCHISCO)
-    ) %>% 
-    left_join(tmp_key, by = c("OCCHISCO"="lbl")) %>% 
-    rename(HISCO = val)
-  
-  write_fst(all_data, "Data/Tmp_data/IPUMS_tmp", compress = 0) 
+ddi = read_ipums_ddi("Data/Raw_data/IPUMS/ipumsi_00002.xml")
+all_data = read_ipums_micro(ddi)
+
+# Fix weird labels
+fixIt = function(x){
+  x = as_factor(x)
+  x = as.character(x)
 }
 
+tmp_key = ipums_val_labels(all_data$OCCHISCO)
+
+all_data = all_data %>%
+  mutate(
+    COUNTRY = fixIt(COUNTRY),
+    SAMPLE = fixIt(SAMPLE),
+    MARST = fixIt(MARST),
+    MARSTD = fixIt(MARSTD),
+    OCCHISCO = fixIt(OCCHISCO)
+  ) %>%
+  left_join(tmp_key, by = c("OCCHISCO"="lbl")) %>%
+  rename(HISCO = val)
+
+# # Toy data in script development
+# set.seed(20)
+# all_data = all_data %>% sample_n(10^6)
+# write_fst(all_data, "Data/Tmp_data/IPUMS_tmp_small", compress = 0)
+# all_data = read_fst("Data/Tmp_data/IPUMS_tmp_small") 
+# 
+# all_data %>% 
+#   group_by(COUNTRY) %>% 
+#   count() %>% 
+#   ungroup() %>% 
+#   mutate(pct = n/sum(n))
+
+# Key
 cross_walk = read_csv("Data/Raw_data/O-clack/n2h_2.csv")
+key = cross_walk %>%
+  # Remove anything with a note
+  filter(is.na(comments)) %>% 
+  filter(napp.eq.hisco == 1)
 
-# Toy data in script development
-set.seed(20)
-all_data = all_data %>% sample_n(10^6)
 
-all_data %>% 
-  group_by(COUNTRY) %>% 
-  count() %>% 
-  ungroup() %>% 
-  mutate(pct = n/sum(n))
+key0 = read_csv("Data/Key.csv")
 
-# ==== List countries ====
+# ==== Extracting counties ====
 all_data$COUNTRY %>% unique() %>% sort()
 # "Canada"         "Denmark"        "Egypt"          "France"         "Germany"        "Iceland"        "Ireland"        "Netherlands"
 # "Norway"         "Sweden"         "United Kingdom" "United States"
 
-
-all_data = all_data %>% 
-  filter(COUNTRY != "Denmark") %>% # We already have higher quality DK data
-  filter(COUNTRY != "Egypt") %>% # No raw occupational descriptions in this data
-  filter(COUNTRY != "France") %>% # No raw occupational descriptions in this data
-  filter(COUNTRY != "Ireland") %>% # No raw occupational descriptions in this data
-  filter(COUNTRY != "Netherlands") %>% # No raw occupational descriptions in this data
-  ungroup()
-
 # Canada:
-# Contains both French and English
-# Problem with BBBBBBBB in Icelandic data
-# Norway is missing household position variable, where a lot of information is
+CNT = "Canada"
+canada = all_data %>% 
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
+  mutate(
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
+  )
 
 # Manual look at data
 CNT = "Norway"
-all_data %>% 
-  filter(COUNTRY == CNT) %>% View()
-
-all_data %>% 
-  filter(COUNTRY == CNT) %>% 
-  group_by(OCCSTRNG == "") %>% 
-  count()
-
-# # Fix inconsistency in "no occupation" encoding
-# all_data %>% 
-#   mutate(
-#     HISCO = ifelse(HISCO == 99999, -1, HISCO)
-#   )
-
-
-
-# # # ==== Norway ====
-# Fixing norway
-# stop("Fix Norway")
 norway = all_data %>% 
-  filter(COUNTRY == "Norway")
-
-# Standardizing strings and var names
-NROW(all_data)
-norway = norway %>%
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
   mutate(
-    HISCO = as.character(HISCO)
-  ) %>%
-  mutate( # Clean string:
-    Original = str_replace_all(OCCSTRNG, "[^[:alnum:] ]", "") %>% tolower()
-  ) %>%
-  rename(
-    occ1 = Original,
-    hisco_1 = HISCO
-  ) %>% 
-  filter(occ1 != "") %>% 
-  select(occ1, hisco_1) %>%
-  mutate( # Remove scandi letters
-    occ1 = occ1 %>% sub_scandi()
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
   )
 
-norway = norway %>% as.data.frame()
-
-# NA padding
-norway = norway %>%
+CNT = "Germany"
+germany = all_data %>% 
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
   mutate(
-    hisco_2 = " ",
-    hisco_3 = " ",
-    hisco_4 = " ",
-    hisco_5 = " "
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
   )
 
-# Check against valid list
-load("Data/Key.Rdata")
 
-key = key %>% select(hisco, code)
-
-# Remove data not in key (erronoeous data somehow)
-norway %>% 
-  filter(!hisco_1 %in% key$hisco)
-
-n1 = NROW(norway)
-norway = norway %>% 
-  filter(hisco_1 %in% key$hisco) %>% 
-  filter(hisco_2 %in% key$hisco) %>% 
-  filter(hisco_3 %in% key$hisco) %>% 
-  filter(hisco_4 %in% key$hisco) %>% 
-  filter(hisco_5 %in% key$hisco)
-
-NROW(norway) - n1 # 151 observations
-
-# Change 99999 to -1
-
-norway = norway %>%
+CNT = "Iceland"
+iceland = all_data %>% 
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
   mutate(
-    hisco_1 = ifelse(hisco_1 == 99999, -1, hisco_1)
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
   )
 
-# ==== Some simple descriptive stats ====
-# Word cloud
-library(wordcloud)
-set.seed(20)
-text = sample(all_data$occ1, 10000)
-docs = Corpus(VectorSource(text))
-dtm = TermDocumentMatrix(docs)
-the_mat = as.matrix(dtm)
-words = sort(rowSums(the_mat),decreasing=TRUE)
-df = data.frame(word = names(words), freq = words)
-
-wordcloud(
-  words = df$word,
-  freq = df$freq,
-  min.freq = 1,
-  max.words=200,
-  random.order=FALSE,
-  rot.per=0.35,
-  colors=brewer.pal(8, "Dark2")
-)
-
-# # ==== Encode with key ====
-load("Data/Key.Rdata")
-
-key = key %>% select(hisco, code)
-
-# 00-Pruning categories
-#     Many newly custom categories contained in IPUMS
-#     Some of them can be converted back to standard
-#     or something close to it, by inserting 00 as the
-#     last two digits
-# Find missing
-# missing_hiscos = all_data %>% 
-#   count(hisco_1, OCCHISCO) %>% 
-#   arrange(hisco_1) %>% 
-#   left_join(key, by = c("hisco_1"="hisco")) %>% 
-#   filter(is.na(code)) %>% 
-#   arrange(-n)
-# 
-# missing_hiscos = missing_hiscos %>% 
-#   rowwise() %>% 
-#   mutate(
-#     hisco_replace = sub("\\d{3}$", "000", hisco_1)
-#   ) %>% 
-#   select(hisco_1, hisco_replace)
-# 
-# all_data = all_data %>% 
-#   left_join(missing_hiscos, by = c("hisco_1")) %>% 
-#   mutate(
-#     hisco_1 = ifelse(
-#       !is.na(hisco_replace),
-#       hisco_replace,
-#       hisco_1
-#     )
-#   ) %>% 
-#   select(-hisco_replace)
-
-# Remove data not in key (erronoeous data somehow)
-n1 = NROW(all_data)
-occ_data = all_data %>%
-  filter(hisco_1 %in% key$hisco)
-
-NROW(all_data) - n1 # -72337 of a million
-
-# Add code
-all_data = all_data %>%
-  left_join(
-    key, by = c("hisco_1" = "hisco")
-  ) %>%
-  rename(code1 = code) %>%
-  left_join(
-    key, by = c("hisco_2" = "hisco")
-  ) %>%
-  rename(code2 = code) %>%
-  left_join(
-    key, by = c("hisco_3" = "hisco")
-  ) %>%
-  rename(code3 = code) %>%
-  left_join(
-    key, by = c("hisco_4" = "hisco")
-  ) %>%
-  rename(code4 = code) %>%
-  left_join(
-    key, by = c("hisco_5" = "hisco")
-  ) %>%
-  rename(code5 = code)
-
-all_data = all_data %>%
+CNT = "United Kingdom"
+uk = all_data %>% 
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
   mutate(
-    COUNTRY = gsub(" ", "_", COUNTRY)
-  ) %>% 
-  ungroup() %>%
-  mutate(RowID = paste0(COUNTRY, YEAR, 1:n()))
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
+  )
 
-# ==== Save data ====
-# Save in loop
-for(n in unique(all_data$COUNTRY)){
-  # Construct fname
-  fname_n = paste0("Data/Tmp_data/Clean_IPUMS_",n,".Rdata")
+CNT = "United States"
+usa = all_data %>% 
+  filter(COUNTRY == CNT) %>% 
+  filter(OCCSTRNG != "") %>% 
+  select(YEAR, OCCSTRNG, HISCO) %>% 
+  mutate(
+    HISCO = ifelse(
+      HISCO == 99999,
+      -1,
+      HISCO
+    )
+  )
+
+rm(all_data)
+
+# ==== Clean it function ====
+Clean_it = function(x){
+  # Standardizing strings and var names
+  x = x %>%
+    mutate(
+      HISCO = as.character(HISCO)
+    ) %>%
+    mutate( # Clean string:
+      Original = str_replace_all(OCCSTRNG, "[^[:alnum:] ]", "") %>% tolower()
+    ) %>%
+    rename(
+      occ1 = Original,
+      hisco_1 = HISCO
+    ) %>% 
+    filter(occ1 != "") %>% 
+    select(YEAR, occ1, hisco_1) %>%
+    mutate( # Remove scandi letters
+      occ1 = occ1 %>% sub_scandi()
+    ) %>% 
+    rename(Year = YEAR)
   
-  # Filter data and save
-  all_data_n = all_data %>% 
-    filter(COUNTRY == n)
-  save(all_data_n, file = fname_n)
+  x = x %>% as.data.frame()
   
-  cat("Saved:",fname_n,"\n")
+  # NA padding
+  x = x %>%
+    mutate(
+      hisco_2 = " ",
+      hisco_3 = " ",
+      hisco_4 = " ",
+      hisco_5 = " "
+    )
+  
+  # Check against valid list
+  load("Data/Key.Rdata")
+  
+  key = key %>% select(hisco, code)
+  
+  # Remove data not in key (erronoeous data somehow)
+  x %>% 
+    filter(!hisco_1 %in% key$hisco)
+  
+  n1 = NROW(x)
+  x = x %>% 
+    filter(hisco_1 %in% key$hisco) %>% 
+    filter(hisco_2 %in% key$hisco) %>% 
+    filter(hisco_3 %in% key$hisco) %>% 
+    filter(hisco_4 %in% key$hisco) %>% 
+    filter(hisco_5 %in% key$hisco)
+  
+  print(NROW(x) - n1)
+  
+  # Add code
+  x = x %>% 
+    left_join(
+      key, by = c("hisco_1" = "hisco")
+    ) %>% 
+    rename(code1 = code) %>% 
+    left_join(
+      key, by = c("hisco_2" = "hisco")
+    ) %>% 
+    rename(code2 = code) %>% 
+    left_join(
+      key, by = c("hisco_3" = "hisco")
+    ) %>% 
+    rename(code3 = code) %>% 
+    left_join(
+      key, by = c("hisco_4" = "hisco")
+    ) %>% 
+    rename(code4 = code) %>% 
+    left_join(
+      key, by = c("hisco_5" = "hisco")
+    ) %>% 
+    rename(code5 = code)
+  
+  # Add RowID 
+  x = x %>% 
+    ungroup() %>% 
+    mutate(RowID = 1:n())
+  
+  return(x)
 }
+
+# ==== Canada ====
+canada = Clean_it(canada)
+save(canada, file = "Data/Tmp_data/Clean_CA_IPUMS.Rdata")
+
+# ==== Norway ====
+# Standardizing strings and var names
+norway = Clean_it(norway)
+
+save(norway, file = "Data/Tmp_data/Clean_NO_IPUMS.Rdata")
+
+# ==== Germany ====
+germany = Clean_it(germany)
+
+save(germany, file = "Data/Tmp_data/Clean_DE_IPUMS.Rdata")
+
+# ==== Iceland ====
+# Standardizing strings and var names
+iceland = Clean_it(iceland)
+
+# Remove bbbbb
+iceland = iceland %>% 
+  filter(occ1 != "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+
+# Remove numbers
+iceland = iceland %>% 
+  filter(is.na(as.numeric(occ1)))
+  
+save(iceland, file = "Data/Tmp_data/Clean_IS_IPUMS.Rdata")
+
+# ==== UK ====
+uk = Clean_it(uk)
+uk
+save(uk, file = "Data/Tmp_data/Clean_UK_IPUMS.Rdata")
+
+# ==== USA ====
+usa = Clean_it(usa)
+usa
+save(usa, file = "Data/Tmp_data/Clean_USA_IPUMS.Rdata")
+
