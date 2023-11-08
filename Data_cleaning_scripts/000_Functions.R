@@ -297,3 +297,30 @@ NA_str = function(x){
 translate = function(x, key){
   x
 }
+
+# ==== Combinations ====
+Combinations = function(x, and = "and"){
+  set.seed(20)
+
+  # Initiating empty frame
+  results = foreach(i = seq(10), .combine = "bind_rows") %do% x
+  index_sample = sample(seq(NROW(results)))
+  
+  # Generating random combinations
+  results = results %>% 
+    mutate(tmp_occ = occ1) %>% 
+    mutate(
+      occ1 = paste(occ1, and, occ1[index_sample]),
+      hisco_2 = hisco_1[index_sample]
+    ) %>% 
+    mutate(
+      hisco_2 = ifelse(hisco_2 == "-1", " ", hisco_2)
+    ) %>% 
+    mutate(
+      occ1 = ifelse(hisco_1 == "-1", tmp_occ, occ1),
+      hisco_2 = ifelse(hisco_1 == "-1", " ", occ1),
+    ) %>% 
+    select(-tmp_occ)
+  
+  return(results)
+}
