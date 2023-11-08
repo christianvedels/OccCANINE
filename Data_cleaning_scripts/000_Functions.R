@@ -190,7 +190,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -316,10 +316,7 @@ Combinations = function(x, and = "and"){
     mutate(
       hisco_2 = ifelse(hisco_2 == "-1", " ", hisco_2)
     ) %>% 
-    mutate(
-      occ1 = ifelse(hisco_1 == "-1", tmp_occ, occ1),
-      hisco_2 = ifelse(hisco_1 == "-1", " ", occ1),
-    ) %>% 
+    filter(hisco_1 != "-1") %>% 
     select(-tmp_occ)
   
   return(results)

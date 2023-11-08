@@ -214,6 +214,15 @@ x = pipeline(
   lang
 )
 
+# ==== Run pipelines IT ====
+lang = "it"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_IT_FM.Rdata",
+  "IT_fm",
+  lang
+)
+
 # ==== Training data stats ====
  
 fs = list.files("Data/Training_data", pattern = ".csv", full.names = TRUE)
