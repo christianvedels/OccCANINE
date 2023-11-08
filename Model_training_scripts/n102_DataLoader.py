@@ -310,7 +310,7 @@ def ReadData(
 
 # %% Train test val split
 def TrainTestVal(df, verbose = False):
-    df_train, df_test = train_test_split(df, test_size=0.2, random_state=20)
+    df_train, df_test = train_test_split(df, test_size=0.05, random_state=20)
     df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=20)
     if verbose:
         print(f"Train {df_train.shape[0]} / Val {df_val.shape[0]} / Test {df_test.shape[0]}")
