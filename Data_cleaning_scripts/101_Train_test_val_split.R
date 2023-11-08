@@ -142,6 +142,12 @@ x = pipeline(
   lang
 )
 
+x = pipeline(
+  "Data/Tmp_data/Clean_JIW.Rdata",
+  "JIW_database",
+  lang
+)
+
 # ==== Run pipelines SE ====
 lang = "se"
 
@@ -228,5 +234,5 @@ x = x %>%
 
 bign = x$n %>% sum()
 bigN = x$all_n %>% sum()
-cat(round(bign/1000000,3), "mil. training observations of", round(bigN/1000000,3), "mil. in total")
+cat("\n", round(bign/1000000,3), "mil. training observations of", round(bigN/1000000,3), "mil. in total")
 print(x)
