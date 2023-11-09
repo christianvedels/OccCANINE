@@ -52,6 +52,8 @@ all_data = all_data %>%
 #   ungroup() %>% 
 #   mutate(pct = n/sum(n))
 
+
+# ==== Cross walk ====
 # Key
 cross_walk = read_csv("Data/Raw_data/O-clack/n2h_2.csv")
 key = cross_walk %>%
@@ -61,6 +63,8 @@ key = cross_walk %>%
 
 
 key0 = read_csv("Data/Key.csv")
+
+stop("Implement cross-walk")
 
 # ==== Extracting counties ====
 all_data$COUNTRY %>% unique() %>% sort()
