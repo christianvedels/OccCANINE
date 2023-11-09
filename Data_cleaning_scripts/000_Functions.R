@@ -455,6 +455,21 @@ Data_summary = function(out = "plain"){
   res = res %>% 
     left_join(langs, by = "f")
   
+  # Language summary stats 
+  res %>% 
+    group_by(lang) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
   # Get results
   if("plain" %in% out){
     cat("\n")
