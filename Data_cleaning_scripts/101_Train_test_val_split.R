@@ -224,24 +224,5 @@ x = pipeline(
 )
 
 # ==== Training data stats ====
- 
-fs = list.files("Data/Training_data", pattern = ".csv", full.names = TRUE)
-fs0 = list.files("Data/Training_data", pattern = ".csv")
-x = foreach(f = fs, .combine = "bind_rows") %do% {
-  x = read_csv(f) %>% NROW()
-  data.frame(n = x)
-} %>% mutate(f = fs0)
-
-
-x = x %>% 
-  arrange(n) %>% 
-  mutate(
-    all_n = round(n * 1/0.85)
-  ) %>% 
-  mutate(pct = round(100*n/sum(n), 3)) %>% 
-  mutate(holdout = all_n - n)
-
-bign = x$n %>% sum()
-bigN = x$all_n %>% sum()
-cat("\n", round(bign/1000000,3), "mil. training observations of", round(bigN/1000000,3), "mil. in total")
-print(x)
+summary0 = Data_summary(out = c("plain", "data"))
+summary0 %>% write_csv2("Data/Summary_data/Data_summary.csv")
