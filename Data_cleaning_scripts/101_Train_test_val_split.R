@@ -225,4 +225,4 @@ x = pipeline(
 
 # ==== Training data stats ====
 summary0 = Data_summary(out = c("plain", "data"))
-summary0 %>% write_csv2("Data/Summary_data/Data_summary.csv")
+summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")
