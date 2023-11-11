@@ -349,13 +349,16 @@ n_in_dir = function(x){
     suppressWarnings({
       x = read_csv(
         f, show_col_types = FALSE, progress = FALSE
-      ) %>% NROW() # Count number of rows
-      data.frame(n = x)
+      )
+      n = x %>% NROW() # Count number of rows  
+      n_unique = x %>% distinct(occ1) %>% NROW()
+        
+      data.frame(n = n, n_unique = n_unique)
     })
     
     
   } %>% mutate(f = fs0) %>% 
-    select(f, n)
+    select(f, n, n_unique)
   return(x)
 }
 
@@ -400,16 +403,27 @@ million = function(x){
 }
 
 Data_summary = function(out = "plain"){
+  # Load counts 
   train = n_in_dir("Training_data") %>% 
     mutate(f = gsub("train", "[x]", f)) %>% 
-    rename(n_train = n)
+    rename(
+      n_train = n,
+      n_train_unique = n_unique
+    )
   val = n_in_dir("Validation_data") %>% 
     mutate(f = gsub("val", "[x]", f)) %>% 
-    rename(n_val = n)
+    rename(
+      n_val = n,
+      n_val_unique = n_unique
+    )
   test = n_in_dir("Test_data") %>% 
     mutate(f = gsub("test", "[x]", f)) %>% 
-    rename(n_test = n)
+    rename(
+      n_test = n,
+      n_test_unique = n_unique
+    )
   
+  # Clean counts
   res = train %>% 
     left_join(val, by = "f") %>% 
     left_join(test, by = "f")
@@ -419,7 +433,11 @@ Data_summary = function(out = "plain"){
       n = n_train + n_val + n_test
     ) %>% 
     arrange(-n) %>% 
-    mutate(pct = paste0(round(100*n/sum(n), 3),"%"))
+    mutate(
+      pct_train = paste0(round(100*n/sum(n), 3),"%"),
+      pct_train_unique = paste0(round(100*n_train_unique/sum(n_train_unique), 3),"%")
+    ) %>% 
+    select(-n_val_unique, -n_test_unique)
   
   Ntrain = res$n_train %>% sum() %>% million()
   Nval = res$n_val %>% sum() %>% million()
@@ -456,8 +474,31 @@ Data_summary = function(out = "plain"){
     left_join(langs, by = "f")
   
   # Language summary stats 
-  res %>% 
+  lang_sum = res %>% 
     group_by(lang) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
+  # Load descriptions and citations 
+  desc = read_csv2("Data/Summary_data/Data_sources.csv")
+  desc %>% select(-lang)
+  res = res %>% left_join(desc)
+  
+  if(any(is.na(res$Description))){
+    warning("Missing description in 'Data/Summary_data/Data_sources.csv'")
+  }
+  
+  res_type = res %>% 
+    group_by(Type) %>% 
     summarise(
       n_train = sum(n_train),
       n_val = sum(n_val),
@@ -479,13 +520,21 @@ Data_summary = function(out = "plain"){
     cat("\n---> In total:   ", capN, "million observations")
     cat("\n\nAmount of data by source:\n")
     knitr::kable(res, "pipe") %>% print()
+    knitr::kable(lang_sum, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
   }
   
   if("md" %in% out){
     knitr::kable(res, "pipe") %>% print()
+    knitr::kable(lang_sum, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
   }
   
   if("data" %in% out){
-    return(res)
+    return(list(
+      res,
+      res_lang,
+      res_type
+    ))
   }
 }
