@@ -523,6 +523,20 @@ Data_summary = function(out = "plain"){
     knitr::kable(res, "pipe") %>% print()
     knitr::kable(res_lang, "pipe") %>% print()
     knitr::kable(res_type, "pipe") %>% print()
+    
+    cat("\n\nFor readme:")
+    res %>% 
+      select(f, n, n_train, n_train_unique, Description, Source , lang, Type) %>% 
+      rename(
+        `File name` = f,
+        `N` = n,
+        `N train` = n_train_unique,
+        `N unique strings` = n_train_unique,
+        Reference = Source,
+        Language = lang
+      ) %>% 
+      knitr::kable("pipe") %>% 
+      print()
   }
   
   if("md" %in% out){
