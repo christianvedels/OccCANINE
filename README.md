@@ -72,6 +72,9 @@ x $\in$ {train, test, val}
 
 ## Updates
 
+### 2023-11-11
+- Fixed incompatibility of IPUMS data by simply removing all observations with HISCO codes which are not exactly equivalent across based on [O-CLACK](https://github.com/rlzijdeman/o-clack/tree/master)
+
 ### 2023-11-06
 - Added evaluation scripts
 - Added several more languages 
