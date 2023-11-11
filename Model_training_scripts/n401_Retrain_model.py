@@ -21,7 +21,7 @@ MODEL_DOMAIN = "Multilingual"
 
 # Parameters
 SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 500
+EPOCHS = 20
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -33,7 +33,7 @@ MAX_LEN = 64 # Number of tokens to use
 import datetime
 current_date = datetime.datetime.now().strftime("%y%m%d")
 if MODEL_DOMAIN == "Multilingual":
-    MODEL_NAME_start = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+    MODEL_NAME_start = f'231107_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
     MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 else: 
     MODEL_NAME = f'{current_date}_BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 

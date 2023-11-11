@@ -190,7 +190,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -316,11 +316,226 @@ Combinations = function(x, and = "and"){
     mutate(
       hisco_2 = ifelse(hisco_2 == "-1", " ", hisco_2)
     ) %>% 
-    mutate(
-      occ1 = ifelse(hisco_1 == "-1", tmp_occ, occ1),
-      hisco_2 = ifelse(hisco_1 == "-1", " ", occ1),
-    ) %>% 
+    filter(hisco_1 != "-1") %>% 
     select(-tmp_occ)
   
   return(results)
+}
+
+# ==== Data_summary ====
+# Gives a summary of available data
+# out:  "plain", "md" (markdown) or "data"
+
+# n_in_dir: Counts data in directories
+n_in_dir = function(x){
+  
+  # Setup
+  dir0 = paste0("Data/", x)
+  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
+  fs0 = list.files(dir0, pattern = ".csv")
+  
+  # Progress setup
+  i = 1
+  length0 = length(fs)
+  
+  # Count loop
+  x = foreach(f = fs, .combine = "bind_rows") %do% {
+    
+    # Progress
+    cat(i,"of",length0,"::: Reading",f, "                      \r")
+    i = i + 1
+    
+    # Read and count
+    suppressWarnings({
+      x = read_csv(
+        f, show_col_types = FALSE, progress = FALSE
+      )
+    })
+    
+    n = x %>% NROW() # Count number of rows  
+    n_unique = x %>% distinct(occ1) %>% NROW()
+    
+    data.frame(n = n, n_unique = n_unique)
+    
+    
+  } %>% mutate(f = fs0) %>% 
+    select(f, n, n_unique)
+  return(x)
+}
+
+lang_in_dir = function(x){
+  
+  # Setup
+  dir0 = paste0("Data/", x)
+  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
+  fs0 = list.files(dir0, pattern = ".csv")
+  
+  # Progress setup
+  i = 1
+  length0 = length(fs)
+  
+  # Count loop
+  x = foreach(f = fs, .combine = "bind_rows") %do% {
+    
+    # Progress
+    cat(i,"of",length0,"::: Lang",f, "                      \r")
+    i = i + 1
+    
+    # Read and count
+    suppressWarnings({
+      x = read_csv(
+        f, show_col_types = FALSE, progress = FALSE, n_max = 100
+      )
+    })
+    
+    lang = x$lang %>% unique()
+    if(length(lang)>1){
+      stop("More than one language in: ", f)
+    }
+    data.frame(lang = lang)
+    
+  } %>% mutate(f = fs0) %>% 
+    select(f, lang)
+  return(x)
+}
+
+million = function(x){
+  return(round(x / 1000000, 3))
+}
+
+Data_summary = function(out = "plain"){
+  # Load counts 
+  train = n_in_dir("Training_data") %>% 
+    mutate(f = gsub("train", "[x]", f)) %>% 
+    rename(
+      n_train = n,
+      n_train_unique = n_unique
+    )
+  val = n_in_dir("Validation_data") %>% 
+    mutate(f = gsub("val", "[x]", f)) %>% 
+    rename(
+      n_val = n,
+      n_val_unique = n_unique
+    )
+  test = n_in_dir("Test_data") %>% 
+    mutate(f = gsub("test", "[x]", f)) %>% 
+    rename(
+      n_test = n,
+      n_test_unique = n_unique
+    )
+  
+  # Clean counts
+  res = train %>% 
+    left_join(val, by = "f") %>% 
+    left_join(test, by = "f")
+  
+  res = res %>% 
+    mutate(
+      n = n_train + n_val + n_test
+    ) %>% 
+    arrange(-n) %>% 
+    mutate(
+      pct_train = paste0(round(100*n/sum(n), 3),"%"),
+      pct_train_unique = paste0(round(100*n_train_unique/sum(n_train_unique), 3),"%")
+    ) %>% 
+    select(-n_val_unique, -n_test_unique)
+  
+  Ntrain = res$n_train %>% sum() %>% million()
+  Nval = res$n_val %>% sum() %>% million()
+  Ntest = res$n_val %>% sum() %>% million()
+  capN = res$n %>% sum() %>% million()
+  
+  # Identify languages
+  lang_train = lang_in_dir("Training_data") %>% 
+    mutate(f = gsub("train", "[x]", f)) %>% 
+    rename(lang_train = lang)
+  lang_val = lang_in_dir("Validation_data") %>% 
+    mutate(f = gsub("val", "[x]", f)) %>% 
+    rename(lang_val = lang)
+  lang_test = lang_in_dir("Test_data") %>% 
+    mutate(f = gsub("test", "[x]", f)) %>% 
+    rename(lang_test = lang)
+  
+  langs = lang_train %>% 
+    left_join(lang_val, by = "f") %>% 
+    left_join(lang_test, by = "f")
+  
+  # test similarity of languages 
+  test1 = !all(langs$lang_train==langs$lang_train)
+  test2 = !all(langs$lang_train==langs$lang_val)
+  if(test1 | test2){
+    stop("Languages are not the same somehow")
+  }
+  
+  langs = langs %>% 
+    select(f, lang_train) %>% 
+    rename(lang = lang_train)
+  
+  res = res %>% 
+    left_join(langs, by = "f")
+  
+  # Language summary stats 
+  res_lang = res %>% 
+    group_by(lang) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
+  # Load descriptions and citations 
+  desc = read_csv2("Data/Summary_data/Data_sources.csv")
+  desc %>% select(-lang)
+  res = res %>% left_join(desc)
+  
+  if(any(is.na(res$Description))){
+    warning("Missing description in 'Data/Summary_data/Data_sources.csv'")
+  }
+  
+  res_type = res %>% 
+    group_by(Type) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
+  # Get results
+  if("plain" %in% out){
+    cat("\n")
+    cat("\nTraining data:   ", Ntrain, "million observations")
+    cat("\nValidation data: ", Nval, "million observations")
+    cat("\nTest data:       ", Ntest, "million observations")
+    cat("\n---> In total:   ", capN, "million observations")
+    cat("\n\nAmount of data by source:\n")
+    knitr::kable(res, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
+  }
+  
+  if("md" %in% out){
+    knitr::kable(res, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
+  }
+  
+  if("data" %in% out){
+    return(list(
+      res,
+      res_lang,
+      res_type
+    ))
+  }
 }

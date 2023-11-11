@@ -44,7 +44,7 @@ all_data = all_data %>%
 # set.seed(20)
 # all_data = all_data %>% sample_n(10^6)
 # write_fst(all_data, "Data/Tmp_data/IPUMS_tmp_small", compress = 0)
-# all_data = read_fst("Data/Tmp_data/IPUMS_tmp_small") 
+# all_data = read_fst("Data/Tmp_data/IPUMS_tmp_small")
 # 
 # all_data %>% 
 #   group_by(COUNTRY) %>% 
@@ -52,15 +52,23 @@ all_data = all_data %>%
 #   ungroup() %>% 
 #   mutate(pct = n/sum(n))
 
+
+# ==== Cross walk ====
 # Key
+# Everything with no exact equivalent in standard HISCO is filtered off
+
 cross_walk = read_csv("Data/Raw_data/O-clack/n2h_2.csv")
 key = cross_walk %>%
   # Remove anything with a note
   filter(is.na(comments)) %>% 
-  filter(napp.eq.hisco == 1)
-
+  filter(napp.eq.hisco == 1) %>% 
+  # Only when we are completely sure of agreement
+  filter(hisco.code.num == napp.code.num)
 
 key0 = read_csv("Data/Key.csv")
+
+all_data = all_data %>% 
+  semi_join(key, by = c("HISCO"="hisco.code.num"))
 
 # ==== Extracting counties ====
 all_data$COUNTRY %>% unique() %>% sort()

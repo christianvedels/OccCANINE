@@ -1,39 +1,24 @@
-# Cleaning JIW https://datarepository.eur.nl/articles/dataset/Dataset_Ja_ik_wil_-_Amsterdam_marriage_banns_registers_1580-1810/14049842
+# Cleaning Italian Formasin Marzona data (FM data)
 # Created:    2023-11-08
 # Auhtors:    Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:    This script cleans occupations from the 'Ja, ik will' database
-#
+# Purpose:    This script cleans occupations from the It_FM data 
+#             https://hdl.handle.net/10622/SRVW6S
 # Output:     Clean tmp version of the inputted data
 
 # ==== Libraries =====
 library(tidyverse)
 source("Data_cleaning_scripts/000_Functions.R")
 library(foreach)
-library(readxl)
 
 # ==== Read data ====
-data0 = read_excel("Data/Raw_data/JIW data/JIW data_version-20210217.xlsx")
+data0 = read_csv("Data/Raw_data/Italian Formasin Marzona/HISCO_Italian_Formasin_Marzona_2006.csv")
 
 # ==== Cleaning data0 ====
-data0 = data0 %>%
-  select(
-    groom_occupation_current,
-    bruidegom_beroep,
-    `Groom_occupation-HIScode`,
-    reg_year
-  ) %>% 
-  pivot_longer(
-    cols = groom_occupation_current:bruidegom_beroep,
-    names_to = "type"
-  ) %>% 
-  mutate(
-    reg_year = ifelse(type == "groom_occupation_current", NA, reg_year)
-  ) %>% 
+data0 = data0 %>% 
   rename(
-    occ1 = value,
-    hisco_1 = `Groom_occupation-HIScode`,
-    Year = "reg_year"
+    occ1 = occupation,
+    hisco_1 = hisco,
   ) %>% 
   mutate( # Clean string:
     occ1 = str_replace_all(occ1, "[^[:alnum:] ]", "") %>% tolower()
@@ -43,7 +28,8 @@ data0 = data0 %>%
   ) %>% 
   mutate(
     hisco_1 = ifelse(is.na(hisco_1), -1, hisco_1)
-  )
+  ) %>% 
+  select(occ1, hisco_1)
 
 data0 = data0 %>%
   mutate(
@@ -53,7 +39,7 @@ data0 = data0 %>%
     hisco_5 = " "
   )
 
-combinations = Combinations(data0, and = "en")
+combinations = Combinations(data0, and = "e")
 
 combinations = combinations %>%
   mutate(
@@ -84,7 +70,7 @@ data1 = data1 %>%
   filter(hisco_4 %in% key$hisco) %>% 
   filter(hisco_5 %in% key$hisco)
 
-NROW(data1) - n1 # -9801 observations
+NROW(data1) - n1 # -0 observations
 
 # Turn into character
 data1 = data1 %>% 
@@ -119,4 +105,4 @@ data1 = data1 %>%
   mutate(RowID = 1:n())
 
 # ==== Save ====
-save(data1, file = "Data/Tmp_data/Clean_JIW.Rdata")
+save(data1, file = "Data/Tmp_data/Clean_IT_FM.Rdata")
