@@ -350,11 +350,12 @@ n_in_dir = function(x){
       x = read_csv(
         f, show_col_types = FALSE, progress = FALSE
       )
-      n = x %>% NROW() # Count number of rows  
-      n_unique = x %>% distinct(occ1) %>% NROW()
-        
-      data.frame(n = n, n_unique = n_unique)
     })
+    
+    n = x %>% NROW() # Count number of rows  
+    n_unique = x %>% distinct(occ1) %>% NROW()
+    
+    data.frame(n = n, n_unique = n_unique)
     
     
   } %>% mutate(f = fs0) %>% 
@@ -474,7 +475,7 @@ Data_summary = function(out = "plain"){
     left_join(langs, by = "f")
   
   # Language summary stats 
-  lang_sum = res %>% 
+  res_lang = res %>% 
     group_by(lang) %>% 
     summarise(
       n_train = sum(n_train),
@@ -520,13 +521,13 @@ Data_summary = function(out = "plain"){
     cat("\n---> In total:   ", capN, "million observations")
     cat("\n\nAmount of data by source:\n")
     knitr::kable(res, "pipe") %>% print()
-    knitr::kable(lang_sum, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
     knitr::kable(res_type, "pipe") %>% print()
   }
   
   if("md" %in% out){
     knitr::kable(res, "pipe") %>% print()
-    knitr::kable(lang_sum, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
     knitr::kable(res_type, "pipe") %>% print()
   }
   
