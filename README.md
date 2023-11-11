@@ -42,7 +42,7 @@ Data types:
 
 
 ## Overview of training data and sources
-|File name            |       N| n_train| N unique strings|Description                                                  |Reference                                    |Language |Type             |
+|File name            |       N| N train| N unique strings|Description                                                  |Reference                                    |Language |Type             |
 |:--------------------|-------:|-------:|----------------:|:------------------------------------------------------------|:--------------------------------------------|:--------|:----------------|
 |DK_census_[x].csv    | 4673892| 3972635|           148011|Danish census data                                           |Clausen (2015); The Danish National Archives |da       |Census           |
 |EN_marr_cert_[x].csv | 4046387| 3439405|            86397|English marriage certificates                                |Clark, Cummins, Curtis (2022)                |en       |Marriage records |
