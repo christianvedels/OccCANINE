@@ -530,7 +530,7 @@ Data_summary = function(out = "plain"){
       rename(
         `File name` = f,
         `N` = n,
-        `N train` = n_train_unique,
+        `N train` = n_train,
         `N unique strings` = n_train_unique,
         Reference = Source,
         Language = lang
