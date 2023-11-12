@@ -300,9 +300,10 @@ def ReadData(
         downsample_top1 = True,
         upsample_below = 1000,
         sample_size = 4,
-        verbose = False
+        verbose = False,
+        toyload = False
         ):
-    df, key = read_data(model_domain = model_domain)
+    df, key = read_data(model_domain = model_domain, toyload = toyload)
     df = resample(df, downsample_top1=downsample_top1, upsample_below=upsample_below, verbose=verbose)
     df = subset_to_smaller(df, sample_size=sample_size)
     
@@ -497,6 +498,7 @@ def Load_data(
         toyload = False,
         tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
         ):
+    # breakpoint()
     
     # Load data
     df, key = ReadData(
@@ -504,9 +506,14 @@ def Load_data(
         downsample_top1 = downsample_top1,
         upsample_below = upsample_below,
         sample_size = sample_size,
-        verbose = verbose
+        verbose = verbose,
+        toyload = toyload
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
+    
+    # Get set of unique languages 
+    Langs = set(df_train['lang'])
+    Occs = set(df_train['occ1'])
 
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":
@@ -547,7 +554,9 @@ def Load_data(
         'tokenizer': tokenizer,
         'N_CLASSES': N_CLASSES,
         'key': key,
-        'reference_loss': reference_loss
+        'reference_loss': reference_loss,
+        'Languages': Langs,
+        'Occupations': Occs
     }
 
 #%%

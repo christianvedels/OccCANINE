@@ -16,9 +16,11 @@ os.chdir(script_directory)
 # %% Libraries
 import numpy as np
 import pandas as pd
+import transformers
 from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel
 import torch
 import torch.nn as nn
+from keras.layers import TextVectorization
 
 # %% BERT finetune based on model_domain
 def modelPath(model_domain):
@@ -99,7 +101,7 @@ class BERTOccupationClassifier(nn.Module):
         return self.out(output)
     
 # %%
-# Build the Sentiment Classifier class 
+# Build the Classifier 
 class XMLRoBERTaOccupationClassifier(nn.Module):
     
     # Constructor class 
@@ -121,23 +123,70 @@ class XMLRoBERTaOccupationClassifier(nn.Module):
         output = self.drop(pooled_output)
         return self.out(output)
     
+# %% LSTM
 class CharLSTMOccupationClassifier(nn.Module):
-    def __init__(self, n_outputs, input_size, hidden_size, num_layers, dropout_rate):
+    def __init__(self, n_classes, unique_chars, unique_langs, char_embedding_size, lang_embedding_size, hidden_size, num_layers, dropout_rate, char_length):
         super(CharLSTMOccupationClassifier, self).__init__()
         
-        self.embedding = nn.Embedding(input_size, hidden_size)
+        # breakpoint()
+        # Makeshift lang tokenizer
+        # Assume you have the following mappings from the tokenizer
+        self.char_to_id_mapping = {char: idx for idx, char in enumerate([' '] + unique_chars)}
+        self.lang_to_id_mapping = {lang: idx for idx, lang in enumerate(unique_langs)}
+        self.char_length = char_length
+        
+        self.char_embedding = nn.Embedding(len(self.char_to_id_mapping), char_embedding_size)
+        self.lang_embedding = nn.Embedding(len(self.lang_to_id_mapping), lang_embedding_size)
+        
         self.dropout = nn.Dropout(dropout_rate)
-        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, 
-                            num_layers=num_layers, bidirectional=True, batch_first=True)
-        self.global_avg_pooling = nn.AdaptiveAvgPool1d(1)  # Global average pooling
+        self.lstm = nn.LSTM(input_size=char_embedding_size + lang_embedding_size,
+                            hidden_size=hidden_size, num_layers=num_layers,
+                            bidirectional=True, batch_first=True)
+        
+        self.global_avg_pooling = nn.AdaptiveAvgPool1d(1)
         self.fc1 = nn.Linear(hidden_size * 2, hidden_size * 2)
         self.fc2 = nn.Linear(hidden_size * 2, hidden_size)
-        self.output_layer = nn.Linear(hidden_size, n_outputs)
+        self.output_layer = nn.Linear(hidden_size, n_classes)
         self.leaky_relu = nn.LeakyReLU(0.01)
+                
+    # Function to convert characters to ids
+    def char_to_ids(self, char_sequence):
+        char_ids = [self.char_to_id_mapping[char] for char in char_sequence]
+        
+        # Padding to char_length
+        padding_length = self.char_length - len(char_ids)
+        padded_char_ids = char_ids + [0] * padding_length if padding_length > 0 else char_ids
+        
+        return torch.tensor(padded_char_ids)
+    
+    # Function to convert languages to ids
+    def lang_to_ids(self, lang_token):
+        res = self.lang_to_id_mapping[lang_token]
+        return torch.tensor(res)
 
-    def forward(self, input_ids):
-        embedded = self.embedding(input_ids)
-        dropped = self.dropout(embedded)
+    def forward(self, occ_input, lang_input):
+        # breakpoint()
+        
+        # Convert lang to unk if unknown language
+        lang_input = lang_input.lower()
+        # Check if lang_input is in self.lang_to_id_mapping or convert to unknown
+        if lang_input not in self.lang_to_id_mapping:
+            lang_input = 'unk'
+        
+        # Convert tokens to IDs
+        char_ids = self.char_to_ids(occ_input)
+
+        # Convert language token to ID
+        lang_ids = self.lang_to_ids(lang_input)
+        
+        char_embedded = self.char_embedding(char_ids)
+        lang_embedded = self.lang_embedding(lang_ids)
+        
+        # Concatenate character and language embeddings along the last dimension
+        # breakpoint()
+        concatenated_input = torch.cat((lang_embedded, char_embedded), dim=-1)
+
+        dropped = self.dropout(concatenated_input)
         lstm_out, _ = self.lstm(dropped)
         
         # Global average pooling
@@ -149,3 +198,28 @@ class CharLSTMOccupationClassifier(nn.Module):
         output = torch.sigmoid(self.output_layer(fc2_out))
         
         return output
+    
+    
+# # %% Custom tokenizer
+# class CharTokens:
+#     def __init__(self, vocab):
+#         self.vocab = vocab
+        
+    
+#     def encode_plus(
+#             x, 
+#             add_special_tokens=True, 
+#             padding = 'max_length', 
+#             max_length = max_len, 
+#             return_token_type_ids=False, 
+#             return_attention_mask=True,
+#             return_tensors='pt',
+#             truncation = True
+#             ):
+        
+#         for char in x:
+#             print(char)
+        
+#     def add_tokens(x):
+#         self.vocab.append(x)
+
