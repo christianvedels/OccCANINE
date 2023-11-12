@@ -17,7 +17,8 @@ os.chdir(script_directory)
 import numpy as np
 import pandas as pd
 from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel
-from torch import nn
+import torch
+import torch.nn as nn
 
 # %% BERT finetune based on model_domain
 def modelPath(model_domain):
@@ -119,3 +120,32 @@ class XMLRoBERTaOccupationClassifier(nn.Module):
         #  Add a dropout layer 
         output = self.drop(pooled_output)
         return self.out(output)
+    
+class CharLSTMOccupationClassifier(nn.Module):
+    def __init__(self, n_outputs, input_size, hidden_size, num_layers, dropout_rate):
+        super(CharLSTMOccupationClassifier, self).__init__()
+        
+        self.embedding = nn.Embedding(input_size, hidden_size)
+        self.dropout = nn.Dropout(dropout_rate)
+        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, 
+                            num_layers=num_layers, bidirectional=True, batch_first=True)
+        self.global_avg_pooling = nn.AdaptiveAvgPool1d(1)  # Global average pooling
+        self.fc1 = nn.Linear(hidden_size * 2, hidden_size * 2)
+        self.fc2 = nn.Linear(hidden_size * 2, hidden_size)
+        self.output_layer = nn.Linear(hidden_size, n_outputs)
+        self.leaky_relu = nn.LeakyReLU(0.01)
+
+    def forward(self, input_ids):
+        embedded = self.embedding(input_ids)
+        dropped = self.dropout(embedded)
+        lstm_out, _ = self.lstm(dropped)
+        
+        # Global average pooling
+        pooled_output = self.global_avg_pooling(lstm_out.permute(0, 2, 1)).squeeze(-1)
+        
+        fc1_out = self.leaky_relu(self.fc1(pooled_output))
+        fc2_out = self.leaky_relu(self.fc2(fc1_out))
+        
+        output = torch.sigmoid(self.output_layer(fc2_out))
+        
+        return output
