@@ -17,7 +17,7 @@ os.chdir(script_directory)
 import numpy as np
 import pandas as pd
 import transformers
-from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel
+from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel, CanineTokenizer, CanineModel
 import torch
 import torch.nn as nn
 from keras.layers import TextVectorization
@@ -32,6 +32,8 @@ def modelPath(model_domain):
         MDL = "GroNLP/bert-base-dutch-cased"
     elif(model_domain == "Multilingual"):
         MDL = 'xlm-roberta-base'
+    elif model_domain == "Multilingual_CANINE":  # Replace "CANINE_MODEL_NAME" with the actual CANINE model name
+        MDL = "google/canine-s"          
     else:
         raise Exception("This is not implemented yet")
         
@@ -43,7 +45,12 @@ def load_tokenizer(model_domain):
     MDL = modelPath(model_domain)
     if MDL == "xlm-roberta-base":
         tokenizer = XLMRobertaTokenizer.from_pretrained(MDL)
+    elif MDL == "google/canine-s":  # Replace "CANINE_MODEL_NAME" with the actual CANINE model name
+        tokenizer = CanineTokenizer.from_pretrained(MDL)
     else: 
+        raise Exception("Not implemented")
+        
+        # Consider implementing this
         tokenizer = BertTokenizer.from_pretrained(MDL)
     return(tokenizer)
 
@@ -65,14 +72,21 @@ def update_tokenizer(tokenizer, df):
 
 # %%
 def getModel(model_domain, tokenizer):
+    # breakpoint()
     MDL = modelPath(model_domain)
     # Load the basic BERT model 
     if model_domain == "Multilingual":
         model = XLMRobertaModel.from_pretrained(MDL)
+    elif model_domain == "Multilingual_CANINE":  
+        model = CanineModel.from_pretrained(MDL)
     else:
-        model = BertModel.from_pretrained(MDL)
+        raise Exception("Not implemented")
+        # model = BertModel.from_pretrained(MDL)
     
-    # Adapt model size to the tokens added:
+    if model_domain == "Multilingual_CANINE": # No reason to resize these tokens
+        return model
+    
+    # Adapt model size to the tokens added:   
     model.resize_token_embeddings(len(tokenizer))
     
     return model
@@ -107,6 +121,29 @@ class XMLRoBERTaOccupationClassifier(nn.Module):
     # Constructor class 
     def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
         super(XMLRoBERTaOccupationClassifier, self).__init__()
+        self.basemodel = getModel(model_domain, tokenizer)
+        self.drop = nn.Dropout(p=dropout_rate)
+        self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
+    
+    # Forward propagaion class
+    def forward(self, input_ids, attention_mask):
+        outputs = self.basemodel(
+          input_ids=input_ids,
+          attention_mask=attention_mask
+        )
+        pooled_output = outputs.pooler_output
+        
+        #  Add a dropout layer 
+        output = self.drop(pooled_output)
+        return self.out(output)
+    
+# %%
+# Build the Classifier 
+class CANINEOccupationClassifier(nn.Module):
+    
+    # Constructor class 
+    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
+        super(CANINEOccupationClassifier, self).__init__()
         self.basemodel = getModel(model_domain, tokenizer)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
@@ -199,27 +236,5 @@ class CharLSTMOccupationClassifier(nn.Module):
         
         return output
     
-    
-# # %% Custom tokenizer
-# class CharTokens:
-#     def __init__(self, vocab):
-#         self.vocab = vocab
-        
-    
-#     def encode_plus(
-#             x, 
-#             add_special_tokens=True, 
-#             padding = 'max_length', 
-#             max_length = max_len, 
-#             return_token_type_ids=False, 
-#             return_attention_mask=True,
-#             return_tensors='pt',
-#             truncation = True
-#             ):
-        
-#         for char in x:
-#             print(char)
-        
-#     def add_tokens(x):
-#         self.vocab.append(x)
+
 
