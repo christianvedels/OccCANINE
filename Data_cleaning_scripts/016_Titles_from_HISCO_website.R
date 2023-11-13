@@ -98,7 +98,9 @@ skipped_ids = foreach(i = 1:NROW(skipping_ids)) %do% {
 
 skipped_ids %>% length()
 
-# %>% 
-#   write_csv2("Data/Raw_data/HISCO_website/To_rescrape")
-# 
+to_rescrape = data.frame(id = c(pt1$ids, skipped_ids))
+
+to_rescrape %>%
+  write_csv2("Data/Raw_data/HISCO_website/To_rescrape.csv")
+
 
