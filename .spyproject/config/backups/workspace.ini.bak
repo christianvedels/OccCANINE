@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['Model_training_scripts\\n100_Attacker.py', 'Model_training_scripts\\n001_Model_assets.py', 'Model_training_scripts\\n102_DataLoader.py', 'Model_training_scripts\\n101_Trainer.py', 'Model_training_scripts\\n203_TrainCANINE.py']
+recent_files = ['..\\..\\Teaching\\F23_News_and_Market_Sentiment_Analytics\\2023\\News_and_Market_Sentiment_Analytics\\Lecture 4 - Classification pt 2\\Code\\Gender_classification_all_Danish_names.py', '..\\..\\Teaching\\F23_News_and_Market_Sentiment_Analytics\\2023\\Coding_challenge_and_misc\\Lecture 3\\Solution1.py', '..\\..\\Teaching\\F23_News_and_Market_Sentiment_Analytics\\2023\\News_and_Market_Sentiment_Analytics\\Lecture 3 - Classification pt 1\\Code\\OneShotClassification.py']
 
 [main]
 version = 0.2.0
