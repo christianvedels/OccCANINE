@@ -134,7 +134,7 @@ model = trainer_loop(
     optimizer = optimizer, 
     device = device, 
     scheduler = scheduler,
-    attack_switch = True  
+    attack_switch = True # Attack is enabled from the beginning
     )
 
 # # %% Load best model instance
