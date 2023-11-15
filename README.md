@@ -72,6 +72,9 @@ x $\in$ {train, test, val}
 
 ## Updates
 
+### 2023-11-15
+- Added [CANINE](https://huggingface.co/google/canine-s) model. It is character based and should be more robust to typos. It is trained with [Model_training_scripts/n203_TrainCANINE.py](https://github.com/christianvedels/Automatic-HISCO-labels/blob/main/Model_training_scripts/n203_TrainCANINE.py)
+
 ### 2023-11-11
 - Fixed incompatibility of IPUMS data by simply removing all observations with HISCO codes which are not exactly equivalent across based on [O-CLACK](https://github.com/rlzijdeman/o-clack/tree/master)
 
