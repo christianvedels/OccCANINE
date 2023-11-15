@@ -28,6 +28,8 @@ def train_path(model_domain):
         fname = "../Data/Training_data/HSN_database_train.csv"
     elif(model_domain == "Multilingual"):
         fname = "../Data/Training_data"
+    elif(model_domain == "Multilingual_CANINE"):
+         fname = "../Data/Training_data"
     else:
         raise Exception("This is not implemented yet")
         
@@ -41,6 +43,8 @@ def val_path(model_domain):
     elif(model_domain == "HSN_DATABASE"):
         fname = "../Data/Validation_data/HSN_database_val.csv"
     elif(model_domain == "Multilingual"):
+        fname = "../Data/Validation_data"
+    elif(model_domain == "Multilingual_CANINE"):
         fname = "../Data/Validation_data"
     else:
         raise Exception("This is not implemented yet")
@@ -85,7 +89,7 @@ def check_csv_column_consistency(folder_path):
 #%% Read_data
 def read_data(model_domain, data_type = "Train", toyload = False):
     # breakpoint()
-    if(model_domain == "Multilingual"):
+    if(model_domain == "Multilingual" or model_domain == "Multilingual_CANINE"):
         
         # Find correct path
         if data_type == "Train":
@@ -129,9 +133,9 @@ def read_data(model_domain, data_type = "Train", toyload = False):
            raise Exception("data_type not implemented yet")
            
         if toyload:
-            df = pd.read_csv(file_path, nrows = 100)
+            df = pd.read_csv(fname, nrows = 100)
         else: 
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(fname)
     
     # Handle na strings
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
@@ -300,9 +304,10 @@ def ReadData(
         downsample_top1 = True,
         upsample_below = 1000,
         sample_size = 4,
-        verbose = False
+        verbose = False,
+        toyload = False
         ):
-    df, key = read_data(model_domain = model_domain)
+    df, key = read_data(model_domain = model_domain, toyload = toyload)
     df = resample(df, downsample_top1=downsample_top1, upsample_below=upsample_below, verbose=verbose)
     df = subset_to_smaller(df, sample_size=sample_size)
     
@@ -326,6 +331,13 @@ def Concat_string(occ1, lang):
     
     return(cat_sequence)
 
+def Concat_string1(occ1, lang):
+    occ1 = str(occ1).strip("'[]'")
+    # Implement random change to lang 'unknown' here:
+    cat_sequence = lang+"[SEP]"+occ1
+    
+    return(cat_sequence)
+
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
@@ -338,7 +350,8 @@ class OCCDataset(Dataset):
             n_classes, 
             alt_prob = 0, 
             insert_words = False, 
-            unk_lang_prob = 0.25 # Probability of changing lang to 'unknown'
+            unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
+            model_domain = ""
             ):
         self.occ1 = df.occ1.tolist()
         self.df = df
@@ -350,6 +363,7 @@ class OCCDataset(Dataset):
         self.insert_words = insert_words # Should random word insertation occur in Attacker()
         self.lang = df.lang.tolist()
         self.unk_lang_prob = unk_lang_prob
+        self.model_domain = model_domain
     
     # Length magic method
     def __len__(self):
@@ -369,14 +383,17 @@ class OCCDataset(Dataset):
             insert_words = self.insert_words
             )
         
-        # breakpoint()
         # Change lanuage to 'unknown' = "unk" in some cases
+        # Warning("CANINEOccupationClassifier: pair of sequences: [CLS] A [SEP] B [SEP]")
         if(r.random()<self.unk_lang_prob):
             lang = "unk"
         
         occ1 = str(occ1).strip("'[]'")
         # Implement random change to lang 'unknown' here:
-        cat_sequence = Concat_string(occ1, lang)
+        if self.model_domain == "Multilingual_CANINE":
+            cat_sequence = Concat_string1(occ1, lang)
+        else:
+            cat_sequence = Concat_string(occ1, lang)
         
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(
@@ -412,7 +429,8 @@ def datasets(df_train, df_val, df_test,
              max_len,
              n_classes,
              alt_prob, 
-             insert_words):
+             insert_words,
+             model_domain):
     
     # Only 'ds_train_attack' has any attack probability
     ds_train = OCCDataset(
@@ -422,7 +440,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )
     ds_train_attack = OCCDataset(
         df=df_train,
@@ -431,7 +450,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = alt_prob, 
-        insert_words =insert_words 
+        insert_words = insert_words,
+        model_domain = model_domain 
     )
     ds_val = OCCDataset(
         df=df_val,
@@ -440,7 +460,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )    
     ds_test = OCCDataset(
         df=df_test,
@@ -449,7 +470,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )
     
     return ds_train, ds_train_attack, ds_val, ds_test
@@ -497,6 +519,7 @@ def Load_data(
         toyload = False,
         tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
         ):
+    # breakpoint()
     
     # Load data
     df, key = ReadData(
@@ -504,14 +527,21 @@ def Load_data(
         downsample_top1 = downsample_top1,
         upsample_below = upsample_below,
         sample_size = sample_size,
-        verbose = verbose
+        verbose = verbose,
+        toyload = toyload
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
+    
+    # Get set of unique languages 
+    Langs = set(df_train['lang'])
+    Occs = set(df_train['occ1'])
 
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":
         tokenizer = load_tokenizer(model_domain)
-        tokenizer = update_tokenizer(tokenizer, df)
+        
+        if model_domain != "Multilingual_CANINE":
+            tokenizer = update_tokenizer(tokenizer, df)
 
     # Calculate number of classes
     N_CLASSES = len(key)
@@ -530,7 +560,8 @@ def Load_data(
         max_len=max_len,
         n_classes=N_CLASSES,
         alt_prob = alt_prob, 
-        insert_words = insert_words
+        insert_words = insert_words,
+        model_domain = model_domain
         )
     
     # Data loaders
@@ -547,7 +578,9 @@ def Load_data(
         'tokenizer': tokenizer,
         'N_CLASSES': N_CLASSES,
         'key': key,
-        'reference_loss': reference_loss
+        'reference_loss': reference_loss,
+        'Languages': Langs,
+        'Occupations': Occs
     }
 
 #%%

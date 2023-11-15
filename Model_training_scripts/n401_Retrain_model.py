@@ -17,11 +17,11 @@ os.chdir(script_directory)
 #%% Hyperparameters
 
 # Which training data is used for the model
-MODEL_DOMAIN = "Multilingual"
+MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
 SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 20
+EPOCHS = 30
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -34,8 +34,13 @@ import datetime
 current_date = datetime.datetime.now().strftime("%y%m%d")
 if MODEL_DOMAIN == "Multilingual":
     MODEL_NAME_start = f'231107_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
-    MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+    MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}'
+elif MODEL_DOMAIN == "Multilingual_CANINE":
+    MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    MODEL_NAME_start = "231114_231114_231114_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    MODEL_NAME = f"{current_date}_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
 else: 
+    raise Exception("Not implemented")
     MODEL_NAME = f'{current_date}_BERT_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 #%% Libraries
@@ -57,8 +62,16 @@ from n102_DataLoader import *
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # %% Load tokenizer
-tokenizer_save_path = '../Trained_models/' + MODEL_NAME_start + '_tokenizer'
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
+
+if MODEL_DOMAIN == "Multilingual":
+   # Load updated tokenizer
+   tokenizer_save_path = '../Trained_models/' + MODEL_NAME_start + '_tokenizer'
+   tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
+elif MODEL_DOMAIN == "Multilingual_CANINE":
+    tokenizer = load_tokenizer(MODEL_DOMAIN)
+else: 
+    raise Exception("Not implemented")
+
 
 # Temp code 
 # tokenizer = data['tokenizer']
@@ -120,7 +133,8 @@ model = trainer_loop(
     reference_loss = data['reference_loss'], 
     optimizer = optimizer, 
     device = device, 
-    scheduler = scheduler
+    scheduler = scheduler,
+    attack_switch = True # Attack is enabled from the beginning
     )
 
 # # %% Load best model instance
