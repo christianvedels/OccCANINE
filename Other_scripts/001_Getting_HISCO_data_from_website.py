@@ -210,6 +210,13 @@ def get_one_again(i, sleep_max = 3, sleep_min = 1, save_interval=100):
         else:
             return 0
     
+    # Add 'i' to the set of checked values
+    checked_i_values.add(id0)
+    
+    # Check if it's time to save checked_i_values
+    if len(checked_i_values) % save_interval == 0:
+        save_checked_values(checked_i_values)
+    
     # ==== Get response ====
     print(f"Trying {i}: {url}")
         
@@ -246,20 +253,7 @@ def get_one_again(i, sleep_max = 3, sleep_min = 1, save_interval=100):
     # Delete 'column' element, which is empty:
     if len(table_data ) > 0 and len(table_data[0]) > 1:
         del table_data[0][1]
-    
-    # ==== Housekeeping ====
-    # Update progress saver
-    # Add 'i' to the set of checked values
-    checked_i_values.add(id0)
-    
-    # Check if it's time to save checked_i_values
-    if len(checked_i_values) % save_interval == 0:
-        save_checked_values(checked_i_values)
-    
-    if(len(table_data)<8):
-        print(f'Skipped id {id0}')
-        return 0
-        
+                
     # ==== Process and save results =====
         
     # Create a pandas DataFrame from the table data
@@ -282,5 +276,11 @@ def get_one_again(i, sleep_max = 3, sleep_min = 1, save_interval=100):
     
 # %% Run it again 
 to_rescrape = pd.read_csv("../Data/Raw_data/HISCO_website/To_rescrape.csv")
-for i in range(7722, 100000):
-    get_one_again(i)
+# for i in range(7722, 100000):
+for i in range(52731, 100000):
+    get_one_again(i, sleep_max = 10, sleep_min = 3)
+    
+    # Long break:
+    if i % 500 == 0:
+        print("---> Long sleep")
+        sleep(randint(120, 180))
