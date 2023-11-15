@@ -42,29 +42,29 @@ Data types:
 
 
 ## Overview of training data and sources
-| Source file name    | Observations  | Description                                              | Reference   | Language |
-|----------------------|---------------|---------------------------------------------------------|-------------|----------|
-| EN_uk_ipums_[x].csv  | 5,108,577     | English UK IPUMS dataset                                | MPC (2020)     | en |
-| DK_census_[x].csv    | 4,673,892     | Danish census data.                                     | Clausen (2015) | da |
-| EN_marr_cert_[x].csv | 4,046,387     | English marriage certificate data                       | Unknown     | en |
-| SE_swedpop_[x].csv   | 1,793,557     | Swedish population data                                 | Unknown     | se |
-| EN_ca_ipums_[x].csv  | 1,427,559     | English Canada IPUMS dataset                            | Unknown     | en |
-| JIW_database_[x].csv | 966,793       | JIW database                                            | Unknown     | nl |
-| CA_bcn_[x].csv       | 644,484       | Canadian Barcelona dataset                              | Unknown     | ca |
-| EN_us_ipums_[x].csv  | 313,069       | English US IPUMS dataset                                | Unknown     | en |
-| NO_ipums_[x].csv     | 233,518       | Norwegian IPUMS dataset                                 | Unknown     | no |
-| FR_desc_[x].csv      | 142,778       | French description data                                 | Unknown     | fr |
-| HSN_database_[x].csv | 134,957       | HSN database                                            | Unknown     | nl |
-| EN_parish_[x].csv    | 73,806        | English parish dataset                                  | Unknown     | en |
-| IS_ipums_[x].csv     | 47,497        | Icelandic IPUMS dataset                                 | Unknown     | is |
-| DK_cedar_[x].csv     | 46,563        | Danish cedar dataset                                    | Unknown     | da |
-| SE_cedar_[x].csv     | 45,581        | Swedish cedar dataset                                   | Unknown     | se |
-| DE_ipums_[x].csv     | 36,942        | German IPUMS dataset                                   | Unknown     | de |
-| DK_orsted_[x].csv    | 36,608        | Danish Orsted dataset                                  | Unknown     | da |
-| EN_oclack_[x].csv    | 24,530        | English Oclack dataset                                  | Unknown     | en |
-| EN_loc_[x].csv       | 23,179        | English Loc dataset                                    | Unknown     | en |
-| SE_chalmers_[x].csv  | 14,426        | Swedish Chalmers dataset                               | Unknown     | se |
-| IT_fm_[x].csv        | 4,525         | Italian FM dataset                                     | Unknown     | it |
+|File name            |       N| N train| N unique strings|Description                                                  |Reference                                    |Language |Type             |
+|:--------------------|-------:|-------:|----------------:|:------------------------------------------------------------|:--------------------------------------------|:--------|:----------------|
+|DK_census_[x].csv    | 4673892| 3972635|           148011|Danish census data                                           |Clausen (2015); The Danish National Archives |da       |Census           |
+|EN_marr_cert_[x].csv | 4046387| 3439405|            86397|English marriage certificates                                |Clark, Cummins, Curtis (2022)                |en       |Marriage records |
+|EN_uk_ipums_[x].csv  | 3026859| 2572930|          2073676|IPUMS international census data*                             |MPC (2020); Office of National Statistics    |en       |Census           |
+|SE_swedpop_[x].csv   | 1793557| 1523770|            30939|Parish registers and income registers                        |SwedPop (2022)                               |se       |Census           |
+|JIW_database_[x].csv |  966793|  821229|           155834|Ja, ik wil - Amsterdam marriage banns registers              |De Moor & van Weeren (2021)                  |nl       |Marriage records |
+|EN_ca_ipums_[x].csv  |  818657|  695383|             9437|IPUMS international census data. Both French and English     |MPC (2020); Statistics Canada                |unk      |Census           |
+|CA_bcn_[x].csv       |  644484|  547492|           501115|Barcelona Historical Marriage Database                       |Pujades-Mora & Valls (2017)                  |ca       |Marriage records |
+|NO_ipums_[x].csv     |  147255|  125068|            17209|IPUMS international census data. Norwegian census 1801.      |MPC (2020)                                   |no       |Census           |
+|FR_desc_[x].csv      |  142778|  121273|           118904|Occupational titles form the HISCO website                   |historyofwork.iisg.nl                        |fr       |Descriptions     |
+|EN_us_ipums_[x].csv  |  139595|  118558|           118258|IPUMS international census data*                             |MPC (2020); Bureau of the Census             |en       |Census           |
+|HSN_database_[x].csv |  134957|  114635|           109247|Historical Sample of The Netheralnds                         |Mandemakers et al (2020)                     |nl       |Census           |
+|EN_parish_[x].csv    |   73806|   62654|            11820|HISCO labelled parish occupational descriptions              |de Pleijt, Nuvolari, Weisdorf (2020)         |en       |Descriptions     |
+|DK_cedar_[x].csv     |   46563|   39507|             3750|Occupational descriptions tranlated from Swedish CEDAR       |Ford (2023)                                  |da       |Descriptions     |
+|SE_cedar_[x].csv     |   45581|   38673|            38648|Occupational descriptions extracted from Swedish CEDAR       |Ford (2023)                                  |se       |Descriptions     |
+|DK_orsted_[x].csv    |   36608|   31046|             1961|Occupational descriptions used in Ford (2023)                |Ford (2023)                                  |da       |Descriptions     |
+|EN_oclack_[x].csv    |   24530|   20837|             2408|https://github.com/rlzijdeman/o-clack/tree/master            |O-clack                                      |en       |Descriptions     |
+|EN_loc_[x].csv       |   23179|   19691|            19632|London Occupational codes                                    |Mooney (2016)                                |en       |Descriptions     |
+|IS_ipums_[x].csv     |   20459|   17364|             5488|IPUMS international census data. Icelandic census 1901, 1910 |MPC (2020)                                   |is       |Census           |
+|SE_chalmers_[x].csv  |   14426|   12246|              849|Occupational descriptions from Ford (2023)                   |Ford (2023)                                  |se       |Descriptions     |
+|DE_ipums_[x].csv     |    8482|    7185|              588|IPUMS international census data                              |MPC (2020); Statistics Netherlands           |de       |Census           |
+|IT_fm_[x].csv        |    4525|    3828|             3797|Italian occupational descriptions                            |Fornasin & Marzona (2016)                    |it       |Descriptions     |
 
 
 x $\in$ {train, test, val}

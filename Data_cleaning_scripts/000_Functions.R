@@ -328,6 +328,7 @@ Combinations = function(x, and = "and"){
 
 # n_in_dir: Counts data in directories
 n_in_dir = function(x){
+  data_type = x
   
   # Setup
   dir0 = paste0("Data/", x)
@@ -355,10 +356,12 @@ n_in_dir = function(x){
     n = x %>% NROW() # Count number of rows  
     n_unique = x %>% distinct(occ1) %>% NROW()
     
-    data.frame(n = n, n_unique = n_unique)
+    res = data.frame(n = n, n_unique = n_unique)
     
+    return(res)
     
-  } %>% mutate(f = fs0) %>% 
+  } %>% 
+    mutate(f = fs0) %>% 
     select(f, n, n_unique)
   return(x)
 }
@@ -396,6 +399,41 @@ lang_in_dir = function(x){
     
   } %>% mutate(f = fs0) %>% 
     select(f, lang)
+  return(x)
+}
+
+
+unique_in_dir = function(x){
+  stop("Not fully implemented. Something is weird in the loop.")
+  # Setup
+  dir0 = paste0("Data/", x)
+  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
+  fs0 = list.files(dir0, pattern = ".csv")
+  
+  # Progress setup
+  i = 1
+  length0 = length(fs)
+  
+  # Count loop
+  x = foreach(f = fs, .combine = "bind_rows") %do% {
+    
+    # Progress
+    cat(i,"of",length0,"::: Lang",f, "                      \r")
+    i = i + 1
+    
+    # Read and count
+    suppressWarnings({
+      x = read_csv(
+        f, show_col_types = FALSE, progress = FALSE, n_max = 100
+      )
+    })
+    
+    unique_occs = x$occ1
+    
+    data.frame(occ1 = unique_occs, f = fs0[i])
+    
+  } %>% 
+    select(f, occ1) %>% 
   return(x)
 }
 
@@ -523,6 +561,20 @@ Data_summary = function(out = "plain"){
     knitr::kable(res, "pipe") %>% print()
     knitr::kable(res_lang, "pipe") %>% print()
     knitr::kable(res_type, "pipe") %>% print()
+    
+    cat("\n\nFor readme:")
+    res %>% 
+      select(f, n, n_train, n_train_unique, Description, Source , lang, Type) %>% 
+      rename(
+        `File name` = f,
+        `N` = n,
+        `N train` = n_train,
+        `N unique strings` = n_train_unique,
+        Reference = Source,
+        Language = lang
+      ) %>% 
+      knitr::kable("pipe") %>% 
+      print()
   }
   
   if("md" %in% out){
