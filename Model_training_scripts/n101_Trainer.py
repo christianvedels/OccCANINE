@@ -131,6 +131,38 @@ def plot_progress(train_losses, val_losses, train_acc, val_acc, reference_loss, 
     plt.savefig("../Tmp training plots/" + model_name + ".png")
     #plt.show()
     plt.close()
+    
+# %% Run_eval()
+def Run_eval(model, data, loss_fn, device, reference_loss, history, train_acc, train_loss, model_name):
+    # Get model performance (accuracy and loss)
+    val_acc, val_loss = eval_model(
+        model,
+        data['data_loader_val'],
+        loss_fn,
+        device,
+    )
+    
+    print(f"Val   loss {val_loss}, accuracy {val_acc}")
+    
+    print(f"Reference loss: {reference_loss}")
+    
+    # Store stats to history
+    history['train_acc'].append(train_acc)
+    history['train_loss'].append(train_loss)
+    history['val_acc'].append(val_acc)
+    history['val_loss'].append(val_loss)
+    
+    # Make plot
+    plot_progress(
+        history['train_loss'], 
+        history['val_loss'], 
+        history['train_acc'],
+        history['val_acc'],
+        reference_loss = reference_loss,
+        model_name = model_name
+        )
+    
+    return history, val_acc
 
 # %% Trainer loop
 def trainer_loop(
@@ -144,11 +176,11 @@ def trainer_loop(
         device,
         scheduler,
         verbose = False,
-        switch_attack = 0.75
+        switch_attack = 0.75,
+        attack_switch = False        
         ):
     history = defaultdict(list)
     best_accuracy = 0
-    attack_switch = False
     
     # # Train first epoch before plotting anything
     # print("Started training one epoch as warmup")
@@ -191,35 +223,19 @@ def trainer_loop(
                 print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
             attack_switch = True
             
-            
-        # Get model performance (accuracy and loss)
-        val_acc, val_loss = eval_model(
-            model,
-            data['data_loader_val'],
-            loss_fn,
-            device,
-        )
-        
-        print(f"Val   loss {val_loss}, accuracy {val_acc}")
-        
-        print(f"Reference loss: {reference_loss}")
-        
-        # Store stats to history
-        history['train_acc'].append(train_acc)
-        history['train_loss'].append(train_loss)
-        history['val_acc'].append(val_acc)
-        history['val_loss'].append(val_loss)
-        
-        # Make plot
-        plot_progress(
-            history['train_loss'], 
-            history['val_loss'], 
-            history['train_acc'],
-            history['val_acc'],
-            reference_loss = reference_loss,
-            model_name = model_name
+        # Run eval
+        history, val_acc = Run_eval(
+            model, 
+            data, 
+            loss_fn, 
+            device, 
+            reference_loss, 
+            history, 
+            train_acc, 
+            train_loss, 
+            model_name
             )
-
+        
         # If we beat prev performance
         if val_acc > best_accuracy:
             print("Saved improved model")
