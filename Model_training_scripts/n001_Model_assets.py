@@ -159,122 +159,43 @@ class CANINEOccupationClassifier(nn.Module):
         #  Add a dropout layer 
         output = self.drop(pooled_output)
         return self.out(output)
-    
-<<<<<<< Updated upstream
-# %% LSTM
-class CharLSTMOccupationClassifier(nn.Module):
-    def __init__(self, n_classes, unique_chars, unique_langs, char_embedding_size, lang_embedding_size, hidden_size, num_layers, dropout_rate, char_length):
-        super(CharLSTMOccupationClassifier, self).__init__()
         
-        # breakpoint()
-        # Makeshift lang tokenizer
-        # Assume you have the following mappings from the tokenizer
-        self.char_to_id_mapping = {char: idx for idx, char in enumerate([' '] + unique_chars)}
-        self.lang_to_id_mapping = {lang: idx for idx, lang in enumerate(unique_langs)}
-        self.char_length = char_length
-        
-        self.char_embedding = nn.Embedding(len(self.char_to_id_mapping), char_embedding_size)
-        self.lang_embedding = nn.Embedding(len(self.lang_to_id_mapping), lang_embedding_size)
-        
-        self.dropout = nn.Dropout(dropout_rate)
-        self.lstm = nn.LSTM(input_size=char_embedding_size + lang_embedding_size,
-                            hidden_size=hidden_size, num_layers=num_layers,
-                            bidirectional=True, batch_first=True)
-        
-        self.global_avg_pooling = nn.AdaptiveAvgPool1d(1)
-        self.fc1 = nn.Linear(hidden_size * 2, hidden_size * 2)
-        self.fc2 = nn.Linear(hidden_size * 2, hidden_size)
-        self.output_layer = nn.Linear(hidden_size, n_classes)
-        self.leaky_relu = nn.LeakyReLU(0.01)
-                
-    # Function to convert characters to ids
-    def char_to_ids(self, char_sequence):
-        char_ids = [self.char_to_id_mapping[char] for char in char_sequence]
-        
-        # Padding to char_length
-        padding_length = self.char_length - len(char_ids)
-        padded_char_ids = char_ids + [0] * padding_length if padding_length > 0 else char_ids
-        
-        return torch.tensor(padded_char_ids)
-    
-    # Function to convert languages to ids
-    def lang_to_ids(self, lang_token):
-        res = self.lang_to_id_mapping[lang_token]
-        return torch.tensor(res)
-
-    def forward(self, occ_input, lang_input):
-        # breakpoint()
-        
-        # Convert lang to unk if unknown language
-        lang_input = lang_input.lower()
-        # Check if lang_input is in self.lang_to_id_mapping or convert to unknown
-        if lang_input not in self.lang_to_id_mapping:
-            lang_input = 'unk'
-        
-        # Convert tokens to IDs
-        char_ids = self.char_to_ids(occ_input)
-
-        # Convert language token to ID
-        lang_ids = self.lang_to_ids(lang_input)
-        
-        char_embedded = self.char_embedding(char_ids)
-        lang_embedded = self.lang_embedding(lang_ids)
-        
-        # Concatenate character and language embeddings along the last dimension
-        # breakpoint()
-        concatenated_input = torch.cat((lang_embedded, char_embedded), dim=-1)
-
-        dropped = self.dropout(concatenated_input)
-        lstm_out, _ = self.lstm(dropped)
-        
-        # Global average pooling
-        pooled_output = self.global_avg_pooling(lstm_out.permute(0, 2, 1)).squeeze(-1)
-        
-        fc1_out = self.leaky_relu(self.fc1(pooled_output))
-        fc2_out = self.leaky_relu(self.fc2(fc1_out))
-        
-        output = torch.sigmoid(self.output_layer(fc2_out))
-        
-        return output
-    
-=======
 # %%
-class StackingEnsemble(nn.Module):
-    def __init__(self, base_models, meta_classifier, encoders, tokenizers, freeze_base_models=True):
-        super(StackingEnsemble, self).__init__()
+# class StackingEnsemble(nn.Module):
+#     def __init__(self, base_models, meta_classifier, encoders, tokenizers, freeze_base_models=True):
+#         super(StackingEnsemble, self).__init__()
         
-        # Create a list to hold the base models
-        self.base_models = nn.ModuleList(base_models)
+#         # Create a list to hold the base models
+#         self.base_models = nn.ModuleList(base_models)
         
-        # Freeze or unfreeze base models based on the argument
-        for model in self.base_models:
-            self.freeze_layers(model, freeze_base_models)
+#         # Freeze or unfreeze base models based on the argument
+#         for model in self.base_models:
+#             self.freeze_layers(model, freeze_base_models)
         
-        self.meta_classifier = meta_classifier
+#         self.meta_classifier = meta_classifier
         
-        self.encoders = encoders
-        self.tokenizers = tokenizers
+#         self.encoders = encoders
+#         self.tokenizers = tokenizers
 
-    def freeze_layers(self, model, freeze):
-        if freeze:
-            for param in model.parameters():
-                param.requires_grad = False
-        return model
->>>>>>> Stashed changes
+#     def freeze_layers(self, model, freeze):
+#         if freeze:
+#             for param in model.parameters():
+#                 param.requires_grad = False
+#         return model
 
-    def forward(self, occ1, lang):
-        # Make predictions with each base model using corresponding inputs
-        [e(occ1, lang) for e in ] # Include concat function
+#     def forward(self, occ1, lang):
+#         # Make predictions with each base model using corresponding inputs
+#         # [e(occ1, lang) for e in ] # Include concat function
         
-        predictions = [
-            base_model(input_ids, attention_mask) for (input_ids, attention_mask), base_model in zip(inputs, self.base_models)
-        ]
+#         predictions = [
+#             base_model(input_ids, attention_mask) for (input_ids, attention_mask), base_model in zip(inputs, self.base_models)
+#         ]
         
-        # Concatenate predictions along the feature dimension
-        features = torch.cat(predictions, dim=1)
+#         # Concatenate predictions along the feature dimension
+#         features = torch.cat(predictions, dim=1)
         
-        # Forward pass through the meta-classifier using concatenated features
-        final_pred = self.meta_classifier(features)
+#         # Forward pass through the meta-classifier using concatenated features
+#         final_pred = self.meta_classifier(features)
         
-        return final_pred
+#         return final_pred
     
