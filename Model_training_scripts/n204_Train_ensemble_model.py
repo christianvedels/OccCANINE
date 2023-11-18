@@ -73,6 +73,9 @@ pred01 = models[0].predict(df["occ1"].tolist(), what = "bin", verbose = True)
 pred10 = models[1].predict(df["occ1"].tolist(), what = "bin", lang = df['lang'].tolist(), verbose = True)
 pred11 = models[1].predict(df["occ1"].tolist(), what = "bin", verbose = True)
 
+
+
+
 # %%
 def pred_test(pred):
     test = []
@@ -80,12 +83,26 @@ def pred_test(pred):
         result = p == y
         test.append(all(result))
         
-    print(np.mean(test))
+    return np.mean(test)
     
 pred_test(pred00)
 pred_test(pred01)
 pred_test(pred10)
 pred_test(pred10)
+
+# %%
+pred025 =  [
+    models[0].predict(df["occ1"].tolist(), what = "bin", lang = df['lang'].tolist(), verbose = True, threshold = p)
+    for p in np.arange(0.1, 1, step=0.1)
+    ]
+
+pred125 =  [
+    models[1].predict(df["occ1"].tolist(), what = "bin", lang = df['lang'].tolist(), verbose = True, threshold = p)
+    for p in np.arange(0.1, 1, step=0.1)
+    ]
+
+# %%
+[[pred_test(pred),p] for pred, p in zip(pred025, np.arange(0.1, 1, step=0.1))]
 
 # %% Run test
 pred00 = models[0].predict(df["occ1"].tolist(), what = "probs", lang = df['lang'].tolist(), verbose = True)
