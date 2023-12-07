@@ -11,14 +11,17 @@
 # ==== Libraries ====
 library(tidyverse)
 library(foreach)
+source("Data_cleaning_scripts/000_Functions.R")
 
 # ==== Load data ====
-fs = list.files(
-  "Data/Raw_data/HISCO_website/Many_files", 
-  pattern = ".csv", 
-  full.names = TRUE
-)
-data0 = read_csv(fs, id = "file_name")
+# fs = list.files(
+#   "Data/Raw_data/HISCO_website/Many_files", 
+#   pattern = ".csv", 
+#   full.names = TRUE
+# )
+# data0 = read_csv(fs, id = "file_name")
+# save(data0, file = "Data/Tmp_data/HISCO_website_raw.Rdata")
+load("Data/Tmp_data/HISCO_website_raw.Rdata")
 
 # ==== Clean data ====
 data0 = data0 %>% 
@@ -97,26 +100,147 @@ data0 %>% filter(Provenance == 97125) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance == 94990) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance %in% c(1:11)) %>% select(url) %>% unlist()
 
+# ==== Preliminary data clean ====
+data0 = data0 %>% 
+  drop_na(valid_hisco) %>% 
+  rename(
+    Source = Provenance
+  ) %>% 
+  mutate( # Clean string:
+    occ1 = str_replace_all(occ1, "[^[:alnum:] ]", "") %>% tolower()
+  ) %>% 
+  mutate(
+    occ1 = sub_scandi(occ1) # Clean out all non-English characters
+  ) %>% 
+  mutate(
+    hisco_1 = as.numeric(hisco_1)
+  ) %>% 
+  mutate(
+    hisco_1 = ifelse(is.na(hisco_1), -1, hisco_1)
+  )
 
-# ==== To rescrape ====
-# pt1 = data0 %>% 
-#   filter(is.na(occ1)) %>% 
-#   select(id)
-# 
-# # Running numbers
-# skipping_ids = data0 %>% 
-#   mutate(dif = as.numeric(id) - dplyr::lag(as.numeric(id))) %>% 
-#   filter(dif != 1) %>% select(id, dif)
-# 
-# skipped_ids = foreach(i = 1:NROW(skipping_ids)) %do% {
-#   skipping_ids$id[i] - seq(1, skipping_ids$dif[i]-1)
-# } %>% unlist()
-# 
-# skipped_ids %>% length()
-# 
-# to_rescrape = data.frame(id = c(pt1$ids, skipped_ids))
-# 
-# to_rescrape %>%
-#   write_csv2("Data/Raw_data/HISCO_website/To_rescrape.csv")
+data0 = data0 %>%
+  mutate(
+    hisco_2 = " ",
+    hisco_3 = " ",
+    hisco_4 = " ",
+    hisco_5 = " "
+  )
 
 
+translations = data0 %>% 
+  distinct(hisco_1, Translation) %>% 
+  rename(
+    occ1 = Translation
+  ) %>% 
+  mutate(
+    Source = "Translations",
+    Language = "English"
+  ) %>% 
+  mutate(hisco_2 = " ")
+
+data0 = data0 %>% 
+  bind_rows(translations)
+
+# ==== Synthetic combinations ("and") ====
+data0 = data0 %>% 
+  drop_na(Language) %>%  # 2 observations
+  filter(Language != "DA") # 1 observations
+
+unique_languages = data0$Language %>% unique()
+print(unique_languages)
+paste(unique_languages, collapse = "',\n'") %>% cat()
+
+and_in_lang = c( # https://translated-into.com/and
+  'French' = 'et',
+  'German' = 'und',
+  'Dutch' = 'en',
+  'Norwegian' = 'og',
+  'Catalan' = 'i',
+  'Spanish' = 'y',
+  'English' = 'and',
+  'Swedish' = 'och',
+  'Portugese' = 'e',
+  'Danish' = 'og',
+  'Greek' = "kai"
+)
+
+# Combinations
+combinations0 = foreach(i = seq(1:length(and_in_lang)), .combine = "bind_rows") %do% {
+  lang_i = names(and_in_lang)[i]
+  message1 = paste0(
+    "<===================================>\n",
+    Sys.time(), ":\nMaking combinations from ", lang_i, "\n"
+  )
+  cat(message1)
+  
+  # Extract relevant data
+  data_i = data0 %>% filter(
+    Language == lang_i
+  ) %>% select(occ1, Language, hisco_1, hisco_2)
+  
+  # Run combinations
+  comb_i = Combinations(data_i, and = and_in_lang[i]) %>% 
+    mutate_all(as.character)
+  
+  return(comb_i)
+}
+
+combinations0 = combinations0 %>% 
+  mutate(Source = paste("Combinations", Language))
+
+# Combine it
+data1 = data0 %>% 
+  mutate_all(as.character) %>% 
+  bind_rows(combinations0)
+
+# ==== Check against authoritative HISCO list ====
+load("Data/Key.Rdata")
+
+key = key %>% select(hisco, code)
+
+# Remove data not in key (erronoeous data somehow)
+data1 %>% 
+  filter(!hisco_1 %in% key$hisco)
+
+n1 = NROW(data1)
+data1 = data1 %>% 
+  filter(hisco_1 %in% key$hisco) %>% 
+  filter(hisco_2 %in% key$hisco)
+
+NROW(data1) - n1 # -9801 observations
+
+# Turn into character
+data1 = data1 %>% 
+  mutate_all(as.character)
+
+# Add code
+data1 = data1 %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
+
+# Add RowID 
+data1 = data1 %>% 
+  ungroup() %>% 
+  mutate(RowID = 1:n())
+
+# ==== Save ====
+save(data1, file = "Data/Tmp_data/Clean_HISCO_website.Rdata")

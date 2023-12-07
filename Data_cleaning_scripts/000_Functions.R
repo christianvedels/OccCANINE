@@ -11,6 +11,7 @@
 # x: Character to clean
 
 sub_scandi = function(x){
+  require(stringi)
   x = stri_trans_general(x, "Latin-ASCII")
   return(x)
   
