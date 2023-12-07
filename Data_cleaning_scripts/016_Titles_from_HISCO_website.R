@@ -248,5 +248,27 @@ data1 = data1 %>%
 # ==== Standardized language names ====
 # 'da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it'
 
+stop("Finish this bit")
+data1 %>% 
+  mutate(
+    lang = case_when(
+      lang == 'French' ~ 'fr',
+      'German' = 'und',
+      'Dutch' = 'en',
+      'Norwegian' = 'og',
+      'Catalan' = 'i',
+      'Spanish' = 'y',
+      'English' = 'and',
+      'Swedish' = 'och',
+      'Portugese' = 'e',
+      'Danish' = 'og',
+      'Greek' = "kai"
+    )
+  )
+
+and_in_lang = c( # https://translated-into.com/and
+  
+)
+
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/Clean_HISCO_website.Rdata")
