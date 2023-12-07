@@ -223,6 +223,13 @@ x = pipeline(
   lang
 )
 
+# ==== Run pipeline multilingual ====
+x = pipeline(
+  "Data/Tmp_data/Clean_HISCO_website.Rdata",
+  "HISCO_website",
+  lang = "In_data"
+)
+
 # ==== Training data stats ====
 summary0 = Data_summary(out = c("plain", "data"))
 summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")

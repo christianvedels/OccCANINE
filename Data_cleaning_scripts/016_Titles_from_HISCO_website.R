@@ -100,6 +100,21 @@ data0 %>% filter(Provenance == 97125) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance == 94990) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance %in% c(1:11)) %>% select(url) %>% unlist()
 
+# ==== Tranlastions is also good data ====
+translations = data0 %>% 
+  distinct(hisco_1, Translation) %>% 
+  rename(
+    occ1 = Translation
+  ) %>% 
+  mutate(
+    Source = "Translations",
+    Language = "English"
+  ) %>% 
+  mutate(hisco_2 = " ")
+
+data0 = data0 %>% 
+  bind_rows(translations)
+
 # ==== Preliminary data clean ====
 data0 = data0 %>% 
   drop_na(valid_hisco) %>% 
@@ -126,21 +141,6 @@ data0 = data0 %>%
     hisco_4 = " ",
     hisco_5 = " "
   )
-
-
-translations = data0 %>% 
-  distinct(hisco_1, Translation) %>% 
-  rename(
-    occ1 = Translation
-  ) %>% 
-  mutate(
-    Source = "Translations",
-    Language = "English"
-  ) %>% 
-  mutate(hisco_2 = " ")
-
-data0 = data0 %>% 
-  bind_rows(translations)
 
 # ==== Synthetic combinations ("and") ====
 data0 = data0 %>% 
@@ -240,7 +240,13 @@ data1 = data1 %>%
 # Add RowID 
 data1 = data1 %>% 
   ungroup() %>% 
-  mutate(RowID = 1:n())
+  mutate(RowID = 1:n()) %>% 
+  rename(
+    lang = Language
+  )
+
+# ==== Standardized language names ====
+# 'da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it'
 
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/Clean_HISCO_website.Rdata")
