@@ -66,7 +66,7 @@ data0 = data0 %>%
     valid_hisco = ifelse(hisco_1 %in% hisco::hisco$hisco, hisco_1, NA)
   )
 
-# ==== Non unique HISCO codes ====
+# ==== Looking at data ====
 data0 %>% 
   distinct(occ1, Language, Country, valid_hisco) %>% 
   group_by(occ1) %>% 
@@ -101,6 +101,11 @@ data0 %>% filter(Provenance == 94990) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance %in% c(1:11)) %>% select(url) %>% unlist()
 
 # ==== Tranlastions is also good data ====
+data0 = data0 %>% 
+  rename(
+    Source = Provenance
+  )
+
 translations = data0 %>% 
   distinct(hisco_1, Translation) %>% 
   rename(
@@ -118,9 +123,6 @@ data0 = data0 %>%
 # ==== Preliminary data clean ====
 data0 = data0 %>% 
   drop_na(valid_hisco) %>% 
-  rename(
-    Source = Provenance
-  ) %>% 
   mutate( # Clean string:
     occ1 = str_replace_all(occ1, "[^[:alnum:] ]", "") %>% tolower()
   ) %>% 
@@ -246,29 +248,23 @@ data1 = data1 %>%
   )
 
 # ==== Standardized language names ====
-# 'da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it'
-
-stop("Finish this bit")
-data1 %>% 
+data1 = data1 %>% 
   mutate(
     lang = case_when(
       lang == 'French' ~ 'fr',
-      'German' = 'und',
-      'Dutch' = 'en',
-      'Norwegian' = 'og',
-      'Catalan' = 'i',
-      'Spanish' = 'y',
-      'English' = 'and',
-      'Swedish' = 'och',
-      'Portugese' = 'e',
-      'Danish' = 'og',
-      'Greek' = "kai"
+      lang == 'German' ~ 'ge',
+      lang == 'Dutch' ~ 'nl',
+      lang == 'Norwegian' ~ 'no',
+      lang == 'Catalan' ~ 'ca',
+      lang == 'Spanish' ~ 'es',
+      lang == 'English' ~ 'en',
+      lang == 'Swedish' ~ 'se',
+      lang == 'Portugese' ~ 'pt',
+      lang == 'Danish' ~ 'da',
+      lang == 'Greek' ~ 'gr'
     )
   )
-
-and_in_lang = c( # https://translated-into.com/and
   
-)
 
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/Clean_HISCO_website.Rdata")

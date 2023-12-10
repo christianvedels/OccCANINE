@@ -169,7 +169,8 @@ Keep_only_relevant = function(x){
     "code3",
     "code4", 
     "code5", 
-    "split"
+    "split",
+    "lang"
   )
   
   res = x[,which(names(x)%in%relevant_vars)]
@@ -191,7 +192,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'unk', 'de', 'is', 'unk', 'it', 'In_data')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'es', 'pt', 'gr', 'unk', 'ge', 'is', 'unk', 'it', 'In_data')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -204,13 +205,29 @@ Save_train_val_test = function(x, Name, language = NA){
       occ1 = ifelse(is.na(occ1), " ", occ1)
     )
   
-  stop("Implement handling of cases where 'lang' is present in 'x'")
   # Update RowID to contain Name
   x = x %>% 
     mutate(
-      RowID = paste0(Name, RowID),
-      lang = language
+      RowID = paste0(Name, RowID)
     )
+  
+  # Handle languages
+  if(language == 'In_data'){
+    # Check if all langs are valid
+    the_langs = unique(x$lang)
+    test1 = all(the_langs %in% valid_languages)
+    if(!test1){
+      # Find culprit
+      culprit = the_langs[which(!the_langs %in% valid_languages)]
+      stop("Unrecognized language found: '",culprit, "' is not a valid language")
+    }
+  } else {
+    # If lang was an input, then set it as variable
+    x = x %>% 
+      mutate(
+        lang = language
+      )
+  }
   
   # Add na year if it is missing
   if((!"Year" %in% names(x))){
@@ -344,6 +361,8 @@ n_in_dir = function(x){
   # Count loop
   x = foreach(f = fs, .combine = "bind_rows") %do% {
     
+    f0_i = fs0[i]
+    
     # Progress
     cat(i,"of",length0,"::: Reading",f, "                      \r")
     i = i + 1
@@ -354,53 +373,23 @@ n_in_dir = function(x){
         f, show_col_types = FALSE, progress = FALSE
       )
     })
-    
-    n = x %>% NROW() # Count number of rows  
-    n_unique = x %>% distinct(occ1) %>% NROW()
-    
-    res = data.frame(n = n, n_unique = n_unique)
+     
+    res = x %>% 
+      group_by(lang) %>% 
+      summarise(
+        n = n(),
+        n_unique = length(unique(occ1))
+      ) %>% 
+      arrange(lang) %>% 
+      mutate(
+        f = f0_i
+      )
     
     return(res)
     
   } %>% 
-    mutate(f = fs0) %>% 
-    select(f, n, n_unique)
-  return(x)
-}
-
-lang_in_dir = function(x){
+    select(f, lang, n, n_unique)
   
-  # Setup
-  dir0 = paste0("Data/", x)
-  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
-  fs0 = list.files(dir0, pattern = ".csv")
-  
-  # Progress setup
-  i = 1
-  length0 = length(fs)
-  
-  # Count loop
-  x = foreach(f = fs, .combine = "bind_rows") %do% {
-    
-    # Progress
-    cat(i,"of",length0,"::: Lang",f, "                      \r")
-    i = i + 1
-    
-    # Read and count
-    suppressWarnings({
-      x = read_csv(
-        f, show_col_types = FALSE, progress = FALSE, n_max = 100
-      )
-    })
-    
-    lang = x$lang %>% unique()
-    if(length(lang)>1){
-      stop("More than one language in: ", f)
-    }
-    data.frame(lang = lang)
-    
-  } %>% mutate(f = fs0) %>% 
-    select(f, lang)
   return(x)
 }
 
@@ -466,8 +455,8 @@ Data_summary = function(out = "plain"){
   
   # Clean counts
   res = train %>% 
-    left_join(val, by = "f") %>% 
-    left_join(test, by = "f")
+    left_join(val, by = c("f", "lang")) %>% 
+    left_join(test, by = c("f", 'lang'))
   
   res = res %>% 
     mutate(
@@ -475,8 +464,7 @@ Data_summary = function(out = "plain"){
     ) %>% 
     arrange(-n) %>% 
     mutate(
-      pct_train = paste0(round(100*n/sum(n), 3),"%"),
-      pct_train_unique = paste0(round(100*n_train_unique/sum(n_train_unique), 3),"%")
+      pct_train = paste0(round(100*n/sum(n), 3),"%")
     ) %>% 
     select(-n_val_unique, -n_test_unique)
   
@@ -484,35 +472,6 @@ Data_summary = function(out = "plain"){
   Nval = res$n_val %>% sum() %>% million()
   Ntest = res$n_val %>% sum() %>% million()
   capN = res$n %>% sum() %>% million()
-  
-  # Identify languages
-  lang_train = lang_in_dir("Training_data") %>% 
-    mutate(f = gsub("train", "[x]", f)) %>% 
-    rename(lang_train = lang)
-  lang_val = lang_in_dir("Validation_data") %>% 
-    mutate(f = gsub("val", "[x]", f)) %>% 
-    rename(lang_val = lang)
-  lang_test = lang_in_dir("Test_data") %>% 
-    mutate(f = gsub("test", "[x]", f)) %>% 
-    rename(lang_test = lang)
-  
-  langs = lang_train %>% 
-    left_join(lang_val, by = "f") %>% 
-    left_join(lang_test, by = "f")
-  
-  # test similarity of languages 
-  test1 = !all(langs$lang_train==langs$lang_train)
-  test2 = !all(langs$lang_train==langs$lang_val)
-  if(test1 | test2){
-    stop("Languages are not the same somehow")
-  }
-  
-  langs = langs %>% 
-    select(f, lang_train) %>% 
-    rename(lang = lang_train)
-  
-  res = res %>% 
-    left_join(langs, by = "f")
   
   # Language summary stats 
   res_lang = res %>% 
@@ -529,10 +488,23 @@ Data_summary = function(out = "plain"){
     ) %>% 
     arrange(-n)
   
+  # Compute summary again...
+  res = res %>% 
+    group_by(f) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    arrange(-n) %>% 
+    mutate(
+      pct_train = paste0(round(100*n/sum(n), 3),"%")
+    )
+  
   # Load descriptions and citations 
   desc = read_csv2("Data/Summary_data/Data_sources.csv")
-  desc %>% select(-lang)
-  res = res %>% left_join(desc)
+  res = res %>% left_join(desc, by = "f")
   
   if(any(is.na(res$Description))){
     warning("Missing description in 'Data/Summary_data/Data_sources.csv'")
