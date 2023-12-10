@@ -21,7 +21,7 @@ MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
 SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 30
+EPOCHS = 20
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -37,7 +37,7 @@ if MODEL_DOMAIN == "Multilingual":
     MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}'
 elif MODEL_DOMAIN == "Multilingual_CANINE":
     MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
-    MODEL_NAME_start = "231114_231114_231114_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    MODEL_NAME_start = "231115_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
     MODEL_NAME = f"{current_date}_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
 else: 
     raise Exception("Not implemented")
