@@ -331,7 +331,7 @@ def Concat_string(occ1, lang):
     
     return(cat_sequence)
 
-def Concat_string1(occ1, lang):
+def Concat_string_canine(occ1, lang):
     occ1 = str(occ1).strip("'[]'")
     # Implement random change to lang 'unknown' here:
     cat_sequence = lang+"[SEP]"+occ1
@@ -391,7 +391,7 @@ class OCCDataset(Dataset):
         occ1 = str(occ1).strip("'[]'")
         # Implement random change to lang 'unknown' here:
         if self.model_domain == "Multilingual_CANINE":
-            cat_sequence = Concat_string1(occ1, lang)
+            cat_sequence = Concat_string_canine(occ1, lang)
         else:
             cat_sequence = Concat_string(occ1, lang)
         

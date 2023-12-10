@@ -271,8 +271,6 @@ def get_one_again(i, sleep_max = 3, sleep_min = 1, save_interval=100):
 # %% Run it
 # for i in range(7722, 100000):
 #     get_one(i)
-
-
     
 # %% Run it again 
 to_rescrape = pd.read_csv("../Data/Raw_data/HISCO_website/To_rescrape.csv")

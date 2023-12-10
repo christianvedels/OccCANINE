@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['Other_scripts\\001_Getting_HISCO_data_from_website.py']
+recent_files = ['..\\..\\Teaching\\F23_News_and_Market_Sentiment_Analytics\\2023\\News_and_Market_Sentiment_Analytics\\Lecture 6 - The meaning of sentences\\Code\\spaCy_zeroshot.py', '..\\..\\Teaching\\F23_News_and_Market_Sentiment_Analytics\\2023\\News_and_Market_Sentiment_Analytics\\Lecture 5 - Understanding and utilizing grammar\\Code\\Getting_recent_news.py']
 
 [main]
 version = 0.2.0
