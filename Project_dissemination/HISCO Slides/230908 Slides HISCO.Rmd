@@ -169,7 +169,7 @@ DT::datatable(
 
 
 ---
-# The architecture
+# The architecture (1/2)
 ![Arch2](Figures/Architecture.png)
 
 ### Training 
@@ -177,7 +177,30 @@ DT::datatable(
 - Continuously tweaked towards more correct predictions
 
 ### Ongoing work
-- Replacing the brains by a transformer model (BERT) *akin to a chatGPT-frankenstein*
+- Replacing the brains by a transformer model (XML-RoBERTA)
+
+---
+# The architecture (2/2)
+
+.pull-left[
+### XML-RoBERTa
+- Pretrained multilingual model trained on 100 different languages 
+- Inherently understands different languages 
+- Trained on 2.5TB of internet text 
+- Masked language model
+
+]
+
+.pull-right[
+![Architecture](Figures/Architecture_small.png)
+
+### Fine tuning
+- Add classification layer on top of existing architecture
+- Modify some strings with language token:
+  + "UNK" + "He is a farmer"
+  + "EN" + "He is a farmer" 
+- Fine tune the model 
+]
 
 ---
 # Training
