@@ -74,7 +74,7 @@ def update_tokenizer(tokenizer, df):
 def getModel(model_domain, tokenizer):
     # breakpoint()
     MDL = modelPath(model_domain)
-    
+    # Load the basic BERT model 
     if model_domain == "Multilingual":
         model = XLMRobertaModel.from_pretrained(MDL)
     elif model_domain == "Multilingual_CANINE":  
@@ -159,43 +159,6 @@ class CANINEOccupationClassifier(nn.Module):
         #  Add a dropout layer 
         output = self.drop(pooled_output)
         return self.out(output)
-        
-# %%
-# class StackingEnsemble(nn.Module):
-#     def __init__(self, base_models, meta_classifier, encoders, tokenizers, freeze_base_models=True):
-#         super(StackingEnsemble, self).__init__()
-        
-#         # Create a list to hold the base models
-#         self.base_models = nn.ModuleList(base_models)
-        
-#         # Freeze or unfreeze base models based on the argument
-#         for model in self.base_models:
-#             self.freeze_layers(model, freeze_base_models)
-        
-#         self.meta_classifier = meta_classifier
-        
-#         self.encoders = encoders
-#         self.tokenizers = tokenizers
-
-#     def freeze_layers(self, model, freeze):
-#         if freeze:
-#             for param in model.parameters():
-#                 param.requires_grad = False
-#         return model
-
-#     def forward(self, occ1, lang):
-#         # Make predictions with each base model using corresponding inputs
-#         # [e(occ1, lang) for e in ] # Include concat function
-        
-#         predictions = [
-#             base_model(input_ids, attention_mask) for (input_ids, attention_mask), base_model in zip(inputs, self.base_models)
-#         ]
-        
-#         # Concatenate predictions along the feature dimension
-#         features = torch.cat(predictions, dim=1)
-        
-#         # Forward pass through the meta-classifier using concatenated features
-#         final_pred = self.meta_classifier(features)
-        
-#         return final_pred
     
+
+
