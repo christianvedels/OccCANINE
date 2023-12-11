@@ -11,6 +11,11 @@
 # x: Character to clean
 
 sub_scandi = function(x){
+  require(stringi)
+  x = stri_trans_general(x, "Latin-ASCII")
+  return(x)
+  
+  # Legacy code
   scandi_letters = c("Æ",
                      "æ",
                      "Ø",
@@ -20,7 +25,17 @@ sub_scandi = function(x){
                      "ö",
                      "Ö",
                      "ä",
-                     "Ä")
+                     "Ä",
+                     "ñ",
+                     "Ó",
+                     "ó",
+                     "ð",
+                     "þ",
+                     "ü",
+                     "á",
+                     "í",
+                     "û",
+                     "ú")
   
   replacement = c("Ae",
                   "ae",
@@ -31,7 +46,18 @@ sub_scandi = function(x){
                   "oe",
                   "Oe",
                   "ae",
-                  "Ae"
+                  "Ae",
+                  "n",
+                  "O",
+                  "o",
+                  "th",
+                  "th",
+                  "y",
+                  "a",
+                  "i",
+                  "u",
+                  "u"
+                  
   )
   
   for(i in 1:length(scandi_letters)){
@@ -143,7 +169,8 @@ Keep_only_relevant = function(x){
     "code3",
     "code4", 
     "code5", 
-    "split"
+    "split",
+    "lang"
   )
   
   res = x[,which(names(x)%in%relevant_vars)]
@@ -165,7 +192,7 @@ write_csv0 = function(x, fname){
 
 Save_train_val_test = function(x, Name, language = NA){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no')
+  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'es', 'pt', 'gr', 'unk', 'ge', 'is', 'unk', 'it', 'In_data')
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -181,9 +208,32 @@ Save_train_val_test = function(x, Name, language = NA){
   # Update RowID to contain Name
   x = x %>% 
     mutate(
-      RowID = paste0(Name, RowID),
-      lang = language
+      RowID = paste0(Name, RowID)
     )
+  
+  # Handle languages
+  if(language == 'In_data'){
+    # Check if all langs are valid
+    the_langs = unique(x$lang)
+    test1 = all(the_langs %in% valid_languages)
+    if(!test1){
+      # Find culprit
+      culprit = the_langs[which(!the_langs %in% valid_languages)]
+      stop("Unrecognized language found: '",culprit, "' is not a valid language")
+    }
+  } else {
+    # If lang was an input, then set it as variable
+    x = x %>% 
+      mutate(
+        lang = language
+      )
+  }
+  
+  # Add na year if it is missing
+  if((!"Year" %in% names(x))){
+    x = x %>% 
+      mutate(Year = NA)
+  }
   
   # Filter data
   x_test = x %>% 
@@ -229,4 +279,289 @@ upsample = function(x, n, verbose = FALSE){
   }
   
   return(x)
+}
+
+# ==== Concat_strings_lang ====
+Concat_strings_lang = function(x, and = "och"){
+  if(length(na.omit(x))<=1){
+    return(x[1])
+  }
+  
+  for(i in seq(length(x))){
+    if(is.na(x[i])){
+      break
+    }
+    if(i==1){
+      res = x[i]
+    } else {
+      res = paste0(res, " ", and, " ", x[i])
+    }
+  }
+  
+  if(length(res)!=1){
+    print(x)
+    stop("Too long")
+  }
+  
+  return(res)
+}
+
+# ==== NA_str ====
+NA_str = function(x){
+  ifelse(is.na(x), " ", as.character(x))
+}
+
+# ==== translate ====
+# Translates with a key
+translate = function(x, key){
+  x
+}
+
+# ==== Combinations ====
+Combinations = function(x, and = "and"){
+  set.seed(20)
+
+  # Initiating empty frame
+  results = foreach(i = seq(10), .combine = "bind_rows") %do% x
+  index_sample = sample(seq(NROW(results)))
+  
+  # Generating random combinations
+  results = results %>% 
+    mutate(tmp_occ = occ1) %>% 
+    mutate(
+      occ1 = paste(occ1, and, occ1[index_sample]),
+      hisco_2 = hisco_1[index_sample]
+    ) %>% 
+    mutate(
+      hisco_2 = ifelse(hisco_2 == "-1", " ", hisco_2)
+    ) %>% 
+    filter(hisco_1 != "-1") %>% 
+    select(-tmp_occ)
+  
+  return(results)
+}
+
+# ==== Data_summary ====
+# Gives a summary of available data
+# out:  "plain", "md" (markdown) or "data"
+
+# n_in_dir: Counts data in directories
+n_in_dir = function(x){
+  data_type = x
+  
+  # Setup
+  dir0 = paste0("Data/", x)
+  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
+  fs0 = list.files(dir0, pattern = ".csv")
+  
+  # Progress setup
+  i = 1
+  length0 = length(fs)
+  
+  # Count loop
+  x = foreach(f = fs, .combine = "bind_rows") %do% {
+    
+    f0_i = fs0[i]
+    
+    # Progress
+    cat(i,"of",length0,"::: Reading",f, "                      \r")
+    i = i + 1
+    
+    # Read and count
+    suppressWarnings({
+      x = read_csv(
+        f, show_col_types = FALSE, progress = FALSE
+      )
+    })
+     
+    res = x %>% 
+      group_by(lang) %>% 
+      summarise(
+        n = n(),
+        n_unique = length(unique(occ1))
+      ) %>% 
+      arrange(lang) %>% 
+      mutate(
+        f = f0_i
+      )
+    
+    return(res)
+    
+  } %>% 
+    select(f, lang, n, n_unique)
+  
+  return(x)
+}
+
+
+unique_in_dir = function(x){
+  stop("Not fully implemented. Something is weird in the loop.")
+  # Setup
+  dir0 = paste0("Data/", x)
+  fs = list.files(dir0, pattern = ".csv", full.names = TRUE)
+  fs0 = list.files(dir0, pattern = ".csv")
+  
+  # Progress setup
+  i = 1
+  length0 = length(fs)
+  
+  # Count loop
+  x = foreach(f = fs, .combine = "bind_rows") %do% {
+    
+    # Progress
+    cat(i,"of",length0,"::: Lang",f, "                      \r")
+    i = i + 1
+    
+    # Read and count
+    suppressWarnings({
+      x = read_csv(
+        f, show_col_types = FALSE, progress = FALSE, n_max = 100
+      )
+    })
+    
+    unique_occs = x$occ1
+    
+    data.frame(occ1 = unique_occs, f = fs0[i])
+    
+  } %>% 
+    select(f, occ1) %>% 
+  return(x)
+}
+
+million = function(x){
+  return(round(x / 1000000, 3))
+}
+
+Data_summary = function(out = "plain"){
+  # Load counts 
+  train = n_in_dir("Training_data") %>% 
+    mutate(f = gsub("train", "[x]", f)) %>% 
+    rename(
+      n_train = n,
+      n_train_unique = n_unique
+    )
+  val = n_in_dir("Validation_data") %>% 
+    mutate(f = gsub("val", "[x]", f)) %>% 
+    rename(
+      n_val = n,
+      n_val_unique = n_unique
+    )
+  test = n_in_dir("Test_data") %>% 
+    mutate(f = gsub("test", "[x]", f)) %>% 
+    rename(
+      n_test = n,
+      n_test_unique = n_unique
+    )
+  
+  # Clean counts
+  res = train %>% 
+    left_join(val, by = c("f", "lang")) %>% 
+    left_join(test, by = c("f", 'lang'))
+  
+  res = res %>% 
+    mutate(
+      n = n_train + n_val + n_test
+    ) %>% 
+    arrange(-n) %>% 
+    mutate(
+      pct_train = paste0(round(100*n/sum(n), 3),"%")
+    ) %>% 
+    select(-n_val_unique, -n_test_unique)
+  
+  Ntrain = res$n_train %>% sum() %>% million()
+  Nval = res$n_val %>% sum() %>% million()
+  Ntest = res$n_val %>% sum() %>% million()
+  capN = res$n %>% sum() %>% million()
+  
+  # Language summary stats 
+  res_lang = res %>% 
+    group_by(lang) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
+  # Compute summary again...
+  res = res %>% 
+    group_by(f) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    arrange(-n) %>% 
+    mutate(
+      pct_train = paste0(round(100*n/sum(n), 3),"%")
+    )
+  
+  # Load descriptions and citations 
+  desc = read_csv2("Data/Summary_data/Data_sources.csv")
+  res = res %>% left_join(desc, by = "f")
+  
+  if(any(is.na(res$Description))){
+    warning("Missing description in 'Data/Summary_data/Data_sources.csv'")
+  }
+  
+  res_type = res %>% 
+    group_by(Type) %>% 
+    summarise(
+      n_train = sum(n_train),
+      n_val = sum(n_val),
+      n_test = sum(n_test),
+      n = sum(n)
+    ) %>% 
+    ungroup() %>% 
+    mutate(
+      pct = paste0(round(n/sum(n)*100, 3), "%")
+    ) %>% 
+    arrange(-n)
+  
+  # Get results
+  if("plain" %in% out){
+    cat("\n")
+    cat("\nTraining data:   ", Ntrain, "million observations")
+    cat("\nValidation data: ", Nval, "million observations")
+    cat("\nTest data:       ", Ntest, "million observations")
+    cat("\n---> In total:   ", capN, "million observations")
+    cat("\n\nAmount of data by source:\n")
+    knitr::kable(res, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
+    
+    cat("\n\nFor readme:")
+    res %>% 
+      select(f, n, n_train, n_train_unique, Description, Source , lang, Type) %>% 
+      rename(
+        `File name` = f,
+        `N` = n,
+        `N train` = n_train,
+        `N unique strings` = n_train_unique,
+        Reference = Source,
+        Language = lang
+      ) %>% 
+      knitr::kable("pipe") %>% 
+      print()
+  }
+  
+  if("md" %in% out){
+    knitr::kable(res, "pipe") %>% print()
+    knitr::kable(res_lang, "pipe") %>% print()
+    knitr::kable(res_type, "pipe") %>% print()
+  }
+  
+  if("data" %in% out){
+    return(list(
+      res,
+      res_lang,
+      res_type
+    ))
+  }
 }

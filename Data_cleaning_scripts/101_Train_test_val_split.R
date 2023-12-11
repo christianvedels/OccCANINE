@@ -1,5 +1,5 @@
 # Train test and validation split
-# Updated:    2023-09-06
+# Updated:    2023-11-06
 # Auhtors:    Christian Vedel [christian-vs@sam.sdu.dk],
 #
 # Purpose:    Splits all clean tmp files into training, test and validation
@@ -11,127 +11,225 @@
 # ==== Libraries ====
 library(tidyverse)
 source("Data_cleaning_scripts/000_Functions.R")
+library(foreach)
 
-# ==== Load data ====
-
-# Danish data
-DK_census = loadRData("Data/Tmp_data/Clean_DK_census.Rdata")
-DK_cedar  = loadRData("Data/Tmp_data/Clean_DK_cedar_translation.Rdata")
-DK_orsted = loadRData("Data/Tmp_data/Clean_DK_orsted.Rdata")
-
-# English data
-EN_marr   = loadRData("Data/Tmp_data/Clean_EN_marr_cert.Rdata")
-EN_parish = loadRData("Data/Tmp_data/Clean_EN_parish_records.Rdata")
-
-# Dutch data
-HSN_data  = loadRData("Data/Tmp_data/Clean_HSN_database.Rdata") # Dutch data
-
-# Swedish data
-SE_chalmers = loadRData("Data/Tmp_data/Clean_SE_chalmers.Rdata")
-
-# ==== Train test val split ====
+# ==== Train test val split (run once ever) ====
 # This following is done to make sure that train/test/val split is entirely reproducible
 # Generate common long vector of samples train, val, test
-# space = c(rep("Train",7), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
+# space = c(rep("Train",17), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
 # set.seed(20)
 # train_test_split = sample(space, 10^7, replace = TRUE)
 # save(train_test_split, file = "Data/Manual_data/Random_sequence.Rdata")
-load("Data/Manual_data/Random_sequence.Rdata")
+# load("Data/Manual_data/Random_sequence.Rdata")
+# # Add more random draws (the first was not enough)
+# space = c(rep("Train",17), rep("Val1", 1), rep("Val2", 1), rep("Test",1))
+# set.seed(20)
+# train_test_split1 = sample(space, 10^8, replace = TRUE)
+# train_test_split = c(train_test_split, train_test_split1)
+# save(train_test_split, file = "Data/Manual_data/Random_sequence_long.Rdata")
+# load("Data/Manual_data/Random_sequence_long.Rdata")
 
-# ==== Add split and clean data ====
+# ==== Pipeline ====
+pipeline = function(x, name, lang){
+  # Check if name already exists
+  test = any(grepl(name, list.files("Data/Training_data")))
+  if(test){
+    cat("\n",name,"Data already processed")
+    return(name)
+  }
+  
+  cat("\nLoading", x)
+  x = loadRData(x)
+  
+  if(name %in% c("EN_uk_ipums", "EN_us_ipums")){
+    # These are downsampled to not dominate training
+    x = x %>% 
+      select(-RowID) %>% 
+      distinct() %>% 
+      mutate(RowID = 1:n())
+  }
+  
+  load("Data/Manual_data/Random_sequence_long.Rdata")
+  set.seed(20)
+  
+  cat("\nMaking data ready")
+  x = x %>%
+    # Reshuffle
+    sample_frac(1) %>%
+    mutate(split = train_test_split[1:n()]) %>%
+    Validate_split() %>%
+    Keep_only_relevant()
+  
+  cat("\nSaving data")
+  x %>% 
+    Save_train_val_test(name, lang)
+  cat("\nSaved:", name, lang)
+  
+  return(name)
+}
 
-# Danish data
-set.seed(20)
-DK_census = DK_census %>% 
-  # Delete unused vars:
-  select(-Household_status, -Occupation, -labelled) %>% 
-  # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+# ==== Run pipelines DK ====
+lang = "da"
+x = pipeline(
+  "Data/Tmp_data/Clean_DK_census.Rdata",
+  "DK_census",
+  lang
+)
 
-set.seed(20)
-DK_cedar = DK_cedar %>% 
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+x = pipeline(
+  "Data/Tmp_data/Clean_DK_cedar_translation.Rdata",
+  "DK_cedar",
+  lang
+)
 
-set.seed(20)
-DK_orsted = DK_orsted %>% 
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+x = pipeline(
+  "Data/Tmp_data/Clean_DK_orsted.Rdata",
+  "DK_orsted",
+  lang
+)
 
-# English data
-set.seed(20)
-EN_marr = EN_marr %>% 
-  # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+# ==== Run pipelines EN ====
+lang = "en"
+x = pipeline(
+  "Data/Tmp_data/Clean_EN_marr_cert.Rdata",
+  "EN_marr_cert",
+  lang
+)
 
-set.seed(20)
-EN_parish = EN_parish %>% 
-  # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+x = pipeline(
+  "Data/Tmp_data/Clean_EN_parish_records.Rdata",
+  "EN_parish",
+  lang
+)
 
+x = pipeline(
+  "Data/Tmp_data/Clean_LOC_EN.Rdata",
+  "EN_loc",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Clean_O_CLACK.Rdata",
+  "EN_oclack",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Clean_UK_IPUMS.Rdata",
+  "EN_uk_ipums",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Clean_USA_IPUMS.Rdata",
+  "EN_us_ipums",
+  lang
+)
+
+# Canada
+x = pipeline(
+  "Data/Tmp_data/Clean_CA_IPUMS.Rdata",
+  "EN_ca_ipums",
+  "unk" # Unknown language (french and english mix)
+)
+
+# ==== Run pipelines NL ====
+lang = "nl"
 # Dutch data
-set.seed(20)
-HSN_data = HSN_data %>% 
-  # Reshuffle
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+x = pipeline(
+  "Data/Tmp_data/Clean_HSN_database.Rdata",
+  "HSN_database",
+  lang
+)
 
-# Swedish data
-set.seed(20)
-SE_chalmers = SE_chalmers %>% 
-  sample_frac(1) %>% 
-  mutate(split = train_test_split[1:n()]) %>% 
-  Validate_split() %>% 
-  Keep_only_relevant()
+x = pipeline(
+  "Data/Tmp_data/Clean_JIW.Rdata",
+  "JIW_database",
+  lang
+)
 
-# ==== Save data ====
-# Danish data
-DK_census %>% 
-  Save_train_val_test("DK_census", "da")
+# ==== Run pipelines SE ====
+lang = "se"
 
-DK_cedar %>% 
-  Save_train_val_test("DK_cedar", "da")
+x = pipeline(
+  "Data/Tmp_data/Clean_SE_chalmers.Rdata",
+  "SE_chalmers",
+  lang
+)
 
-DK_orsted %>% 
-  Save_train_val_test("DK_orsted", "da")
+x = pipeline(
+  "Data/Tmp_data/Clean_CEDAR_SE.Rdata",
+  "SE_cedar",
+  lang
+)
 
-# English data
-EN_marr %>% 
-  Save_train_val_test("EN_marr_cert", "en")
-EN_parish %>% 
-  Save_train_val_test("EN_parish", "en")
+x = pipeline(
+  "Data/Tmp_data/Clean_SWEDPOP_SE.Rdata",
+  "SE_swedpop",
+  lang
+)
 
-# Dutch data
-HSN_data %>% 
-  Save_train_val_test("HSN_database", "nl")
+# ==== Run pipelines NO ====
+lang = "no"
 
-# Swedish data
-SE_chalmers %>% 
-  Save_train_val_test("SE_chalmers", "se")
+x = pipeline(
+  "Data/Tmp_data/Clean_NO_IPUMS.Rdata",
+  "NO_ipums",
+  lang
+)
+
+# ==== Run pipelines FR ====
+lang = "fr"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_French_desc.Rdata",
+  "FR_desc",
+  lang
+)
+
+# ==== Run pipelines Catalan ====
+lang = "ca"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_CA_BCN.Rdata",
+  "CA_bcn",
+  lang
+)
+
+# ==== Run pipelines DE ====
+lang = "de"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_DE_IPUMS.Rdata",
+  "DE_ipums",
+  lang
+)
+
+# ==== Run pipelines Iceland ====
+lang = "is"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_IS_IPUMS.Rdata",
+  "IS_ipums",
+  lang
+)
+
+# ==== Run pipelines IT ====
+lang = "it"
+
+x = pipeline(
+  "Data/Tmp_data/Clean_IT_FM.Rdata",
+  "IT_fm",
+  lang
+)
+
+# ==== Run pipeline multilingual ====
+x = pipeline(
+  "Data/Tmp_data/Clean_HISCO_website.Rdata",
+  "HISCO_website",
+  lang = "In_data"
+)
 
 # ==== Training data stats ====
-# Total training data
-total = lapply(
-  list(DK_census, DK_cedar, DK_orsted, EN_marr, HSN_data, SE_chalmers),
-  function(x){NROW(x)}
-) %>% 
-  unlist() %>% 
-  sum()
-
-cat("\nTotal training data", total/10^6, "mil. observations")
-  
+summary0 = Data_summary(out = c("plain", "data"))
+summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")

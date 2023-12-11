@@ -1,0 +1,22 @@
+f;n_train;n_train_unique;n_val;n_test;n;pct_train;pct_train_unique;lang;Source;Description;Type
+DK_census_[x].csv;3972635;148011;467445;233812;4673892;27.766%;4.28%;da;"Clausen (2015); The Danish National Archives";Danish census data;Census
+EN_marr_cert_[x].csv;3439405;86397;404435;202547;4046387;24.038%;2.498%;en;Clark, Cummins, Curtis (2022);English marriage certificates;Marriage records
+EN_uk_ipums_[x].csv;2572930;2073676;302122;151807;3026859;17.981%;59.968%;en;"MPC (2020); Office of National Statistics";IPUMS international census data*;Census
+SE_swedpop_[x].csv;1523770;30939;179526;90261;1793557;10.655%;0.895%;se;SwedPop (2022);Parish registers and income registers;Census
+JIW_database_[x].csv;821229;155834;96663;48901;966793;5.743%;4.507%;nl;De Moor & van Weeren (2021);Ja, ik wil - Amsterdam marriage banns registers;Marriage records
+EN_ca_ipums_[x].csv;695383;9437;81795;41479;818657;4.863%;0.273%;unk;"MPC (2020); Statistics Canada";IPUMS international census data. Both French and English;Census
+CA_bcn_[x].csv;547492;501115;64362;32630;644484;3.829%;14.492%;ca;Pujades-Mora & Valls (2017);Barcelona Historical Marriage Database;Marriage records
+NO_ipums_[x].csv;125068;17209;14702;7485;147255;0.875%;0.498%;no;MPC (2020);IPUMS international census data. Norwegian census 1801.;Census
+FR_desc_[x].csv;121273;118904;14261;7244;142778;0.848%;3.439%;fr;historyofwork.iisg.nl;Occupational titles form the HISCO website;Descriptions
+EN_us_ipums_[x].csv;118558;118258;13946;7091;139595;0.829%;3.42%;en;"MPC (2020); Bureau of the Census";IPUMS international census data*;Census
+HSN_database_[x].csv;114635;109247;13471;6851;134957;0.802%;3.159%;nl;Mandemakers et al (2020);Historical Sample of The Netheralnds;Census
+EN_parish_[x].csv;62654;11820;7396;3756;73806;0.438%;0.342%;en;de Pleijt, Nuvolari, Weisdorf (2020);HISCO labelled parish occupational descriptions;Descriptions
+DK_cedar_[x].csv;39507;3750;4666;2390;46563;0.277%;0.108%;da;Ford (2023);Occupational descriptions tranlated from Swedish CEDAR;Descriptions
+SE_cedar_[x].csv;38673;38648;4578;2330;45581;0.271%;1.118%;se;Ford (2023);Occupational descriptions extracted from Swedish CEDAR;Descriptions
+DK_orsted_[x].csv;31046;1961;3670;1892;36608;0.217%;0.057%;da;Ford (2023);Occupational descriptions used in Ford (2023);Descriptions
+EN_oclack_[x].csv;20837;2408;2441;1252;24530;0.146%;0.07%;en;O-clack;https://github.com/rlzijdeman/o-clack/tree/master;Descriptions
+EN_loc_[x].csv;19691;19632;2309;1179;23179;0.138%;0.568%;en;Mooney (2016);London Occupational codes;Descriptions
+IS_ipums_[x].csv;17364;5488;2053;1042;20459;0.122%;0.159%;is;MPC (2020);IPUMS international census data. Icelandic census 1901, 1910;Census
+SE_chalmers_[x].csv;12246;849;1457;723;14426;0.086%;0.025%;se;Ford (2023);Occupational descriptions from Ford (2023);Descriptions
+DE_ipums_[x].csv;7185;588;870;427;8482;0.05%;0.017%;de;"MPC (2020); Statistics Netherlands";IPUMS international census data;Census
+IT_fm_[x].csv;3828;3797;453;244;4525;0.027%;0.11%;it;Fornasin & Marzona (2016);Italian occupational descriptions;Descriptions

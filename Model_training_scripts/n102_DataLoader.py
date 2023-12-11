@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Aug 16 13:31:41 2023
-
+https://medium.com/@keruchen/train-a-xlm-roberta-model-for-text-classification-on-pytorch-4ccf0b30f762
 @author: chris
 """
 import os
@@ -26,18 +26,117 @@ def train_path(model_domain):
         fname = "../Data/Training_data/EN_marr_cert_train.csv" 
     elif(model_domain == "HSN_DATABASE"):
         fname = "../Data/Training_data/HSN_database_train.csv"
+    elif(model_domain == "Multilingual"):
+        fname = "../Data/Training_data"
+    elif(model_domain == "Multilingual_CANINE"):
+         fname = "../Data/Training_data"
     else:
         raise Exception("This is not implemented yet")
         
     return fname
 
-#%% Read_data
-def read_data(model_domain):
-    # breakpoint()
-    fname = train_path(model_domain)
-    
-    df = pd.read_csv(fname, encoding = "UTF-8")
+def val_path(model_domain):
+    if(model_domain == "DK_CENSUS"):
+        fname = "../Data/Validation_data/DK_census_val.csv"
+    elif(model_domain == "EN_MARR_CERT"):
+        fname = "../Data/Validation_data/EN_marr_cert_val.csv" 
+    elif(model_domain == "HSN_DATABASE"):
+        fname = "../Data/Validation_data/HSN_database_val.csv"
+    elif(model_domain == "Multilingual"):
+        fname = "../Data/Validation_data"
+    elif(model_domain == "Multilingual_CANINE"):
+        fname = "../Data/Validation_data"
+    else:
+        raise Exception("This is not implemented yet")
+        
+    return fname
 
+#%% check_csv_column_consistency
+def check_csv_column_consistency(folder_path):
+    # Get a list of CSV files in the specified folder
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
+
+    if not csv_files:
+        print("No CSV files found in the specified folder.")
+        return
+
+    # Read the first CSV file to get its column names
+    first_file_path = os.path.join(folder_path, csv_files[0])
+    first_df = pd.read_csv(first_file_path)
+    first_columns = set(first_df.columns)
+
+    # Initialize a variable to track whether all files have consistent columns
+    consistent_columns = True
+
+    # Check the columns of the remaining CSV files
+    for file in csv_files[1:]:
+        file_path = os.path.join(folder_path, file)
+        df = pd.read_csv(file_path, nrows=10)
+        if set(df.columns) != first_columns:
+            consistent_columns = False
+            print(f"Columns in '{file}' are not consistent with the first file.")
+
+    # if consistent_columns:
+    #     print("All CSV files in the folder have the same columns.")
+    # else:
+    #     print("Not all CSV files have the same columns.")
+        
+    return consistent_columns
+
+# # Usage example
+# check_csv_column_consistency(train_path(model_domain))
+
+#%% Read_data
+def read_data(model_domain, data_type = "Train", toyload = False):
+    # breakpoint()
+    if(model_domain == "Multilingual" or model_domain == "Multilingual_CANINE"):
+        
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+        
+        fnames = os.listdir(fname)
+        
+        # Check that all csv's have the same columns
+        consistent_data = check_csv_column_consistency(fname)
+        if not consistent_data:
+            raise Exception("Problem in training data consistency. See above")
+        
+        # Initialize an empty dataframe to store the data
+        combined_df = pd.DataFrame()
+        # Loop through the file list and read each CSV file into the combined dataframe
+        for file in fnames:
+            if file.endswith(".csv"):  # Make sure the file is a CSV file
+                file_path = os.path.join(fname, file)  # Replace with the actual path to your folder
+                
+                if toyload:
+                    df = pd.read_csv(file_path, nrows = 100)
+                else: 
+                    df = pd.read_csv(file_path)
+        
+                combined_df = pd.concat([combined_df, df])
+                print("\nRead "+file)
+                
+        df = combined_df
+        
+    else:
+        # Find correct path
+        if data_type == "Train":
+            fname = train_path(model_domain)
+        elif data_type == "Validation":
+            fname = val_path(model_domain)
+        else:
+           raise Exception("data_type not implemented yet")
+           
+        if toyload:
+            df = pd.read_csv(fname, nrows = 100)
+        else: 
+            df = pd.read_csv(fname)
+    
     # Handle na strings
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
 
@@ -48,7 +147,14 @@ def read_data(model_domain):
     key = list(key)
     key = dict(key)
     
+    ### LONG TEXT TO GENERATE ERROR
+    # df.occ1 = "kammerherre hab pai 5te aar waeret amkmand ower srmvancew hworwra hanhefter alledxnderdanigst ansoegningmer afgaaet med 300 rd pension ltamherrlwtil xhyrscech efter faderens doed"
+    ###
+    
     return df, key
+
+
+# df, key = read_data(model_domain)
     
 #%% Resample()
 def resample(
@@ -198,9 +304,10 @@ def ReadData(
         downsample_top1 = True,
         upsample_below = 1000,
         sample_size = 4,
-        verbose = False
+        verbose = False,
+        toyload = False
         ):
-    df, key = read_data(model_domain = model_domain)
+    df, key = read_data(model_domain = model_domain, toyload = toyload)
     df = resample(df, downsample_top1=downsample_top1, upsample_below=upsample_below, verbose=verbose)
     df = subset_to_smaller(df, sample_size=sample_size)
     
@@ -208,17 +315,44 @@ def ReadData(
 
 # %% Train test val split
 def TrainTestVal(df, verbose = False):
-    df_train, df_test = train_test_split(df, test_size=0.2, random_state=20)
+    df_train, df_test = train_test_split(df, test_size=0.05, random_state=20)
     df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=20)
     if verbose:
         print(f"Train {df_train.shape[0]} / Val {df_val.shape[0]} / Test {df_test.shape[0]}")
         
     return df_train, df_val, df_test
 
+# %% Concat_string
+# Makes one string with language and then occupational description
+def Concat_string(occ1, lang):
+    occ1 = str(occ1).strip("'[]'")
+    # Implement random change to lang 'unknown' here:
+    cat_sequence = "<s>"+lang+"</s></s>"+occ1+"</s>"
+    
+    return(cat_sequence)
+
+def Concat_string_canine(occ1, lang):
+    occ1 = str(occ1).strip("'[]'")
+    # Implement random change to lang 'unknown' here:
+    cat_sequence = lang+"[SEP]"+occ1
+    
+    return(cat_sequence)
+
 #%% Dataset
 class OCCDataset(Dataset):
     # Constructor Function 
-    def __init__(self, df, tokenizer, attacker, max_len, n_classes, alt_prob = 0, insert_words = False):
+    def __init__(
+            self, 
+            df, 
+            tokenizer, 
+            attacker, 
+            max_len, 
+            n_classes, 
+            alt_prob = 0, 
+            insert_words = False, 
+            unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
+            model_domain = ""
+            ):
         self.occ1 = df.occ1.tolist()
         self.df = df
         self.tokenizer = tokenizer
@@ -227,6 +361,9 @@ class OCCDataset(Dataset):
         self.attacker = attacker
         self.alt_prob = alt_prob # Probability of text alteration in Attacker()
         self.insert_words = insert_words # Should random word insertation occur in Attacker()
+        self.lang = df.lang.tolist()
+        self.unk_lang_prob = unk_lang_prob
+        self.model_domain = model_domain
     
     # Length magic method
     def __len__(self):
@@ -237,6 +374,7 @@ class OCCDataset(Dataset):
         # breakpoint()
         occ1 = str(self.occ1[item])
         target = self.targets[item]
+        lang = self.lang[item]
         
         # Implement Attack() here
         occ1 = self.attacker.attack(
@@ -245,19 +383,40 @@ class OCCDataset(Dataset):
             insert_words = self.insert_words
             )
         
+        # Change lanuage to 'unknown' = "unk" in some cases
+        # Warning("CANINEOccupationClassifier: pair of sequences: [CLS] A [SEP] B [SEP]")
+        if(r.random()<self.unk_lang_prob):
+            lang = "unk"
+        
+        occ1 = str(occ1).strip("'[]'")
+        # Implement random change to lang 'unknown' here:
+        if self.model_domain == "Multilingual_CANINE":
+            cat_sequence = Concat_string_canine(occ1, lang)
+        else:
+            cat_sequence = Concat_string(occ1, lang)
+        
         # Encoded format to be returned 
         encoding = self.tokenizer.encode_plus(
-            occ1,
+            cat_sequence,
             add_special_tokens=True,
             padding = 'max_length',
             max_length = self.max_len,
             return_token_type_ids=False,
             return_attention_mask=True,
             return_tensors='pt',
+            truncation = True
         )
         
+        # Try to see if the following error can be caught here:
+        # return torch.stack(batch, 0, out=out)
+        #    RuntimeError: stack expects each tensor to be equal size, but got [63] at entry 0 and [50] at entry 1
+        if encoding['input_ids'].shape[1] != self.max_len:
+            # breakpoint()
+            print(cat_sequence+" had shape: "+str(encoding['input_ids'].shape))
+            print("This might cause an error")
+        
         return {
-            'occ1': occ1,
+            'occ1': cat_sequence,
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
             'targets': torch.tensor(target, dtype=torch.long)
@@ -270,7 +429,8 @@ def datasets(df_train, df_val, df_test,
              max_len,
              n_classes,
              alt_prob, 
-             insert_words):
+             insert_words,
+             model_domain):
     
     # Only 'ds_train_attack' has any attack probability
     ds_train = OCCDataset(
@@ -280,7 +440,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )
     ds_train_attack = OCCDataset(
         df=df_train,
@@ -289,7 +450,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = alt_prob, 
-        insert_words =insert_words 
+        insert_words = insert_words,
+        model_domain = model_domain 
     )
     ds_val = OCCDataset(
         df=df_val,
@@ -298,7 +460,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )    
     ds_test = OCCDataset(
         df=df_test,
@@ -307,7 +470,8 @@ def datasets(df_train, df_val, df_test,
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = 0, 
-        insert_words = False
+        insert_words = False,
+        model_domain = model_domain
     )
     
     return ds_train, ds_train_attack, ds_val, ds_test
@@ -351,8 +515,11 @@ def Load_data(
         alt_prob = 0.1,
         insert_words = True,
         batch_size = 16,
-        verbose = False
+        verbose = False,
+        toyload = False,
+        tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
         ):
+    # breakpoint()
     
     # Load data
     df, key = ReadData(
@@ -360,13 +527,21 @@ def Load_data(
         downsample_top1 = downsample_top1,
         upsample_below = upsample_below,
         sample_size = sample_size,
-        verbose = verbose
+        verbose = verbose,
+        toyload = toyload
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
+    
+    # Get set of unique languages 
+    Langs = set(df_train['lang'])
+    Occs = set(df_train['occ1'])
 
-    # Load tokenizer
-    tokenizer = load_tokenizer(model_domain)
-    tokenizer = update_tokenizer(tokenizer, df)
+    # Load tokenizer (if non is provided)
+    if tokenizer == "No tokenizer":
+        tokenizer = load_tokenizer(model_domain)
+        
+        if model_domain != "Multilingual_CANINE":
+            tokenizer = update_tokenizer(tokenizer, df)
 
     # Calculate number of classes
     N_CLASSES = len(key)
@@ -385,7 +560,8 @@ def Load_data(
         max_len=max_len,
         n_classes=N_CLASSES,
         alt_prob = alt_prob, 
-        insert_words = insert_words
+        insert_words = insert_words,
+        model_domain = model_domain
         )
     
     # Data loaders
@@ -402,14 +578,36 @@ def Load_data(
         'tokenizer': tokenizer,
         'N_CLASSES': N_CLASSES,
         'key': key,
-        'reference_loss': reference_loss
+        'reference_loss': reference_loss,
+        'Languages': Langs,
+        'Occupations': Occs
     }
 
 #%%
-from n001_BERT_models import *
+from n001_Model_assets import *
 from n100_Attacker import *
 
 # model_domain = "EN_MARR_CERT"
 
 # df, key = read_data(model_domain)
+
+
+# %% Load_val
+# Simple loader for validation data
+
+def Load_val(model_domain, sample_size, toyload = False):
+    df, key = read_data(model_domain, data_type = "Validation", toyload = toyload)
+    
+    # Subset to smaller
+    df = subset_to_smaller(df, sample_size=sample_size)
+    
+    df['concat_string0'] = [Concat_string(occ1, lang) for occ1, lang in zip(df['occ1'].tolist(), df['lang'].tolist())]
+    df['concat_string1'] = [Concat_string(occ1, 'unk') for occ1 in df['occ1'].tolist()]
+    
+    # Make binary output matrix
+    df_bin = labels_to_bin(df, max(df.code1)+1)
+        
+    return key, df, df_bin
+
+
 

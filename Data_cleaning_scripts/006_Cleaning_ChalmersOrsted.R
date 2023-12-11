@@ -64,6 +64,35 @@ DK_cedar = DK_cedar %>%
 
 NROW(DK_cedar) - n1 # 85 observations
 
+# Turn into character
+DK_cedar = DK_cedar %>% 
+  mutate_all(as.character)
+
+key = key %>% mutate_all(as.character)
+
+# Add code
+DK_cedar = DK_cedar %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
+
 # Upsampling
 set.seed(20)
 DK_cedar = upsample(DK_cedar, 10)
@@ -125,6 +154,33 @@ NROW(SE_chalmers) - n1 # 0 observations
 set.seed(20)
 SE_chalmers = upsample(SE_chalmers, 10)
 
+# Turn into character
+SE_chalmers = SE_chalmers %>% 
+  mutate_all(as.character)
+
+# Add code
+SE_chalmers = SE_chalmers %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
+
 # Add rowID
 SE_chalmers = SE_chalmers %>% 
   mutate(RowID = 1:n())
@@ -181,6 +237,33 @@ NROW(DK_orsted) - n1 # 0 observations
 # Upsampling
 set.seed(20)
 DK_orsted = upsample(DK_orsted, 10)
+
+# Turn into character
+DK_orsted = DK_orsted %>% 
+  mutate_all(as.character)
+
+# Add code
+DK_orsted = DK_orsted %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
 
 # Add rowID
 DK_orsted = DK_orsted %>% 

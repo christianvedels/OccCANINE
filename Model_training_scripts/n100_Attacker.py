@@ -26,6 +26,9 @@ class AttackerClass:
         super(AttackerClass, self).__init__()
         all_text = ' '.join(df['occ1'].tolist())
         self.word_list = all_text.split()
+        
+        
+    # Consider adding negations based on languag e.g. "retired"
     
     # attack
     def attack(self, x_string, alt_prob = 0.1, insert_words = True):

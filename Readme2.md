@@ -16,5 +16,12 @@
 ## Install other packages
 `conda install -c anaconda pandas scikit-learn seaborn`
 
+## Install SentencePiece and protobuf library (required for XML-RoBERTa)
+`conda install SentencePiece`
+`conda install protobuf`
+
+## Installing spyder
+`conda install spyder`
+
 ## For interactive mode in VS code
 `conda install -n HISCO ipykernel --update-deps --force-reinstall`

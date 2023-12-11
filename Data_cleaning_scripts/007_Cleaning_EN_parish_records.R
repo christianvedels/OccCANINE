@@ -65,6 +65,33 @@ data0 = data0 %>%
 
 NROW(data0) - n1 # 34 observations
 
+# Turn into character
+data0 = data0 %>% 
+  mutate_all(as.character)
+
+# Add code
+data0 = data0 %>% 
+  left_join(
+    key, by = c("hisco_1" = "hisco")
+  ) %>% 
+  rename(code1 = code) %>% 
+  left_join(
+    key, by = c("hisco_2" = "hisco")
+  ) %>% 
+  rename(code2 = code) %>% 
+  left_join(
+    key, by = c("hisco_3" = "hisco")
+  ) %>% 
+  rename(code3 = code) %>% 
+  left_join(
+    key, by = c("hisco_4" = "hisco")
+  ) %>% 
+  rename(code4 = code) %>% 
+  left_join(
+    key, by = c("hisco_5" = "hisco")
+  ) %>% 
+  rename(code5 = code)
+
 # Add RowID 
 data0 = data0 %>% 
   ungroup() %>% 

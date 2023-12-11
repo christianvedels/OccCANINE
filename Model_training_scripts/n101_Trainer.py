@@ -2,7 +2,6 @@
 """
 Created on Wed Aug 16 13:33:15 2023
 
-@author: chris
 """
 
 # Set path to file path
@@ -26,10 +25,10 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
     model = model.train()
     losses = []
     correct_predictions = 0
-    
+        
     if verbose:
         print("Training:", end = " ")
-    
+                    
     for batch_idx, d in enumerate(data_loader):
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
@@ -132,6 +131,38 @@ def plot_progress(train_losses, val_losses, train_acc, val_acc, reference_loss, 
     plt.savefig("../Tmp training plots/" + model_name + ".png")
     #plt.show()
     plt.close()
+    
+# %% Run_eval()
+def Run_eval(model, data, loss_fn, device, reference_loss, history, train_acc, train_loss, model_name):
+    # Get model performance (accuracy and loss)
+    val_acc, val_loss = eval_model(
+        model,
+        data['data_loader_val'],
+        loss_fn,
+        device,
+    )
+    
+    print(f"Val   loss {val_loss}, accuracy {val_acc}")
+    
+    print(f"Reference loss: {reference_loss}")
+    
+    # Store stats to history
+    history['train_acc'].append(train_acc)
+    history['train_loss'].append(train_loss)
+    history['val_acc'].append(val_acc)
+    history['val_loss'].append(val_loss)
+    
+    # Make plot
+    plot_progress(
+        history['train_loss'], 
+        history['val_loss'], 
+        history['train_acc'],
+        history['val_acc'],
+        reference_loss = reference_loss,
+        model_name = model_name
+        )
+    
+    return history, val_acc
 
 # %% Trainer loop
 def trainer_loop(
@@ -145,14 +176,15 @@ def trainer_loop(
         device,
         scheduler,
         verbose = False,
-        switch_attack = 0.75
+        switch_attack = 0.75,
+        attack_switch = False        
         ):
     history = defaultdict(list)
     best_accuracy = 0
-    attack_switch = False
     
-    # Train first epoch before plotting anything
-    train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=verbose)
+    # # Train first epoch before plotting anything
+    # print("Started training one epoch as warmup")
+    # train_epoch(model, data['data_loader_train'], loss_fn, optimizer, device, scheduler, verbose=True)
   
     # Training loop
     for epoch in range(epochs):
@@ -191,35 +223,19 @@ def trainer_loop(
                 print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
             attack_switch = True
             
-            
-        # Get model performance (accuracy and loss)
-        val_acc, val_loss = eval_model(
-            model,
-            data['data_loader_val'],
-            loss_fn,
-            device,
-        )
-        
-        print(f"Val   loss {val_loss}, accuracy {val_acc}")
-        
-        print(f"Reference loss: {reference_loss}")
-        
-        # Store stats to history
-        history['train_acc'].append(train_acc)
-        history['train_loss'].append(train_loss)
-        history['val_acc'].append(val_acc)
-        history['val_loss'].append(val_loss)
-        
-        # Make plot
-        plot_progress(
-            history['train_loss'], 
-            history['val_loss'], 
-            history['train_acc'],
-            history['val_acc'],
-            reference_loss = reference_loss,
-            model_name = model_name
+        # Run eval
+        history, val_acc = Run_eval(
+            model, 
+            data, 
+            loss_fn, 
+            device, 
+            reference_loss, 
+            history, 
+            train_acc, 
+            train_loss, 
+            model_name
             )
-
+        
         # If we beat prev performance
         if val_acc > best_accuracy:
             print("Saved improved model")
@@ -236,6 +252,8 @@ def trainer_loop(
 
 # %%
 def get_predictions(model, data_loader, device):
+    
+    # breakpoint()
     model = model.eval()
 
     occ1 = []
@@ -294,3 +312,5 @@ def print_report(report, model_name):
         file.write(report_str)
 
     print(f"Classification report saved to {file_path}")
+    
+    

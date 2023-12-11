@@ -37,13 +37,13 @@ key = bind_rows(
   key %>% mutate(hisco = as.character(hisco))
 )
 
-key %>% 
+key %>%
   write_csv("Data/Key.csv")
 
 save(key, file = "Data/Key.Rdata")
 
 # ==== IPUMS own HISCO system ====
-key_ipums = read_csv("Data/Raw_data/IPUMS HISCO system.csv")
+key_ipums = read_csv("Data/Raw_data/IPUMS/IPUMS HISCO system.csv")
 
 key_ipums = key_ipums %>% 
   distinct(CODE, LABEL) %>% 
@@ -82,8 +82,8 @@ key_ipums = bind_rows(
   key_ipums %>% mutate(hisco = as.character(hisco))
 )
 
-# Save key
-key_ipums %>% 
-  write_csv("Data/Key_ipums.csv")
-
-save(key_ipums, file = "Data/Key_ipums.Rdata")
+# # Save key
+# key_ipums %>% 
+#   write_csv("Data/Key_ipums.csv")
+# 
+# save(key_ipums, file = "Data/Key_ipums.Rdata")
