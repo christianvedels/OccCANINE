@@ -21,52 +21,52 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 #%% Function for a single training iteration
-def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbose = False):
+def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbose=True):
     model = model.train()
     losses = []
     correct_predictions = 0
-        
+
     if verbose:
-        print("Training:", end = " ")
-                    
+        print("Training:", end=" ")
+
     for batch_idx, d in enumerate(data_loader):
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
         targets = d['targets'].to(device, dtype=torch.float)
-        
+
         outputs = model(
             input_ids=input_ids,
             attention_mask=attention_mask
         )
-        
+
         loss = loss_fn(outputs, targets)
-        
+
         # Calculate correct predictions using threshold
         preds = torch.sigmoid(outputs)
         threshold = 0.5  # You can adjust this threshold based on your use case
         predicted_labels = (preds > threshold).float()
-        # breakpoint()
-        test = accuracy_score(predicted_labels.cpu(), targets.cpu())
-        correct_predictions += test
-        
+        batch_accuracy = accuracy_score(predicted_labels.cpu(), targets.cpu())
+        correct_predictions += batch_accuracy
+
         losses.append(loss.item())
-        
-        # Backward prop
+
+        # Backward prop and optimization
         loss.backward()
-        
-        # Gradient Descent
         nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         scheduler.step()
         optimizer.zero_grad()
-        
+
         if verbose:
-            print(":",end = "")
-     
+            # Print detailed information after each batch
+            print(f"\rBatch {batch_idx+1}/{len(data_loader)} - Loss: {loss.item():.4f}, Acc: {batch_accuracy:.4f}", end="")
+
     if verbose:
-        print("]")
-    
-    return correct_predictions / len(data_loader), np.mean(losses)
+        print("\nTraining completed.")
+
+    average_accuracy = correct_predictions / len(data_loader)
+    average_loss = np.mean(losses)
+    return average_accuracy, average_loss
 
 # %% Eval model
 def eval_model(model, data_loader, loss_fn, device):

@@ -11,8 +11,9 @@ Train Character Architecture with No tokenization In Neural Encoders
 CANINE
 """
 import os
-script_directory = os.path.dirname(os.path.abspath(__file__))
+script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 #%% Hyperparameters
 
@@ -20,9 +21,9 @@ os.chdir(script_directory)
 MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
-SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 20
-BATCH_SIZE = 2**5
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+EPOCHS = 500
+BATCH_SIZE = 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1

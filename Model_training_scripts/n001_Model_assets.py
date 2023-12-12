@@ -20,7 +20,8 @@ import transformers
 from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel, CanineTokenizer, CanineModel
 import torch
 import torch.nn as nn
-from keras.layers import TextVectorization
+from tf_keras.layers import TextVectorization
+#from keras.layers import TextVectorization
 
 # %% BERT finetune based on model_domain
 def modelPath(model_domain):
