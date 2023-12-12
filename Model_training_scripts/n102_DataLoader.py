@@ -29,6 +29,7 @@ def train_path(model_domain):
     elif(model_domain == "Multilingual"):
         fname = "../Data/Training_data"
     elif(model_domain == "Multilingual_CANINE"):
+         #fname = "D:/data/Hisco/Training_data/HISCO_website_train.csv"
          fname = "../Data/Training_data"
     else:
         raise Exception("This is not implemented yet")
@@ -45,6 +46,7 @@ def val_path(model_domain):
     elif(model_domain == "Multilingual"):
         fname = "../Data/Validation_data"
     elif(model_domain == "Multilingual_CANINE"):
+        #fname = "D:/data/Hisco/Validation_data/HISCO_website_val.csv"
         fname = "../Data/Validation_data"
     else:
         raise Exception("This is not implemented yet")
@@ -550,7 +552,8 @@ def Load_data(
     attacker = AttackerClass(df)
     
     # Calculate reference loss
-    reference_loss = referenceLoss(df)
+    #reference_loss = referenceLoss(df)
+    reference_loss = 0
 
     # Datsets
     ds_train, ds_train_attack, ds_val, ds_test = datasets(
