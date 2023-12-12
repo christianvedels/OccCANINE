@@ -283,6 +283,10 @@ def labels_to_bin(df, max_value):
 
 # %% Reference loss
 def referenceLoss(df):
+    if len(df) >= 10000:
+        # Downsample to 10000 observations 
+        df = df.sample(n=10000, random_state=20)  
+    
     # Step 1: Calculate the probabilities for each class (frequency of occurrence)
     labels = labels_to_bin(df, max(df.code1)+1)
     probs = np.mean(labels, axis=0)
@@ -552,8 +556,8 @@ def Load_data(
     attacker = AttackerClass(df)
     
     # Calculate reference loss
-    #reference_loss = referenceLoss(df)
-    reference_loss = 0
+    reference_loss = referenceLoss(df)
+    # reference_loss = 0
 
     # Datsets
     ds_train, ds_train_attack, ds_val, ds_test = datasets(
