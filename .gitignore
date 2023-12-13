@@ -55,3 +55,6 @@ Data/Application_data/Copenhagen Burial Records/LICENSE_DK
 Data/Application_data/Copenhagen Burial Records/LICENSE_EN
 Data/Application_data/Copenhagen Burial Records/Link-lives Guide v.1.pdf
 Data/Application_data
+Data/Tmp_train/Test.parquet
+Data/Tmp_train/Train.parquet
+Data/Tmp_train/Val.parquet
