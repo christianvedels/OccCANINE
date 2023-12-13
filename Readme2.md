@@ -15,6 +15,7 @@
 
 ## Install other packages
 `conda install -c anaconda pandas scikit-learn seaborn`
+`conda install pyarrow`
 
 ## Install SentencePiece and protobuf library (required for XML-RoBERTa)
 `conda install SentencePiece`
