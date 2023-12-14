@@ -23,9 +23,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
-SAMPLE_SIZE = 3 # 10 # 10 to the power of this is used for training
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
 EPOCHS = 500
-BATCH_SIZE = 256
+BATCH_SIZE = 16 # 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1

@@ -21,7 +21,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 #%% Function for a single training iteration
-def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbose=True):
+def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbose=True, num_batches_to_average = 100):
     model = model.train()
     losses = []
     correct_predictions = 0
@@ -30,7 +30,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
         print("Training:", end=" ")
 
     for batch_idx, d in enumerate(data_loader):
-        breakpoint()
+        # breakpoint()
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
         targets = d['targets'].to(device, dtype=torch.float)
@@ -61,11 +61,12 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
         if verbose:
             # Print detailed information after each batch
             print(f"\rBatch {batch_idx+1}/{len(data_loader)} - Loss: {loss.item():.4f}, Acc: {batch_accuracy:.4f}", end="")
-
+    
+    # breakpoint()
     if verbose:
         print("\nTraining completed.")
 
-    average_accuracy = correct_predictions / len(data_loader)
+    average_accuracy = correct_predictions /  len(data_loader)
     average_loss = np.mean(losses)
     return average_accuracy, average_loss
 
