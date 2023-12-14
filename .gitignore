@@ -58,3 +58,6 @@ Data/Application_data
 Data/Tmp_train/Test.parquet
 Data/Tmp_train/Train.parquet
 Data/Tmp_train/Val.parquet
+Data/Tmp_train/Test.csv
+Data/Tmp_train/Train.csv
+Data/Tmp_train/Val.csv

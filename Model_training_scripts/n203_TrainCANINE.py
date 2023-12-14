@@ -13,15 +13,17 @@ CANINE
 import os
 script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 #%% Hyperparameters
+
+# Choose which GPU to use
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # Which training data is used for the model
 MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
-SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+SAMPLE_SIZE = 3 # 10 # 10 to the power of this is used for training
 EPOCHS = 500
 BATCH_SIZE = 256
 LEARNING_RATE = 2*10**-5

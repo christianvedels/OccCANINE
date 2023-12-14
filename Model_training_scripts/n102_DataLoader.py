@@ -17,6 +17,7 @@ import random as r
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import torch
+import pyarrow.parquet as pq
 
 #%% Returns training data path
 def train_path(model_domain):
@@ -148,11 +149,7 @@ def read_data(model_domain, data_type = "Train", toyload = False):
     key = zip(key.code, key.hisco)
     key = list(key)
     key = dict(key)
-    
-    ### LONG TEXT TO GENERATE ERROR
-    # df.occ1 = "kammerherre hab pai 5te aar waeret amkmand ower srmvancew hworwra hanhefter alledxnderdanigst ansoegningmer afgaaet med 300 rd pension ltamherrlwtil xhyrscech efter faderens doed"
-    ###
-    
+        
     return df, key
 
 
@@ -355,7 +352,8 @@ class OCCDataset(Dataset):
     # Constructor Function 
     def __init__(
             self, 
-            df, 
+            df_path, 
+            n_obs,
             tokenizer, 
             attacker, 
             max_len, 
@@ -365,28 +363,34 @@ class OCCDataset(Dataset):
             unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
             model_domain = ""
             ):
-        self.occ1 = df.occ1.tolist()
-        self.df = df
+        self.df_path = df_path
         self.tokenizer = tokenizer
         self.max_len = max_len
-        self.targets = labels_to_bin(df, n_classes)
         self.attacker = attacker
         self.alt_prob = alt_prob # Probability of text alteration in Attacker()
         self.insert_words = insert_words # Should random word insertation occur in Attacker()
-        self.lang = df.lang.tolist()
         self.unk_lang_prob = unk_lang_prob
         self.model_domain = model_domain
+        self.n_obs = n_obs
+        self.n_classes = n_classes
     
     # Length magic method
     def __len__(self):
-        return len(self.occ1)
+        return self.n_obs
     
     # get item magic method
     def __getitem__(self, item):
+        # Load only the rows corresponding to the current item
         # breakpoint()
-        occ1 = str(self.occ1[item])
-        target = self.targets[item]
-        lang = self.lang[item]
+        df = pd.read_csv(
+            self.df_path, 
+            skiprows=range(1, item), 
+            nrows=1
+            )
+        
+        occ1 = str(df.occ1.tolist()[0])
+        target = labels_to_bin(df, self.n_classes)[0]
+        lang = str(df.lang.tolist()[0])
         
         # Implement Attack() here
         occ1 = self.attacker.attack(
@@ -394,7 +398,7 @@ class OCCDataset(Dataset):
             alt_prob = self.alt_prob, 
             insert_words = self.insert_words
             )
-        
+                
         # Change lanuage to 'unknown' = "unk" in some cases
         # Warning("CANINEOccupationClassifier: pair of sequences: [CLS] A [SEP] B [SEP]")
         if(r.random()<self.unk_lang_prob):
@@ -419,9 +423,6 @@ class OCCDataset(Dataset):
             truncation = True
         )
         
-        # Try to see if the following error can be caught here:
-        # return torch.stack(batch, 0, out=out)
-        #    RuntimeError: stack expects each tensor to be equal size, but got [63] at entry 0 and [50] at entry 1
         if encoding['input_ids'].shape[1] != self.max_len:
             # breakpoint()
             print(cat_sequence+" had shape: "+str(encoding['input_ids'].shape))
@@ -435,7 +436,7 @@ class OCCDataset(Dataset):
         }
 
 #%% Function to return datasets    
-def datasets(df_train, df_val, df_test, 
+def datasets(n_obs_train, n_obs_val, n_obs_test,
              tokenizer,
              attacker,
              max_len,
@@ -446,7 +447,8 @@ def datasets(df_train, df_val, df_test,
     
     # Only 'ds_train_attack' has any attack probability
     ds_train = OCCDataset(
-        df=df_train,
+        df_path = "../Data/Tmp_train/Train.csv",
+        n_obs = n_obs_train,
         tokenizer=tokenizer,
         attacker=attacker,
         max_len=max_len,
@@ -456,7 +458,8 @@ def datasets(df_train, df_val, df_test,
         model_domain = model_domain
     )
     ds_train_attack = OCCDataset(
-        df=df_train,
+        df_path = "../Data/Tmp_train/Train.csv",
+        n_obs = n_obs_train,
         tokenizer=tokenizer,
         attacker=attacker,
         max_len=max_len,
@@ -466,7 +469,8 @@ def datasets(df_train, df_val, df_test,
         model_domain = model_domain 
     )
     ds_val = OCCDataset(
-        df=df_val,
+        df_path = "../Data/Tmp_train/Val.csv",
+        n_obs = n_obs_val,
         tokenizer=tokenizer,
         attacker=attacker,
         max_len=max_len,
@@ -476,7 +480,8 @@ def datasets(df_train, df_val, df_test,
         model_domain = model_domain
     )    
     ds_test = OCCDataset(
-        df=df_test,
+        df_path = "../Data/Tmp_train/Test.csv",
+        n_obs = n_obs_test,
         tokenizer=tokenizer,
         attacker=attacker,
         max_len=max_len,
@@ -517,6 +522,24 @@ def create_data_loader(ds_train, ds_train_attack, ds_val, ds_test, batch_size):
     
     return data_loader_train, data_loader_train_attack, data_loader_val, data_loader_test
 
+# %% Save tmp_train
+# Saves temporary data to call in traning
+def save_tmp(df_train, df_val, df_test):
+    # Define the directory path
+    directory_path = "../Data/Tmp_train/"
+
+    # Check if the directory exists, and create it if not
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+    # Save the DataFrames to CSV
+    df_train.to_csv(os.path.join(directory_path, "Train.csv"))
+    df_val.to_csv(os.path.join(directory_path, "Val.csv"))
+    df_test.to_csv(os.path.join(directory_path, "Test.csv"))
+    
+    print("Saved, ../Data/Tmp_train/[x].csv, Train, Test, Val")
+
+    
 # %% Load data
 def Load_data(
         model_domain = "DK_CENSUS",
@@ -544,30 +567,42 @@ def Load_data(
         )
     df_train, df_val, df_test = TrainTestVal(df, verbose=verbose)
     
+    # To use later
+    n_obs_train = df_train.shape[0]
+    n_obs_val = df_val.shape[0]
+    n_obs_test = df_test.shape[0]
+        
     # Get set of unique languages 
     Langs = set(df_train['lang'])
     Occs = set(df_train['occ1'])
 
+    # Save tmp files
+    save_tmp(df_train, df_val, df_test)
+    
+    # Downsample if larger than 100k
+    if df.shape[0]>10**5:
+        df = df.sample(n = 10**5, random_state=20)
+        
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":
         tokenizer = load_tokenizer(model_domain)
         
         if model_domain != "Multilingual_CANINE":
-            tokenizer = update_tokenizer(tokenizer, df)
-
+            tokenizer = update_tokenizer(tokenizer, df_train)
+            
     # Calculate number of classes
     N_CLASSES = len(key)
-    
+        
     # Define attakcer instance
     attacker = AttackerClass(df)
     
     # Calculate reference loss
     reference_loss = referenceLoss(df)
     # reference_loss = 0
-
+        
     # Datsets
     ds_train, ds_train_attack, ds_val, ds_test = datasets(
-        df_train, df_val, df_test,
+        n_obs_train, n_obs_val, n_obs_test,
         tokenizer=tokenizer,
         attacker=attacker,
         max_len=max_len,

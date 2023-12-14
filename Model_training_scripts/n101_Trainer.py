@@ -30,6 +30,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
         print("Training:", end=" ")
 
     for batch_idx, d in enumerate(data_loader):
+        breakpoint()
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
         targets = d['targets'].to(device, dtype=torch.float)
