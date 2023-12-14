@@ -19,6 +19,16 @@ from torch import nn
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import time
+
+# %% Function to generate ETA string
+def eta(start_time, batch_idx, capN):
+    elapsed_time = time.time() - start_time
+    average_time_per_batch = elapsed_time / (batch_idx+1)
+    remaining_batches = capN - (batch_idx + 1)
+    eta_seconds = remaining_batches * average_time_per_batch
+    eta_str = str(int(eta_seconds // 60)) + "m" + str(int(eta_seconds % 60)) + "s"
+    return eta_str
 
 #%% Function for a single training iteration
 def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbose=True, num_batches_to_average = 100):
@@ -29,6 +39,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
     if verbose:
         print("Training:", end=" ")
 
+    start_time = time.time()
     for batch_idx, d in enumerate(data_loader):
         # breakpoint()
         input_ids = d["input_ids"].to(device)
@@ -60,9 +71,10 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
 
         if verbose:
             # Print detailed information after each batch
-            print(f"\rBatch {batch_idx+1}/{len(data_loader)} - Loss: {loss.item():.4f}, Acc: {batch_accuracy:.4f}", end="")
+            eta_str = eta(start_time, batch_idx, capN = len(data_loader))
+            print(f"\rBatch {batch_idx+1}/{len(data_loader)} - Loss: {loss.item():.4f}, Acc: {batch_accuracy:.4f}, ETA: {eta_str}", end="")
+            
     
-    # breakpoint()
     if verbose:
         print("\nTraining completed.")
 
