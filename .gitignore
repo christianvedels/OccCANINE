@@ -61,3 +61,6 @@ Data/Tmp_train/Val.parquet
 Data/Tmp_train/Test.csv
 Data/Tmp_train/Train.csv
 Data/Tmp_train/Val.csv
+Data/Tmp_train/Test_index.txt
+Data/Tmp_train/Train_index.txt
+Data/Tmp_train/Val_index.txt
