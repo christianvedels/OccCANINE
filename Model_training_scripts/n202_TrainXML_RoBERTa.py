@@ -15,7 +15,7 @@ os.chdir(script_directory)
 MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+SAMPLE_SIZE = 3 # 10 to the power of this is used for training
 EPOCHS = 50
 BATCH_SIZE = 2**5
 LEARNING_RATE = 2*10**-5
@@ -26,6 +26,8 @@ DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 64 # Number of tokens to use
 
 MODEL_NAME = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+
+checkpoint_path = None # Provide path to load model from checkpoint path
 
 #%% Libraries
 # Import necessary libraries
@@ -71,6 +73,11 @@ model = XMLRoBERTaOccupationClassifier(
     dropout_rate = DROPOUT_RATE
     )
 model.to(device)
+
+# %% Load model checkpoint
+if checkpoint_path:
+    model, tokenizer = load_model_from_checkpoint(checkpoint_path, model, MODEL_DOMAIN)
+    data['tokenizer'] = tokenizer
 
 #%% Optimizer and learning scheduler
 optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)

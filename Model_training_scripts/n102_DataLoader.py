@@ -582,6 +582,7 @@ def Load_data(
     # Downsample if larger than 100k
     if df.shape[0]>10**5:
         df = df.sample(n = 10**5, random_state=20)
+        df_train = df_train.sample(n = 10**5, random_state=20)
         
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":

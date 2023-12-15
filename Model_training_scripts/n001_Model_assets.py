@@ -17,7 +17,7 @@ os.chdir(script_directory)
 import numpy as np
 import pandas as pd
 import transformers
-from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel, CanineTokenizer, CanineModel
+from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel, CanineTokenizer, CanineModel, AutoTokenizer
 import torch
 import torch.nn as nn
 # from tf_keras.layers import TextVectorization
@@ -125,6 +125,9 @@ class XMLRoBERTaOccupationClassifier(nn.Module):
         self.basemodel = getModel(model_domain, tokenizer)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
+        
+    def resize_token_embeddings(self, n): 
+        self.basemodel.resize_token_embeddings(n)
     
     # Forward propagaion class
     def forward(self, input_ids, attention_mask):
@@ -148,6 +151,9 @@ class CANINEOccupationClassifier(nn.Module):
         self.basemodel = getModel(model_domain, tokenizer)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
+        
+    def resize_token_embeddings(self, n): 
+        x = 1 # Do nothing CANINE should never base resized
     
     # Forward propagaion class
     def forward(self, input_ids, attention_mask):
@@ -199,4 +205,30 @@ class CANINEOccupationClassifier(nn.Module):
 #         final_pred = self.meta_classifier(features)
         
 #         return final_pred
+
+# %% Load model from checkpoint
+def load_model_from_checkpoint(checkpoint_path, model, MODEL_DOMAIN):
+    
+    # Handle string
+    if checkpoint_path.endswith(".bin"):
+        checkpoint_path = checkpoint_path[:-4]  # Remove the ".bin" extension
+    
+    if MODEL_DOMAIN == "Multilingual":
+       # Load updated tokenizer
+       tokenizer_save_path = checkpoint_path + '_tokenizer'
+       tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
+    elif MODEL_DOMAIN == "Multilingual_CANINE":
+        tokenizer = load_tokenizer(MODEL_DOMAIN)
+    else: 
+        raise Exception("Not implemented")
+     
+    # Adapt model size to the tokenizer size:   
+    model.resize_token_embeddings(len(tokenizer))    
+        
+    # Load model state
+    loaded_state = torch.load(checkpoint_path+".bin")
+    model.load_state_dict(loaded_state)
+    
+    return model, tokenizer
+
     

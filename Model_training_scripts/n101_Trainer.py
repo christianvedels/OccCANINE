@@ -28,6 +28,12 @@ def eta(start_time, batch_idx, capN):
     remaining_batches = capN - (batch_idx + 1)
     eta_seconds = remaining_batches * average_time_per_batch
     eta_str = str(int(eta_seconds // 60)) + "m" + str(int(eta_seconds % 60)) + "s"
+    
+    total_seconds = capN * average_time_per_batch
+    total_str = str(int(total_seconds // 60)) + "m" + str(int(total_seconds % 60)) + "s"
+    
+    eta_str = eta_str + " of " + total_str
+    
     return eta_str
 
 #%% Function for a single training iteration
