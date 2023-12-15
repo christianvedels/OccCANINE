@@ -141,10 +141,30 @@ data1 = data1 %>%
   select(-n) %>% 
   mutate(hisco_1 = as.character(hisco_1))
 
+# ==== Get combinations ====
+set.seed(20)
+combinations = data1 %>% 
+  filter(hisco_2 == " ", hisco_1 != "-1") %>% 
+  sample_n(100000) %>% 
+  Combinations("and")
+
+data1 = data1 %>% bind_rows(combinations) 
+
 # ==== Encode with key ====
 load("Data/Key.Rdata")
 
 key = key %>% select(hisco, code)
+
+# Remove data not in key (erronoeous data somehow)
+n1 = NROW(data1)
+data1 = data1 %>% 
+  filter(hisco_1 %in% key$hisco) %>% 
+  filter(hisco_2 %in% key$hisco) %>% 
+  filter(hisco_3 %in% key$hisco) %>% 
+  filter(hisco_4 %in% key$hisco) %>% 
+  filter(hisco_5 %in% key$hisco)
+
+NROW(data1) - n1 # Removed 184 observations
 
 # Add code
 data1 = data1 %>% 
