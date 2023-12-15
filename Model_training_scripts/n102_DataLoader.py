@@ -17,7 +17,7 @@ import random as r
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, DataLoader
 import torch
-import pyarrow.parquet as pq
+import io
 
 #%% Returns training data path
 def train_path(model_domain):
@@ -120,9 +120,11 @@ def read_data(model_domain, data_type = "Train", toyload = False):
                     df = pd.read_csv(file_path, nrows = 100)
                 else: 
                     df = pd.read_csv(file_path)
-        
+                    
+                n_df = df.shape[0]
+                    
                 combined_df = pd.concat([combined_df, df])
-                print("\nRead "+file)
+                print(f"\nRead {file} (N = {n_df})")
                 
         df = combined_df
         
@@ -358,6 +360,7 @@ class OCCDataset(Dataset):
             attacker, 
             max_len, 
             n_classes, 
+            index_file_path,
             alt_prob = 0, 
             insert_words = False, 
             unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
@@ -373,20 +376,31 @@ class OCCDataset(Dataset):
         self.model_domain = model_domain
         self.n_obs = n_obs
         self.n_classes = n_classes
+        self.colnames = pd.read_csv(df_path, nrows=10).columns.tolist()
+        
+        # Load and store index file in memory
+        with open(index_file_path, 'r') as index_file:
+            self.index_data = index_file.readlines()
     
     # Length magic method
     def __len__(self):
         return self.n_obs
     
     # get item magic method
-    def __getitem__(self, item):
-        # Load only the rows corresponding to the current item
+    def __getitem__(self, item):        
+        # Get the byte offset from the stored index data
+        byte_offset_line = self.index_data[item].strip()
+        if not byte_offset_line:
+            raise ValueError(f"Empty line encountered in index file at item {item}")
+        byte_offset = int(byte_offset_line)
+        
+        # Use the byte offset to read the specific row from the data file
+        with open(self.df_path, 'rb') as f:
+            f.seek(byte_offset)
+            row = f.readline()
+            df = pd.read_csv(io.StringIO(row.decode('utf-8')), names=self.colnames)
+            
         # breakpoint()
-        df = pd.read_csv(
-            self.df_path, 
-            skiprows=range(1, item), 
-            nrows=1
-            )
         
         occ1 = str(df.occ1.tolist()[0])
         target = labels_to_bin(df, self.n_classes)[0]
@@ -436,61 +450,18 @@ class OCCDataset(Dataset):
         }
 
 #%% Function to return datasets    
-def datasets(n_obs_train, n_obs_val, n_obs_test,
-             tokenizer,
-             attacker,
-             max_len,
-             n_classes,
-             alt_prob, 
-             insert_words,
-             model_domain):
-    
-    # Only 'ds_train_attack' has any attack probability
-    ds_train = OCCDataset(
-        df_path = "../Data/Tmp_train/Train.csv",
-        n_obs = n_obs_train,
-        tokenizer=tokenizer,
-        attacker=attacker,
-        max_len=max_len,
-        n_classes=n_classes,
-        alt_prob = 0, 
-        insert_words = False,
-        model_domain = model_domain
-    )
-    ds_train_attack = OCCDataset(
-        df_path = "../Data/Tmp_train/Train.csv",
-        n_obs = n_obs_train,
-        tokenizer=tokenizer,
-        attacker=attacker,
-        max_len=max_len,
-        n_classes=n_classes,
-        alt_prob = alt_prob, 
-        insert_words = insert_words,
-        model_domain = model_domain 
-    )
-    ds_val = OCCDataset(
-        df_path = "../Data/Tmp_train/Val.csv",
-        n_obs = n_obs_val,
-        tokenizer=tokenizer,
-        attacker=attacker,
-        max_len=max_len,
-        n_classes=n_classes,
-        alt_prob = 0, 
-        insert_words = False,
-        model_domain = model_domain
-    )    
-    ds_test = OCCDataset(
-        df_path = "../Data/Tmp_train/Test.csv",
-        n_obs = n_obs_test,
-        tokenizer=tokenizer,
-        attacker=attacker,
-        max_len=max_len,
-        n_classes=n_classes,
-        alt_prob = 0, 
-        insert_words = False,
-        model_domain = model_domain
-    )
-    
+def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain):
+    # File paths for the index files
+    train_index_path = "../Data/Tmp_train/Train_index.txt"
+    val_index_path = "../Data/Tmp_train/Val_index.txt"
+    test_index_path = "../Data/Tmp_train/Test_index.txt"
+
+    # Instantiating OCCDataset with index file paths
+    ds_train = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
+    ds_train_attack = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain)
+    ds_val = OCCDataset(df_path="../Data/Tmp_train/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
+    ds_test = OCCDataset(df_path="../Data/Tmp_train/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
+
     return ds_train, ds_train_attack, ds_val, ds_test
 
 #%%
@@ -523,7 +494,16 @@ def create_data_loader(ds_train, ds_train_attack, ds_val, ds_test, batch_size):
     return data_loader_train, data_loader_train_attack, data_loader_val, data_loader_test
 
 # %% Save tmp_train
-# Saves temporary data to call in traning
+def create_index_file(csv_file_path, index_file_path):
+    byte_offset = 0
+    with open(csv_file_path, 'rb') as f, open(index_file_path, 'w') as index_file:
+        next(f)  # Skip the header row
+        byte_offset = f.tell()  # Get the current position after skipping
+        for line in f:
+            index_file.write(f"{byte_offset}\n")
+            byte_offset += len(line)
+
+# Saves temporary data to call in training
 def save_tmp(df_train, df_val, df_test):
     # Define the directory path
     directory_path = "../Data/Tmp_train/"
@@ -532,12 +512,23 @@ def save_tmp(df_train, df_val, df_test):
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
 
+    # Define file paths
+    train_file_path = os.path.join(directory_path, "Train.csv")
+    val_file_path = os.path.join(directory_path, "Val.csv")
+    test_file_path = os.path.join(directory_path, "Test.csv")
+
     # Save the DataFrames to CSV
-    df_train.to_csv(os.path.join(directory_path, "Train.csv"))
-    df_val.to_csv(os.path.join(directory_path, "Val.csv"))
-    df_test.to_csv(os.path.join(directory_path, "Test.csv"))
-    
-    print("Saved, ../Data/Tmp_train/[x].csv, Train, Test, Val")
+    df_train.to_csv(train_file_path, index=False)
+    df_val.to_csv(val_file_path, index=False)
+    df_test.to_csv(test_file_path, index=False)
+
+    # Create index files for each CSV
+    create_index_file(train_file_path, os.path.join(directory_path, "Train_index.txt"))
+    create_index_file(val_file_path, os.path.join(directory_path, "Val_index.txt"))
+    create_index_file(test_file_path, os.path.join(directory_path, "Test_index.txt"))
+
+    print("Saved, ../Data/Tmp_train/[x].csv and [x]_index.txt, Train, Test, Val")
+
 
     
 # %% Load data

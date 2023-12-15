@@ -18,7 +18,7 @@ MODEL_DOMAIN = "Multilingual_CANINE"
 # Parameters
 SAMPLE_SIZE = 10 # 10 to the power of this is used for training
 EPOCHS = 500
-BATCH_SIZE = 32 # 256
+BATCH_SIZE = 128 # 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
@@ -29,20 +29,18 @@ MAX_LEN = 128 # Number of tokens/characters to use
 MODEL_NAME = f'CANINE_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 checkpoint_path = None # Provide path to load model from checkpoint path
+checkpoint_path = "../Trained_models/231117_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32.bin"
 
 #%% Libraries
 # Import necessary libraries
-import numpy as np
-import pandas as pd
 import torch
+from torch import nn
 from transformers import AdamW, get_linear_schedule_with_warmup
-from sklearn.metrics import classification_report
 
 #%% Load modules
-from n001_Model_assets import *
-from n100_Attacker import *
-from n101_Trainer import *
-from n102_DataLoader import *
+from n001_Model_assets import CANINEOccupationClassifier
+from n101_Trainer import trainer_loop
+from n102_DataLoader import Load_data, load_model_from_checkpoint
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,13 +59,6 @@ data = Load_data(
     verbose = False
     # , toyload=True
     )
-
-# # Sanity check
-# for d in data['data_loader_train_attack']: 
-#     print(d['occ1'][0])
-#     print(data['tokenizer'](d['occ1'][0]))
-    
-# data['reference_loss']
 
 # %% Load model
 model = CANINEOccupationClassifier(
