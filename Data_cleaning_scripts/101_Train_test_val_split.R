@@ -126,7 +126,13 @@ x = pipeline(
   lang
 )
 
-# Canada
+x = pipeline(
+  "Data/Tmp_data/Clean_training_ship.Rdata",
+  "EN_training_ship",
+  lang
+)
+
+# ==== Run pipelines Canada ====
 x = pipeline(
   "Data/Tmp_data/Clean_CA_IPUMS.Rdata",
   "EN_ca_ipums",
