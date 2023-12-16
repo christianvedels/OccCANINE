@@ -387,7 +387,8 @@ class OCCDataset(Dataset):
         return self.n_obs
     
     # get item magic method
-    def __getitem__(self, item):        
+    def __getitem__(self, item):      
+        # breakpoint()
         # Get the byte offset from the stored index data
         byte_offset_line = self.index_data[item].strip()
         if not byte_offset_line:
@@ -470,12 +471,14 @@ def create_data_loader(ds_train, ds_train_attack, ds_val, ds_test, batch_size):
     data_loader_train = DataLoader(
         ds_train,
         batch_size=batch_size,
+        shuffle=True,  # Enable shuffling
         num_workers=0
     )
     
     data_loader_train_attack = DataLoader(
         ds_train_attack,
         batch_size=batch_size,
+        shuffle=True,  # Enable shuffling
         num_workers=0
     )
     
