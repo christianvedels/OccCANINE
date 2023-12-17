@@ -23,8 +23,8 @@ import torch.nn as nn
 # from tf_keras.layers import TextVectorization
 #from keras.layers import TextVectorization
 
-# %% BERT finetune based on model_domain
-def modelPath(model_domain):
+# %% Model path from domain
+def modelPath(model_domain, model_size = ""):
     if(model_domain == "DK_CENSUS"):
         MDL = 'Maltehb/danish-bert-botxo' # https://huggingface.co/Maltehb/danish-bert-botxo
     elif(model_domain == "EN_MARR_CERT"):
@@ -32,7 +32,10 @@ def modelPath(model_domain):
     elif(model_domain == "HSN_DATABASE"):
         MDL = "GroNLP/bert-base-dutch-cased"
     elif(model_domain == "Multilingual"):
-        MDL = 'xlm-roberta-base'
+        if model_size == "base":
+            MDL = 'xlm-roberta-base'
+        elif model_size == "large":
+            MDL = 'xlm-roberta-large'
     elif model_domain == "Multilingual_CANINE":  # Replace "CANINE_MODEL_NAME" with the actual CANINE model name
         MDL = "google/canine-s"          
     else:
@@ -41,10 +44,10 @@ def modelPath(model_domain):
     return MDL
 
 #%% Tokenizer
-def load_tokenizer(model_domain):
+def load_tokenizer(model_domain, model_size = ""):
     # breakpoint()
-    MDL = modelPath(model_domain)
-    if MDL == "xlm-roberta-base":
+    MDL = modelPath(model_domain, model_size)
+    if MDL == "xlm-roberta-base" or MDL == "xlm-roberta-large":
         tokenizer = XLMRobertaTokenizer.from_pretrained(MDL)
     elif MDL == "google/canine-s":  # Replace "CANINE_MODEL_NAME" with the actual CANINE model name
         tokenizer = CanineTokenizer.from_pretrained(MDL)
@@ -72,9 +75,9 @@ def update_tokenizer(tokenizer, df):
     return tokenizer
 
 # %%
-def getModel(model_domain, tokenizer):
+def getModel(model_domain, tokenizer, model_size = ""):
     # breakpoint()
-    MDL = modelPath(model_domain)
+    MDL = modelPath(model_domain, model_size)
     
     if model_domain == "Multilingual":
         model = XLMRobertaModel.from_pretrained(MDL)
@@ -120,9 +123,10 @@ class BERTOccupationClassifier(nn.Module):
 class XMLRoBERTaOccupationClassifier(nn.Module):
     
     # Constructor class 
-    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
+    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate, model_size):
         super(XMLRoBERTaOccupationClassifier, self).__init__()
-        self.basemodel = getModel(model_domain, tokenizer)
+        # breakpoint()
+        self.basemodel = getModel(model_domain, tokenizer, model_size)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
         

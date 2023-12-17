@@ -17,8 +17,8 @@ MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
 SAMPLE_SIZE = 10 # 10 to the power of this is used for training
-EPOCHS = 500
-BATCH_SIZE = 128 # 256
+EPOCHS = 50
+BATCH_SIZE = 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
@@ -28,8 +28,8 @@ MAX_LEN = 128 # Number of tokens/characters to use
 
 MODEL_NAME = f'CANINE_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
-checkpoint_path = None # Provide path to load model from checkpoint path
-checkpoint_path = "../Trained_models/231117_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32.bin"
+# checkpoint_path = None # Provide path to load model from checkpoint path
+checkpoint_path = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_4_lr_2e-05_batch_size_128"
 
 #%% Libraries
 # Import necessary libraries
@@ -38,9 +38,9 @@ from torch import nn
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 #%% Load modules
-from n001_Model_assets import CANINEOccupationClassifier
+from n001_Model_assets import CANINEOccupationClassifier, load_model_from_checkpoint
 from n101_Trainer import trainer_loop
-from n102_DataLoader import Load_data, load_model_from_checkpoint
+from n102_DataLoader import Load_data
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

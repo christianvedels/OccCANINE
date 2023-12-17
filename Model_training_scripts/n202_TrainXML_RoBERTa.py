@@ -15,36 +15,39 @@ os.chdir(script_directory)
 MODEL_DOMAIN = "Multilingual"
 
 # Parameters
-SAMPLE_SIZE = 3 # 10 to the power of this is used for training
+SAMPLE_SIZE = 10 # 10 # 10 to the power of this is used for training
 EPOCHS = 50
-BATCH_SIZE = 2**5
+BATCH_SIZE = 16
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 64 # Number of tokens to use
+model_size = "large"
 
-MODEL_NAME = f'XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
-checkpoint_path = None # Provide path to load model from checkpoint path
+MODEL_NAME = f'XML_RoBERTa_{model_size}_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
+checkpoint_path = None
+# checkpoint_path = "../Trained_models/231111_XML_RoBERTa_Multilingual_sample_size_6_lr_2e-05_batch_size_32" # Provide path to load model from checkpoint path
 
 #%% Libraries
 # Import necessary libraries
 import numpy as np
 import pandas as pd
 import torch
+from torch import nn
 from transformers import AdamW, get_linear_schedule_with_warmup
 from sklearn.metrics import classification_report
 
 #%% Load modules
-from n001_Model_assets import *
-from n100_Attacker import *
-from n101_Trainer import *
-from n102_DataLoader import *
+from n001_Model_assets import XMLRoBERTaOccupationClassifier
+from n101_Trainer import trainer_loop
+from n102_DataLoader import Load_data, load_model_from_checkpoint
 
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = "cpu"
 
 # %% Load data + tokenizer
 data = Load_data(
@@ -56,7 +59,9 @@ data = Load_data(
     alt_prob = ALT_PROB,
     insert_words = INSERT_WORDS,
     batch_size = BATCH_SIZE,
-    verbose = False
+    verbose = False,
+    model_size = model_size
+    # , toyload=True
     )
 
 # Sanity check
@@ -70,7 +75,8 @@ model = XMLRoBERTaOccupationClassifier(
     model_domain = MODEL_DOMAIN,
     n_classes = data['N_CLASSES'], 
     tokenizer = data['tokenizer'], 
-    dropout_rate = DROPOUT_RATE
+    dropout_rate = DROPOUT_RATE,
+    model_size = model_size
     )
 model.to(device)
 
@@ -103,30 +109,7 @@ model = trainer_loop(
     scheduler = scheduler
     )
 
-# # %% Load best model instance
-# # Define the path to the saved binary file
-# model_path = '../Trained_models/'+MODEL_NAME+'.bin'
 
-# # Load the model
-# loaded_state = torch.load(model_path)
-# model_best = XMLRoBERTaOccupationClassifier(
-#     n_classes = data['N_CLASSES'], 
-#     model_domain = MODEL_DOMAIN, 
-#     tokenizer = data['tokenizer'], 
-#     dropout_rate = DROPOUT_RATE
-#     )
-# model_best.load_state_dict(loaded_state)
-# model_best.to(device)
-
-# # %%
-# y_occ_texts, y_pred, y_pred_probs, y_test = get_predictions(
-#     model_best,
-#     data['data_loader_test'],
-#     device = device
-# )
-# report = classification_report(y_test, y_pred, output_dict=True)
-
-# print_report(report, MODEL_NAME)
 
 
 

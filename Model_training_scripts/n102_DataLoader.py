@@ -546,7 +546,8 @@ def Load_data(
         batch_size = 16,
         verbose = False,
         toyload = False,
-        tokenizer = "No tokenizer" # If no tokenizer is provided one will be created
+        tokenizer = "No tokenizer", # If no tokenizer is provided one will be created
+        model_size = "" # base, large, etc (many transformers have a small and large version)
         ):
     # breakpoint()
     
@@ -580,7 +581,10 @@ def Load_data(
         
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":
-        tokenizer = load_tokenizer(model_domain)
+        tokenizer = load_tokenizer(
+            model_domain,
+            model_size = model_size
+            )
         
         if model_domain != "Multilingual_CANINE":
             tokenizer = update_tokenizer(tokenizer, df_train)
