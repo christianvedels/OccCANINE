@@ -16,7 +16,7 @@ library(stringr)
 library(tm)
 
 # # ==== Load data ====
-all_data = read_csv("Data/Raw_data/HSN_HISCO_release_2018_01a.csv")
+all_data = read_csv("Data/Raw_data/HSN/HSN_HISCO_release_2018_01a.csv")
 
 # Toy data in script development
 # set.seed(20)
@@ -28,7 +28,7 @@ occ_data = all_data %>%
     HISCO = as.character(HISCO)
   ) %>% 
   mutate( # Clean string:
-    Original = str_replace_all(Original, "[^[:alnum:] ]", "") %>% tolower()
+    Original = str_replace_all(Original, "[^[:alnum:] ]", "") %>% tolower() %>% sub_scandi()
   ) %>% 
   rename(
     occ1 = Original,
@@ -45,6 +45,15 @@ occ_data = occ_data %>%
     hisco_4 = " ",
     hisco_5 = " "
   )
+
+# ==== Get combinations ====
+set.seed(20)
+combinations = occ_data %>% 
+  filter(hisco_2 == " ", hisco_1 != "-1") %>% 
+  sample_n(5000) %>% 
+  Combinations("en")
+
+occ_data = occ_data %>% bind_rows(combinations)  
 
 # ==== Some simple descriptive stats ====
 # Word cloud

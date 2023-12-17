@@ -9,7 +9,7 @@ CA_bcn_[x].csv;ca;Pujades-Mora & Valls (2017);Barcelona Historical Marriage Data
 EN_us_ipums_[x].csv;en;"MPC (2020); Bureau of the Census";IPUMS international census data*;Census;
 NO_ipums_[x].csv;no;MPC (2020);IPUMS international census data. Norwegian census 1801.;Census;
 FR_desc_[x].csv;fr;historyofwork.iisg.nl;Occupational titles form the HISCO website;Descriptions;
-HSN_database_[x].csv;nl;Mandemakers et al (2020) ;Historical Sample of The Netheralnds;Census;
+HSN_database_[x].csv;nl;Mandemakers et al (2020) ;Historical Sample of The Netheralnds;Census;50000
 EN_parish_[x].csv;en;de Pleijt, Nuvolari, Weisdorf (2020);HISCO labelled parish occupational descriptions;Descriptions;
 IS_ipums_[x].csv;is;MPC (2020);IPUMS international census data. Icelandic census 1901, 1910;Census;
 DK_cedar_[x].csv;da;Ford (2023);Occupational descriptions tranlated from Swedish CEDAR;Descriptions;
