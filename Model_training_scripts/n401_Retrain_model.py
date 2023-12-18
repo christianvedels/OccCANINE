@@ -14,21 +14,24 @@ import os
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+
 #%% Hyperparameters
 
 # Which training data is used for the model
 MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
-SAMPLE_SIZE = 6 # 10 to the power of this is used for training
-EPOCHS = 20
-BATCH_SIZE = 2**5
+SAMPLE_SIZE = 10 # 10 to the power of this is used for training
+EPOCHS = 500
+BATCH_SIZE = 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
-MAX_LEN = 64 # Number of tokens to use
+MAX_LEN = 128 # Number of tokens/characters to use
 
 import datetime
 current_date = datetime.datetime.now().strftime("%y%m%d")
@@ -38,6 +41,7 @@ if MODEL_DOMAIN == "Multilingual":
 elif MODEL_DOMAIN == "Multilingual_CANINE":
     MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
     MODEL_NAME_start = "231115_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
     MODEL_NAME = f"{current_date}_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
 else: 
     raise Exception("Not implemented")
