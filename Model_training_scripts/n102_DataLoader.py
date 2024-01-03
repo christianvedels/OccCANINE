@@ -246,38 +246,49 @@ def subset_to_smaller(df, sample_size):
 # Returns binary array
 def labels_to_bin(df, max_value):
     df_codes = df[["code1", "code2", "code3", "code4", "code5"]]
-    # Binarize
-    labels_list = df_codes.values.tolist()
-    # == Build outcome matrix ==
-    # Construct the NxK matrix
-    N = len(labels_list)
-    K = int(max_value)
-    labels = np.zeros((N, K), dtype=int)
-
-    for i, row in enumerate(labels_list):
-        for value in row:
+    
+    if len(df) == 1: # Handle single row efficiently
+        # Directly work with the single row's values
+        row_values = df_codes.iloc[0].values
+        labels = np.zeros(max_value, dtype=int)
+        for value in row_values:
             if not np.isnan(value):
-                labels[i, int(value)] = 1
+                labels[int(value)] = 1
 
-
-    # The columns 0-2 contains all those labelled as having 'no occupation'.
-    # But since any individuals is encoded with up 5 occupations, and any one o
-    # these can be 'no occupation' it occurs erroneously with high frequency.
-    # Fix: Check if any other occupation is positve.
-    # Iterate through each row of the array
-    for row in labels:
-        # Check if the value in the first column is '1'
-        if row[2] == 1 | row[1] == 1 | row[0] == 1:
-            # Check if there are any positive values in the remaining row (excluding the first column)
-            if np.any(row[3:]>0):
-                # Set the first column to '0' if positive values are found
-                row[0] = 0
+        # 'No occupation' correction for single row
+        if labels[2] == 1 or labels[1] == 1 or labels[0] == 1:
+            if np.any(labels[3:] > 0):
+                labels[0] = 0
+    else:
+        # Binarize
+        labels_list = df_codes.values.tolist()
+        # == Build outcome matrix ==
+        # Construct the NxK matrix
+        N = len(labels_list)
+        K = int(max_value)
+        labels = np.zeros((N, K), dtype=int)
+    
+        for i, row in enumerate(labels_list):
+            for value in row:
+                if not np.isnan(value):
+                    labels[i, int(value)] = 1
+    
+    
+        # The columns 0-2 contains all those labelled as having 'no occupation'.
+        # But since any individuals is encoded with up 5 occupations, and any one o
+        # these can be 'no occupation' it occurs erroneously with high frequency.
+        # Fix: Check if any other occupation is positve.
+        # Iterate through each row of the array
+        for row in labels:
+            # Check if the value in the first column is '1'
+            if row[2] == 1 | row[1] == 1 | row[0] == 1:
+                # Check if there are any positive values in the remaining row (excluding the first column)
+                if np.any(row[3:]>0):
+                    # Set the first column to '0' if positive values are found
+                    row[0] = 0
 
     labels = labels.astype(float)
-     
-    # Convert each row of the array to a 1D list
-    # labels = [row.tolist() for row in labels]
-     
+         
     return(labels)
 
 # %% Reference loss
@@ -404,7 +415,7 @@ class OCCDataset(Dataset):
         # breakpoint()
         
         occ1 = str(df.occ1.tolist()[0])
-        target = labels_to_bin(df, self.n_classes)[0]
+        target = labels_to_bin(df, self.n_classes)
         lang = str(df.lang.tolist()[0])
         
         # Implement Attack() here
