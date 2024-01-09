@@ -13,10 +13,16 @@ Train XML Roberta
 import os
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
-
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
+import torch
 
+if torch.cuda.is_available():
+    print(f"Number of GPUs available: {torch.cuda.device_count()}")
+    for i in range(torch.cuda.device_count()):
+        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+else:
+    print("No GPUs available")
 #%% Hyperparameters
 
 # Which training data is used for the model
@@ -33,14 +39,17 @@ INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 128 # Number of tokens/characters to use
 
+
 import datetime
 current_date = datetime.datetime.now().strftime("%y%m%d")
 if MODEL_DOMAIN == "Multilingual":
     MODEL_NAME_start = f'231107_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
     MODEL_NAME = f'{current_date}_XML_RoBERTa_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}'
 elif MODEL_DOMAIN == "Multilingual_CANINE":
-    MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
-    MODEL_NAME_start = "231115_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    #MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    #MODEL_NAME_start = "231115_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    #MODEL_NAME = f"{current_date}_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
+    
     MODEL_NAME_start = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
     MODEL_NAME = f"{current_date}_CANINE_Multilingual_CANINE_sample_size_6_lr_2e-05_batch_size_32"
 else: 
@@ -98,6 +107,7 @@ data = Load_data(
     tokenizer=tokenizer
     )
 
+
 # %% Load best model instance
 # Define the path to the saved binary file
 model_path = '../Trained_models/'+MODEL_NAME_start+'.bin'
@@ -105,12 +115,20 @@ model_path = '../Trained_models/'+MODEL_NAME_start+'.bin'
 # Load the model
 loaded_state = torch.load(model_path)
 
-model = XMLRoBERTaOccupationClassifier(
-    n_classes = len(data['key']), 
-    model_domain = MODEL_DOMAIN, 
-    tokenizer = tokenizer, 
+#model = XMLRoBERTaOccupationClassifier(
+#    n_classes = len(data['key']), 
+#    model_domain = MODEL_DOMAIN, 
+#    tokenizer = tokenizer, 
+#    dropout_rate = DROPOUT_RATE
+#    )
+
+model = CANINEOccupationClassifier(
+    model_domain = MODEL_DOMAIN,
+    n_classes = data['N_CLASSES'], 
+    tokenizer = data['tokenizer'], 
     dropout_rate = DROPOUT_RATE
     )
+model.to(device)
     
 model.load_state_dict(loaded_state)
 

@@ -14,6 +14,7 @@ os.chdir(script_directory)
 
 # %% Libraries
 import torch
+import wandb
 from sklearn.metrics import accuracy_score
 from torch import nn
 import numpy as np
@@ -182,7 +183,7 @@ def Run_eval(model, data, loss_fn, device, reference_loss, history, train_acc, t
         model_name = model_name
         )
     
-    return history, val_acc
+    return history, val_loss,val_acc
 
 # %% Trainer loop
 def trainer_loop(
@@ -202,7 +203,8 @@ def trainer_loop(
     
     history = defaultdict(list)
     best_accuracy = 0
-      
+    
+    wandb.watch(model)  
     # Training loop
     for epoch in range(epochs):
         
@@ -232,16 +234,15 @@ def trainer_loop(
                 scheduler, 
                 verbose=True
                 )
-        
+        wandb.log({"train_loss": train_loss, "train_accuracy": train_acc})
         print(f"Train loss {train_loss}, accuracy {train_acc}")    
-        
         if(train_loss < switch_attack*reference_loss):
             if(not(attack_switch)):
                 print("-----> SWITCHED TO DATA LOADER WITH ATTACK")
             attack_switch = True
             
         # Run eval
-        history, val_acc = Run_eval(
+        history, val_loss,val_acc = Run_eval(
             model, 
             data, 
             loss_fn, 
@@ -253,6 +254,7 @@ def trainer_loop(
             model_name
             )
         
+        wandb.log({"epoch": epoch, "val_loss": val_loss, "val_accuracy": val_acc})
         # If we beat prev performance
         if val_acc > best_accuracy:
             print("Saved improved model")

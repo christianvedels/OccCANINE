@@ -12,12 +12,17 @@ os.chdir(script_directory)
 # Choose which GPU to use
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
+import wandb
+os.environ['WANDB_API_KEY'] = '30b543a8072aecce8ff8922a0f68e0785f237d92'  # Replace with your actual API key
+wandb.login()
+wandb.init(project='Multilingual_CANINE', entity='christianmdahl')
+
 # Which training data is used for the model
 MODEL_DOMAIN = "Multilingual_CANINE"
 
 # Parameters
 SAMPLE_SIZE = 10 # 10 to the power of this is used for training
-EPOCHS = 50
+EPOCHS = 500
 BATCH_SIZE = 256
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
@@ -29,7 +34,22 @@ MAX_LEN = 128 # Number of tokens/characters to use
 MODEL_NAME = f'CANINE_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
 
 # checkpoint_path = None # Provide path to load model from checkpoint path
-checkpoint_path = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_4_lr_2e-05_batch_size_128"
+checkpoint_path = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
+
+# Configure hyperparameters
+config = wandb.config
+config.learning_rate = LEARNING_RATE
+config.epochs = EPOCHS
+config.batch_size = BATCH_SIZE
+config.dropout_rate = DROPOUT_RATE
+config.max_len = MAX_LEN
+config.sample_size = SAMPLE_SIZE
+config.alt_prob = ALT_PROB
+config.insert_words = INSERT_WORDS
+config.model_domain = MODEL_DOMAIN
+config.upsample_minimum = UPSAMPLE_MINIMUM
+config.model_name = MODEL_NAME
+config.checkpoint_path = checkpoint_path
 
 #%% Libraries
 # Import necessary libraries
@@ -109,6 +129,7 @@ model = trainer_loop(
     device = device, 
     scheduler = scheduler
     )
+wandb.finish()
 
 
 
@@ -116,3 +137,5 @@ model = trainer_loop(
 
 
 
+
+# %%
