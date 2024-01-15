@@ -128,7 +128,7 @@ x = pipeline(
 
 x = pipeline(
   "Data/Tmp_data/Clean_training_ship.Rdata",
-  "EN_training_ship",
+  "EN_ship_data",
   lang
 )
 
