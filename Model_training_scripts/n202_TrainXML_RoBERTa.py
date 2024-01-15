@@ -17,19 +17,19 @@ MODEL_DOMAIN = "Multilingual"
 # Parameters
 SAMPLE_SIZE = 10 # 10 # 10 to the power of this is used for training
 EPOCHS = 50
-BATCH_SIZE = 16
+BATCH_SIZE = 64
 LEARNING_RATE = 2*10**-5
 UPSAMPLE_MINIMUM = 0
 ALT_PROB = 0.1
 INSERT_WORDS = True
 DROPOUT_RATE = 0 # Dropout rate in final layer
 MAX_LEN = 64 # Number of tokens to use
-model_size = "large"
+model_size = "base"
 
 
 MODEL_NAME = f'XML_RoBERTa_{model_size}_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}' 
-checkpoint_path = None
-# checkpoint_path = "../Trained_models/231111_XML_RoBERTa_Multilingual_sample_size_6_lr_2e-05_batch_size_32" # Provide path to load model from checkpoint path
+# checkpoint_path = None
+checkpoint_path = "../Trained_models/231111_XML_RoBERTa_Multilingual_sample_size_6_lr_2e-05_batch_size_32" # Provide path to load model from checkpoint path
 
 #%% Libraries
 # Import necessary libraries
