@@ -253,6 +253,15 @@ def trainer_loop(
             model_name
             )
         
+        # Checkpoint
+        torch.save(
+            model.state_dict(), 
+            '../Trained_models/Checkpoint'+model_name+'.bin'
+            )
+        
+        tokenizer_save_path = '../Trained_models/Checkpoint' + model_name + '_tokenizer'
+        data['tokenizer'].save_pretrained(tokenizer_save_path)
+        
         # If we beat prev performance
         if val_acc > best_accuracy:
             print("Saved improved model")
@@ -329,5 +338,10 @@ def print_report(report, model_name):
         file.write(report_str)
 
     print(f"Classification report saved to {file_path}")
+    
+    
+# %% Save everything
+def save_everything():
+    print("1")
     
     
