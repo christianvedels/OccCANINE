@@ -21,3 +21,4 @@ EN_loc_[x].csv;en;Mooney (2016);London Occupational codes;Descriptions;
 SE_chalmers_[x].csv;se;Ford (2023);Occupational descriptions from Ford (2023);Descriptions;
 IT_fm_[x].csv;it;Fornasin & Marzona (2016);Italian occupational descriptions;Descriptions;
 HISCO_website_[x].csv;mult;HISCO website;Descriptions from HISCO website. historyofwork.iisg.nl;Descriptions;
+EN_ship_data_[x].csv;en;Schneider & Gao (2019);English training ship data;Census;
