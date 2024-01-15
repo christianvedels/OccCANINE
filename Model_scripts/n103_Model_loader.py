@@ -35,10 +35,11 @@ def Get_adapated_tokenizer(name):
 # %% Load best model instance
 # Define the path to the saved binary file
 class Finetuned_model:
-    def __init__(self, name, device = "cpu"):
-        breakpoint()
+    def __init__(self, name, device = "cpu", batch_size = 256):
+        
         self.name = name
         self.device = device
+        self.batch_size = batch_size
         
         # Get tokenizer
         self.tokenizer = Get_adapated_tokenizer(name)
@@ -110,7 +111,7 @@ class Finetuned_model:
                 
         return inputs
             
-    def predict(self, occ1, lang = "unk", batch_size = 256, what = "logits", threshold = 0.5, concat_in = False, verbose = False, ):
+    def predict(self, occ1, lang = "unk", what = "logits", threshold = 0.5, concat_in = False, verbose = False, ):
         """
         occ1:           List of occupational strings
         lang:           Language (defaults to unknown)
@@ -121,7 +122,7 @@ class Finetuned_model:
         concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
         """
         inputs = self.encode(occ1, lang, concat_in)
-        
+        batch_size = self.batch_size
         results = []
         total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
 
