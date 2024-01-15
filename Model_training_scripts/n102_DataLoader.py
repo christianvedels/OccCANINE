@@ -542,8 +542,6 @@ def save_tmp(df_train, df_val, df_test):
     create_index_file(test_file_path, os.path.join(directory_path, "Test_index.txt"))
 
     print("Saved, ../Data/Tmp_train/[x].csv and [x]_index.txt, Train, Test, Val")
-
-
     
 # %% Load data
 def Load_data(
@@ -641,15 +639,6 @@ def Load_data(
         'Occupations': Occs
     }
 
-#%%
-from n001_Model_assets import *
-from n100_Attacker import *
-
-# model_domain = "EN_MARR_CERT"
-
-# df, key = read_data(model_domain)
-
-
 # %% Load_val
 # Simple loader for validation data
 
@@ -658,10 +647,7 @@ def Load_val(model_domain, sample_size, toyload = False):
     
     # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)
-    
-    df['concat_string0'] = [Concat_string(occ1, lang) for occ1, lang in zip(df['occ1'].tolist(), df['lang'].tolist())]
-    df['concat_string1'] = [Concat_string(occ1, 'unk') for occ1 in df['occ1'].tolist()]
-    
+     
     # Make binary output matrix
     df_bin = labels_to_bin(df, max(df.code1)+1)
         
