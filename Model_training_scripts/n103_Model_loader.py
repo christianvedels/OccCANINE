@@ -36,7 +36,7 @@ def Get_adapated_tokenizer(name):
 # Define the path to the saved binary file
 class Finetuned_model:
     def __init__(self, name, device = "cpu"):
-        
+        breakpoint()
         self.name = name
         self.device = device
         
