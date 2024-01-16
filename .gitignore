@@ -64,3 +64,10 @@ Data/Tmp_train/Val.csv
 Data/Tmp_train/Test_index.txt
 Data/Tmp_train/Train_index.txt
 Data/Tmp_train/Val_index.txt
+Data/Predictions/embeddings_w_lang.csv
+Data/Predictions/embeddings_w_lang_base.csv
+Data/Predictions/embeddings_wo_lang.csv
+Data/Predictions/embeddings_wo_lang_base.csv
+Data/Predictions/pred_data.csv
+Data/Predictions/preds_w_lang.csv
+Data/Predictions/preds_wo_lang.csv
