@@ -71,3 +71,11 @@ Data/Predictions/embeddings_wo_lang_base.csv
 Data/Predictions/pred_data.csv
 Data/Predictions/preds_w_lang.csv
 Data/Predictions/preds_wo_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_w_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_w_lang_base.csv
+Data/Predictions/PredictionsCANINE/embeddings_wo_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_wo_lang_base.csv
+Data/Predictions/PredictionsCANINE/pred_data.csv
+Data/Predictions/PredictionsCANINE/preds_w_lang.csv
+Data/Predictions/PredictionsCANINE/preds_wo_lang.csv
+Data/Summary_data/Model_performanceCANINE.csv
