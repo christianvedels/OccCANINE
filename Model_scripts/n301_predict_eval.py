@@ -22,14 +22,13 @@ BATCH_SIZE = 256
 VERBOSE = True
 
 # Where should the files be saved to?
-output_dir = "../Data/Predictions/"
+output_dir = "../Data/Predictions/PredictionsCANINE"
 
 # Name of the finetuned model to use (must be located in "Trained_models") 
 model_name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
 
 # %% Import necessary modules
 import torch
-import numpy as np
 import pandas as pd
 
 from n103_Prediction_assets import Finetuned_model
