@@ -22,7 +22,8 @@ BATCH_SIZE = 256
 VERBOSE = True
 
 # Where should the files be saved to?
-output_dir = "../Data/Predictions/PredictionsCANINE"
+model_name = "CANINE"
+output_dir = "../Data/Predictions/Predictions" + model_name 
 
 # Name of the finetuned model to use (must be located in "Trained_models") 
 model_name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
@@ -34,14 +35,13 @@ import pandas as pd
 from n103_Prediction_assets import Finetuned_model
 from n102_DataLoader import Load_val
 
-
 #%% Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # %% Load data
 key, df = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = 5, # 10^sample_size
+    sample_size = 6, # 10^sample_size
     toyload = False
     )
 
@@ -58,7 +58,7 @@ model_baseline = Finetuned_model(
     device = device, 
     batch_size = BATCH_SIZE, 
     verbose = VERBOSE, 
-    baseline=True
+    baseline=True # Loads untrained version of CANINE 
     )
 
 # %% Proof of concept
@@ -76,12 +76,16 @@ embeddings_wo_lang = model.forward_base(df["occ1"].tolist(), lang = df["lang"].t
 embeddings_w_lang_base = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 embeddings_wo_lang_base = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 
+# %% Create dir if it does not exist
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+    
 # %% Convert to data frame and save csv
-df.to_csv(output_dir+"pred_data.csv") # Save background data 
+df.to_csv(output_dir+"/pred_data.csv") # Save background data 
 
-preds_w_lang.to_csv(output_dir+"preds_w_lang.csv")
-preds_wo_lang.to_csv(output_dir+"preds_wo_lang.csv")
-pd.DataFrame(embeddings_w_lang).to_csv(output_dir+"embeddings_w_lang.csv")
-pd.DataFrame(embeddings_wo_lang).to_csv(output_dir+"embeddings_wo_lang.csv")
-pd.DataFrame(embeddings_w_lang_base).to_csv(output_dir+"embeddings_w_lang_base.csv")
-pd.DataFrame(embeddings_wo_lang_base).to_csv(output_dir+"embeddings_wo_lang_base.csv")
+preds_w_lang.to_csv(output_dir+"/preds_w_lang.csv")
+preds_wo_lang.to_csv(output_dir+"/preds_wo_lang.csv")
+pd.DataFrame(embeddings_w_lang).to_csv(output_dir+"/embeddings_w_lang.csv")
+pd.DataFrame(embeddings_wo_lang).to_csv(output_dir+"/embeddings_wo_lang.csv")
+pd.DataFrame(embeddings_w_lang_base).to_csv(output_dir+"/embeddings_w_lang_base.csv")
+pd.DataFrame(embeddings_wo_lang_base).to_csv(output_dir+"/embeddings_wo_lang_base.csv")
