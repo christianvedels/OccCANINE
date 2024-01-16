@@ -11,7 +11,44 @@ library(tidyverse)
 library(foreach)
 
 # ==== Read data ====
-predictions = read_csv("Data/Predictions/XML_RoBERTa_Multilingual_sample_size_6_lr_2e-05_batch_size_32.csv")
+pred_data = read_csv("Data/Predictions/pred_data.csv")[,-1]
+preds_w_lang = read_csv("Data/Predictions/preds_w_lang.csv")[,-1]
+preds_wo_lang = read_csv("Data/Predictions/preds_wo_lang.csv")[,-1]
+
+set.seed(20)
+pred_data %>% 
+  bind_cols(preds_w_lang) %>% 
+  sample_n(10000) %>% 
+  rowwise() %>% 
+  select(starts_with("hisco")) %>% 
+  mutate_all(.funs = function(x) ifelse(is.na(x), -1, x)) %>% 
+  mutate(
+    test1 = c(hisco_1...2) %in% c(hisco_1...16:hisco_20),
+    test2 = c(hisco_2...3) %in% c(hisco_1...16:hisco_20),
+    test3 = c(hisco_3...4) %in% c(hisco_1...16:hisco_20),
+  ) %>% 
+  mutate(test = any(test1, test2, test3)) %>% 
+  ungroup() %>% 
+  summarise(
+    mean(test)
+  )
+
+pred_data %>% 
+  bind_cols(preds_wo_lang) %>% 
+  sample_n(10000) %>% 
+  rowwise() %>% 
+  select(starts_with("hisco")) %>% 
+  mutate_all(.funs = function(x) ifelse(is.na(x), -1, x)) %>% 
+  mutate(
+    test1 = c(hisco_1...2) %in% c(hisco_1...16:hisco_20),
+    test2 = c(hisco_2...3) %in% c(hisco_1...16:hisco_20),
+    test3 = c(hisco_3...4) %in% c(hisco_1...16:hisco_20),
+  ) %>% 
+  mutate(test = any(test1, test2, test3)) %>% 
+  ungroup() %>% 
+  summarise(
+    mean(test)
+  )
 
 # ==== CorrectHISCOChar ====
 # Corrects HISCO with leading zeros
