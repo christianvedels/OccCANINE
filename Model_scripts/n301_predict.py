@@ -14,16 +14,14 @@ os.chdir(script_directory)
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 MODEL_DOMAIN = "Multilingual_CANINE" # Type of model
-MODEL_SIZE = "base"
 BATCH_SIZE = 256
 
-# Model path
-checkpoint_path = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
+# Name of the finetuned model to use (must be located in "Trained_models") 
 model_name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
 
 # %% Import necessary modules
 import torch
-from n103_Model_loader import Finetuned_model
+from n103_Prediction_assets import Finetuned_model
 from n102_DataLoader import Load_val
 # from n001_Model_assets import load_model_from_checkpoint, load_tokenizer, update_tokenizer, CANINEOccupationClassifier
 # from n102_DataLoader import Load_val, Concat_string, Concat_string_canine

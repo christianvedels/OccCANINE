@@ -649,9 +649,9 @@ def Load_val(model_domain, sample_size, toyload = False):
     df = subset_to_smaller(df, sample_size=sample_size)
      
     # Make binary output matrix
-    df_bin = labels_to_bin(df, max(df.code1)+1)
+    # df_bin = labels_to_bin(df, max(df.code1)+1)
         
-    return key, df, df_bin
+    return key, df
 
 
 
