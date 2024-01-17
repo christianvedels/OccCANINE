@@ -41,7 +41,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # %% Load data
 key, df = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = 5, # 10^sample_size
+    sample_size = 6, # 10^sample_size
     toyload = False
     )
 

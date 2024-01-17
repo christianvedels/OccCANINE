@@ -12,7 +12,7 @@ source("Model_evaluation_scripts/000_Functions.R")
 source("Model_evaluation_scripts/001_Generate_eval_stats.R")
 
 # ==== Load eval stats ====
-eval_canine = Generate_eval_stats("CANINE")
+eval_canine = Generate_eval_stats("CANINE", overwrite = FALSE)
 
 # ==== What is the best threshold? ====
 plot_of_thresholds = function(x, name){
@@ -23,10 +23,11 @@ plot_of_thresholds = function(x, name){
     mutate(
       best = max(value) == value
     ) %>% 
-    filter(!lang_info) # Something weird happens when lang is included
+    # filter(!lang_info) %>%  # Something weird happens when lang is included
+    ungroup()
   
   p1 = plot_stats %>% 
-    ggplot(aes(thr, value)) + 
+    ggplot(aes(thr, value, col = lang_info)) + 
     geom_point() + 
     geom_line(lty = 2) +
     geom_point(data = subset(plot_stats, best), aes(thr, value), shape = 4, size = 3, col = "black") +  # Highlight max points
@@ -51,11 +52,13 @@ plot_of_thresholds = function(x, name){
   
   path = paste0("Eval_plots/Optimal_threshold/", name, ".png")
   ggsave(path, width = 10, height = 8, plot = p1)
+  
+  return(p1)
 }
 
 # All
 eval_canine %>% filter(summary == "All") %>% 
-  plot_of_thresholds()
+  plot_of_thresholds("All")
 
 # Langs
 x = eval_canine %>% filter(summary == "Lang")
@@ -69,29 +72,36 @@ p1 = eval_canine %>%
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
   filter(summary == "Lang") %>% 
   filter(thr == 0.5) %>% 
-  filter(!lang_info) %>% 
-  ggplot(aes(n, value, label = lang)) +
+  filter(lang_info) %>%
+  mutate(
+    share_in_training = n/sum(n)
+  ) %>% 
+  ggplot(aes(share_in_training, value, label = lang)) +
   geom_label(alpha = 0.5, size = 4) +
-  facet_wrap(~stat) + 
+  facet_wrap(~stat, ncol = 2) + 
   theme_bw() +
+  scale_x_continuous(
+    labels = scales::percent
+  ) +
   scale_y_continuous(
     labels = scales::percent,
     breaks = seq(0.7, 1, by = 0.025),  # Labels at every 0.1
   ) + 
   labs(
-    x = "Threshold",
+    x = "Share of training data",
     y = "Statistic",
     title = "Language_wise performance"
   ) + 
   geom_hline(yintercept = 1)
 
-ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 8, plot = p1)
+p1
+ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 10, plot = p1)
 
 p1 = eval_canine %>% # Regular bar plot
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
   filter(summary == "Lang") %>% 
   filter(thr == 0.5) %>% 
-  filter(!lang_info) %>% 
+  filter(lang_info) %>% 
   ggplot(aes(lang, value, fill = n)) +
   geom_bar(stat = "identity") +
   facet_wrap(~stat) + 
@@ -102,10 +112,11 @@ p1 = eval_canine %>% # Regular bar plot
   labs(
     x = "Threshold",
     y = "Statistic",
-    title = "Language_wise performance"
+    title = "Performance by language"
   ) + 
   geom_hline(yintercept = 1)
-  
+
+p1  
 ggsave("Eval_plots/Performance_lang_wise2.png", width = 10, height = 8, plot = p1)
 
 # ==== By hisco ====
@@ -113,9 +124,9 @@ p1 = eval_canine %>%
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
   filter(summary == "hisco") %>% 
   filter(thr == 0.5) %>% 
-  filter(!lang_info) %>% 
+  filter(lang_info) %>% 
   ggplot(aes(n, value, label = hisco_1)) +
-  geom_label(alpha = 0.5, size = 4) +
+  geom_label(alpha = 0.5) +
   facet_wrap(~stat) + 
   theme_bw() +
   scale_x_log10() +
@@ -129,7 +140,7 @@ p1 = eval_canine %>%
   ) + 
   geom_hline(yintercept = 1)
 
-ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 8, plot = p1)
+ggsave("Eval_plots/Performance_hisco.png", width = 10, height = 8, plot = p1)
 
 p1
 
