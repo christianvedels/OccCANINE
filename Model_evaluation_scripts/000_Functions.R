@@ -193,14 +193,61 @@ Run_tests = function(pred, truth){
   return(res)
 }
 
-
-
-# === floor0 ====
+# ==== floor0 ====
 # floor0 is a modicaiton of floor
 
 floor0 = function(x, n){
   floor(x*n)/n
 }
 
+# ==== plot of thresholds ====
+plot_of_thresholds = function(x, name){
+  
+  plot_stats = x %>% 
+    pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
+    group_by(stat, lang_info) %>% 
+    mutate(
+      best = max(value) == value
+    ) %>% 
+    # filter(!lang_info) %>%  # Something weird happens when lang is included
+    ungroup()
+  
+  p1 = plot_stats %>% 
+    ggplot(aes(thr, value, col = lang_info)) + 
+    geom_point() + 
+    geom_line(lty = 2) +
+    geom_point(data = subset(plot_stats, best), aes(thr, value), shape = 4, size = 3, col = "black") +  # Highlight max points
+    geom_vline(data = subset(plot_stats, best), aes(xintercept = thr), lty = 2) +
+    geom_hline(data = subset(plot_stats, best), aes(yintercept = value), lty = 2) +
+    facet_wrap(~stat) +  # Changed from ~name to ~stat based on your data structure
+    theme_bw() +
+    scale_y_continuous(
+      labels = scales::percent,
+      breaks = seq(floor0(min(plot_stats$value),1), 1, by = 0.025),  # Labels at every 0.1
+    ) + 
+    scale_x_continuous(
+      breaks = seq(0, 1, by = 0.1),  # Labels at every 0.1
+      minor_breaks = seq(0, 0, by = 0.05) # Lines at every 0.05
+    ) + 
+    labs(
+      x = "Threshold",
+      y = "Statistic",
+      title = name,
+      subtitle = paste("N =", plot_stats$n[1])
+    )
+  
+  path = paste0("Eval_plots/Optimal_threshold/", name, ".png")
+  ggsave(path, width = 10, height = 8, plot = p1)
+  
+  return(p1)
+}
 
+# ==== Fix_HISCO ====
+Fix_HISCO = function(x){
+  case_when(
+    nchar(x) == 5 ~ as.character(x),
+    nchar(x) == 4 ~ paste0("0",x),
+    TRUE ~  as.character(x)
+  )
+}
 

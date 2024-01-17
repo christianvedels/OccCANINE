@@ -271,4 +271,4 @@ class Finetuned_model:
         results = torch.cat(results, axis=0).cpu().detach().numpy()
         
         print("\n")
-        return(results)
+        return results, inputs

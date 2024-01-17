@@ -41,7 +41,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # %% Load data
 key, df = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = 6, # 10^sample_size
+    sample_size = 5, # 10^sample_size
     toyload = False
     )
 
@@ -81,14 +81,14 @@ x.to_csv(output_dir+"/preds_wo_lang.csv")
 x, inputs = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang.csv")
 
-x, inputs = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+x, inputs = model.forward_base(df["occ1"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang.csv")
 
 # Get baseline predictions for comparisons
 x, inputs = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang_base.csv")
 
-x, inputs = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+x, inputs = model_baseline.forward_base(df["occ1"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang_base.csv")
 
 
