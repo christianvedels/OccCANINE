@@ -11,7 +11,7 @@ import os
 script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
-# %%
+# %% Params
 # Choose which GPU to use
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -41,7 +41,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # %% Load data
 key, df = Load_val(
     model_domain = MODEL_DOMAIN,
-    sample_size = 6, # 10^sample_size
+    sample_size = 5, # 10^sample_size
     toyload = False
     )
 
@@ -62,30 +62,39 @@ model_baseline = Finetuned_model(
     )
 
 # %% Proof of concept
-model.predict(["he has a farm and is the taylor of fine dresses for all the ladys"], what = 5, get_dict = True)
-
-# %% Predict 
-# Get predictions. The following returns 
-preds_w_lang = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
-preds_wo_lang = model.predict(df["occ1"].tolist(), what = 20)
-
-embeddings_w_lang = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
-embeddings_wo_lang = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
-
-# Get baseline predictions for comparisons
-embeddings_w_lang_base = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
-embeddings_wo_lang_base = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+# model.predict(["he has a farm and is the taylor of fine dresses for all the ladys"], what = 5, get_dict = True)
 
 # %% Create dir if it does not exist
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
     
-# %% Convert to data frame and save csv
 df.to_csv(output_dir+"/pred_data.csv") # Save background data 
 
-preds_w_lang.to_csv(output_dir+"/preds_w_lang.csv")
-preds_wo_lang.to_csv(output_dir+"/preds_wo_lang.csv")
-pd.DataFrame(embeddings_w_lang).to_csv(output_dir+"/embeddings_w_lang.csv")
-pd.DataFrame(embeddings_wo_lang).to_csv(output_dir+"/embeddings_wo_lang.csv")
-pd.DataFrame(embeddings_w_lang_base).to_csv(output_dir+"/embeddings_w_lang_base.csv")
-pd.DataFrame(embeddings_wo_lang_base).to_csv(output_dir+"/embeddings_wo_lang_base.csv")
+# %% Predict and save to csv
+# Get predictions. The following returns 
+x, inputs = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
+x.to_csv(output_dir+"/preds_w_lang.csv")
+
+x, inputs = model.predict(df["occ1"].tolist(), what = 20)
+x.to_csv(output_dir+"/preds_wo_lang.csv")
+
+x, inputs = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang.csv")
+
+x, inputs = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang.csv")
+
+# Get baseline predictions for comparisons
+x, inputs = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang_base.csv")
+
+x, inputs = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang_base.csv")
+
+
+
+
+
+
+
+

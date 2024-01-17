@@ -135,6 +135,7 @@ class Finetuned_model:
         self.model = model
         
     def encode(self, occ1, lang, concat_in):
+        # breakpoint()
         if not concat_in: # Because then it is assumed that strings are already clean
             occ1 = [occ.lower() for occ in occ1]
             occ1 = [unidecode(occ) for occ in occ1]
@@ -142,10 +143,8 @@ class Finetuned_model:
         # Handle singular lang
         if isinstance(lang, str):
             lang = [lang]
-        
-        # Make list
-        lang = [lang[0] for i in occ1]
-        
+            lang = [lang[0] for i in occ1]
+                
         # Define input
         if concat_in:
             inputs = occ1
@@ -167,6 +166,7 @@ class Finetuned_model:
         concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
         get_dict:       For what [n] method this is an option to return a list of dictionaries
         """
+        # breakpoint()
         inputs = self.encode(occ1, lang, concat_in)
         batch_size = self.batch_size
         verbose = self.verbose
@@ -233,7 +233,7 @@ class Finetuned_model:
                 results = Top_n_to_df(results, what)
                     
         print("\n")
-        return results
+        return results, inputs
     
     def forward_base(self, occ1, lang = "unk", concat_in = False):
         """
