@@ -69,14 +69,17 @@ p1 = eval_canine %>% # Regular bar plot
     labels = scales::percent,
   ) + 
   labs(
-    x = "Threshold",
+    x = "Language",
     y = "Statistic",
     title = "Performance by language"
   ) + 
-  geom_hline(yintercept = 1)
+  geom_hline(yintercept = 1) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0)
+  )
 
 p1  
-ggsave("Eval_plots/Performance_lang_wise2.png", width = 10, height = 8, plot = p1)
+ggsave("Eval_plots/Performance_lang_wise2.png", width = 6, height = 3.5, plot = p1)
 
 # ==== By hisco ====
 p1 = eval_canine %>% 
@@ -99,7 +102,7 @@ p1 = eval_canine %>%
   ) + 
   geom_hline(yintercept = 1)
 
-ggsave("Eval_plots/Performance_hisco.png", width = 10, height = 8, plot = p1)
+ggsave("Eval_plots/Performance_hisco.png", width = 6, height = 3.5, plot = p1)
 
 p1
 

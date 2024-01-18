@@ -237,7 +237,7 @@ plot_of_thresholds = function(x, name){
     )
   
   path = paste0("Eval_plots/Optimal_threshold/", name, ".png")
-  ggsave(path, width = 10, height = 8, plot = p1)
+  ggsave(path, width = 6, height = 3.5, plot = p1)
   
   return(p1)
 }
