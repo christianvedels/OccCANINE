@@ -130,9 +130,4 @@ embeddings_wo_lang_base %>%
 
 
 
-# embeddings_w_lang_base$occ1 = pred_data$occ1
-# embeddings_wo_lang$occ1 = pred_data$occ1
-# embeddings_wo_lang_base$occ1 = pred_data$occ1
-
-
 
