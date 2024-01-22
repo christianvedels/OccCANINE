@@ -17,9 +17,6 @@ from n103_Prediction_assets import Finetuned_model
 # %% Load model
 model = Finetuned_model(
     name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256", 
-    device = "cuda", 
-    batch_size = 256, 
-    verbose = True
     )
 
 # %% Use the model
