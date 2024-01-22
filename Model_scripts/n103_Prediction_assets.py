@@ -71,14 +71,19 @@ def Top_n_to_df(result, top_n):
 # %% Load best model instance
 # Define the path to the saved binary file
 class Finetuned_model:
-    def __init__(self, name, device = "cpu", batch_size = 256, verbose = False, baseline = False):
+    def __init__(self, name, device = None, batch_size = 256, verbose = False, baseline = False):
         """
         name:           Name of the model to load (name in 'Trained_models')
-        device:         Which device should be used? Defaults to cpu
+        device:         Which device should be used? Defaults to auto-detection. 
         batch_size:     How to batch up the data
         verbose:        Should updates be printed?  
         baseline:       Option to load baseline (untrained) version of the model
         """
+        
+        # Detect device
+        if not device:
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            print(f"Auto-detected device: {device}")
         
         self.name = name
         self.device = device

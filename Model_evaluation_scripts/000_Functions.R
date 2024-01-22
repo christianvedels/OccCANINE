@@ -4,6 +4,11 @@
 #
 # Purpose:    Functions for model evaluation
 
+# ==== Colors ====
+blue = "#273a8f"
+green = "#2c5c34"
+red = "#b33d3d"
+orange = "#DE7500"
 
 # ==== Pred_to_pred ====
 # Transforms the pred files outputted from n301_predict_eval.py to label predictions
@@ -251,3 +256,109 @@ Fix_HISCO = function(x){
   )
 }
 
+# ==== Get_wrong_cases ====
+Get_wrong_cases = function(x0, pred_data, key){
+  x = x0 %>% 
+    Pred_to_pred() 
+  
+  cases = pred_data %>%
+    select(RowID, lang, Source, occ1, hisco_1:hisco_5) %>% 
+    left_join(x, by = "RowID") %>% 
+    filter( # Only where one code is the TRUE code
+      !is.na(hisco_1),
+      is.na(hisco_2),
+    ) %>% 
+    rowwise() %>% 
+    filter( # Only where one 
+      !acc(hisco_1, pred_hisco_1)
+    ) %>% 
+    ungroup() %>% 
+    select(RowID, hisco_1, occ1) %>% 
+    left_join(key %>% select(hisco, en_hisco_text), by = c(hisco_1="hisco")) %>% 
+    left_join(x0, by = "RowID", suffix = c("_correct", ""))
+  
+  return(cases)
+}
+
+# ==== Plot_wrong ====
+# capN: How many plots?
+Plot_wrong = function(x, capN = 100, n_guesses = 10, n_char = 20, name){
+  x_long = x %>%
+    pivot_longer(
+      cols = -c(RowID, hisco_1_correct, en_hisco_text, occ1), 
+      names_to = c(".value", "set"), 
+      names_pattern = "(.*)_(\\d+)"
+    ) %>% 
+    mutate(
+      hisco = Fix_HISCO(hisco),
+      hisco_correct = Fix_HISCO(hisco_1_correct)
+    )
+  
+  ids = unique(x_long$RowID)
+  
+  # Define custom colors for each category
+  custom_colors = c("TRUE" = red,
+                    "FALSE" = "grey")
+  
+  foreach(i = seq(capN)) %do% {
+    id_i = ids[i]
+    if(is.na(id_i)){
+      return(0)
+    }
+    
+    # Make plot for ID
+    plot_data_i = x_long %>% 
+      filter(RowID==id_i) %>% 
+      filter(as.numeric(set) <= n_guesses) %>% 
+      mutate(
+        correct = hisco_correct == hisco
+      ) %>% 
+      mutate(
+        label = paste(hisco, desc, sep = ": ")
+      ) %>% 
+      mutate(
+        label = ifelse(
+          nchar(label) > n_char,
+          paste0(substr(label, 1, n_char), "..."),
+          label
+        )
+      ) %>% 
+      mutate(
+        label = factor(label, levels = label)
+      ) %>% 
+      mutate(
+        prob_label = ifelse(
+          prob > 0.001,
+          signif(prob, 2),
+          "<0.001"
+        )
+      )
+    
+    title_i = paste(unique(plot_data_i$hisco_correct), unique(plot_data_i$en_hisco_text))
+    subtitle_i = paste0('Descirption: "', unique(plot_data_i$occ1), '"')
+    
+    p_i = plot_data_i %>% 
+      ggplot(aes(
+        label, prob, fill = correct
+      )) +
+      geom_bar(stat = "identity") + 
+      theme_bw() + 
+      theme(
+        axis.text.x = element_text(angle = 90),
+        legend.position = "bottom"
+      ) +
+      labs(
+        title = title_i,
+        subtitle = subtitle_i,
+        y = "HISCO probability",
+        x = "",
+        fill = "Correct label:"
+      ) + 
+      geom_text(aes(y = prob, label = prob_label)) + 
+      ylim(c(0,1)) + 
+      scale_fill_manual(values = custom_colors) # Use custom fill colors
+    
+    fname_i = paste0("Eval_plots/Wrong_labels/", name,"/RowID_", id_i, ".png")
+    ggsave(fname_i, plot = p_i, width = 6, height = 4)
+  }
+}

@@ -10,9 +10,13 @@
 library(tidyverse)
 source("Model_evaluation_scripts/000_Functions.R")
 source("Model_evaluation_scripts/001_Generate_eval_stats.R")
+source("Model_evaluation_scripts/002_Nature_of_mistakes.R")
 
 # ==== Load eval stats ====
 eval_canine = Generate_eval_stats("CANINE", overwrite = FALSE)
+
+# ==== Illustrate some mistakes ====
+Nature_of_mistakes("CANINE")
 
 # ==== What is the best threshold? ====
 # All
