@@ -389,6 +389,10 @@ class OCCDataset(Dataset):
         self.n_classes = n_classes
         self.colnames = pd.read_csv(df_path, nrows=10).columns.tolist()
         
+        # Make sure dir exists
+        if not os.path.exists(os.path.dirname(df_path)):
+            os.makedirs(os.path.dirname(df_path))
+        
         # Load and store index file in memory
         with open(index_file_path, 'r') as index_file:
             self.index_data = index_file.readlines()
