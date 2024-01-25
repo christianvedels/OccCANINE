@@ -339,9 +339,118 @@ def print_report(report, model_name):
 
     print(f"Classification report saved to {file_path}")
     
+# %% Trainer loop
+def trainer_loop_simple(
+        model, 
+        epochs, 
+        model_name,
+        data,
+        loss_fn,
+        optimizer,
+        device,
+        scheduler,
+        verbose = True,
+        attack_switch = False        
+        ):
     
-# %% Save everything
-def save_everything():
-    print("1")
+    history = defaultdict(list)
+    best_accuracy = 0
+        
+    # Training loop
+    for epoch in range(epochs):
+        
+        # Show details 
+        print("----------")
+        print(f"Epoch {epoch + 1}/{epochs}")
+        
+        
+        # Switch when below reference loss
+        if(attack_switch):
+            train_acc, train_loss = train_epoch(
+                model, 
+                data['data_loader_train_attack'], 
+                loss_fn,    
+                optimizer, 
+                device, 
+                scheduler, 
+                verbose=False
+            )
+        else:
+            train_acc, train_loss = train_epoch(
+                model, 
+                data['data_loader_train'], 
+                loss_fn, 
+                optimizer, 
+                device, 
+                scheduler, 
+                verbose=False
+                )
+        
+        print(f"Train loss {train_loss}, accuracy {train_acc}")    
+                    
+        # Run eval
+        history, val_acc = Run_eval_simple(
+            model, 
+            data, 
+            loss_fn, 
+            device, 
+            history, 
+            train_acc, 
+            train_loss, 
+            model_name
+            )
+        
+        # Checkpoint
+        torch.save(
+            model.state_dict(), 
+            '../Trained_models/Checkpoint'+model_name+'.bin'
+            )
+        
+        tokenizer_save_path = '../Trained_models/Checkpoint' + model_name + '_tokenizer'
+        data['tokenizer'].save_pretrained(tokenizer_save_path)
+        
+        # If we beat prev performance
+        if val_acc > best_accuracy:
+            print("Saved improved model")
+            torch.save(
+                model.state_dict(), 
+                '../Trained_models/'+model_name+'.bin'
+                )
+            best_accuracy = val_acc
+            
+            tokenizer_save_path = '../Trained_models/' + model_name + '_tokenizer'
+            data['tokenizer'].save_pretrained(tokenizer_save_path)
+        
+    return model, history
+
+# %%
+def Run_eval_simple(model, data, loss_fn, device, history, train_acc, train_loss, model_name):
+    # Get model performance (accuracy and loss)
+    val_acc, val_loss = eval_model(
+        model,
+        data['data_loader_val'],
+        loss_fn,
+        device,
+    )
+    
+    print(f"Val loss {val_loss}, accuracy {val_acc}")
+    
+    # Store stats to history
+    history['train_acc'].append(train_acc)
+    history['train_loss'].append(train_loss)
+    history['val_acc'].append(val_acc)
+    history['val_loss'].append(val_loss)
+    
+    # Make plot
+    plot_progress(
+        history['train_loss'], 
+        history['val_loss'], 
+        history['train_acc'],
+        history['val_acc'],
+        reference_loss = 0,
+        model_name = model_name
+        )
+    
+    return history, val_acc
     
     

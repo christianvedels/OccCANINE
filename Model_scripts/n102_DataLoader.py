@@ -90,7 +90,7 @@ def check_csv_column_consistency(folder_path):
 # check_csv_column_consistency(train_path(model_domain))
 
 #%% Read_data
-def read_data(model_domain, data_type = "Train", toyload = False):
+def read_data(model_domain, data_type = "Train", toyload = False, verbose = True):
     # breakpoint()
     if(model_domain == "Multilingual" or model_domain == "Multilingual_CANINE"):
         
@@ -124,7 +124,8 @@ def read_data(model_domain, data_type = "Train", toyload = False):
                 n_df = df.shape[0]
                     
                 combined_df = pd.concat([combined_df, df])
-                print(f"\nRead {file} (N = {n_df})")
+                if verbose:
+                    print(f"\nRead {file} (N = {n_df})")
                 
         df = combined_df
         
@@ -330,10 +331,9 @@ def ReadData(
     return df, key
 
 # %% Train test val split
-def TrainTestVal(df, verbose = False, max_testval = 10**5):
+def TrainTestVal(df, verbose = False, max_testval = 10**5, testval_fraction = 0.05):
     # Note: More test and validation data exists in sepperate files
     # Test/val size limited to 'max_testval' observations
-    testval_fraction = 0.05
     if df.shape[0]*testval_fraction > max_testval:
         testval_fraction = max_testval / df.shape[0]
         
@@ -522,9 +522,9 @@ def create_index_file(csv_file_path, index_file_path):
             byte_offset += len(line)
 
 # Saves temporary data to call in training
-def save_tmp(df_train, df_val, df_test):
+def save_tmp(df_train, df_val, df_test, path = "../Data/Tmp_train/", verbose = True):
     # Define the directory path
-    directory_path = "../Data/Tmp_train/"
+    directory_path = path
 
     # Check if the directory exists, and create it if not
     if not os.path.exists(directory_path):
@@ -544,8 +544,9 @@ def save_tmp(df_train, df_val, df_test):
     create_index_file(train_file_path, os.path.join(directory_path, "Train_index.txt"))
     create_index_file(val_file_path, os.path.join(directory_path, "Val_index.txt"))
     create_index_file(test_file_path, os.path.join(directory_path, "Test_index.txt"))
-
-    print("Saved, ../Data/Tmp_train/[x].csv and [x]_index.txt, Train, Test, Val")
+    
+    if verbose:
+        print(f"Saved tmp files to {path}: Train, Test, Val and index files")
     
 # %% Load data
 def Load_data(

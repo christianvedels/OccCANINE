@@ -11,12 +11,16 @@ os.chdir(script_directory)
 
 # %% Import modules
 from n001_Model_assets import XMLRoBERTaOccupationClassifier, CANINEOccupationClassifier, load_tokenizer
-from n102_DataLoader import Concat_string, Concat_string_canine
+from n102_DataLoader import Concat_string, Concat_string_canine, OCCDataset, read_data, labels_to_bin, TrainTestVal, save_tmp, create_data_loader
+from n101_Trainer import trainer_loop_simple, eval_model
+from n100_Attacker import AttackerClass
 
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from unidecode import unidecode
 import numpy as np
 import torch
+from torch import nn
+from torch.optim import AdamW
 import pandas as pd
 
 # %% Get_adapted_tokenizer
@@ -277,3 +281,174 @@ class Finetuned_model:
         
         print("\n")
         return results, inputs
+    
+    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.1, insert_words = True):
+        
+        _, key = read_data(model_domain, toyload = True, verbose=False)
+        # Convert the key dictionary to a DataFrame for joining
+        key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
+        
+        # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
+        key_df['Hisco'] = pd.to_numeric(key_df['Hisco'], errors='coerce')
+        
+        # Ensure the label columns are numeric and have the same type as the key
+        for col in label_cols:
+            data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
+        
+        # Initialize an empty DataFrame to store the label codes
+        label_codes = pd.DataFrame(index=data_df.index)
+        
+        # Iterate over each label column and perform left join with the key
+        for i, col in enumerate(label_cols, start=1):
+            # Perform the left join
+            merged_df = pd.merge(data_df[[col]], key_df, left_on=col, right_on='Hisco', how='left')
+        
+            # Assign the 'Code' column from the merged DataFrame to label_codes
+            label_codes[f'code{i}'] = merged_df['Code']
+            
+        expected_cols = [f'code{i}' for i in range(1, 6)]
+        label_codes = label_codes.reindex(columns=expected_cols, fill_value=np.nan)
+        
+        # Handle missing values by ensuring they are NaN
+        label_codes = label_codes.apply(pd.to_numeric, errors='coerce')    
+       
+        try:
+            _ = labels_to_bin(label_codes, max_value = np.max(key_df["Code"]+1))
+        except Exception:
+            raise Exception("Was not able to convert to binary representation")
+        
+        # Tokenizer
+        tokenizer = self.tokenizer
+        
+        # Define attakcer instance
+        attacker = AttackerClass(data_df)
+        
+        # Split data
+        df_train, df_val, df_test = TrainTestVal(data_df, verbose=False, testval_fraction = 0.1)
+        
+        # To use later
+        n_obs_train = df_train.shape[0]
+        n_obs_val = df_val.shape[0]
+        n_obs_test = df_test.shape[0]
+
+        # Save tmp files
+        save_tmp(df_train, df_val, df_test, path = "../Data/Tmp_finetune")
+        
+        # File paths for the index files
+        train_index_path = "../Data/Tmp_finetune/Train_index.txt"
+        val_index_path = "../Data/Tmp_finetune/Val_index.txt"
+        test_index_path = "../Data/Tmp_finetune/Test_index.txt"
+        
+        # Calculate number of classes
+        n_classes = len(key)
+
+        # Instantiating OCCDataset with index file paths
+        ds_train = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_train_attack = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
+        ds_val = OCCDataset(df_path="../Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_test = OCCDataset(df_path="../Data/Tmp_finetune/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        
+        # Data loaders
+        data_loader_train, data_loader_train_attack, data_loader_val, data_loader_test = create_data_loader(
+            ds_train, ds_train_attack, ds_val, ds_test,
+            batch_size = batch_size
+            )
+        
+        return {
+            'data_loader_train': data_loader_train,
+            'data_loader_train_attack': data_loader_train_attack,
+            'data_loader_val': data_loader_val,
+            'data_loader_test': data_loader_test,
+            'tokenizer': self.tokenizer
+        }
+        
+    
+    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True):
+        optimizer = AdamW(self.model.parameters(), lr=2*10**-5)
+        total_steps = len(processed_data['data_loader_train']) * epochs
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=0,
+            num_training_steps=total_steps
+        )
+        
+        # Set the loss function 
+        loss_fn = nn.BCEWithLogitsLoss().to(self.device)
+        
+        # Freeze layers
+        if only_train_final_layer:
+            # Freeze all layers initially
+            for param in self.model.parameters():
+                param.requires_grad = False
+     
+            # Unfreeze the final layers (self.out in CANINEOccupationClassifier)
+            for param in self.model.out.parameters():
+                param.requires_grad = True
+                
+                
+        val_acc, val_loss = eval_model(
+            self.model,
+            processed_data['data_loader_val'],
+            loss_fn = loss_fn,
+            device = self.device,
+            )
+        
+        print("----------")
+        if verbose:
+            print(f"Intital validation acc: {val_acc}; validation loss: {val_loss}")
+           
+        history, model = trainer_loop_simple(
+            self.model,
+            epochs = epochs, 
+            model_name = model_name,
+            data = processed_data,
+            loss_fn = loss_fn,
+            optimizer = optimizer,
+            device = self.device,
+            scheduler = scheduler,
+            verbose = verbose,
+            attack_switch = False   
+            ) 
+        
+        return history, model
+        
+    def finetune(self, data_df, label_cols, lang='unk', batch_size="Default", epochs=3, attack=True, save_name = "finetune", only_train_final_layer = True):
+        """
+        Fine-tunes the model on the provided dataset.
+
+        Parameters
+        ----------
+        data_df : pd.DataFrame
+            DataFrame containing the training data. Must include the text and label columns.
+        label_col : list of str
+            Name of the columns in data_df that contains the labels.
+        text_col : str
+            Name of the column in data_df that contains the text data.
+        lang : str, optional
+            Language of the provided descriptions. Defaults to 'unk'.
+        batch_size : int, optional
+            Batch size for training. If None, the default batch_size specified in the class is used.
+        epochs : int, optional
+            Number of epochs for training. Defaults to 3.
+        attack : bool, optional
+            Indicates whether data augmentation should be used in the training. Defaults to True.
+
+        Returns
+        -------
+        Training history
+        """
+        
+        # Handle batch_size
+        if batch_size=="Default":
+            batch_size = self.batch_size
+        
+        # Load and process the data
+        processed_data = self._process_data(data_df, label_cols, batch_size=batch_size)
+
+        # Training the model
+        history, model = self._train_model(
+            processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer
+            )
+
+        print("Finetuning completed successfully.")
+        
