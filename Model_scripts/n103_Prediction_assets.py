@@ -324,20 +324,22 @@ class Finetuned_model:
         attacker = AttackerClass(data_df)
         
         # Split data
-        df_train, df_val, df_test = TrainTestVal(data_df, verbose=False, testval_fraction = 0.1)
+        df_train, df_val = TrainTestVal(data_df, verbose=False, testval_fraction = 0.1, test_size = 0)
         
         # To use later
         n_obs_train = df_train.shape[0]
         n_obs_val = df_val.shape[0]
-        n_obs_test = df_test.shape[0]
+        
+        # Print split sizes
+        print(f"{n_obs_train} observations will be used in training.")
+        print(f"{n_obs_val} observations will be used in validation.")
 
         # Save tmp files
-        save_tmp(df_train, df_val, df_test, path = "../Data/Tmp_finetune")
+        save_tmp(df_train, df_val, df_test = df_val, path = "../Data/Tmp_finetune")
         
         # File paths for the index files
         train_index_path = "../Data/Tmp_finetune/Train_index.txt"
         val_index_path = "../Data/Tmp_finetune/Val_index.txt"
-        test_index_path = "../Data/Tmp_finetune/Test_index.txt"
         
         # Calculate number of classes
         n_classes = len(key)
@@ -346,11 +348,10 @@ class Finetuned_model:
         ds_train = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
         ds_train_attack = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
         ds_val = OCCDataset(df_path="../Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
-        ds_test = OCCDataset(df_path="../Data/Tmp_finetune/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
         
         # Data loaders
-        data_loader_train, data_loader_train_attack, data_loader_val, data_loader_test = create_data_loader(
-            ds_train, ds_train_attack, ds_val, ds_test,
+        data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
+            ds_train, ds_train_attack, ds_val, ds_val, # DS val twice as dummy to make it run
             batch_size = batch_size
             )
         
@@ -358,7 +359,6 @@ class Finetuned_model:
             'data_loader_train': data_loader_train,
             'data_loader_train_attack': data_loader_train_attack,
             'data_loader_val': data_loader_val,
-            'data_loader_test': data_loader_test,
             'tokenizer': self.tokenizer
         }
         
@@ -395,7 +395,7 @@ class Finetuned_model:
         
         print("----------")
         if verbose:
-            print(f"Intital validation acc: {val_acc}; validation loss: {val_loss}")
+            print(f"Intital performance\nValidation acc: {val_acc}; Validation loss: {val_loss}")
            
         history, model = trainer_loop_simple(
             self.model,
@@ -412,20 +412,21 @@ class Finetuned_model:
         
         return history, model
         
-    def finetune(self, data_df, label_cols, lang='unk', batch_size="Default", epochs=3, attack=True, save_name = "finetune", only_train_final_layer = True):
+    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetune", only_train_final_layer = True):
         """
         Fine-tunes the model on the provided dataset.
 
         Parameters
         ----------
         data_df : pd.DataFrame
-            DataFrame containing the training data. Must include the text and label columns.
+            DataFrame containing the training data. Must include:
+                - 'occ1', the occupational description
+                - columns w. labels specified in 'label_cols'
+                - 'lang' a column of the language of each label
         label_col : list of str
             Name of the columns in data_df that contains the labels.
         text_col : str
             Name of the column in data_df that contains the text data.
-        lang : str, optional
-            Language of the provided descriptions. Defaults to 'unk'.
         batch_size : int, optional
             Batch size for training. If None, the default batch_size specified in the class is used.
         epochs : int, optional

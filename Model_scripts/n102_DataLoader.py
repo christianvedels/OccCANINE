@@ -331,14 +331,18 @@ def ReadData(
     return df, key
 
 # %% Train test val split
-def TrainTestVal(df, verbose = False, max_testval = 10**5, testval_fraction = 0.05):
+def TrainTestVal(df, verbose = False, max_testval = 10**5, testval_fraction = 0.05, test_size = 0.5):
     # Note: More test and validation data exists in sepperate files
     # Test/val size limited to 'max_testval' observations
     if df.shape[0]*testval_fraction > max_testval:
         testval_fraction = max_testval / df.shape[0]
         
     df_train, df_test = train_test_split(df, test_size=testval_fraction, random_state=20)
-    df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=20)
+    
+    if test_size == 0:
+        return df_train, df_test # If test_size is zero, then that means data should only be split in train/test
+    
+    df_val, df_test = train_test_split(df_test, test_size=test_size, random_state=20)
     if verbose:
         print(f"Train {df_train.shape[0]} / Val {df_val.shape[0]} / Test {df_test.shape[0]}")
         
