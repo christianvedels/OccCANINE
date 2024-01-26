@@ -415,6 +415,9 @@ class Finetuned_model:
         # breakpoint()
         # Load state
         model_path = '../Trained_models/'+model_name+'.bin'
+        if not os.path.isfile(model_path):
+            print("Model did not improve in training. Realoding original model")
+            model_path = '../Trained_models/'+self.name+'.bin'
    
         # Load the model state
         loaded_state = torch.load(model_path)
@@ -437,7 +440,7 @@ class Finetuned_model:
         else:
             raise Exception(f"Was not able to identify/find {model_name}")
 
-
+        
         model.load_state_dict(loaded_state)        
         model.to(self.device)   
         self.model = model
@@ -483,7 +486,10 @@ class Finetuned_model:
         -------
         Training history
         """
-                
+        print("=======================================")
+        print("==== Started fine tuning procedure ====")
+        print("=======================================")
+        
         # Handle batch_size
         if batch_size=="Default":
             batch_size = self.batch_size

@@ -22,7 +22,6 @@ model = Finetuned_model(
 # %% Finetune
 data_df = pd.read_csv(
     "../Data/Training_data/SE_chalmers_train.csv"
-    # , nrows = 50000
     )
 label_cols = ["hisco_1", "hisco_2"]
 model.finetune(data_df, label_cols, batch_size=16, only_train_final_layer = True)
