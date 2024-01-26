@@ -16,14 +16,17 @@ import pandas as pd
 
 # %% Load model
 model = Finetuned_model(
-    name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256",
-    device = "cpu"
+    name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
     )
 
-# %% Fine tune
-data_df = pd.read_csv("../Data/Training_data/SE_chalmers_train.csv", nrows = 5000)
+# %% Finetune
+data_df = pd.read_csv(
+    "../Data/Training_data/SE_chalmers_train.csv"
+    # , nrows = 50000
+    )
 label_cols = ["hisco_1", "hisco_2"]
-model.finetune(data_df, label_cols, batch_size=16)
+model.finetune(data_df, label_cols, batch_size=16, only_train_final_layer = True)
 
+model.predict(["Detta är bagaren som bakar de bästa kardemummabullarna i stan"], lang = "se")
 
 

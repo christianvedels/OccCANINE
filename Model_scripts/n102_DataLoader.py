@@ -550,7 +550,7 @@ def save_tmp(df_train, df_val, df_test, path = "../Data/Tmp_train/", verbose = T
     create_index_file(test_file_path, os.path.join(directory_path, "Test_index.txt"))
     
     if verbose:
-        print(f"Saved tmp files to {path}: Train, Test, Val and index files")
+        print(f"Saved tmp files to {path}")
     
 # %% Load data
 def Load_data(

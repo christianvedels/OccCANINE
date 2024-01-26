@@ -349,12 +349,14 @@ def trainer_loop_simple(
         optimizer,
         device,
         scheduler,
+        initial_loss,
         verbose = True,
         attack_switch = False        
         ):
     
+        
     history = defaultdict(list)
-    best_accuracy = 0
+    best_loss = initial_loss
         
     # Training loop
     for epoch in range(epochs):
@@ -389,7 +391,7 @@ def trainer_loop_simple(
         print(f"Train loss {train_loss}, accuracy {train_acc}")    
                     
         # Run eval
-        history, val_acc = Run_eval_simple(
+        history, val_acc, val_loss = Run_eval_simple(
             model, 
             data, 
             loss_fn, 
@@ -400,23 +402,23 @@ def trainer_loop_simple(
             model_name
             )
         
-        # Checkpoint
-        torch.save(
-            model.state_dict(), 
-            '../Trained_models/Checkpoint'+model_name+'.bin'
-            )
+        # # Checkpoint
+        # torch.save(
+        #     model.state_dict(), 
+        #     '../Trained_models/Checkpoint'+model_name+'.bin'
+        #     )
         
-        tokenizer_save_path = '../Trained_models/Checkpoint' + model_name + '_tokenizer'
-        data['tokenizer'].save_pretrained(tokenizer_save_path)
+        # tokenizer_save_path = '../Trained_models/Checkpoint_' + model_name + '_tokenizer'
+        # data['tokenizer'].save_pretrained(tokenizer_save_path)
         
         # If we beat prev performance
-        if val_acc > best_accuracy:
-            print("Saved improved model")
+        if val_loss < best_loss:
+            print("Validation loss improved. Saved improved model")
             torch.save(
                 model.state_dict(), 
                 '../Trained_models/'+model_name+'.bin'
                 )
-            best_accuracy = val_acc
+            best_loss = val_loss
             
             tokenizer_save_path = '../Trained_models/' + model_name + '_tokenizer'
             data['tokenizer'].save_pretrained(tokenizer_save_path)
@@ -451,6 +453,6 @@ def Run_eval_simple(model, data, loss_fn, device, history, train_acc, train_loss
         model_name = model_name
         )
     
-    return history, val_acc
+    return history, val_acc, val_loss
     
     

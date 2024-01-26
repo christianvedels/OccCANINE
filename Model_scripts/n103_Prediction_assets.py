@@ -142,7 +142,7 @@ class Finetuned_model:
         model.to(device)   
         
         self.model = model
-        
+    
     def encode(self, occ1, lang, concat_in):
         # breakpoint()
         if not concat_in: # Because then it is assumed that strings are already clean
@@ -165,7 +165,7 @@ class Finetuned_model:
                 
         return inputs
             
-    def predict(self, occ1, lang = "unk", what = "logits", threshold = 0.5, concat_in = False, get_dict = False):
+    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.5, concat_in = False, get_dict = False):
         """
         occ1:           List of occupational strings
         lang:           Language (defaults to unknown)
@@ -395,7 +395,7 @@ class Finetuned_model:
         
         print("----------")
         if verbose:
-            print(f"Intital performance\nValidation acc: {val_acc}; Validation loss: {val_loss}")
+            print(f"Intital performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
            
         history, model = trainer_loop_simple(
             self.model,
@@ -407,12 +407,57 @@ class Finetuned_model:
             device = self.device,
             scheduler = scheduler,
             verbose = verbose,
-            attack_switch = False   
-            ) 
+            attack_switch = False,
+            initial_loss = val_loss
+            )
         
+        # == Load best model ==
+        # breakpoint()
+        # Load state
+        model_path = '../Trained_models/'+model_name+'.bin'
+   
+        # Load the model state
+        loaded_state = torch.load(model_path)
+        
+        # If-lookup for model
+        if "RoBERTa" in model_name:
+            model = XMLRoBERTaOccupationClassifier(
+                n_classes = len(self.key), 
+                model_domain = "Multilingual", 
+                tokenizer = self.tokenizer, 
+                dropout_rate = 0
+                )
+        elif "CANINE" in model_name:
+            model = CANINEOccupationClassifier(
+                model_domain = "Multilingual_CANINE",
+                n_classes = len(self.key), 
+                tokenizer = self.tokenizer, 
+                dropout_rate = 0
+                )
+        else:
+            raise Exception(f"Was not able to identify/find {model_name}")
+
+
+        model.load_state_dict(loaded_state)        
+        model.to(self.device)   
+        self.model = model
+        
+        print("Loaded best version of model")
+        
+        val_acc, val_loss = eval_model(
+            self.model,
+            processed_data['data_loader_val'],
+            loss_fn = loss_fn,
+            device = self.device,
+            )
+        
+        print("----------")
+        if verbose:
+            print(f"Final performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
+            
         return history, model
-        
-    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetune", only_train_final_layer = True):
+                
+    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetuneCANINE", only_train_final_layer = True):
         """
         Fine-tunes the model on the provided dataset.
 
@@ -438,7 +483,7 @@ class Finetuned_model:
         -------
         Training history
         """
-        
+                
         # Handle batch_size
         if batch_size=="Default":
             batch_size = self.batch_size
@@ -447,7 +492,7 @@ class Finetuned_model:
         processed_data = self._process_data(data_df, label_cols, batch_size=batch_size)
 
         # Training the model
-        history, model = self._train_model(
+        self._train_model(
             processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer
             )
 
