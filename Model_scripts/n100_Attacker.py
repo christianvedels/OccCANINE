@@ -23,14 +23,10 @@ import random as r
 class AttackerClass:
     # Constructor class 
     def __init__(self, df):
-        breakpoint()
-        super(AttackerClass, self).__init__()
+        # super(AttackerClass, self).__init__()
         all_text = ' '.join(str(item) for item in df['occ1'].tolist())
         self.word_list = all_text.split()
         
-        
-    # Consider adding negations based on languag e.g. "retired"
-    
     # attack
     def attack(self, x_string, alt_prob = 0.1, insert_words = True):
         # breakpoint()
@@ -82,16 +78,5 @@ class AttackerClass:
                     x_string_copy[i] = " ".join(occ_as_word_list)
                         
         return(x_string_copy)
-
-        
-# # %%
-# import sys
-# from n102_DataLoader import *
-
-# df, key = ReadData(MODEL_DOMAIN)
-
-# attacker = AttackerClass(df)
-
-# attacker.attack(df.occ1.tolist(), 0.1)
 
     
