@@ -23,8 +23,9 @@ import random as r
 class AttackerClass:
     # Constructor class 
     def __init__(self, df):
+        breakpoint()
         super(AttackerClass, self).__init__()
-        all_text = ' '.join(df['occ1'].tolist())
+        all_text = ' '.join(str(item) for item in df['occ1'].tolist())
         self.word_list = all_text.split()
         
         
