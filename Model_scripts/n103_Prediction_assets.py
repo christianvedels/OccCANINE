@@ -282,7 +282,7 @@ class Finetuned_model:
         print("\n")
         return results, inputs
     
-    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.1, insert_words = True):
+    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1):
         
         _, key = read_data(model_domain, toyload = True, verbose=False)
         # Convert the key dictionary to a DataFrame for joining
@@ -324,7 +324,7 @@ class Finetuned_model:
         attacker = AttackerClass(data_df)
         
         # Split data
-        df_train, df_val = TrainTestVal(data_df, verbose=False, testval_fraction = 0.1, test_size = 0)
+        df_train, df_val = TrainTestVal(data_df, verbose=False, testval_fraction = testval_fraction, test_size = 0)
         
         # To use later
         n_obs_train = df_train.shape[0]
@@ -363,7 +363,7 @@ class Finetuned_model:
         }
         
     
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True):
+    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False):
         optimizer = AdamW(self.model.parameters(), lr=2*10**-5)
         total_steps = len(processed_data['data_loader_train']) * epochs
         scheduler = get_linear_schedule_with_warmup(
@@ -407,7 +407,8 @@ class Finetuned_model:
             device = self.device,
             scheduler = scheduler,
             verbose = verbose,
-            attack_switch = False,
+            verbose_extra  = verbose_extra,
+            attack_switch = True,
             initial_loss = val_loss
             )
         
@@ -460,7 +461,7 @@ class Finetuned_model:
             
         return history, model
                 
-    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetuneCANINE", only_train_final_layer = True):
+    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetuneCANINE", only_train_final_layer = True, verbose_extra = False, test_fraction = 0.1):
         """
         Fine-tunes the model on the provided dataset.
 
@@ -481,25 +482,31 @@ class Finetuned_model:
             Number of epochs for training. Defaults to 3.
         attack : bool, optional
             Indicates whether data augmentation should be used in the training. Defaults to True.
+        verbose_extra : bool, optional
+            Print even more info during training. Defaults to False. 
 
         Returns
         -------
         Training history
         """
-        print("=======================================")
-        print("==== Started fine tuning procedure ====")
-        print("=======================================")
+        print("======================================")
+        print("==== Started finetuning procedure ====")
+        print("======================================")
         
         # Handle batch_size
         if batch_size=="Default":
             batch_size = self.batch_size
         
         # Load and process the data
-        processed_data = self._process_data(data_df, label_cols, batch_size=batch_size)
+        processed_data = self._process_data(
+            data_df, label_cols, batch_size=batch_size,
+            testval_fraction = test_fraction
+            )
 
         # Training the model
         self._train_model(
-            processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer
+            processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
+            verbose_extra = verbose_extra
             )
 
         print("Finetuning completed successfully.")

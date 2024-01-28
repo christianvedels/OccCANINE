@@ -82,7 +82,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
             
     
     if verbose:
-        print("\nTraining completed.")
+        print("\nEpoch completed.")
 
     average_accuracy = correct_predictions /  len(data_loader)
     average_loss = np.mean(losses)
@@ -351,6 +351,7 @@ def trainer_loop_simple(
         scheduler,
         initial_loss,
         verbose = True,
+        verbose_extra = False,
         attack_switch = False        
         ):
     
@@ -375,7 +376,7 @@ def trainer_loop_simple(
                 optimizer, 
                 device, 
                 scheduler, 
-                verbose=False
+                verbose=verbose_extra
             )
         else:
             train_acc, train_loss = train_epoch(
@@ -385,7 +386,7 @@ def trainer_loop_simple(
                 optimizer, 
                 device, 
                 scheduler, 
-                verbose=False
+                verbose=verbose_extra
                 )
         
         print(f"Train loss {train_loss}, accuracy {train_acc}")    

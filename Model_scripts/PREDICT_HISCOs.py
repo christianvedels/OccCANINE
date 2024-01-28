@@ -19,8 +19,48 @@ from n103_Prediction_assets import Finetuned_model
 
 # %% Load model
 model = Finetuned_model(
-    name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256", 
+    name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256",
+    device = "cpu"
     )
+
+# %% Texts
+occupations = [
+    "labourer and sailor",
+    "production worker and unemployed",
+    "stewardess",
+    "clerk and labourer",
+    "gasser and retired",
+    "charwoman and tailor",
+    "fireman in hospital",
+    "hatter c and royal navy",
+    "grocer and work study engineer",
+    "formerly medical and medical doctor",
+    "goods porter and unemployed",
+    "labourer and carpenter",
+    "gardener labourer and barber",
+    "police constable and machine operator",
+    "computor systems analyst and unemployed plasterer",
+    "secretary and washing",
+    "laundress and cleaner",
+    "sailor and hotel proprietor",
+    "labourer",
+    "aircraft inspector and key smith",
+    "post office clerk retired",
+    "millenar at messr leas and district midwife",
+    "shop assistant and keeps a lodging house",
+    "machine operator and gardener",
+    "shopkeeper and trade union official",
+    "ma and carter",
+    "civil service clerk and sailor",
+    "ships engineer stepfather and divorced",
+    "shop assistant and housewife"
+]
+
+model.predict(
+    occupations,
+    what = "pred"
+    )
+
 
 # %% Example 1
 model.predict(
@@ -28,23 +68,10 @@ model.predict(
     what = "pred"
     )
 
-# %% Example 2
-model.predict(
-    ["linotype operator of the press"],
-    what = "pred"
-    )
 
 # %% Example 3 (language specified)
 model.predict(
     ["Detta är bagaren som bakar de bästa kardemummabullarna i stan"],
-    lang="se",
-    what = "pred"
-    )
-
-
-# %%
-model.predict(
-    ["bakar"],
     lang="se",
     what = "pred"
     )
