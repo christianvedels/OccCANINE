@@ -170,7 +170,7 @@ class Finetuned_model:
         occ1:           List of occupational strings
         lang:           Language (defaults to unknown)
         batch_size:     How to batch up the data
-        what:           What to return "logits", "probs", "pred", "bin" [n] return top [n]
+        what:           What to return "logits", "probs", "pred", "bin" [n] return top [n], "tokens"
         threshold:      Prediction threshold in case of what == "pred"
         concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
         get_dict:       For what [n] method this is an option to return a list of dictionaries
@@ -226,7 +226,9 @@ class Finetuned_model:
                 batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
                 for probs in batch_predicted_probs:
                     bin_out = [1 if prob > threshold else 0 for prob in probs]
-                    results.append(bin_out)                
+                    results.append(bin_out)
+            elif what == "tokens":
+                results.append(batch_input_ids)
             else:
                 raise Exception("'what' incorrectly specified")
                 
@@ -282,18 +284,64 @@ class Finetuned_model:
         print("\n")
         return results, inputs
     
-    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1):
+    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1, new_labels = True, verbose = False):
+        """
+        Processes the input data for training or validation.
+    
+        This internal method prepares the data for the model by converting labels to numeric codes, merging with a key DataFrame, handling missing values, tokenizing the text, and creating data loaders for training and validation.
+    
+        Parameters
+        ----------
+        data_df : pd.DataFrame
+            The input data containing text and labels.
+        label_cols : list of str
+            The column names in data_df that contain the labels.
+        batch_size : int
+            The size of the batch to be used in data loaders.
+        model_domain : str, optional
+            The domain of the model to be used. Defaults to "Multilingual_CANINE".
+        alt_prob : float, optional
+            The probability of using alternative tokens (data augmentation). Defaults to 0.2.
+        insert_words : bool, optional
+            Whether to insert words as a part of data augmentation. Defaults to True.
+        testval_fraction : float, optional
+            The fraction of data to be used for validation. Defaults to 0.1.
+        new_labels : bool, optional
+            If True, the method generates a new key based on the unique labels in the input data and updates data processing accordingly. Defaults to False.
+        verbose : bool, optional
+            Whether to print out the training progress. Defaults to True.
+    
+        Returns
+        -------
+        dict
+            A dictionary containing training and validation data loaders, and the tokenizer.
+        """
+        if new_labels:
+            # Generate a new key based on the unique labels in the label columns
+            unique_labels = pd.unique(data_df[label_cols].values.ravel('K'))
+            key = {label: idx for idx, label in enumerate(unique_labels)}
+            self.key = key
+            
+            # Convert the new key dictionary to a DataFrame for joining
+            key_df = pd.DataFrame(list(self.key.items()), columns=['Hisco', 'Code']) # Yes it is not HISCO, but if we just call it that everything runs
+            
+            if verbose:
+                print(f"Produced new key for {len(unique_labels)} possible labels")
+        else:
+            _, key = read_data(model_domain, toyload=True, verbose=False)
+            # Convert the key dictionary to a DataFrame for joining
+            key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco']) 
+            # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
+            key_df['Hisco'] = pd.to_numeric(key_df['Hisco'], errors='coerce')
+            # Ensure the label columns are numeric and have the same type as the key
+            for col in label_cols:
+                data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
         
-        _, key = read_data(model_domain, toyload = True, verbose=False)
-        # Convert the key dictionary to a DataFrame for joining
-        key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
+        # Define expected code column names
+        expected_code_cols = [f'code{i}' for i in range(1, 6)]
         
-        # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
-        key_df['Hisco'] = pd.to_numeric(key_df['Hisco'], errors='coerce')
-        
-        # Ensure the label columns are numeric and have the same type as the key
-        for col in label_cols:
-            data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
+        # Drop code1 to code5 from data_df if they exist
+        data_df = data_df.drop(columns=expected_code_cols, errors='ignore')
         
         # Initialize an empty DataFrame to store the label codes
         label_codes = pd.DataFrame(index=data_df.index)
@@ -305,13 +353,16 @@ class Finetuned_model:
         
             # Assign the 'Code' column from the merged DataFrame to label_codes
             label_codes[f'code{i}'] = merged_df['Code']
-            
-        expected_cols = [f'code{i}' for i in range(1, 6)]
-        label_codes = label_codes.reindex(columns=expected_cols, fill_value=np.nan)
+        
+        # Ensure label_codes has columns code1 to code5, filling missing ones with NaN
+        label_codes = label_codes.reindex(columns=expected_code_cols, fill_value=np.nan)
         
         # Handle missing values by ensuring they are NaN
-        label_codes = label_codes.apply(pd.to_numeric, errors='coerce')    
-       
+        label_codes = label_codes.apply(pd.to_numeric, errors='coerce')
+        
+        # Concatenate label_codes with data_df
+        data_df = pd.concat([data_df, label_codes], axis=1)
+         
         try:
             _ = labels_to_bin(label_codes, max_value = np.max(key_df["Code"]+1))
         except Exception:
@@ -333,7 +384,7 @@ class Finetuned_model:
         # Print split sizes
         print(f"{n_obs_train} observations will be used in training.")
         print(f"{n_obs_val} observations will be used in validation.")
-
+        
         # Save tmp files
         save_tmp(df_train, df_val, df_test = df_val, path = "../Data/Tmp_finetune")
         
@@ -363,7 +414,42 @@ class Finetuned_model:
         }
         
     
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False):
+    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False):
+        """
+        Trains the model with the provided processed data.
+    
+        This internal method sets up the optimizer, scheduler, and loss function, and initiates the training loop. It also handles layer freezing for transfer learning, if specified.
+    
+        Parameters
+        ----------
+        processed_data : dict
+            The dictionary containing training and validation data loaders, and the tokenizer.
+        model_name : str
+            The name of the model to be used for saving.
+        epochs : int
+            The number of epochs for training.
+        only_train_final_layer : bool
+            Whether to train only the final layer of the model.
+        verbose : bool, optional
+            Whether to print out the training progress. Defaults to True.
+        verbose_extra : bool, optional
+            Whether to print extra details during training. Defaults to False.
+        new_labels : bool, optional
+            Whether new labels should be used. Defaults to false
+    
+        Returns
+        -------
+        tuple
+            A tuple containing the training history and the trained model.
+        """
+        
+        if new_labels:
+            n_classes = len(self.key)
+            self.model.out = nn.Linear(in_features=self.model.out.in_features, out_features=n_classes)
+            
+            # Ensure the model is set to the correct device again
+            self.model = self.model.to(self.device)
+        
         optimizer = AdamW(self.model.parameters(), lr=2*10**-5)
         total_steps = len(processed_data['data_loader_train']) * epochs
         scheduler = get_linear_schedule_with_warmup(
@@ -461,34 +547,58 @@ class Finetuned_model:
             
         return history, model
                 
-    def finetune(self, data_df, label_cols, batch_size="Default", epochs=3, attack=True, save_name = "finetuneCANINE", only_train_final_layer = True, verbose_extra = False, test_fraction = 0.1):
+    def finetune(
+            self, 
+            data_df, 
+            label_cols, 
+            batch_size="Default", 
+            epochs=3, 
+            attack=True, 
+            save_name = "finetuneCANINE", 
+            only_train_final_layer = False, 
+            verbose = True,
+            verbose_extra = False, 
+            test_fraction = 0.1,
+            new_labels = False
+            ):
         """
         Fine-tunes the model on the provided dataset.
-
+    
+        This method orchestrates the fine-tuning process by processing the data, training the model, and handling the batch size specifications. It also allows for data augmentation and control over verbosity during training.
+    
         Parameters
         ----------
         data_df : pd.DataFrame
             DataFrame containing the training data. Must include:
                 - 'occ1', the occupational description
-                - columns w. labels specified in 'label_cols'
-                - 'lang' a column of the language of each label
-        label_col : list of str
-            Name of the columns in data_df that contains the labels.
-        text_col : str
-            Name of the column in data_df that contains the text data.
-        batch_size : int, optional
-            Batch size for training. If None, the default batch_size specified in the class is used.
+                - columns with labels specified in 'label_cols'
+                - 'lang', a column of the language of each label
+        label_cols : list of str
+            Names of the columns in data_df that contain the labels.
+        batch_size : int or "Default", optional
+            Batch size for training. If "Default", the class-specified batch size is used. Defaults to "Default".
         epochs : int, optional
             Number of epochs for training. Defaults to 3.
         attack : bool, optional
-            Indicates whether data augmentation should be used in the training. Defaults to True.
+            Indicates whether data augmentation should be used in training. Defaults to True.
+        save_name : str, optional
+            The name under which the trained model is to be saved. Defaults to "finetuneCANINE".
+        only_train_final_layer : bool, optional
+            Whether to train only the final layer of the model. Defaults to False.
+        verbose : bool, optional 
+            Should updates be printed. Defaults to True
         verbose_extra : bool, optional
-            Print even more info during training. Defaults to False. 
-
+            Whether to print additional information during training. Defaults to False.
+        test_fraction : float, optional
+            The fraction of the dataset to be used for testing. Defaults to 0.1.
+        new_labels : bool, optional
+            Whether the labels are a new system of labeling. Defaults to False.
+    
         Returns
         -------
-        Training history
+        None
         """
+        
         print("======================================")
         print("==== Started finetuning procedure ====")
         print("======================================")
@@ -500,13 +610,16 @@ class Finetuned_model:
         # Load and process the data
         processed_data = self._process_data(
             data_df, label_cols, batch_size=batch_size,
-            testval_fraction = test_fraction
+            testval_fraction = test_fraction,
+            new_labels = new_labels,
+            verbose = verbose
             )
 
         # Training the model
         self._train_model(
             processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
-            verbose_extra = verbose_extra
+            verbose_extra = verbose_extra,
+            new_labels = new_labels
             )
 
         print("Finetuning completed successfully.")
