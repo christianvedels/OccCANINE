@@ -23,50 +23,55 @@ model = Finetuned_model(
     device = "cpu"
     )
 
-# %% Texts
-occupations = [
-    "labourer and sailor",
-    "production worker and unemployed",
-    "stewardess",
-    "clerk and labourer",
-    "gasser and retired",
-    "charwoman and tailor",
-    "fireman in hospital",
-    "hatter c and royal navy",
-    "grocer and work study engineer",
-    "formerly medical and medical doctor",
-    "goods porter and unemployed",
-    "labourer and carpenter",
-    "gardener labourer and barber",
-    "police constable and machine operator",
-    "computor systems analyst and unemployed plasterer",
-    "secretary and washing",
-    "laundress and cleaner",
-    "sailor and hotel proprietor",
-    "labourer",
-    "aircraft inspector and key smith",
-    "post office clerk retired",
-    "millenar at messr leas and district midwife",
-    "shop assistant and keeps a lodging house",
-    "machine operator and gardener",
-    "shopkeeper and trade union official",
-    "ma and carter",
-    "civil service clerk and sailor",
-    "ships engineer stepfather and divorced",
-    "shop assistant and housewife"
-]
+model.predict(["he is a fisher and a farmer" ], lang = "en", what = "tokens")
+model.forward_base(["he is a fisher and a farmer" ], lang = "en")
+x, _ = model.predict(["he is a fisher and a farmer" ], lang = "en", what = 5)
 
-model.predict(
-    occupations,
-    what = "pred"
-    )
+# %%
+model.model
 
+# # %% Texts
+# occupations = [
+#     "labourer and sailor",
+#     "stewardess",
+#     "clerk and labourer",
+#     "charwoman and tailor",
+#     "fireman in hospital",
+#     "hatter c and royal navy",
+#     "grocer and work study engineer",
+#     "formerly medical and medical doctor",
+#     "goods porter and unemployed",
+#     "labourer and carpenter",
+#     "gardener labourer and barber",
+#     "police constable and machine operator",
+#     "computor systems analyst and unemployed plasterer",
+#     "secretary and washing",
+#     "laundress and cleaner",
+#     "sailor and hotel proprietor",
+#     "labourer",
+#     "aircraft inspector and key smith",
+#     "post office clerk retired",
+#     "millenar at messr leas and district midwife",
+#     "shop assistant and keeps a lodging house",
+#     "machine operator and gardener",
+#     "shopkeeper and trade union official",
+#     "ma and carter",
+#     "civil service clerk and sailor",
+#     "ships engineer stepfather and divorced",
+#     "shop assistant and housewife"
+# ]
 
-# %% Example 1
-model.predict(
-    ["taylor of fne dresses and mechanic of motor vehicles"],
-    what = "pred"
-    )
+# res, _ = model.predict(
+#     occupations,
+#     what = 5,
+#     lang = "en"
+#     )
+
+# # %% Example 1
+# model.predict(
+#     ["taylor of fne dresses and mechanic of motor vehicles"],
+#     what = "pred"
+#     )
 
 
 # %% Example 3 (language specified)
@@ -76,8 +81,8 @@ model.predict(
     what = "pred"
     )
 
-# %% Example 3 (without language)
-model.predict(
-    ["Detta är bagaren som bakar de bästa kardemummabullarna i stan"],
-    what = "pred"
-    )
+# # %% Example 3 (without language)
+# model.predict(
+#     ["Detta är bagaren som bakar de bästa kardemummabullarna i stan"],
+#     what = "pred"
+#     )
