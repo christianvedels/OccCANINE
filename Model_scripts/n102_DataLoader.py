@@ -19,6 +19,10 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 import io
 
+# %% Custom modules
+from n001_Model_assets import load_tokenizer, update_tokenizer
+from n100_Attacker import AttackerClass
+
 #%% Returns training data path
 def train_path(model_domain):
     if(model_domain == "DK_CENSUS"):
@@ -407,7 +411,6 @@ class OCCDataset(Dataset):
     
     # get item magic method
     def __getitem__(self, item):      
-        # breakpoint()
         # Get the byte offset from the stored index data
         byte_offset_line = self.index_data[item].strip()
         if not byte_offset_line:
