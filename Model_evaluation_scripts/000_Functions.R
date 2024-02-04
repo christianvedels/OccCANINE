@@ -218,7 +218,7 @@ plot_of_thresholds = function(x, name){
     ungroup()
   
   p1 = plot_stats %>% 
-    ggplot(aes(thr, value, col = lang_info)) + 
+    ggplot(aes(thr, value, col = lang_info, shape = lang_info)) + 
     geom_point() + 
     geom_line(lty = 2) +
     geom_point(data = subset(plot_stats, best), aes(thr, value), shape = 4, size = 3, col = "black") +  # Highlight max points
