@@ -165,7 +165,7 @@ class Finetuned_model:
                 
         return inputs
             
-    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.5, concat_in = False, get_dict = False):
+    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.5, concat_in = False, get_dict = False, get_df = True):
         """
         occ1:           List of occupational strings
         lang:           Language (defaults to unknown)
@@ -174,6 +174,7 @@ class Finetuned_model:
         threshold:      Prediction threshold in case of what == "pred"
         concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
         get_dict:       For what [n] method this is an option to return a list of dictionaries
+        get_df:         Optional argument for what = "pred". Returns nicely formatted df
         """
         # breakpoint()
         inputs = self.encode(occ1, lang, concat_in)
@@ -181,6 +182,10 @@ class Finetuned_model:
         verbose = self.verbose
         results = []
         total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
+        
+        if get_df:
+            what0 = what
+            what = 5 # This is the easiest way of handling this
 
         for batch_num, i in enumerate(range(0, len(inputs), batch_size), 1):
 
@@ -242,7 +247,19 @@ class Finetuned_model:
         if isinstance(what, (int, float)):
             if not get_dict:
                 results = Top_n_to_df(results, what)
-                    
+                
+        if isinstance(what, (int, float)) and what0 == "pred":
+            breakpoint()
+            # Disable preds for all below threshold
+            for j in range(1, what+1):
+                probs_j = results[f"prob_{j}"]
+                test_j = probs_j > threshold
+                for i in range(results.shape[0]):
+                    if not test_j[i]:
+                        results.loc[i,f"hisco_{j}"] = float("NaN")
+                        results.loc[i, f"desc_{j}"] = "No pred"
+            
+                
         print("\n")
         return results, inputs
     
