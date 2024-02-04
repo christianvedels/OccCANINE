@@ -249,7 +249,6 @@ class Finetuned_model:
                 results = Top_n_to_df(results, what)
                 
         if isinstance(what, (int, float)) and what0 == "pred":
-            breakpoint()
             # Disable preds for all below threshold
             for j in range(1, what+1):
                 probs_j = results[f"prob_{j}"]
