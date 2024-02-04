@@ -55,3 +55,28 @@ Data/Application_data/Copenhagen Burial Records/LICENSE_DK
 Data/Application_data/Copenhagen Burial Records/LICENSE_EN
 Data/Application_data/Copenhagen Burial Records/Link-lives Guide v.1.pdf
 Data/Application_data
+Data/Tmp_train/Test.parquet
+Data/Tmp_train/Train.parquet
+Data/Tmp_train/Val.parquet
+Data/Tmp_train/Test.csv
+Data/Tmp_train/Train.csv
+Data/Tmp_train/Val.csv
+Data/Tmp_train/Test_index.txt
+Data/Tmp_train/Train_index.txt
+Data/Tmp_train/Val_index.txt
+Data/Predictions/embeddings_w_lang.csv
+Data/Predictions/embeddings_w_lang_base.csv
+Data/Predictions/embeddings_wo_lang.csv
+Data/Predictions/embeddings_wo_lang_base.csv
+Data/Predictions/pred_data.csv
+Data/Predictions/preds_w_lang.csv
+Data/Predictions/preds_wo_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_w_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_w_lang_base.csv
+Data/Predictions/PredictionsCANINE/embeddings_wo_lang.csv
+Data/Predictions/PredictionsCANINE/embeddings_wo_lang_base.csv
+Data/Predictions/PredictionsCANINE/pred_data.csv
+Data/Predictions/PredictionsCANINE/preds_w_lang.csv
+Data/Predictions/PredictionsCANINE/preds_wo_lang.csv
+Data/Summary_data/Model_performanceCANINE.csv
+Data/Tmp_finetune

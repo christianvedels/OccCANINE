@@ -15,14 +15,14 @@ library(stringi)
 library(tm)
 
 # # ==== Load data ====
-# load("Data/Raw_data/DK_CENSUS_DATA.Rdata")
+# load("Data/Raw_data/Danish Census data/DK_CENSUS_DATA.Rdata")
 # all_data = merged_data
 # rm(merged_data)
 # 
-# # Toy data in script development
-# # set.seed(20)
-# # all_data = all_data %>% sample_frac(0.01)
-# 
+# # # Toy data in script development
+# # # set.seed(20)
+# # # all_data = all_data %>% sample_frac(0.01)
+# # 
 # # ==== Data cleaning 1 ====
 # occ_data = all_data %>%
 #   mutate(
@@ -62,7 +62,7 @@ library(tm)
 # # Save this processing stage
 # save(occ_data, file = "Data/Tmp_data/Tmp_dk_census1.Rdata")
 # load("Data/Tmp_data/Tmp_dk_census1.Rdata")
-# 
+#
 # # ==== Data cleaning 2 ====
 # # tmp_funky1: Makes NAs -1
 # tmp_funky1 = function(x) ifelse(is.na(x)|x == "", -1, x)
@@ -150,26 +150,26 @@ library(tm)
 #   select(-tmp)
 # 
 # save(occ_data, file = "Data/Tmp_data/Tmp_dk_census2.Rdata")
-# load("Data/Tmp_data/Tmp_dk_census2.Rdata")
-# 
-# # ==== Labelled unlabelled data ====
-# # Years with labeling
-# labelled_years = occ_data %>% 
-#   group_by(Year) %>%
-#   summarise(
-#     na_label_pct = sum(hisco_1 == "-1")/n()
-#   ) %>% 
-#   filter(
-#     na_label_pct<1
-#   ) %>% 
-#   select(Year) %>% 
-#   unlist()
-# 
-# # 1787, 1834, 1845 and 1880 has labels
-# occ_data = occ_data %>% 
-#   mutate(
-#     labelled = ifelse(Year %in% labelled_years, 1, 0)
-#   )
+load("Data/Tmp_data/Tmp_dk_census2.Rdata")
+
+# ==== Labelled unlabelled data ====
+# Years with labeling
+labelled_years = occ_data %>%
+  group_by(Year) %>%
+  summarise(
+    na_label_pct = sum(hisco_1 == "-1")/n()
+  ) %>%
+  filter(
+    na_label_pct<1
+  ) %>%
+  select(Year) %>%
+  unlist()
+
+# 1787, 1834, 1845 and 1880 has labels
+occ_data = occ_data %>%
+  mutate(
+    labelled = ifelse(Year %in% labelled_years, 1, 0)
+  )
 
 # ==== Verified unlabelled data ====
 # The original labels in this data is from a regex procedure. A central concern
@@ -276,6 +276,16 @@ wordcloud(
   colors=brewer.pal(8, "Dark2")
 )
 
+# ==== Get combinations ====
+set.seed(20)
+combinations = occ_data_labelled %>% 
+  filter(hisco_2 == " ", hisco_1 != "-1") %>% 
+  sample_n(100000) %>% 
+  Combinations("og") %>% 
+  select(-Year)
+
+occ_data_labelled = occ_data_labelled %>% bind_rows(combinations)  
+
 # ==== Encode with key ====
 load("Data/Key.Rdata")
 
@@ -290,7 +300,7 @@ occ_data_labelled = occ_data_labelled %>%
   filter(hisco_4 %in% key$hisco) %>% 
   filter(hisco_5 %in% key$hisco)
 
-NROW(occ_data_labelled) - n1 # Removed 187 observations
+NROW(occ_data_labelled) - n1 # Removed 527 observations
 
 # Add code
 occ_data_labelled = occ_data_labelled %>% 

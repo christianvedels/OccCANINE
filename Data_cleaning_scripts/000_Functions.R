@@ -533,6 +533,9 @@ Data_summary = function(out = "plain"){
     cat("\n---> In total:   ", capN, "million observations")
     cat("\n\nAmount of data by source:\n")
     knitr::kable(res, "pipe") %>% print()
+    res %>% 
+      select(f, n, pct_train, lang, Source) %>% 
+      knitr::kable("latex", booktabs =TRUE) %>% print()
     knitr::kable(res_lang, "pipe") %>% print()
     knitr::kable(res_type, "pipe") %>% print()
     

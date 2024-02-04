@@ -25,3 +25,7 @@
 
 ## For interactive mode in VS code
 `conda install -n HISCO ipykernel --update-deps --force-reinstall`
+
+## Installing tensorflow...i 2.15 also install tf_keras
+`pip install tensorflow`
+`pip install tf_keras`
