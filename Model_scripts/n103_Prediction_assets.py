@@ -257,10 +257,12 @@ class Finetuned_model:
                     if not test_j[i]:
                         results.loc[i,f"hisco_{j}"] = float("NaN")
                         results.loc[i, f"desc_{j}"] = "No pred"
+                        results.loc[i, f"prob_{j}"] = float("NaN")
             
+            results['occ1'] = inputs
                 
         print("\n")
-        return results, inputs
+        return results
     
     def forward_base(self, occ1, lang = "unk", concat_in = False):
         """
