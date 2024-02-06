@@ -252,7 +252,7 @@ data1 = data1 %>%
   mutate(
     lang = case_when(
       lang == 'French' ~ 'fr',
-      lang == 'German' ~ 'ge',
+      lang == 'German' ~ 'de',
       lang == 'Dutch' ~ 'nl',
       lang == 'Norwegian' ~ 'no',
       lang == 'Catalan' ~ 'ca',

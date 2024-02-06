@@ -657,6 +657,15 @@ def Load_data(
 def Load_val(model_domain, sample_size, toyload = False):
     df, key = read_data(model_domain, data_type = "Validation", toyload = toyload)
     
+    # Make id unique by keeping the first occurrence of each id
+    n_before = df.shape[0]
+    df = df.groupby('RowID').first().reset_index()
+    n_after = df.shape[0]
+    
+    if n_before != n_after:
+        print(f"NOTE: Made data unique for each RowID. Removed {n_before - n_after} observations")
+    
+    
     # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)
      
