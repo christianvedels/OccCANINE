@@ -100,7 +100,7 @@ data0 %>% filter(Provenance == 97125) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance == 94990) %>% select(url) %>% unlist()
 data0 %>% filter(Provenance %in% c(1:11)) %>% select(url) %>% unlist()
 
-# ==== Tranlastions is also good data ====
+# ==== Tranlations is also good data ====
 data0 = data0 %>% 
   rename(
     Source = Provenance
