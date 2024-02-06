@@ -71,23 +71,23 @@ df.to_csv(output_dir+"/pred_data.csv") # Save background data
 
 # %% Predict and save to csv
 # Get predictions. The following returns 
-x, inputs = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
+x = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
 x.to_csv(output_dir+"/preds_w_lang.csv")
 
-x, inputs = model.predict(df["occ1"].tolist(), what = 20)
+x = model.predict(df["occ1"].tolist(), what = 20)
 x.to_csv(output_dir+"/preds_wo_lang.csv")
 
-x, inputs = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+x = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang.csv")
 
-x, inputs = model.forward_base(df["occ1"].tolist())
+x = model.forward_base(df["occ1"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang.csv")
 
 # Get baseline predictions for comparisons
-x, inputs = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
+x = model_baseline.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang_base.csv")
 
-x, inputs = model_baseline.forward_base(df["occ1"].tolist())
+x = model_baseline.forward_base(df["occ1"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_wo_lang_base.csv")
 
 

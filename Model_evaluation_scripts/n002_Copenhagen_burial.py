@@ -24,9 +24,18 @@ from n103_Prediction_assets import Finetuned_model
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(model_name)
+model = Finetuned_model(model_name, verbose = True)
 
 # %% Load data
-df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/standardized_sources/CBP/CBP.csv")
+df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/transcribed_sources/CBP/CBP_20210309.csv")
 
+df = df[["pa_id", "positions"]]
+df = df.rename(columns = {"pa_id" : "RowID", "positions": "occ1"})
+df = df[df['occ1'].notnull()]
+
+df = df.sample(200, random_state = 20)
+# %% Predict
+pred05 = model.predict(df["occ1"].tolist(), lang = "da", what = "pred", threshold = 0.5)
+fname05 = "../Data/Predictions/CopenhagenBurials_05.csv"
+pred05.to_csv(fname05, sep = ";")
 

@@ -44,22 +44,22 @@ Generate_eval_stats = function(model_name = "CANINE", toyrun = FALSE, overwrite 
   preds_wo_lang$RowID = pred_data$RowID
   
   # ==== Fix a few repeating RowID ====
-  problem_ids = preds_w_lang %>% 
-    count(RowID) %>% 
-    filter(n>1) %>% 
-    select(RowID) %>% 
-    unlist()
-  
-  length(problem_ids) # 159
-  
-  pred_data = pred_data %>% 
-    filter(!RowID %in% problem_ids)
-  
-  preds_w_lang = preds_w_lang %>% 
-    filter(!RowID %in% problem_ids)
-  
-  preds_wo_lang = preds_wo_lang %>% 
-    filter(!RowID %in% problem_ids)
+  # problem_ids = preds_w_lang %>% 
+  #   count(RowID) %>% 
+  #   filter(n>1) %>% 
+  #   select(RowID) %>% 
+  #   unlist()
+  # 
+  # length(problem_ids) # 159
+  # 
+  # pred_data = pred_data %>% 
+  #   filter(!RowID %in% problem_ids)
+  # 
+  # preds_w_lang = preds_w_lang %>% 
+  #   filter(!RowID %in% problem_ids)
+  # 
+  # preds_wo_lang = preds_wo_lang %>% 
+  #   filter(!RowID %in% problem_ids)
   
   # ==== Extract source from RowID ====
   pred_data = pred_data %>%
