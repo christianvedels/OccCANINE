@@ -300,7 +300,7 @@ class Finetuned_model:
         results = torch.cat(results, axis=0).cpu().detach().numpy()
         
         print("\n")
-        return results, inputs
+        return results
     
     def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1, new_labels = True, verbose = False):
         """
