@@ -43,30 +43,30 @@ Generate_eval_stats = function(model_name = "CANINE", toyrun = FALSE, overwrite 
   preds_w_lang$RowID = pred_data$RowID
   preds_wo_lang$RowID = pred_data$RowID
   
-  # ==== Fix a few repeating RowID ====
-  # problem_ids = preds_w_lang %>% 
-  #   count(RowID) %>% 
-  #   filter(n>1) %>% 
-  #   select(RowID) %>% 
-  #   unlist()
-  # 
-  # length(problem_ids) # 159
-  # 
-  # pred_data = pred_data %>% 
-  #   filter(!RowID %in% problem_ids)
-  # 
-  # preds_w_lang = preds_w_lang %>% 
-  #   filter(!RowID %in% problem_ids)
-  # 
-  # preds_wo_lang = preds_wo_lang %>% 
-  #   filter(!RowID %in% problem_ids)
+  # ==== Few repeating IDs ====
+  problem_ids = preds_w_lang %>%
+    count(RowID) %>%
+    filter(n>1) %>%
+    select(RowID) %>%
+    unlist()
+
+  length(problem_ids) # 159
+
+  pred_data = pred_data %>%
+    filter(!RowID %in% problem_ids)
+
+  preds_w_lang = preds_w_lang %>%
+    filter(!RowID %in% problem_ids)
+
+  preds_wo_lang = preds_wo_lang %>%
+    filter(!RowID %in% problem_ids)
   
   # ==== Extract source from RowID ====
   pred_data = pred_data %>%
     mutate(Source = str_replace_all(RowID, "[0-9]", ""))
   
   # ==== Test accuracy at thresholds ====
-  thresholds = seq(from = 0.05, to = 0.95, by = 0.05)
+  thresholds = seq(from = 0.01, to = 0.99, by = 0.01)
   
   sum_stats = foreach(thr = thresholds) %do% {
     cat("Threshold: ", thr, "         \r")

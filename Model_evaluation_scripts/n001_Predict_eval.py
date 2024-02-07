@@ -70,12 +70,12 @@ if not os.path.exists(output_dir):
 df.to_csv(output_dir+"/pred_data.csv") # Save background data 
 
 # %% Predict and save to csv
-# Get predictions. The following returns 
-x = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
-x.to_csv(output_dir+"/preds_w_lang.csv")
+# Get predictions
+# x = model.predict(df["occ1"].tolist(), lang = df["lang"].tolist(), what = 20)
+# x.to_csv(output_dir+"/preds_w_lang.csv")
 
-x = model.predict(df["occ1"].tolist(), what = 20)
-x.to_csv(output_dir+"/preds_wo_lang.csv")
+# x = model.predict(df["occ1"].tolist(), what = 20)
+# x.to_csv(output_dir+"/preds_wo_lang.csv")
 
 x = model.forward_base(df["occ1"].tolist(), lang = df["lang"].tolist())
 pd.DataFrame(x).to_csv(output_dir+"/embeddings_w_lang.csv")
