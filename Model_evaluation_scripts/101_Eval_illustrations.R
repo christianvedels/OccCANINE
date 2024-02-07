@@ -15,7 +15,6 @@ library(knitr)
 library(kableExtra)
 library(hisco)
 library(fixest)
-library(fwildclusterboot)
 
 source("Model_evaluation_scripts/000_Functions.R")
 source("Model_evaluation_scripts/001_Generate_eval_stats.R")
@@ -387,7 +386,8 @@ regdata = ses_data %>%
   rename(
     F1score = `F1 score`
   ) %>% 
-  drop_na()
+  drop_na() %>% 
+  filter(n > 0)
 
 mod1_acc = feols(
   Accuracy ~ ses_value, 

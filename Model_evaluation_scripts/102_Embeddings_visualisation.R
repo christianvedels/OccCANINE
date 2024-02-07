@@ -70,16 +70,16 @@ visualize_embeddings = function(embeddings, name) {
   set.seed(20)  # for reproducibility
   tmp = embeddings %>% select(-c(occ1, hisco_1, only1, first_digit, lang, en_hisco_text)) 
   tsne_results = Rtsne(tmp, dims=2, perplexity=30, theta=0.0, check_duplicates=FALSE, max_iter = 10000)
-  tsne_results3d = Rtsne(tmp, dims=3, perplexity=30, theta=0.0, check_duplicates=FALSE, max_iter = 10000)
+  # tsne_results3d = Rtsne(tmp, dims=3, perplexity=30, theta=0.0, check_duplicates=FALSE, max_iter = 10000)
   
   # Merge t-SNE results with labels
   tsne_data = as.data.frame(tsne_results$Y)
   tsne_data$first_digit = embeddings$first_digit
   tsne_data$label = construct_label(embeddings)
   
-  tsne_data3d = as.data.frame(tsne_results3d$Y)
-  tsne_data3d$first_digit = embeddings$first_digit
-  tsne_data3d$label = construct_label(embeddings)
+  # tsne_data3d = as.data.frame(tsne_results3d$Y)
+  # tsne_data3d$first_digit = embeddings$first_digit
+  # tsne_data3d$label = construct_label(embeddings)
   
   
   
@@ -91,24 +91,27 @@ visualize_embeddings = function(embeddings, name) {
       paste(name, '2D t-SNE Visualization'),
       col = "First HISCO\ndigit"
     ) +
-    theme_bw()
+    theme_bw() + 
+    theme(legend.position = "bottom") 
   
-  p1
+  print(p1)
   # Save 2D plot as PNG
-  ggsave(paste0("Eval_plots/Embedding_tsne/",name, "_tsne_2d.png"), plot=p1, width=10, height=8)
+  ggsave(paste0("Eval_plots/Embedding_tsne/",name, "_tsne_2d.png"), plot=p1, width=4, height=5)
   
-  # Interactive Visualization using plotly
-  p2d = plot_ly(tsne_data, x = ~V1, y = ~V2, text = ~label, mode = 'markers', color = ~first_digit, marker = list(opacity=0.7)) %>%
-    layout(title = paste0("Embedding space (t-sne)<br><sup>",name,"</sup>"))
-  fname = paste0("Eval_plots/Embedding_tsne/",name, "Interactive_tsne_2d.Rdata") 
-  save(p2d, file = fname)
+  # # Interactive Visualization using plotly
+  # p2d = plot_ly(tsne_data, x = ~V1, y = ~V2, text = ~label, mode = 'markers', color = ~first_digit, marker = list(opacity=0.7)) %>%
+  #   layout(title = paste0("Embedding space (t-sne)<br><sup>",name,"</sup>"))
+  # fname = paste0("Eval_plots/Embedding_tsne/",name, "Interactive_tsne_2d.Rdata") 
+  # save(p2d, file = fname)
+  # 
+  # 
+  # # 3D Interactive Visualization using plotly
+  # p3d = plot_ly(tsne_data3d, x = ~V1, y = ~V2, z = ~V3, text = ~label, mode = 'markers', color = ~first_digit, marker = list(opacity=0.7)) %>%
+  #   layout(title = paste0("Embedding space (t-sne)<br><sup>",name,"</sup>"))
+  # fname = paste0("Eval_plots/Embedding_tsne/",name, "Interactive_tsne_3d.Rdata") 
+  # save(p3d, file = fname)
   
   
-  # 3D Interactive Visualization using plotly
-  p3d = plot_ly(tsne_data3d, x = ~V1, y = ~V2, z = ~V3, text = ~label, mode = 'markers', color = ~first_digit, marker = list(opacity=0.7)) %>%
-    layout(title = paste0("Embedding space (t-sne)<br><sup>",name,"</sup>"))
-  fname = paste0("Eval_plots/Embedding_tsne/",name, "Interactive_tsne_3d.Rdata") 
-  save(p3d, file = fname)
 }
 
 # ==== Main Execution ====
