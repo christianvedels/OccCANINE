@@ -665,7 +665,10 @@ def Load_val(model_domain, sample_size, toyload = False):
     if n_before != n_after:
         print(f"NOTE: Made data unique for each RowID. Removed {n_before - n_after} observations")
     
-    
+    # Replace 'ge' with 'de' in the 'lang' column
+    df['lang'] = df['lang'].replace('ge', 'de')
+    print("NOTE: Replaced 'ge' with 'de'. This is a problem stemming from data cleaning.")
+        
     # Subset to smaller
     df = subset_to_smaller(df, sample_size=sample_size)
      
