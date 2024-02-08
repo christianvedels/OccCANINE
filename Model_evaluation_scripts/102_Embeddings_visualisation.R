@@ -96,7 +96,7 @@ visualize_embeddings = function(embeddings, name) {
   
   print(p1)
   # Save 2D plot as PNG
-  ggsave(paste0("Eval_plots/Embedding_tsne/",name, "_tsne_2d.png"), plot=p1, width=4, height=5)
+  ggsave(paste0("Eval_plots/Embedding_tsne/",name, "_tsne_2d.pdf"), plot=p1, width=4, height=5)
   
   # # Interactive Visualization using plotly
   # p2d = plot_ly(tsne_data, x = ~V1, y = ~V2, text = ~label, mode = 'markers', color = ~first_digit, marker = list(opacity=0.7)) %>%

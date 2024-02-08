@@ -39,7 +39,7 @@ p1 = eval_canine %>% filter(summary == "All") %>%
   )
 
 p1
-ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.png", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # Best overall thresholds
 all_stats = eval_canine %>% 
@@ -146,20 +146,21 @@ p1 = plot_data %>%
   geom_text(
     y = 0.4,
     aes(label = label, x = lang),
-    col = "grey", 
-    angle = 90
+    angle = 90,
+    fontface = "italic"
   ) + 
   geom_hline(aes(yintercept = value), data = all_stats, lty = 2) + 
   geom_text(
     data = all_stats,
     aes(label = scales::percent(value, 0.1), x = lang, y = value-0.075),
-    inherit.aes = FALSE
+    inherit.aes = FALSE,
+    fontface = "bold"
   ) + 
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5)
   )
 p1
-ggsave("Project_dissemination/Figures for paper/Performance_by_language.png", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Performance_by_language.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # ==== Table of optimal thresholds for appendix ====
 plot_data %>%
@@ -219,7 +220,7 @@ p1 = eval_canine %>%
   geom_hline(yintercept = 1)
 
 p1
-ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 10, plot = p1)
+ggsave("Eval_plots/Performance_lang_wise1.pdf", width = 10, height = 10, plot = p1)
 
 p1 = eval_canine %>% # Regular bar plot
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
@@ -244,7 +245,7 @@ p1 = eval_canine %>% # Regular bar plot
   )
 
 p1  
-ggsave("Eval_plots/Performance_lang_wise2.png", width = 6, height = 3.5, plot = p1)
+ggsave("Eval_plots/Performance_lang_wise2.pdf", width = 6, height = 3.5, plot = p1)
 
 # ==== By hisco ====
 the_best0 = the_best %>% filter(lang_info)
@@ -341,8 +342,8 @@ p1 = plot_data %>%
     aes(x = n_label, y = y, label = label), data = labels01
   )
 
-ggsave("Eval_plots/Performance_hisco.png", width = 6, height = 3.5, plot = p1)
-ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.png", plot = p1, height = dim[1], width = dim[2])
+ggsave("Eval_plots/Performance_hisco.pdf", width = 6, height = 3.5, plot = p1)
+ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.pdf", plot = p1, height = dim[1], width = dim[2])
 
 p1
 
@@ -375,7 +376,7 @@ p1 = ses_data %>%
   theme_bw()
 
 p1
-ggsave("Project_dissemination/Figures for paper/Performance_by_ses.png", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Performance_by_ses.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # Regressions to test ses_value ~ model performance
 regdata = ses_data %>%

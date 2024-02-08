@@ -1,4 +1,201 @@
-Rækkemærkater;Sum af Check;Gennemsnit af Check2
-FALSK;80;95,24%
-SAND;116;100,00%
-Hovedtotal;196;0,98
+;hisco_1;prob_1;desc_1;hisco_2;prob_2;desc_2;hisco_3;prob_3;desc_3;hisco_4;prob_4;desc_4;hisco_5;prob_5;desc_5;occ1;id;occ1;hisco;en_hisco_text
+0;55220;0.97429776;Charworker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]charwoman;05365;charwoman;55220.0;Charworker
+1;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];07080;;;empty
+2;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37020;;;empty
+3;99910;0.99980384;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]labourer;20073;labourer;99910.0;Labourer
+4;99910;0.99980384;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]labourer;24130;labourer;99910.0;Labourer
+5;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];01187;;;empty
+6;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]lets lodgings;06237;lets lodgings;51040.0;Working Proprietor (Guest House)
+7;81930;0.9999045;Cooper;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cooper;10099;cooper;81930.0;Cooper
+8;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];28007;;;empty
+9;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];34188;;;empty
+10;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];28194;;;empty
+11;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37220;;;empty
+12;30000;0.9928953;Clerical or Related Worker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]clerk;22144;clerk;30000.0;Clerical or Related Worker, Specialisation Unknown
+13;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cooper at sea;01160;cooper at sea;81930.0;Cooper
+14;58320;0.9998617;Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]lt. royal navy;37385;lt. royal navy;58320.0;Officer
+15;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];18032;;;empty
+16;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];01194;;;empty
+17;58320;0.8658831;Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]flying officer (atsd);21106;flying officer (atsd);58320.0;Officer
+18;17320;0.9981634;Actor;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]actor;08162;actor;17320.0;Actor
+19;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];02406;;;empty
+20;72500;0.99863285;Metal Moulder or Coremaker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]iron moulder;09170;iron moulder;72500.0;Metal Moulder or Coremaker, Specialisation Unknown
+21;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37454;;;empty
+22;22610;0.906176;Production Supervisor or Foreman, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]foreman aircraft repairs;21142;foreman aircraft repairs;22690.0;Other Production Supervisors and General Foremen
+23;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];26073;;;empty
+24;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];09166;;;empty
+25;95440;0.9982338;Wood Shipwright;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]shipwright;01246;shipwright;95440.0;Wood Shipwright
+26;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];35187;;;empty
+27;99930;0.99481285;Factory Worker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]process worker;37092;process worker;99910.0;Labourer
+28;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]national assistance;31124;national assistance;;empty
+29;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];22052;;;empty
+30;14140;0.9113349;Religious Worker (Member of Religious Order);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]charing;03274;charing;55220.0;Charworker
+31;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12033;;;empty
+32;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];39300;;;empty
+33;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];03286;;;empty
+34;55220;0.97429776;Charworker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]charwoman;07280;charwoman;55220.0;Charworker
+35;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11209;;;empty
+36;98135;0.9998487;Seaman, Able or Ordinary;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]mariner;01014;mariner;98135.0;Seaman, Able or Ordinary
+37;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11280;;;empty
+38;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];35192;;;empty
+39;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];33045;;;empty
+40;53290;0.8786228;Other Waiters, Bartenders and Related Workers;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]stewardess;05256;stewardess;22440.0;House Steward
+41;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38069;;;empty
+42;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];39190;;;empty
+43;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37171;;;empty
+44;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];03042;;;empty
+45;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11084;;;empty
+46;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11260;;;empty
+47;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11327;;;empty
+48;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]housewife;31150;housewife;;empty
+49;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];13019;;;empty
+50;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12013;;;empty
+51;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11192;;;empty
+52;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];07041;;;empty
+53;99910;0.99980384;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]labourer;19141;labourer;99910.0;Labourer
+54;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37403;;;empty
+55;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];19155;;;empty
+56;58340;0.99997246;Other Military Ranks;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]private r.a.o.c.;20081;private r.a.o.c.;58340.0;Other Military Ranks
+57;71105;0.9995389;Miner, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]coal miner;20041;coal miner;71105.0;Miner, General
+58;98130;0.9933729;Able Seaman;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]royal navy;39323;royal navy;58300.0;Military
+59;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12236;;;empty
+60;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06219;;;empty
+61;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];17029;;;empty
+62;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];13100;;;empty
+63;79140;0.9817648;Dressmaker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]dressmaker;08285;dressmaker;79140.0;Dressmaker
+64;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];18147;;;empty
+65;98130;0.9933729;Able Seaman;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]royal navy;39292;royal navy;58300.0;Military
+66;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];24172;;;empty
+67;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08102;;;empty
+68;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];40180;;;empty
+69;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];05240;;;empty
+70;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38280;;;empty
+71;41030;0.9998487;Working Proprietor (Retail Trade);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]draper;12067;draper;41030.0;Working Proprietor (Retail Trade)
+72;98135;0.9999678;Seaman, Able or Ordinary;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]sailor;03353;sailor;98135.0;Seaman, Able or Ordinary
+73;79590;0.94711244;Other Sewers and Embroiderers;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]needlewoman;08055;needlewoman;79500.0;Sewers and Embroiderers
+74;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];40191;;;empty
+75;78200;0.9817894;Cigar Maker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cigar maker;06324;cigar maker;78200.0;Cigar Maker, Specialisation Unknown
+76;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];36008;;;empty
+77;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11175;;;empty
+78;58320;0.9997154;Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]army officer - major;26141;army officer - major;58320.0;Officer
+79;58300;0.6283193;Military;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]hm forces army;39394;hm forces army;58300.0;Military
+80;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];10188;;;empty
+81;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];31020;;;empty
+82;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];16123;;;empty
+83;98620;0.99989545;AnimalDrawn Vehicle Driver (Road);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]carter;16159;carter;98620.0;AnimalDrawn Vehicle Driver (Road)
+84;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];34206;;;empty
+85;58330;0.9990502;NonCommissioned Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]p.o. in navy;11240;p.o. in navy;58330.0;NonCommissioned Officer
+86;97120;0.8904807;Docker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]dock labourer;14257;dock labourer;97120.0;Docker
+87;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]housewife;24089;housewife;;empty
+88;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];39425;;;empty
+89;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12273;;;empty
+90;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37227;;;empty
+91;51020;0.967952;Working Proprietor (Hotel and Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]inn keeper;38315;inn keeper;51020.0;Working Proprietor (Hotel and Restaurant)
+92;79920;0.9991986;Sail, Tent and Awning Maker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]sailmaker;05128;sailmaker;79920.0;Sail, Tent and Awning Maker
+93;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06327;;;empty
+94;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];37053;;;empty
+95;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];36027;;;empty
+96;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12341;;;empty
+97;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];40160;;;empty
+98;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];29028;;;empty
+99;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06261;;;empty
+100;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]housewife;34110;housewife;;empty
+101;53290;0.85241073;Other Waiters, Bartenders and Related Workers;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]stewardess at sea;02099;stewardess at sea;54060.0;Ship's Steward
+102;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06042;;;empty
+103;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]housewife;26153;housewife;;empty
+104;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]youth hostel warden;33240;youth hostel warden;22425.0;Housekeeper (Private Service, in Hotels, or in Other Institutions)
+105;55220;0.99415565;Charworker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]boiler cleaner;27195;boiler cleaner;87350.0;Boilersmith
+106;62700;0.99973744;Nursery Workers and Gardeners;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]gardener;13126;gardener;62740.0;Gardener
+107;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];22076;;;empty
+108;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]casual;03123;casual;99920.0;DayLabourer
+109;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];01008;;;empty
+110;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];19178;;;empty
+111;62510;0.9948519;Dairy Farm Worker, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cow keeper;03286;cow keeper;62420.0;Beef Cattle Farm Worker
+112;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];15143;;;empty
+113;31000;0.89090043;Government Executive Official, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]highways inspector;39197;highways inspector;22000.0;Supervisor, Foreman or Inspector, Specialisation Unknown
+114;87105;0.9997477;Plumber, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]plumber;08349;plumber;87105.0;Plumber, General
+115;83110;0.98097676;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]engine smith;02157;engine smith;84100.0;Machinery Fitters and Machine Assemblers
+116;54090;0.9928351;Other Maids and Related Housekeeping Service Workers;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]hospital matron;28074;hospital matron;7110.0;Professional Nurse, General
+117;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];04255;;;empty
+118;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];24047;;;empty
+119;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38361;;;empty
+120;45220;0.9997172;Street Vendor;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]hawker;02151;hawker;45220.0;Street Vendor
+121;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];04012;;;empty
+122;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08395;;;empty
+123;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];35012;;;empty
+124;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]post destroyer;21006;post destroyer;-3.0;Non work related title
+125;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];21036;;;empty
+126;95120;0.9995338;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]bricklayer;39019;bricklayer;95120.0;Bricklayer (Construction)
+127;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]once storekeeper in messr mac? employ no;02250;once storekeeper in messr mac? employ no;41030.0;Working Proprietor (Retail Trade)
+128;14120;0.99973685;Minister of Religion;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]wesleyan minister;12166;wesleyan minister;14120.0;Minister of Religion
+129;83410;0.96182626;MachineTool Operator, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]engine operator?;15160;engine operator?;84100.0;Machinery Fitters and Machine Assemblers
+130;7990;0.6321217;Other Medical, Dental, Veterinary and Related Workers;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]ward orderley;36211;ward orderley;59940.0;Nursing Aid
+131;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];21110;;;empty
+132;81935;0.9566433;Wooden Pattern Maker;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]master pattern maker;38222;master pattern maker;79400.0;Pattern Makers and Cutters
+133;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];27133;;;empty
+134;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08144;;;empty
+135;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];31197;;;empty
+136;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];02339;;;empty
+137;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];21023;;;empty
+138;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];21065;;;empty
+139;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08099;;;empty
+140;21000;0.62201995;Manager, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]theatre manager;37255;theatre manager;21490.0;Other Managers (Catering and Lodging Services)
+141;99910;0.99980384;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]labourer;23201;labourer;99910.0;Labourer
+142;39960;0.99506736;Railway Clerk;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]lengthman;21090;lengthman;98990.0;Other Transport Equipment Operators
+143;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];28052;;;empty
+144;22000;0.9436863;Supervisor, Foreman or Inspector, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]electrical inspector;32184;electrical inspector;85920.0;Electrical and Electronic Products Inspector and Tester
+145;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];16070;;;empty
+146;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38272;;;empty
+147;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08025;;;empty
+148;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];20061;;;empty
+149;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];05213;;;empty
+150;98555;0.99731076;Lorry and Van Driver (Local or LongDistance Transport);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]lorry driver;31185;lorry driver;98555.0;Lorry and Van Driver (Local or LongDistance Transport)
+151;44120;0.91627806;Insurance Salesman;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]insurance;13266;insurance;44120.0;Insurance Salesman
+152;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];08229;;;empty
+153;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];25080;;;empty
+154;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];20153;;;empty
+155;21000;0.99898475;Manager, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]company director;37324;company director;21110.0;General Manager
+156;58940;0.98273337;Watchman;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]watchman;09199;watchman;58940.0;Watchman
+157;92400;0.9245106;Printing Engraver, Specialisation Unknown (except PhotoEngraver);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]process engraver;27112;process engraver;92400.0;Printing Engraver, Specialisation Unknown (except PhotoEngraver)
+158;31000;0.7042025;Government Executive Official, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]customhouse officer;01037;customhouse officer;31040.0;Customs officer
+159;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06375;;;empty
+160;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];29033;;;empty
+161;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];24170;;;empty
+162;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];39121;;;empty
+163;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];02307;;;empty
+164;4215;0.7983442;Ship's Master (Sea);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]chief engineer merchant navy;38340;chief engineer merchant navy;4315.0;Ship's Chief Engineer
+165;58330;0.9987306;NonCommissioned Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cpl. army;39039;cpl. army;58330.0;NonCommissioned Officer
+166;98135;0.9999678;Seaman, Able or Ordinary;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]sailor;01055;sailor;98135.0;Seaman, Able or Ordinary
+167;97125;0.951374;Loader of Ship, Truck, Wagon or Airplane;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cotton porter;05086;cotton porter;97145.0;Warehouse Porter
+168;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];07324;;;empty
+169;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];32217;;;empty
+170;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];09148;;;empty
+171;99910;0.99987674;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]builder's labourer;31194;builder's labourer;95000.0;Bricklayers, Carpenters and Other Construction Workers
+172;95410;0.8355848;Carpenter, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]ship carpenter;02039;ship carpenter;95455.0;Ship's Carpenter
+173;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12134;;;empty
+174;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];13329;;;empty
+175;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];34056;;;empty
+176;61115;0.99270815;Small Subsistence Farmer (Husbandman);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]small holder;22198;small holder;61115.0;Small Subsistence Farmer (Husbandman)
+177;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06267;;;empty
+178;58300;0.9840045;Military;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]army;37301;army;58340.0;Other Military Ranks
+179;4215;0.99673945;Ship's Master (Sea);;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]master mariner & s.s. devon;03140;master mariner & s.s. devon;4215.0;Ship's Master (Sea)
+180;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38167;;;empty
+181;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];15082;;;empty
+182;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];14208;;;empty
+183;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];11003;;;empty
+184;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];36088;;;empty
+185;58340;0.9999863;Other Military Ranks;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]soldier;13020;soldier;58340.0;Other Military Ranks
+186;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];10299;;;empty
+187;2410;0.9951776;Mechanical Engineer, General;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]heating engineer;36106;heating engineer;2480.0;Heating, Ventilation and Refrigeration Engineer
+188;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]pet shop manageress;27060;pet shop manageress;21340.0;Sales Manager (Retail Trade)
+189;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];18027;;;empty
+190;58330;0.9987306;NonCommissioned Officer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]cpl. army;38457;cpl. army;58330.0;NonCommissioned Officer
+191;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]housewife;35115;housewife;;empty
+192;98135;0.9999678;Seaman, Able or Ordinary;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]sailor;02055;sailor;98135.0;Seaman, Able or Ordinary
+193;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12027;;;empty
+194;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12093;;;empty
+195;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];31138;;;empty
+196;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];12237;;;empty
+197;99910;0.9998087;Labourer;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP]farm labourer;13111;farm labourer;62105.0;FarmWorker, General
+198;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];06240;;;empty
+199;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;en[SEP];38493;;;empty
