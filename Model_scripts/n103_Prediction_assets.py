@@ -183,6 +183,10 @@ class Finetuned_model:
         results = []
         total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
         
+        # Fix get dict conditionally
+        if get_dict:
+            get_df = False
+        
         if get_df:
             what0 = what
             what = 5 # This is the easiest way of handling this
