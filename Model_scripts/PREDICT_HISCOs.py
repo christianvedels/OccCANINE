@@ -143,12 +143,12 @@ x = model.predict(
 
 print(x)
 
-# %% Example 7 - 50k are still very fast
+# %% Example 7 - 10k are still very fast
 import pandas as pd
 df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/transcribed_sources/CBP/CBP_20210309.csv")
 df = df[["positions"]]
 df = df[df["positions"].notnull()]
-df = df.sample(50000)
+df = df.sample(10000)
 print(f"Producing HISCO codes for {df.shape[0]} observations")
 print(f"Estimated human ours saved: {df.shape[0]*10/60/60} hours")
 model.verbose = True # Set updates to True
