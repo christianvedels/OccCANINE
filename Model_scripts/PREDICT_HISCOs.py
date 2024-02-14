@@ -150,7 +150,7 @@ df = df[["positions"]]
 df = df[df["positions"].notnull()]
 df = df.sample(10000)
 print(f"Producing HISCO codes for {df.shape[0]} observations")
-print(f"Estimated human ours saved: {df.shape[0]*10/60/60} hours")
+print(f"Estimated human hours saved: {df.shape[0]*10/60/60} hours")
 model.verbose = True # Set updates to True
 x = model.predict(
     df["positions"],
