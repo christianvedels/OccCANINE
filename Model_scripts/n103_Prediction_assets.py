@@ -263,7 +263,7 @@ class Finetuned_model:
                         results.loc[i, f"desc_{j}"] = "No pred"
                         results.loc[i, f"prob_{j}"] = float("NaN")
             
-            results['occ1'] = inputs
+            results.insert(0,'occ1', inputs)
                 
         print("\n")
         return results
