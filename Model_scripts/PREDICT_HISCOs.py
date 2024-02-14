@@ -155,5 +155,6 @@ model.verbose = True # Set updates to True
 x = model.predict(
     df["positions"],
     lang = "da",
-    threshold = 0.11
+    threshold = 0.11,
+    get_dict = True
     )
