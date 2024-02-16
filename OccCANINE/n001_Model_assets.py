@@ -95,56 +95,7 @@ def getModel(model_domain, tokenizer, model_size = ""):
     
     return model
 
-# %%
-# Build the Sentiment Classifier class 
-class BERTOccupationClassifier(nn.Module):
-    
-    # Constructor class 
-    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
-        super(BERTOccupationClassifier, self).__init__()
-        self.basemodel = getModel(model_domain, tokenizer)
-        self.drop = nn.Dropout(p=dropout_rate)
-        self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
-    
-    # Forward propagaion class
-    def forward(self, input_ids, attention_mask):
-        outputs = self.basemodel(
-          input_ids=input_ids,
-          attention_mask=attention_mask
-        )
-        pooled_output = outputs.pooler_output
-        
-        #  Add a dropout layer 
-        output = self.drop(pooled_output)
-        return self.out(output)
-    
-# %%
-# Build the Classifier 
-class XMLRoBERTaOccupationClassifier(nn.Module):
-    
-    # Constructor class 
-    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate, model_size):
-        super(XMLRoBERTaOccupationClassifier, self).__init__()
-        # breakpoint()
-        self.basemodel = getModel(model_domain, tokenizer, model_size)
-        self.drop = nn.Dropout(p=dropout_rate)
-        self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
-        
-    def resize_token_embeddings(self, n): 
-        self.basemodel.resize_token_embeddings(n)
-    
-    # Forward propagaion class
-    def forward(self, input_ids, attention_mask):
-        outputs = self.basemodel(
-          input_ids=input_ids,
-          attention_mask=attention_mask
-        )
-        pooled_output = outputs.pooler_output
-        
-        #  Add a dropout layer 
-        output = self.drop(pooled_output)
-        return self.out(output)
-    
+
 # %%
 # Build the Classifier 
 class CANINEOccupationClassifier(nn.Module):
