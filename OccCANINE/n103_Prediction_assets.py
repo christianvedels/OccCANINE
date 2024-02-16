@@ -98,7 +98,7 @@ class Finetuned_model:
         self.tokenizer = Get_adapated_tokenizer(name)
         
         # Load state
-        model_path = '../Trained_models/'+name+'.bin'
+        model_path = 'Model/'+name+'.bin'
    
         # Load the model state
         loaded_state = torch.load(model_path)
@@ -523,10 +523,10 @@ class Finetuned_model:
         # == Load best model ==
         # breakpoint()
         # Load state
-        model_path = '../Trained_models/'+model_name+'.bin'
+        model_path = 'Model/'+model_name+'.bin'
         if not os.path.isfile(model_path):
             print("Model did not improve in training. Realoding original model")
-            model_path = '../Trained_models/'+self.name+'.bin'
+            model_path = 'Model/'+self.name+'.bin'
    
         # Load the model state
         loaded_state = torch.load(model_path)
