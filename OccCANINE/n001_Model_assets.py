@@ -20,6 +20,7 @@ import transformers
 from transformers import BertModel, BertTokenizer, XLMRobertaTokenizer, XLMRobertaModel, CanineTokenizer, CanineModel, AutoTokenizer
 import torch
 import torch.nn as nn
+from huggingface_hub import PyTorchModelHubMixin
 # from tf_keras.layers import TextVectorization
 #from keras.layers import TextVectorization
 
@@ -75,40 +76,33 @@ def update_tokenizer(tokenizer, df):
     return tokenizer
 
 # %%
-def getModel(model_domain, tokenizer, model_size = ""):
+def getModel(model_domain, model_size = ""):
     # breakpoint()
     MDL = modelPath(model_domain, model_size)
     
-    if model_domain == "Multilingual":
-        model = XLMRobertaModel.from_pretrained(MDL)
-    elif model_domain == "Multilingual_CANINE":  
+    if model_domain == "Multilingual_CANINE":  
         model = CanineModel.from_pretrained(MDL)
     else:
         raise Exception("Not implemented")
         # model = BertModel.from_pretrained(MDL)
-    
-    if model_domain == "Multilingual_CANINE": # No reason to resize these tokens
-        return model
-    
-    # Adapt model size to the tokens added:   
-    model.resize_token_embeddings(len(tokenizer))
-    
+        
     return model
-
 
 # %%
 # Build the Classifier 
 class CANINEOccupationClassifier(nn.Module):
     
     # Constructor class 
-    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate):
+    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate, config):
         super(CANINEOccupationClassifier, self).__init__()
-        self.basemodel = getModel(model_domain, tokenizer)
+        self.basemodel = getModel(model_domain)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
         
+        _ = config # Not used
+        
     def resize_token_embeddings(self, n): 
-        x = 1 # Do nothing CANINE should never base resized
+        x = 1 # Do nothing CANINE should never be resized
     
     # Forward propagaion class
     def forward(self, input_ids, attention_mask):
@@ -121,6 +115,33 @@ class CANINEOccupationClassifier(nn.Module):
         #  Add a dropout layer 
         output = self.drop(pooled_output)
         return self.out(output)
+    
+# %%
+# Build the Classifier for HF hub
+class CANINEOccupationClassifier_hub(nn.Module, PyTorchModelHubMixin):
+    
+    # Constructor class 
+    def __init__(self, config):
+        super(CANINEOccupationClassifier_hub, self).__init__()
+        self.basemodel = getModel(config["model_domain"])
+        self.drop = nn.Dropout(p=config["dropout_rate"])
+        self.out = nn.Linear(self.basemodel.config.hidden_size, config["n_classes"])
+        
+    def resize_token_embeddings(self, n): 
+        x = 1 # Do nothing CANINE should never be resized
+    
+    # Forward propagaion class
+    def forward(self, input_ids, attention_mask):
+        outputs = self.basemodel(
+          input_ids=input_ids,
+          attention_mask=attention_mask
+        )
+        pooled_output = outputs.pooler_output
+        
+        #  Add a dropout layer 
+        output = self.drop(pooled_output)
+        return self.out(output)
+    
         
 # %% Load model from checkpoint
 def load_model_from_checkpoint(checkpoint_path, model, MODEL_DOMAIN):

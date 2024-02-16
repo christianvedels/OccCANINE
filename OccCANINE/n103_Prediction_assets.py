@@ -10,7 +10,7 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import modules
-from n001_Model_assets import XMLRoBERTaOccupationClassifier, CANINEOccupationClassifier, load_tokenizer
+from n001_Model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
 from n102_DataLoader import Concat_string, Concat_string_canine, OCCDataset, read_data, labels_to_bin, TrainTestVal, save_tmp, create_data_loader
 from n101_Trainer import trainer_loop_simple, eval_model
 from n100_Attacker import AttackerClass
@@ -75,13 +75,14 @@ def Top_n_to_df(result, top_n):
 # %% Load best model instance
 # Define the path to the saved binary file
 class Finetuned_model:
-    def __init__(self, name, device = None, batch_size = 256, verbose = False, baseline = False):
+    def __init__(self, name, device = None, batch_size = 256, verbose = False, baseline = False, hf = True):
         """
         name:           Name of the model to load (name in 'Trained_models')
         device:         Which device should be used? Defaults to auto-detection. 
         batch_size:     How to batch up the data
         verbose:        Should updates be printed?  
         baseline:       Option to load baseline (untrained) version of the model
+        hf:             Should the model be loaded from hugging face?
         """
         
         # Detect device
@@ -104,7 +105,7 @@ class Finetuned_model:
         loaded_state = torch.load(model_path)
         
         # Load key
-        key = pd.read_csv("../Data/Key.csv") # Load key and convert to dictionary
+        key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
         key = key[1:]
         key = zip(key.code, key.hisco)
         key = list(key)
@@ -118,12 +119,9 @@ class Finetuned_model:
         self.key_desc = dict(key)
         
         # If-lookup for model
-        if "RoBERTa" in name:
-            model = XMLRoBERTaOccupationClassifier(
-                n_classes = len(self.key), 
-                model_domain = "Multilingual", 
-                tokenizer = self.tokenizer, 
-                dropout_rate = 0
+        if hf:
+            model = CANINEOccupationClassifier_hub.from_pretrained(
+                "revert94/OccCANINE"
                 )
         elif "CANINE" in name:
             model = CANINEOccupationClassifier(
@@ -131,14 +129,14 @@ class Finetuned_model:
                 n_classes = len(self.key), 
                 tokenizer = self.tokenizer, 
                 dropout_rate = 0
-                )
+                ) 
+            
+            # Update states and load onto device 
+            if not baseline:
+                model.load_state_dict(loaded_state)
         else:
             raise Exception(f"Was not able to identify/find {name}")
                 
-        # Update states and load onto device 
-        if not baseline:
-            model.load_state_dict(loaded_state)
-        
         model.to(device)   
         
         self.model = model
