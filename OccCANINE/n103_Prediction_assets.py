@@ -31,7 +31,7 @@ def Get_adapated_tokenizer(name):
     if "CANINE" in name:
         tokenizer = load_tokenizer("Multilingual_CANINE")
     else:
-       tokenizer_save_path = '../Trained_models/' + name + '_tokenizer'
+       tokenizer_save_path = 'Model/' + name + '_tokenizer'
        tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path) 
        
     return tokenizer
