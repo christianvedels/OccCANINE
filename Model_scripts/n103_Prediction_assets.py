@@ -183,6 +183,10 @@ class Finetuned_model:
         results = []
         total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
         
+        # Fix get dict conditionally
+        if get_dict:
+            get_df = False
+        
         if get_df:
             what0 = what
             what = 5 # This is the easiest way of handling this
@@ -257,10 +261,12 @@ class Finetuned_model:
                     if not test_j[i]:
                         results.loc[i,f"hisco_{j}"] = float("NaN")
                         results.loc[i, f"desc_{j}"] = "No pred"
+                        results.loc[i, f"prob_{j}"] = float("NaN")
             
+            results.insert(0,'occ1', inputs)
                 
         print("\n")
-        return results, inputs
+        return results
     
     def forward_base(self, occ1, lang = "unk", concat_in = False):
         """
@@ -298,7 +304,7 @@ class Finetuned_model:
         results = torch.cat(results, axis=0).cpu().detach().numpy()
         
         print("\n")
-        return results, inputs
+        return results
     
     def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1, new_labels = True, verbose = False):
         """

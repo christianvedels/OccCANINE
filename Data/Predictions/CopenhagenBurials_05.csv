@@ -1,0 +1,201 @@
+;hisco_1;prob_1;desc_1;hisco_2;prob_2;desc_2;hisco_3;prob_3;desc_3;hisco_4;prob_4;desc_4;hisco_5;prob_5;desc_5;occ1
+0;75145;0.7696172;Fibre Comber;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]haeklerske
+1;83000;0.52082705;Blacksmiths, Toolmakers and MachineTool Operators;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]maskinpasser
+2;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+3;41030;0.97319794;Working Proprietor (Retail Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]hoker
+4;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+5;22430;0.7987728;Housekeeper (Private Service);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]husbestyrerinde (huusbestyrerinde)
+6;62120;0.9896516;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kelner (kellner)
+7;81930;0.97601116;Cooper;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]bodkersvend
+8;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+9;77120;0.9950546;Grain Miller;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]mollersvend (mollesvend)
+10;79100;0.98321146;Tailor, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skraeddersvend (skraedersvend)
+11;81930;0.97601116;Cooper;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]bodkersvend
+12;22290;0.80932146;Other Transport and Communications Supervisors;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skibsmaegler
+13;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+14;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fabrikmester (fabriksmester)
+15;95120;0.97091573;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]murersvend (muurersvend - mursvend - muursvend)
+16;41020;0.96847075;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vinhandler
+17;54020;0.73445815;House Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]husassistent (huusassistent)
+18;81000;0.9764554;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gift,snedkermester
+19;58940;0.9851549;Watchman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]privatvaegter (privat vaegter)
+20;-1;0.9533525;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]uangivet - ukendt - uoplyst
+21;80110;0.9811906;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomager
+22;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+23;80110;0.975409;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomagermester
+24;51030;0.9954881;Working Proprietor (Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]bevaerter
+25;-1;0.9351929;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]froken
+26;7210;0.96416426;Auxiliary Nurse;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]portor (porteur)
+27;77310;0.99072254;Butcher, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]slagtermester
+28;41020;0.9992187;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]grosserer
+29;77610;0.872555;Baker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]konditor (conditor)
+30;79100;0.9803463;Tailor, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]hofskraedderlaerling (hofskraederlaerling)
+31;62700;0.997355;Nursery Workers and Gardeners;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gartner
+32;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]klaverflytter
+33;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]landvaesenselev
+34;81000;0.97983575;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkermester
+35;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+36;-1;0.82428706;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]repraesentant
+37;72550;0.9861341;Coremaker (Hand);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]former
+38;87340;0.8130497;Tinsmith;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]blikkenslager
+39;79510;0.9913148;Hand and Machine Sewer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]syerske
+40;4230;0.99839777;Ship's Navigating Officer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]styrmand
+41;98620;0.84321797;AnimalDrawn Vehicle Driver (Road);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vognmand
+42;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+43;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+44;-1;0.71981084;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]separeret kone (separeret hustru)
+45;75400;0.9979977;Weaver, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vaever
+46;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ritmester,kammerherre (cammerherre),hofchef
+47;83110;0.99323386;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]smedesvend
+48;22000;0.97980976;Supervisor, Foreman or Inspector, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]formand
+49;93120;0.9988901;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]maler
+50;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+51;81000;0.9652672;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkersvend
+52;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+53;62700;0.997355;Nursery Workers and Gardeners;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gartner
+54;22000;0.8311512;Supervisor, Foreman or Inspector, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]malerformand
+55;93120;0.9988901;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]maler
+56;92110;0.87717706;Printer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]metaltrykker
+57;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+58;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+59;95410;0.982735;Carpenter, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tomrersvend
+60;80110;0.9811906;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomager
+61;95120;0.98621505;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]murermester (muurermester - muurmester murmester)
+62;96910;0.8954724;Stationary Engine Operator, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke,maskinmester
+63;83110;0.9847549;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]smedemester
+64;-1;0.999569;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]madam (madame - mdm)
+65;-1;0.999569;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]madam (madame - mdm)
+66;62120;0.99422485;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestekarl (tienestekarl)
+67;80110;0.96968126;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomagersvend
+68;83110;0.99323386;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]smedesvend
+69;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+70;55130;0.9947983;Janitor;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]portner
+71;54020;0.9866279;House Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]husjomfru (huusjomfru)
+72;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+73;81000;0.9652672;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkersvend
+74;-1;0.9351929;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]froken
+75;13020;0.9953927;Teacher, Level and Subject Unknown, Not University and Higher Education Level;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skolelaerer
+76;98620;0.9862331;AnimalDrawn Vehicle Driver (Road);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kusk (kudsk)
+77;93120;0.9988901;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]maler
+78;-1;0.99998903;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]plejebarn (pleiebarn)
+79;61110;0.98901296;General Farmer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gardejer (gaardeier)
+80;95120;0.9828445;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]murer (muurer)
+81;61110;0.99935967;General Farmer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gardmand (gaardmand)
+82;7210;0.96416426;Auxiliary Nurse;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]portor (porteur)
+83;20110;0.9274213;Legislative Official;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]etatsrad (etatsraad),professor
+84;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+85;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+86;80110;0.9811906;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomager
+87;58940;0.9826833;Watchman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]nattevagt (natvagt)
+88;-1;0.99998903;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]plejebarn (pleiebarn)
+89;79100;0.9811813;Tailor, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skraeddermester (skraedermester)
+90;62120;0.98402935;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjener (tiener)
+91;79220;0.99733174;Fur Tailor;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]buntmager (bundtmager)
+92;41025;0.9946636;Working Proprietor (Wholesale or Retail Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kobmand (kjobmand - kiobmand)
+93;84222;0.97934943;Watch and Clock Assembler or Repairer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]urmager (uhrmager)
+94;80110;0.9811906;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomager
+95;41020;0.9992187;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]grosserer
+96;83110;0.99323386;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]smedesvend
+97;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+98;51020;0.988796;Working Proprietor (Hotel and Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vaertshusholder (waertshuusholder)
+99;81000;0.9931704;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedker
+100;99930;0.64430976;Factory Worker;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]frihavnsarbejder (frihavnsarbeider)
+101;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+102;62120;0.9891192;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestepige (tienestepige)
+103;62120;0.99422485;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestekarl (tienestekarl)
+104;54040;0.92433894;Companion;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]opvarter
+105;41020;0.99309546;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]handelskommis (handelscommis) (hdls.kommis)
+106;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+107;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+108;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+109;92110;0.87717706;Printer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]metaltrykker
+110;51020;0.988796;Working Proprietor (Hotel and Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vaertshusholder (waertshuusholder)
+111;17140;0.9895649;Instrumentalist;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kgl. kapelmusiker (kgl. kapelmusikus - kongelig capelmusicus)
+112;41020;0.99630606;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]handelsrejsende (handelsreisende)
+113;77810;0.9948218;Brewer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]bryggerkarl
+114;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tegnerske
+115;95120;0.9607653;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]murerarbejdsmand (muurerarbeidsmand - muurarbeider)
+116;81000;0.97983575;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkermester
+117;-1;0.99998903;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]plejebarn (pleiebarn)
+118;75990;0.9622431;Other Spinners, Weavers, Knitters, Dyers and Related Workers;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]possementmager
+119;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+120;45125;0.9848186;Salesperson, Wholesale or Retail Trade;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]handelsbetjent (handelsbetient - hsb)
+121;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]sandleverandor (sandleverandeur),detailhandler
+122;80110;0.975409;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomagermester
+123;96930;0.97205466;Boiler Fireman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fyrboder
+124;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+125;39310;0.967602;Office Clerk, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kontorist (contorist)
+126;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+127;12310;0.99859315;Notary;22675;0.90864444;Supervisor and General Foreman (Construction Work);;;No pred;;;No pred;;;No pred;da[SEP]staevningsmand,skibstomrerformand
+128;77120;0.9950546;Grain Miller;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]mollersvend (mollesvend)
+129;54020;0.99170274;House Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]jomfru
+130;58220;0.9448185;Policeman and other Maintainers of Law and Order (except Military);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]inspektionsbetjent (inspectionsbetient)
+131;95320;0.9669387;Slate and Tile Roofer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]gas- og vandarbejder (gas og vandarbeider)
+132;62120;0.94452435;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestepige (tienestepige),ugift
+133;41030;0.8900957;Working Proprietor (Retail Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]boghandler
+134;95410;0.9823918;Carpenter, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tomrer
+135;85620;0.983043;Telephone and Telegraph Installer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]telefonmontor (telefonmonteur)
+136;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+137;51020;0.988796;Working Proprietor (Hotel and Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vaertshusholder (waertshuusholder)
+138;96930;0.97205466;Boiler Fireman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fyrboder
+139;;;No pred;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]sygeplejerskeelev (sygepleierskeelev)
+140;-1;0.999569;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]madam (madame - mdm)
+141;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+142;95410;0.9844088;Carpenter, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tomrermester (tommermester)
+143;95440;0.999244;Wood Shipwright;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skibsbygger
+144;58330;0.9224492;NonCommissioned Officer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kvartermester (quartermester)
+145;98620;0.9862331;AnimalDrawn Vehicle Driver (Road);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kusk (kudsk)
+146;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+147;51020;0.9421609;Working Proprietor (Hotel and Restaurant);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]olhandler
+148;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+149;73290;0.760086;Other Sawyer, Plywood Makers and Related WoodProcessing Workers;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]korkskaerer (korkskiaerer - korkskjaerer)
+150;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+151;87340;0.9544316;Tinsmith;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]blikkenslagersvend
+152;93120;0.9988901;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]maler
+153;95120;0.97091573;Bricklayer (Construction);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]murersvend (muurersvend - mursvend - muursvend)
+154;93120;0.9795165;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]malersvend
+155;-1;0.9351929;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]froken
+156;61110;0.9957832;General Farmer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]proprietaer
+157;83465;0.6258204;Precision GrindingMachine Operator;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]metalsliber
+158;92110;0.6579511;Printer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]trykkeriarbejder (trykkeriarbeider)
+159;44120;0.956829;Insurance Salesman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]assurandor (assurandeur)
+160;54020;0.99170274;House Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]jomfru
+161;79100;0.98321146;Tailor, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skraeddersvend (skraedersvend)
+162;96930;0.97205466;Boiler Fireman;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fyrboder
+163;79100;0.98321146;Tailor, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skraeddersvend (skraedersvend)
+164;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+165;93120;0.5497852;Building Painter;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]voksdugmaler (voxdugmaler)
+166;77310;0.9903509;Butcher, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]slagterlaerling
+167;41020;0.9992187;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]grosserer
+168;79510;0.982701;Hand and Machine Sewer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]sypige (syerske - syjomfru - sykone - sydame - syarbejderske)
+169;-1;0.5110608;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]ugift
+170;99900;0.9814636;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]laerling
+171;77610;0.9830315;Baker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]bagersvend (bgs)
+172;39310;0.98815906;Office Clerk, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fuldmaegtig
+173;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+174;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+175;80320;0.99886715;Saddler and Harness Maker;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tapetserer
+176;62120;0.9891192;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestepige (tienestepige)
+177;80110;0.96968126;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]skomagersvend
+178;62120;0.99422485;Farm Servant;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]tjenestekarl (tienestekarl)
+179;81000;0.9652672;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkersvend
+180;99900;0.99250317;Worker, No Further Information;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]arbejdsmand (arbeidsmand - arbejder - arbeider)
+181;99930;0.9941017;Factory Worker;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]fabriksarbejder (fabrikarbeider - fabriksarbejdsmand)
+182;98620;0.84321797;AnimalDrawn Vehicle Driver (Road);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]vognmand
+183;81000;0.9931704;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedker
+184;41020;0.9270217;Working Proprietor (Wholesale Trade);;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]agent
+185;77200;0.9957659;Sugar Processor or Refiner, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]sukkerhusarbejder (sukkerhuusarbeider)
+186;81000;0.9652672;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedkersvend
+187;87340;0.8130497;Tinsmith;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]blikkenslager
+188;62105;0.98442185;FarmWorker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]particulier
+189;57030;0.97916645;Barber Hairdresser;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]barber
+190;22000;0.64138186;Supervisor, Foreman or Inspector, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]kontrollor (controlleur)
+191;61110;0.92523795;General Farmer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]handelsmand
+192;80110;0.9636825;Shoemaker, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]toffelmager
+193;88050;0.8840611;Goldsmith and Silversmith;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]forgyldersvend
+194;77120;0.9290151;Grain Miller;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]mollersvend (mollesvend),rekrut (recrut)
+195;92110;0.99686265;Printer, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]typograf (typograph)
+196;12110;0.99512404;Lawyer;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]overretssagforer
+197;83110;0.9936725;Blacksmith, General;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]smed
+198;-1;0.9999672;Missing, no title;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]enke
+199;81000;0.9931704;Woodworker, Specialisation Unknown;;;No pred;;;No pred;;;No pred;;;No pred;da[SEP]snedker

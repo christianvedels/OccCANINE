@@ -141,7 +141,7 @@ Run_tests = function(pred, truth){
       recall = recall(
         c(hisco_1, hisco_2, hisco_3, hisco_4, hisco_5), 
         c(pred_hisco_1, pred_hisco_2, pred_hisco_3, pred_hisco_4, pred_hisco_5)
-      ),
+      )
     )
   
   sum_all =  x %>% 
@@ -215,12 +215,20 @@ plot_of_thresholds = function(x, name){
       best = max(value) == value
     ) %>% 
     # filter(!lang_info) %>%  # Something weird happens when lang is included
-    ungroup()
+    ungroup()  %>%
+    mutate(
+      stat = case_when(
+        stat == "acc" ~ "Accuracy",
+        stat == "f1" ~ "F1-score",
+        stat == "precision" ~ "Precision",
+        stat == "recall" ~ "Recall"
+      )
+    )
   
   p1 = plot_stats %>% 
     ggplot(aes(thr, value, col = lang_info, shape = lang_info)) + 
     geom_point() + 
-    geom_line(lty = 2) +
+    geom_line() +
     geom_point(data = subset(plot_stats, best), aes(thr, value), shape = 4, size = 3, col = "black") +  # Highlight max points
     geom_vline(data = subset(plot_stats, best), aes(xintercept = thr), lty = 2) +
     geom_hline(data = subset(plot_stats, best), aes(yintercept = value), lty = 2) +
