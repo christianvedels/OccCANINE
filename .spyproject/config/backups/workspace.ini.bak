@@ -4,7 +4,11 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
+<<<<<<< Updated upstream
 recent_files = ['..\\..\\..\\.spyder-py3\\temp.py', 'Model_scripts\\n301_predict_eval.py', 'Model_scripts\\PREDICT_HISCOs.py', 'Model_scripts\\n102_DataLoader.py', 'Model_scripts\\n103_Prediction_assets.py', 'Model_scripts\\n101_Trainer.py']
+=======
+recent_files = ['Model_evaluation_scripts\\n001_Predict_eval.py', 'Model_scripts\\n102_DataLoader.py', 'Model_scripts\\n103_Prediction_assets.py', 'Model_evaluation_scripts\\n003_Training_ship_data.py']
+>>>>>>> Stashed changes
 
 [main]
 version = 0.2.0

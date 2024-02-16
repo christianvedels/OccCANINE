@@ -80,3 +80,6 @@ Data/Predictions/PredictionsCANINE/preds_w_lang.csv
 Data/Predictions/PredictionsCANINE/preds_wo_lang.csv
 Data/Summary_data/Model_performanceCANINE.csv
 Data/Tmp_finetune
+.spyproject/config/backups/workspace.ini.bak
+.spyproject/config/workspace.ini
+Model_scripts/__pycache__/n103_Prediction_assets.cpython-311.pyc
