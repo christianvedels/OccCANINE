@@ -24,7 +24,7 @@ model = Finetuned_model(
 
 # %% Example 1
 model.predict(
-    ["han arbejder primært som borgmestersekretær"], 
+    ["borgmester"],
     lang = "da", 
     get_dict = True, 
     threshold = 0.11 # Best F1 for Danish
@@ -38,7 +38,15 @@ model.predict(
     threshold = 0.11 # Best F1 for Danish
     )
 
-# %% Example 3
+# %% Example 2
+model.predict(
+    ["han arbejder primært som borgmestersekretær"], 
+    lang = "da", 
+    get_dict = True, 
+    threshold = 0.11 # Best F1 for Danish
+    )
+
+# %% Example 4
 model.predict(
     ["tailor of the finest suits"], 
     lang = "en", 
@@ -46,7 +54,7 @@ model.predict(
     threshold = 0.22 # Best F1 for English
     )
 
-# %% Example 4
+# %% Example 5
 model.predict(
     ["the train's fireman"], 
     lang = "en", 
@@ -54,7 +62,7 @@ model.predict(
     threshold = 0.22 # Best F1 for English
     )
 
-# %% Example 5
+# %% Example 6
 model.predict(
     ["This guy sweeps the chimney"],
     lang = "en", 
@@ -62,7 +70,7 @@ model.predict(
     threshold = 0.22 # Best F1 for English
     )
 
-# %% Example 6 - 73 random occs at once works instantaneously
+# %% Example 7 - 73 random occs at once works instantaneously
 x = model.predict(
     ["Works as a blacksmith, forging tools and horseshoes.",
     "Builds and repairs wooden structures as a carpenter.",
@@ -143,7 +151,7 @@ x = model.predict(
 
 print(x)
 
-# %% Example 7 - 10k are still very fast
+# %% Example 8 - 10k are still very fast
 import pandas as pd
 df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/transcribed_sources/CBP/CBP_20210309.csv")
 df = df[["positions"]]
@@ -158,3 +166,5 @@ x = model.predict(
     threshold = 0.11,
     get_dict = True
     )
+
+print(x[0:10])
