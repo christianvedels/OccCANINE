@@ -13,10 +13,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   inkscape:export-filename="C:\Users\chris\Dropbox\PhD\HISCO\Illustrations\Architecture_small.png"
+   inkscape:export-filename="C:\Users\chris\Dropbox\PhD\HISCO clean\Project_dissemination\Figures for paper\Architecture_small.png"
    inkscape:export-xdpi="300"
    inkscape:export-ydpi="300"
-   sodipodi:docname="Network architecture small.svg">
+   sodipodi:docname="Architecture_small.svg">
   <defs
      id="defs2">
     <rect
@@ -451,6 +451,32 @@
        width="52.270073"
        height="45.168156"
        id="rect3149" />
+    <rect
+       x="-7.9374986"
+       y="57.830357"
+       width="83.083392"
+       height="94.572723"
+       id="rect845-1" />
+    <rect
+       x="-7.9374986"
+       y="57.830357"
+       width="44.86385"
+       height="55.284103"
+       id="rect1087" />
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lend-6"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         id="path1611-2" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -459,16 +485,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.9899495"
-     inkscape:cx="366.77947"
-     inkscape:cy="314.78716"
+     inkscape:zoom="0.7"
+     inkscape:cx="356.46046"
+     inkscape:cy="352.64616"
      inkscape:document-units="mm"
-     inkscape:current-layer="g1535-0"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
-     inkscape:window-x="-8"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -494,21 +520,21 @@
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';white-space:pre;shape-inside:url(#rect837);fill:#000000;fill-opacity:1;stroke:none;" />
     <g
        id="g1103"
-       transform="translate(78.106017,59.469469)">
+       transform="translate(3.8050889,58.400391)">
       <g
          id="g1527">
         <rect
-           style="fill:#739f66;fill-opacity:1;stroke-width:0.726497;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.726497, 1.45299;stroke-dashoffset:0"
+           style="fill:#3d8149;fill-opacity:1;stroke-width:0.726;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.726,1.452;stroke-dashoffset:0"
            id="rect1098"
            width="51.166309"
            height="61.118176"
-           x="-32.75618"
-           y="-5.4371014" />
+           x="41.812019"
+           y="15.677191" />
         <text
            xml:space="preserve"
            id="text843"
            style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845);fill:#000000;fill-opacity:1;stroke:none;"
-           transform="translate(-20.073985,-58.464476)"><tspan
+           transform="translate(54.494213,-37.617453)"><tspan
              x="-7.9375"
              y="67.617563"><tspan
                style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">&quot;lives of </tspan></tspan><tspan
@@ -577,7 +603,7 @@
          id="path1588-9"
          sodipodi:nodetypes="cc" />
       <rect
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.4752;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.4752, 1.4256;stroke-dashoffset:0;stroke-opacity:1"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.475;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
          id="rect3403"
          width="82.140724"
          height="109.77725"
@@ -590,97 +616,97 @@
          transform="translate(161.01801,9.827381)"><tspan
            x="-159.51367"
            y="4.2578218"><tspan
-             style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:8.81944px;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">Neural network:</tspan></tspan></text>
+             style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:8.81944px;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">OccCANINE:</tspan></tspan></text>
       <text
          xml:space="preserve"
          id="text3518"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete';white-space:pre;shape-inside:url(#rect3520);fill:#000000;fill-opacity:1;stroke:none;" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883"
          cx="17.528034"
          cy="23.476961"
          rx="4.2672377"
          ry="4.2548323" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-3"
          cx="17.528034"
          cy="42.454021"
          rx="4.2672381"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-0"
          cx="17.528034"
          cy="61.431076"
          rx="4.2672381"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-6"
          cx="17.528034"
          cy="80.408142"
          rx="4.2672381"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-00"
          cx="17.528034"
          cy="99.385193"
          rx="4.2672381"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-7"
          cx="42.392269"
          cy="23.487448"
          rx="4.2672381"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-3-2"
          cx="42.392269"
          cy="42.464508"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-0-1"
          cx="42.392269"
          cy="61.441559"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-6-3"
          cx="42.392269"
          cy="80.418625"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-00-5"
          cx="42.392269"
          cy="99.395676"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-3-5"
          cx="66.727287"
          cy="42.437763"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-0-3"
          cx="66.727287"
          cy="61.414818"
          rx="4.2672386"
          ry="4.2548327" />
       <ellipse
-         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.496977;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0.496977, 1.49093"
+         style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883-6-7"
          cx="66.727287"
          cy="80.391884"
@@ -804,6 +830,10 @@
          style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="M 47.196503,61.100215 62.698123,42.391348"
          id="path3060" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.199013;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Lend-6)"
+         d="m -10.847508,34.848321 9.96592111,0.09449"
+         id="path1588-6" />
     </g>
     <g
        id="g1535-4"
@@ -830,6 +860,32 @@
            x="-7.9375"
            y="94.339853"><tspan
              style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">(fisher)</tspan></tspan></text>
+    </g>
+    <g
+       id="g1103-4"
+       transform="translate(78.448006,39.330432)">
+      <g
+         id="g1527-7">
+        <rect
+           style="fill:#de923e;fill-opacity:1;stroke-width:0.540718;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.540718, 1.08143;stroke-dashoffset:0"
+           id="rect1098-2"
+           width="51.166309"
+           height="33.856686"
+           x="-32.75618"
+           y="-5.4371014" />
+        <text
+           xml:space="preserve"
+           id="text843-2"
+           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-1);fill:#000000;fill-opacity:1;stroke:none;"
+           transform="matrix(0.87719138,0,0,0.87719138,-20.968181,-51.048302)"><tspan
+             x="-7.9375"
+             y="67.617563"><tspan
+               style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">Language: 
+</tspan></tspan><tspan
+             x="-7.9375"
+             y="80.978708"><tspan
+               style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">&quot;English&quot;</tspan></tspan></text>
+      </g>
     </g>
   </g>
 </svg>
