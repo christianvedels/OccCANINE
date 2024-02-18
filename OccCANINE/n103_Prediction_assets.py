@@ -75,7 +75,7 @@ def Top_n_to_df(result, top_n):
 # %% Load best model instance
 # Define the path to the saved binary file
 class Finetuned_model:
-    def __init__(self, name, device = None, batch_size = 256, verbose = False, baseline = False, hf = True):
+    def __init__(self, name = "CANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
         """
         name:           Name of the model to load (name in 'Trained_models')
         device:         Which device should be used? Defaults to auto-detection. 
@@ -83,12 +83,17 @@ class Finetuned_model:
         verbose:        Should updates be printed?  
         baseline:       Option to load baseline (untrained) version of the model
         hf:             Should the model be loaded from hugging face?
+        force_download: Should re-download of the model be forced?
         """
         
         # Detect device
         if not device:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             print(f"Auto-detected device: {device}")
+            
+        # Raise error if name is not provided for local model
+        if name == "CANINE" and not hf:
+            raise Exception("When 'hf' is False, a local model 'name' must be provided")
         
         self.name = name
         self.device = device
@@ -96,14 +101,8 @@ class Finetuned_model:
         self.verbose = verbose
         
         # Get tokenizer
-        self.tokenizer = Get_adapated_tokenizer(name)
-        
-        # Load state
-        model_path = 'Model/'+name+'.bin'
-   
-        # Load the model state
-        loaded_state = torch.load(model_path)
-        
+        self.tokenizer = Get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256")
+            
         # Load key
         key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
         key = key[1:]
@@ -121,9 +120,16 @@ class Finetuned_model:
         # If-lookup for model
         if hf:
             model = CANINEOccupationClassifier_hub.from_pretrained(
-                "revert94/OccCANINE"
+                "christianvedel/OccCANINE",
+                force_download = force_download
                 )
         elif "CANINE" in name:
+            # Load state
+            model_path = 'Model/'+name+'.bin'
+       
+            # Load the model state
+            loaded_state = torch.load(model_path)
+            
             model = CANINEOccupationClassifier(
                 model_domain = "Multilingual_CANINE",
                 n_classes = len(self.key), 
@@ -134,6 +140,7 @@ class Finetuned_model:
             # Update states and load onto device 
             if not baseline:
                 model.load_state_dict(loaded_state)
+                
         else:
             raise Exception(f"Was not able to identify/find {name}")
                 
@@ -530,15 +537,8 @@ class Finetuned_model:
         loaded_state = torch.load(model_path)
         
         # If-lookup for model
-        if "RoBERTa" in model_name:
-            model = XMLRoBERTaOccupationClassifier(
-                n_classes = len(self.key), 
-                model_domain = "Multilingual", 
-                tokenizer = self.tokenizer, 
-                dropout_rate = 0
-                )
-        elif "CANINE" in model_name:
-            model = CANINEOccupationClassifier(
+        if "CANINE" in model_name:
+            model = CANINEOccupationClassifier_hub(
                 model_domain = "Multilingual_CANINE",
                 n_classes = len(self.key), 
                 tokenizer = self.tokenizer, 
