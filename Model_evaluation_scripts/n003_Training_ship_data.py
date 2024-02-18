@@ -9,22 +9,15 @@ import os
 script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
-# %% Params
-# Choose which GPU to use
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# Name of the finetuned model to use (must be located in "Trained_models") 
-model_name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
-
 # %% Libaries
 import sys
-sys.path.append("..\\Model_scripts\\")
+sys.path.append("../OccCANINE/")
 from n103_Prediction_assets import Finetuned_model
 
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(model_name, verbose = True, device = "cpu")
+model = Finetuned_model(verbose = True, device = "cpu")
 
 # %% Load data
 df_early = pd.read_stata("../Data/Application_data/Training_ship_data/indy_early.dta")
@@ -46,7 +39,7 @@ key['hisco'] = pd.to_numeric(key['hisco'], errors='coerce').astype('float64')
 key = key[["en_hisco_text", "hisco"]]
 df = df.merge(key, on='hisco', how='left')
 # %% Predict
-pred = model.predict(df["occ1"].tolist(), lang = "en", what = "pred", threshold = 0.5)
+pred = model.predict(df["occ1"].tolist(), lang = "en", what = "pred", threshold = 0.47)
 fname = "../Data/Predictions/TrainingShip.csv"
 
 df = pd.concat([pred, df], axis = 1)

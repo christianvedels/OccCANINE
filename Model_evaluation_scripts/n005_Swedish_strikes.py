@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Feb  4 15:09:49 2024
+Created on Sun Feb 18 12:26:31 2024
 
 @author: chris
 """
@@ -8,10 +8,6 @@ Created on Sun Feb  4 15:09:49 2024
 import os
 script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
-
-# %% Params
-# Choose which GPU to use
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 # %% Libaries
 import sys
@@ -35,4 +31,3 @@ df = df.sample(200, random_state = 20)
 pred05 = model.predict(df["occ1"].tolist(), lang = "da", what = "pred", threshold = 0.34)
 fname05 = "../Data/Predictions/CopenhagenBurials_05.csv"
 pred05.to_csv(fname05, sep = ";")
-
