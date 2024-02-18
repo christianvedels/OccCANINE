@@ -10,10 +10,10 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import modules
-from n001_Model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
-from n102_DataLoader import Concat_string, Concat_string_canine, OCCDataset, read_data, labels_to_bin, TrainTestVal, save_tmp, create_data_loader
-from n101_Trainer import trainer_loop_simple, eval_model
-from n100_Attacker import AttackerClass
+from OccCANINE.n001_Model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
+from OccCANINE.n102_DataLoader import Concat_string, Concat_string_canine, OCCDataset, read_data, labels_to_bin, TrainTestVal, save_tmp, create_data_loader
+from OccCANINE.n101_Trainer import trainer_loop_simple, eval_model
+from OccCANINE.n100_Attacker import AttackerClass
 
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from unidecode import unidecode
@@ -31,7 +31,7 @@ def Get_adapated_tokenizer(name):
     if "CANINE" in name:
         tokenizer = load_tokenizer("Multilingual_CANINE")
     else:
-       tokenizer_save_path = 'Model/' + name + '_tokenizer'
+       tokenizer_save_path = name + '_tokenizer'
        tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path) 
        
     return tokenizer
@@ -123,9 +123,9 @@ class Finetuned_model:
                 "christianvedel/OccCANINE",
                 force_download = force_download
                 )
-        elif "CANINE" in name:
+        else:
             # Load state
-            model_path = 'Model/'+name+'.bin'
+            model_path = name+'.bin'
        
             # Load the model state
             loaded_state = torch.load(model_path)
@@ -133,17 +133,13 @@ class Finetuned_model:
             model = CANINEOccupationClassifier(
                 model_domain = "Multilingual_CANINE",
                 n_classes = len(self.key), 
-                tokenizer = self.tokenizer, 
                 dropout_rate = 0
                 ) 
             
             # Update states and load onto device 
             if not baseline:
                 model.load_state_dict(loaded_state)
-                
-        else:
-            raise Exception(f"Was not able to identify/find {name}")
-                
+                        
         model.to(device)   
         
         self.model = model
@@ -163,10 +159,7 @@ class Finetuned_model:
         if concat_in:
             inputs = occ1
         else:
-            if "RoBERTa" in self.name:
-                inputs = [Concat_string(occ, l) for occ, l in zip(occ1, lang)]
-            elif "CANINE" in self.name:
-                inputs = [Concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
+            inputs = [Concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
                 
         return inputs
             
@@ -181,7 +174,6 @@ class Finetuned_model:
         get_dict:       For what [n] method this is an option to return a list of dictionaries
         get_df:         Optional argument for what = "pred". Returns nicely formatted df
         """
-        # breakpoint()
         inputs = self.encode(occ1, lang, concat_in)
         batch_size = self.batch_size
         verbose = self.verbose
@@ -531,24 +523,20 @@ class Finetuned_model:
         model_path = '../OccCANINE/Finetuned/'+model_name+'.bin'
         if not os.path.isfile(model_path):
             print("Model did not improve in training. Realoding original model")
-            model_path = 'Model/'+self.name+'.bin'
+            model_path = self.name+'.bin'
    
         # Load the model state
         loaded_state = torch.load(model_path)
         
         # If-lookup for model
-        if "CANINE" in model_name:
-            config = {
-                "model_domain": "Multilingual_CANINE",
-                "n_classes": len(self.key),
-                "dropout_rate": 0,
-                "model_type": "canine"
-            }
-            
-            model = CANINEOccupationClassifier_hub(config)
-        else:
-            raise Exception(f"Was not able to identify/find {model_name}")
-
+        config = {
+            "model_domain": "Multilingual_CANINE",
+            "n_classes": len(self.key),
+            "dropout_rate": 0,
+            "model_type": "canine"
+        }
+        
+        model = CANINEOccupationClassifier_hub(config)
         
         model.load_state_dict(loaded_state)        
         model.to(self.device)   

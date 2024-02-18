@@ -93,13 +93,12 @@ def getModel(model_domain, model_size = ""):
 class CANINEOccupationClassifier(nn.Module):
     
     # Constructor class 
-    def __init__(self, n_classes, model_domain, tokenizer, dropout_rate, config):
+    def __init__(self, n_classes, model_domain, dropout_rate):
         super(CANINEOccupationClassifier, self).__init__()
         self.basemodel = getModel(model_domain)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
         
-        _ = config # Not used
         
     def resize_token_embeddings(self, n): 
         x = 1 # Do nothing CANINE should never be resized

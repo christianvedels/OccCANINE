@@ -11,21 +11,29 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from n103_Prediction_assets import Finetuned_model
+from OccCANINE.n103_Prediction_assets import Finetuned_model
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(
-    name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
+model = Finetuned_model()
+
+# %% Load data
+df = pd.read_csv(
+    "Data/TOYDATA_wHISCO.csv"
     )
+label_cols = ["hisco_1", "hisco_2", "hisco_3", "hisco_4", "hisco_5"]
+
+# Set lang
+df["lang"] = "en"  # English
 
 # %% Finetune
-data_df = pd.read_csv(
-    "../Data/Training_data/SE_chalmers_train.csv"
+model.finetune(
+    df, label_cols, batch_size=16, only_train_final_layer = True,
+    save_name = "Finetune_toy_model"
     )
-label_cols = ["hisco_1", "hisco_2"]
-model.finetune(data_df, label_cols, batch_size=16, only_train_final_layer = True)
 
-model.predict(["Detta är bagaren som bakar de bästa kardemummabullarna i stan"], lang = "se")
+# %% Finetuned model can be loaded
+model = Finetuned_model("Finetuned/Finetune_toy_model", hf = False)
 
-
+x = model.predict(["tailor of fine dresses"], lang = "en")
+print(x)
