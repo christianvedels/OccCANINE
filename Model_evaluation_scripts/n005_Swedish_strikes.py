@@ -6,12 +6,14 @@ Created on Sun Feb 18 12:26:31 2024
 """
 
 import os
-script_directory = os.path.dirname(os.path.abspath(__name__))
+script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
+print(os.getcwd())
 
 # %% Libaries
 import sys
-sys.path.append("../OccCANINE/")
+module_path = os.path.join(script_directory, "..", "OccCANINE")
+sys.path.append(module_path)
 from n103_Prediction_assets import Finetuned_model
 
 import pandas as pd
@@ -20,14 +22,35 @@ import pandas as pd
 model = Finetuned_model(verbose = True)
 
 # %% Load data
-df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/transcribed_sources/CBP/CBP_20210309.csv")
-
-df = df[["pa_id", "positions"]]
-df = df.rename(columns = {"pa_id" : "RowID", "positions": "occ1"})
-df = df[df['occ1'].notnull()]
-
-df = df.sample(200, random_state = 20)
+df0 = pd.read_excel("../Data/Application_data/Swedish_Strikes/National_Sweden_1859-1902.xlsx")
+df = df0.sample(200, random_state = 20)
+df = df[["profession", "hisco"]]
 # %% Predict
-pred05 = model.predict(df["occ1"].tolist(), lang = "da", what = "pred", threshold = 0.34)
-fname05 = "../Data/Predictions/CopenhagenBurials_05.csv"
-pred05.to_csv(fname05, sep = ";")
+pred = model.predict(df["profession"].tolist(), lang = "se", what = "pred", threshold = 0.45)
+fname = "../Data/Predictions/SwedishStrikes.csv"
+
+# Reset index before concatenation
+df.reset_index(drop=True, inplace=True)
+pred.reset_index(drop=True, inplace=True)
+
+df = pd.concat([pred, df], axis = 1)
+
+# Add descriptions from key
+key = pd.read_csv("../Data/Key.csv")
+key['hisco'] = pd.to_numeric(key['hisco'], errors='coerce').astype('float64')
+key = key[["en_hisco_text", "hisco"]]
+df = df.merge(key, on='hisco', how='left')
+
+# %% Save
+df.to_csv(fname, sep = ";", encoding = "ISO-8859-1")
+
+# %% Finetune it
+df0 = df0.rename(columns={"profession": "occ1", "hisco": "hisco_1"})
+df0["lang"] = "se"
+model1 = model.finetune(
+    df0,
+    label_cols = ["hisco_1"],
+    epochs = 20,
+    batch_size = 64,
+    verbose_extra=True
+    )
