@@ -20,4 +20,5 @@ Data/Tmp_finetune/
 Model_scripts/__pycache__/
 .RDataTmp1
 OccCANINE/Model/
-OccCANINE/Finetuned/finetuneCANINE.bin
+OccCANINE/Finetuned/
+OccCANINE/__pycache__/
