@@ -19,7 +19,7 @@ from n103_Prediction_assets import Finetuned_model
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(verbose = True)
+model = Finetuned_model(verbose = True, device="cpu")
 
 # %% Load data
 df0 = pd.read_excel("../Data/Application_data/Swedish_Strikes/National_Sweden_1859-1902.xlsx")

@@ -422,8 +422,6 @@ class OCCDataset(Dataset):
             f.seek(byte_offset)
             row = f.readline()
             df = pd.read_csv(io.StringIO(row.decode('utf-8')), names=self.colnames)
-            
-        # breakpoint()
         
         occ1 = str(df.occ1.tolist()[0])
         target = labels_to_bin(df, self.n_classes)

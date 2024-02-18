@@ -47,7 +47,6 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
 
     start_time = time.time()
     for batch_idx, d in enumerate(data_loader):
-        # breakpoint()
         input_ids = d["input_ids"].to(device)
         attention_mask = d["attention_mask"].to(device)
         targets = d['targets'].to(device, dtype=torch.float)
@@ -90,6 +89,7 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, verbo
 
 # %% Eval model
 def eval_model(model, data_loader, loss_fn, device):
+    # breakpoint()
     model = model.eval()
     
     losses = []
@@ -417,11 +417,11 @@ def trainer_loop_simple(
             print("Validation loss improved. Saved improved model")
             torch.save(
                 model.state_dict(), 
-                '../Trained_models/'+model_name+'.bin'
+                '../OccCANINE/Finetuned/'+model_name+'.bin'
                 )
             best_loss = val_loss
             
-            tokenizer_save_path = '../Trained_models/' + model_name + '_tokenizer'
+            tokenizer_save_path = '../OccCANINE/Finetuned/' + model_name + '_tokenizer'
             data['tokenizer'].save_pretrained(tokenizer_save_path)
         
     return model, history

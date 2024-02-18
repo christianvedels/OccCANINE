@@ -1,0 +1,22 @@
+f;lang;Source;Description;Type;Synthetic combinations
+EN_uk_ipums_[x].csv;en;"MPC (2020); Office of National Statistics";IPUMS international census data*;Census;
+DK_census_[x].csv;da;"Clausen (2015); The Danish National Archives";Danish census data;Census;
+EN_marr_cert_[x].csv;en;Clark, Cummins, Curtis (2022);English marriage certificates;Marriage records;
+SE_swedpop_[x].csv;se;SwedPop (2022);Parish registers and income registers;Census;
+EN_ca_ipums_[x].csv;unk;"MPC (2020); Statistics Canada";IPUMS international census data. Both French and English;Census;
+JIW_database_[x].csv;nl;De Moor & van Weeren (2021);Ja, ik wil - Amsterdam marriage banns registers;Marriage records;
+CA_bcn_[x].csv;ca;Pujades-Mora & Valls (2017);Barcelona Historical Marriage Database;Marriage records;
+EN_us_ipums_[x].csv;en;"MPC (2020); Bureau of the Census";IPUMS international census data*;Census;
+NO_ipums_[x].csv;no;MPC (2020);IPUMS international census data. Norwegian census 1801.;Census;
+FR_desc_[x].csv;fr;historyofwork.iisg.nl;Occupational titles form the HISCO website;Descriptions;
+HSN_database_[x].csv;nl;Mandemakers et al (2020) ;Historical Sample of The Netheralnds;Census;
+EN_parish_[x].csv;en;de Pleijt, Nuvolari, Weisdorf (2020);HISCO labelled parish occupational descriptions;Descriptions;
+IS_ipums_[x].csv;is;MPC (2020);IPUMS international census data. Icelandic census 1901, 1910;Census;
+DK_cedar_[x].csv;da;Ford (2023);Occupational descriptions tranlated from Swedish CEDAR;Descriptions;
+SE_cedar_[x].csv;se;Ford (2023);Occupational descriptions extracted from Swedish CEDAR;Descriptions;
+DE_ipums_[x].csv;de;"MPC (2020); Statistics Netherlands";IPUMS international census data;Census;
+DK_orsted_[x].csv;da;Ford (2023);Occupational descriptions used in Ford (2023);Descriptions;
+EN_oclack_[x].csv;en;O-clack;https://github.com/rlzijdeman/o-clack/tree/master;Descriptions;
+EN_loc_[x].csv;en;Mooney (2016);London Occupational codes;Descriptions;
+SE_chalmers_[x].csv;se;Ford (2023);Occupational descriptions from Ford (2023);Descriptions;
+IT_fm_[x].csv;it;Fornasin & Marzona (2016);Italian occupational descriptions;Descriptions;

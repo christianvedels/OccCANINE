@@ -528,7 +528,7 @@ class Finetuned_model:
         # == Load best model ==
         # breakpoint()
         # Load state
-        model_path = 'Model/'+model_name+'.bin'
+        model_path = '../OccCANINE/Finetuned/'+model_name+'.bin'
         if not os.path.isfile(model_path):
             print("Model did not improve in training. Realoding original model")
             model_path = 'Model/'+self.name+'.bin'
@@ -538,12 +538,14 @@ class Finetuned_model:
         
         # If-lookup for model
         if "CANINE" in model_name:
-            model = CANINEOccupationClassifier_hub(
-                model_domain = "Multilingual_CANINE",
-                n_classes = len(self.key), 
-                tokenizer = self.tokenizer, 
-                dropout_rate = 0
-                )
+            config = {
+                "model_domain": "Multilingual_CANINE",
+                "n_classes": len(self.key),
+                "dropout_rate": 0,
+                "model_type": "canine"
+            }
+            
+            model = CANINEOccupationClassifier_hub(config)
         else:
             raise Exception(f"Was not able to identify/find {model_name}")
 
