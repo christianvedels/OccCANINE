@@ -1,24 +1,24 @@
 ,inputs,hisco_1,prob_1,desc_1,hisco_2,prob_2,desc_2,hisco_3,prob_3,desc_3,hisco_4,prob_4,desc_4,hisco_5,prob_5,desc_5,occ1
 0,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 1,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
-2,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+2,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 3,en[SEP]bus driver and british rail engineer,98540,0.88887364,Motor Bus Driver,,,No pred,,,No pred,,,No pred,,,No pred,bus driver and british rail engineer
 4,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
-5,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
-6,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+5,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+6,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 7,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
 8,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
-9,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
-10,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
-11,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+9,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+10,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
+11,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 12,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 13,en[SEP]crane driver and teacher,13020,0.7743283,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",97315,0.57338506,"Crane Driver (Bridge or Gantry Crane, JibCrane, TowerCrane or Mobile Crane)",,,No pred,,,No pred,,,No pred,crane driver and teacher
 14,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
 15,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 16,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
-17,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+17,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 18,en[SEP]army nco and labourer,99910,0.81387025,Labourer,58340,0.5948985,Other Military Ranks,,,No pred,,,No pred,,,No pred,army nco and labourer
-19,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+19,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 20,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
 21,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
 22,en[SEP]army nco and labourer,99910,0.81387025,Labourer,58340,0.5948985,Other Military Ranks,,,No pred,,,No pred,,,No pred,army nco and labourer
@@ -26,39 +26,39 @@
 24,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 25,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 26,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
-27,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
-28,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
-29,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,,,No pred,nurse and housewife
+27,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+28,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
+29,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",54020,0.30018246,House Servant,,,No pred,,,No pred,,,No pred,nurse and housewife
 30,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 31,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 32,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 33,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-34,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-35,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
-36,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+34,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+35,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+36,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
 37,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 38,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
-39,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
-40,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
-41,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+39,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
+40,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+41,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 42,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
 43,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 44,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
-45,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+45,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 46,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 47,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 48,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
 49,en[SEP]labourer and dressmaker,99910,0.9492617,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and dressmaker
 50,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
 51,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
-52,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+52,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 53,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 54,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
 55,en[SEP]insurance clerk,44120,0.89039564,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,insurance clerk
-56,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+56,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 57,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
 58,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
-59,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+59,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 60,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
 61,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 62,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
@@ -69,13 +69,13 @@
 67,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
 68,en[SEP]process worker and iron moulder,99930,0.98785245,Factory Worker,72500,0.96714246,"Metal Moulder or Coremaker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,process worker and iron moulder
 69,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
-70,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
-71,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+70,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+71,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
 72,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
-73,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+73,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 74,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 75,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
-76,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+76,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 77,en[SEP]sheet metal worker and army,87310,0.89419425,"SheetMetal Worker, General",,,No pred,,,No pred,,,No pred,,,No pred,sheet metal worker and army
 78,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 79,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
@@ -83,40 +83,40 @@
 81,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 82,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 83,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
-84,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+84,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 85,en[SEP]engineer and master stere,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,engineer and master stere
 86,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
-87,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+87,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 88,en[SEP]painter and decorator and company director,93120,0.9610912,Building Painter,21000,0.81199867,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,painter and decorator and company director
 89,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 90,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 91,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 92,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
-93,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+93,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 94,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 95,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 96,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
 97,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 98,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 99,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
-100,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+100,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 101,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 102,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
-103,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+103,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 104,en[SEP]labourer and dressmaker,99910,0.9492617,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and dressmaker
-105,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+105,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 106,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
 107,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 108,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
-109,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
-110,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+109,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
+110,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 111,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
 112,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 113,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-114,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",,,No pred,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
+114,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",45130,0.36931252,Retail Trade Salesperson,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
 115,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 116,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
-117,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+117,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 118,en[SEP]baker and mariner,77610,0.7810477,"Baker, General",98135,0.5106881,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,baker and mariner
 119,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
 120,en[SEP]stoker at sea and boiler maker,87350,0.99521613,Boilersmith,,,No pred,,,No pred,,,No pred,,,No pred,stoker at sea and boiler maker
@@ -127,76 +127,76 @@
 125,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 126,en[SEP]labourer and dressmaker,99910,0.9492617,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and dressmaker
 127,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
-128,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-129,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+128,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+129,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 130,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
 131,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
 132,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 133,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 134,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
-135,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+135,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 136,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
-137,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+137,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 138,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 139,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 140,en[SEP]office cleaner and bus conductor london transport,36040,0.87998337,Bus Conductor,55220,0.70497555,Charworker,,,No pred,,,No pred,,,No pred,office cleaner and bus conductor london transport
 141,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 142,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
-143,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+143,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 144,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
-145,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-146,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+145,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+146,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 147,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
-148,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+148,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 149,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 150,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 151,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 152,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
 153,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
-154,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
-155,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,,,No pred,nurse and housewife
+154,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
+155,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",54020,0.30018246,House Servant,,,No pred,,,No pred,,,No pred,nurse and housewife
 156,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 157,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 158,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
 159,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
-160,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-161,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+160,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+161,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 162,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 163,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
-164,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+164,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
 165,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 166,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
 167,en[SEP]painter and decorator and company director,93120,0.9610912,Building Painter,21000,0.81199867,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,painter and decorator and company director
 168,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
-169,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+169,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 170,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-171,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+171,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 172,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
 173,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
 174,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
-175,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-176,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+175,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+176,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 177,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 178,en[SEP]insurance clerk,44120,0.89039564,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,insurance clerk
 179,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 180,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
-181,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+181,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 182,en[SEP]painter and decorator and company director,93120,0.9610912,Building Painter,21000,0.81199867,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,painter and decorator and company director
 183,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 184,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
 185,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 186,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
 187,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
-188,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+188,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 189,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 190,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 191,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 192,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
-193,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+193,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 194,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
 195,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
-196,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-197,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+196,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+197,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 198,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 199,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 200,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
@@ -207,29 +207,29 @@
 205,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 206,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 207,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
-208,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+208,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 209,en[SEP]engineer and master stere,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,engineer and master stere
 210,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 211,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
 212,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 213,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
-214,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-215,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
-216,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+214,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+215,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+216,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 217,en[SEP]sheet metal worker and army,87310,0.89419425,"SheetMetal Worker, General",,,No pred,,,No pred,,,No pred,,,No pred,sheet metal worker and army
 218,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
-219,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+219,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
 220,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 221,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
-222,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+222,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 223,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
-224,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+224,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 225,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 226,en[SEP]process worker and iron moulder,99930,0.98785245,Factory Worker,72500,0.96714246,"Metal Moulder or Coremaker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,process worker and iron moulder
-227,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
-228,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+227,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+228,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 229,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
-230,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+230,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 231,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
 232,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 233,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
@@ -243,79 +243,79 @@
 241,en[SEP]ship carpenter at sea and school teacher,95455,0.9968419,Ship's Carpenter,13020,0.7713123,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",,,No pred,,,No pred,,,No pred,ship carpenter at sea and school teacher
 242,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 243,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
-244,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+244,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 245,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 246,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 247,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 248,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
-249,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
-250,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
+249,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+250,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
 251,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
-252,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+252,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 253,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
-254,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+254,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 255,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 256,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 257,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 258,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 259,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-260,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+260,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 261,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 262,en[SEP]crane driver and teacher,13020,0.7743283,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",97315,0.57338506,"Crane Driver (Bridge or Gantry Crane, JibCrane, TowerCrane or Mobile Crane)",,,No pred,,,No pred,,,No pred,crane driver and teacher
-263,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+263,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
 264,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
 265,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 266,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 267,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
-268,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-269,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-270,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+268,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+269,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+270,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
 271,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
 272,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 273,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
-274,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+274,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 275,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
 276,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
 277,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
-278,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+278,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 279,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 280,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-281,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+281,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 282,en[SEP]engineer and master stere,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,engineer and master stere
 283,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 284,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 285,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 286,en[SEP]crane driver and teacher,13020,0.7743283,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",97315,0.57338506,"Crane Driver (Bridge or Gantry Crane, JibCrane, TowerCrane or Mobile Crane)",,,No pred,,,No pred,,,No pred,crane driver and teacher
 287,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
-288,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-289,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+288,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+289,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 290,en[SEP]baker and mariner,77610,0.7810477,"Baker, General",98135,0.5106881,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,baker and mariner
 291,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
-292,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
-293,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+292,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
+293,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 294,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 295,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
-296,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+296,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 297,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
-298,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+298,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 299,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
 300,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
-301,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
-302,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+301,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
+302,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 303,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
-304,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+304,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 305,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
-306,en[SEP]railway clerk and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,railway clerk and housewife
-307,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+306,en[SEP]railway clerk and housewife,39960,0.2884661,Railway Clerk,30000,0.265674,"Clerical or Related Worker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,railway clerk and housewife
+307,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 308,en[SEP]carter and millinery buyer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and millinery buyer
 309,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 310,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
-311,en[SEP]railway clerk and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,railway clerk and housewife
+311,en[SEP]railway clerk and housewife,39960,0.2884661,Railway Clerk,30000,0.265674,"Clerical or Related Worker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,railway clerk and housewife
 312,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
-313,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
+313,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
 314,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 315,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
-316,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+316,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 317,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 318,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 319,en[SEP]crane driver and teacher,13020,0.7743283,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",97315,0.57338506,"Crane Driver (Bridge or Gantry Crane, JibCrane, TowerCrane or Mobile Crane)",,,No pred,,,No pred,,,No pred,crane driver and teacher
@@ -323,22 +323,22 @@
 321,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 322,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 323,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
-324,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+324,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 325,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
-326,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+326,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 327,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
-328,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+328,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 329,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
 330,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 331,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
-332,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
-333,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+332,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
+333,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
 334,en[SEP]stoker at sea and boiler maker,87350,0.99521613,Boilersmith,,,No pred,,,No pred,,,No pred,,,No pred,stoker at sea and boiler maker
 335,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
-336,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+336,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 337,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 338,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-339,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+339,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 340,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
 341,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 342,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
@@ -346,88 +346,88 @@
 344,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 345,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 346,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-347,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+347,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 348,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 349,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 350,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 351,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 352,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
-353,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
-354,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+353,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+354,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 355,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
 356,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
 357,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
 358,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 359,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
-360,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+360,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 361,en[SEP]office cleaner and bus conductor london transport,36040,0.87998337,Bus Conductor,55220,0.70497555,Charworker,,,No pred,,,No pred,,,No pred,office cleaner and bus conductor london transport
 362,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-363,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+363,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 364,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 365,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
-366,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
-367,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+366,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+367,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 368,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 369,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 370,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 371,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
-372,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+372,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 373,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 374,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
-375,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+375,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 376,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 377,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
-378,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-379,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+378,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+379,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
 380,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
-381,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+381,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 382,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 383,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 384,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
-385,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
-386,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+385,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+386,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 387,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 388,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 389,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 390,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 391,en[SEP]stoker at sea and boiler maker,87350,0.99521613,Boilersmith,,,No pred,,,No pred,,,No pred,,,No pred,stoker at sea and boiler maker
 392,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
-393,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+393,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 394,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
-395,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
+395,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
 396,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 397,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 398,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
-399,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+399,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 400,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 401,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 402,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 403,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 404,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 405,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
-406,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+406,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 407,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
 408,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
 409,en[SEP]bus driver and british rail engineer,98540,0.88887364,Motor Bus Driver,,,No pred,,,No pred,,,No pred,,,No pred,bus driver and british rail engineer
 410,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 411,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
-412,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
-413,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,,,No pred,nurse and housewife
+412,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
+413,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",54020,0.30018246,House Servant,,,No pred,,,No pred,,,No pred,nurse and housewife
 414,en[SEP]stoker at sea and boiler maker,87350,0.99521613,Boilersmith,,,No pred,,,No pred,,,No pred,,,No pred,stoker at sea and boiler maker
-415,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+415,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 416,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 417,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 418,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
-419,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+419,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 420,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
 421,en[SEP]ship carpenter at sea and school teacher,95455,0.9968419,Ship's Carpenter,13020,0.7713123,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",,,No pred,,,No pred,,,No pred,ship carpenter at sea and school teacher
 422,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
 423,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
-424,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+424,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 425,en[SEP]army nco and labourer,99910,0.81387025,Labourer,58340,0.5948985,Other Military Ranks,,,No pred,,,No pred,,,No pred,army nco and labourer
-426,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+426,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 427,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
-428,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+428,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
 429,en[SEP]labourer and university lecturer,13100,0.76308864,"University and Higher Education Teacher, Subject Unknown",99910,0.60853815,Labourer,,,No pred,,,No pred,,,No pred,labourer and university lecturer
 430,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
 431,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
@@ -438,30 +438,30 @@
 436,en[SEP]charwoman and coal dealer,41025,0.99760664,Working Proprietor (Wholesale or Retail Trade),55220,0.9887792,Charworker,,,No pred,,,No pred,,,No pred,charwoman and coal dealer
 437,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 438,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
-439,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+439,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 440,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
 441,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
 442,en[SEP]army nco and labourer,99910,0.81387025,Labourer,58340,0.5948985,Other Military Ranks,,,No pred,,,No pred,,,No pred,army nco and labourer
 443,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
 444,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
-445,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+445,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 446,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 447,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 448,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 449,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 450,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
-451,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",,,No pred,,,No pred,,,No pred,,,No pred,miner and carpenter at sea
+451,en[SEP]miner and carpenter at sea,71105,0.9064189,"Miner, General",95410,0.36126065,"Carpenter, General",,,No pred,,,No pred,,,No pred,miner and carpenter at sea
 452,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-453,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+453,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 454,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
 455,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 456,en[SEP]army nco and labourer,99910,0.81387025,Labourer,58340,0.5948985,Other Military Ranks,,,No pred,,,No pred,,,No pred,army nco and labourer
 457,en[SEP]carter and millinery buyer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and millinery buyer
 458,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
 459,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
-460,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+460,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 461,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
-462,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",,,No pred,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
+462,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",45130,0.36931252,Retail Trade Salesperson,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
 463,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 464,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 465,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
@@ -469,59 +469,59 @@
 467,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
 468,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 469,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
-470,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
-471,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+470,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+471,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 472,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
-473,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+473,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 474,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 475,en[SEP]charwoman and coal dealer,41025,0.99760664,Working Proprietor (Wholesale or Retail Trade),55220,0.9887792,Charworker,,,No pred,,,No pred,,,No pred,charwoman and coal dealer
 476,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
-477,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
-478,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+477,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
+478,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
 479,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-480,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
-481,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
-482,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+480,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
+481,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+482,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 483,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 484,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
 485,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
 486,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
 487,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 488,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
-489,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-490,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-491,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-492,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,,,No pred,nurse and housewife
+489,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+490,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+491,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+492,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",54020,0.30018246,House Servant,,,No pred,,,No pred,,,No pred,nurse and housewife
 493,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 494,en[SEP]painter and decorator and company director,93120,0.9610912,Building Painter,21000,0.81199867,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,painter and decorator and company director
-495,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+495,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 496,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 497,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 498,en[SEP]ship carpenter at sea and school teacher,95455,0.9968419,Ship's Carpenter,13020,0.7713123,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",,,No pred,,,No pred,,,No pred,ship carpenter at sea and school teacher
 499,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 500,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 501,en[SEP]bus driver and british rail engineer,98540,0.88887364,Motor Bus Driver,,,No pred,,,No pred,,,No pred,,,No pred,bus driver and british rail engineer
-502,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+502,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 503,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 504,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 505,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
 506,en[SEP]labourer and dressmaker,99910,0.9492617,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and dressmaker
 507,en[SEP]carter and millinery buyer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and millinery buyer
-508,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+508,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 509,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
-510,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
-511,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
-512,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-513,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
-514,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
-515,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-516,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",,,No pred,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
+510,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
+511,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+512,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+513,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+514,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
+515,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+516,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",45130,0.36931252,Retail Trade Salesperson,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
 517,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 518,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 519,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 520,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 521,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
-522,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
+522,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
 523,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 524,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 525,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
@@ -534,12 +534,12 @@
 532,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 533,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 534,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-535,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+535,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 536,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 537,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 538,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
 539,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
-540,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+540,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 541,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 542,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 543,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
@@ -556,25 +556,25 @@
 554,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 555,en[SEP]ship carpenter at sea and school teacher,95455,0.9968419,Ship's Carpenter,13020,0.7713123,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",,,No pred,,,No pred,,,No pred,ship carpenter at sea and school teacher
 556,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
-557,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+557,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 558,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
-559,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+559,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 560,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 561,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
-562,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+562,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 563,en[SEP]office cleaner and bus conductor london transport,36040,0.87998337,Bus Conductor,55220,0.70497555,Charworker,,,No pred,,,No pred,,,No pred,office cleaner and bus conductor london transport
 564,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
-565,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+565,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 566,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
 567,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 568,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 569,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
-570,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+570,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 571,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
 572,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 573,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
-574,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-575,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+574,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+575,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 576,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
 577,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 578,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
@@ -584,21 +584,21 @@
 582,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 583,en[SEP]sheet metal worker and army,87310,0.89419425,"SheetMetal Worker, General",,,No pred,,,No pred,,,No pred,,,No pred,sheet metal worker and army
 584,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
-585,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+585,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 586,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
-587,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+587,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 588,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 589,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
 590,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
-591,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
-592,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+591,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
+592,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 593,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
 594,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 595,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 596,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
 597,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 598,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
-599,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+599,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 600,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 601,en[SEP]process worker and iron moulder,99930,0.98785245,Factory Worker,72500,0.96714246,"Metal Moulder or Coremaker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,process worker and iron moulder
 602,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
@@ -606,109 +606,109 @@
 604,en[SEP]baker and mariner,77610,0.7810477,"Baker, General",98135,0.5106881,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,baker and mariner
 605,en[SEP]insurance clerk,44120,0.89039564,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,insurance clerk
 606,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
-607,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
+607,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
 608,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 609,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
-610,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,secretary and casual work
-611,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+610,en[SEP]secretary and casual work,21940,0.7951625,Administration Manager,99999,0.77469456,Unspecified worktitle or several titles,32120,0.268556,Stenographic Secretary,,,No pred,,,No pred,secretary and casual work
+611,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 612,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 613,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 614,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
 615,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 616,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 617,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
-618,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+618,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 619,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 620,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
-621,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+621,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 622,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 623,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 624,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 625,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
 626,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
-627,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+627,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 628,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 629,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 630,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 631,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 632,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
-633,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+633,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
 634,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 635,en[SEP]labourer and dressmaker,99910,0.9492617,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and dressmaker
-636,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+636,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
 637,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 638,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
-639,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+639,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 640,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
 641,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
 642,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
-643,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+643,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
 644,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
-645,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+645,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 646,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 647,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 648,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
 649,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
 650,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
-651,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+651,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 652,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
-653,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+653,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 654,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
-655,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
-656,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+655,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+656,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 657,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
-658,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+658,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 659,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 660,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-661,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+661,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 662,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 663,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 664,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 665,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 666,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-667,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
+667,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
 668,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 669,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
-670,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+670,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
 671,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
 672,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
 673,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
-674,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+674,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 675,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
 676,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
 677,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
-678,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+678,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 679,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
-680,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,,,No pred,nurse and housewife
+680,en[SEP]nurse and housewife,7110,0.7398648,"Professional Nurse, General",54020,0.30018246,House Servant,,,No pred,,,No pred,,,No pred,nurse and housewife
 681,en[SEP]gardener and housewife,62700,0.5373147,Nursery Workers and Gardeners,,,No pred,,,No pred,,,No pred,,,No pred,gardener and housewife
 682,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
 683,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 684,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 685,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
-686,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,,,No pred,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
+686,en[SEP]process worker and maintenance engineer,99930,0.8427581,Factory Worker,84100,0.34954298,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,process worker and maintenance engineer
 687,en[SEP]engineer and master stere,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,engineer and master stere
-688,en[SEP]textile operative and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
-689,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
-690,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
-691,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+688,en[SEP]textile operative and housewife,79990,0.27757883,"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,textile operative and housewife
+689,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+690,en[SEP]charwoman and not known stepfather,55220,0.98388195,Charworker,99999,0.45091695,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,charwoman and not known stepfather
+691,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 692,en[SEP]brick layer,95120,0.99977857,Bricklayer (Construction),,,No pred,,,No pred,,,No pred,,,No pred,brick layer
 693,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 694,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
-695,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-696,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+695,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+696,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 697,en[SEP]housekeeping for brother and not given,54020,0.53819585,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,housekeeping for brother and not given
 698,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
 699,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
-700,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+700,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 701,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
 702,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
-703,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+703,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 704,en[SEP]post office worker,37030,0.9643417,Postman,,,No pred,,,No pred,,,No pred,,,No pred,post office worker
 705,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 706,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
 707,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
-708,en[SEP]railway clerk and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,railway clerk and housewife
-709,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+708,en[SEP]railway clerk and housewife,39960,0.2884661,Railway Clerk,30000,0.265674,"Clerical or Related Worker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,railway clerk and housewife
+709,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 710,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 711,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
 712,en[SEP]unemployed seaman and coach driver,98620,0.9951617,AnimalDrawn Vehicle Driver (Road),98135,0.8441548,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,unemployed seaman and coach driver
@@ -717,17 +717,17 @@
 715,en[SEP]royal navy and sailor,98135,0.89370537,"Seaman, Able or Ordinary",98130,0.8828061,Able Seaman,,,No pred,,,No pred,,,No pred,royal navy and sailor
 716,en[SEP]carter and millinery buyer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and millinery buyer
 717,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
-718,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
-719,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-720,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
+718,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+719,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+720,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
 721,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 722,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 723,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
-724,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+724,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 725,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 726,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
-727,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-728,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+727,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+728,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 729,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
 730,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
 731,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
@@ -736,94 +736,94 @@
 734,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
 735,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 736,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
-737,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+737,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 738,en[SEP]retired police sergeant and fruiterer,58220,0.9996835,Policeman and other Maintainers of Law and Order (except Military),41030,0.957851,Working Proprietor (Retail Trade),,,No pred,,,No pred,,,No pred,retired police sergeant and fruiterer
-739,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+739,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 740,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
-741,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+741,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 742,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
-743,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+743,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 744,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-745,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+745,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 746,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
 747,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
 748,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
-749,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
-750,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+749,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
+750,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 751,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-752,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+752,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 753,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 754,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
 755,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 756,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
 757,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
 758,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
-759,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+759,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 760,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
 761,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
-762,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+762,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 763,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
 764,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
-765,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+765,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 766,en[SEP]baker and mariner,77610,0.7810477,"Baker, General",98135,0.5106881,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,baker and mariner
 767,en[SEP]master mariner and labourer,4215,0.9911177,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and labourer
-768,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+768,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 769,en[SEP]bus driver and british rail engineer,98540,0.88887364,Motor Bus Driver,,,No pred,,,No pred,,,No pred,,,No pred,bus driver and british rail engineer
 770,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 771,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
-772,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+772,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 773,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
 774,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 775,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 776,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
 777,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 778,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
-779,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",,,No pred,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
+779,en[SEP]part time shop assistant and chemicals salesman,45125,0.9855401,"Salesperson, Wholesale or Retail Trade",45130,0.36931252,Retail Trade Salesperson,,,No pred,,,No pred,,,No pred,part time shop assistant and chemicals salesman
 780,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 781,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 782,en[SEP]farm labourer and labourer,99910,0.9647876,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,farm labourer and labourer
 783,en[SEP]master mariner and housewife,4215,0.9072136,Ship's Master (Sea),,,No pred,,,No pred,,,No pred,,,No pred,master mariner and housewife
 784,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
-785,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
-786,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
-787,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
+785,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
+786,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+787,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
 788,en[SEP]dock labourer,97120,0.8904802,Docker,,,No pred,,,No pred,,,No pred,,,No pred,dock labourer
-789,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+789,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 790,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
-791,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+791,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 792,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 793,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-794,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+794,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 795,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
 796,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
-797,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
-798,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+797,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
+798,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 799,en[SEP]hawker,45220,0.9997172,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker
 800,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 801,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
-802,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
-803,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+802,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+803,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 804,en[SEP]company director and none,44330,0.6870927,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,company director and none
 805,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 806,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
 807,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
-808,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+808,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 809,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 810,en[SEP]engineer and master stere,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,engineer and master stere
 811,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
-812,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,fitters mate and civil service
+812,en[SEP]fitters mate and civil service,99910,0.9039534,Labourer,2210,0.2925205,"Civil Engineer, General",,,No pred,,,No pred,,,No pred,fitters mate and civil service
 813,en[SEP]shop keeper,39140,0.9942806,Storeroom Clerk,,,No pred,,,No pred,,,No pred,,,No pred,shop keeper
 814,en[SEP]processing engineer and clerk,39310,0.6514274,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,processing engineer and clerk
 815,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 816,en[SEP]sales manager and domestic,21000,0.9033893,"Manager, Specialisation Unknown",54010,0.86948097,"Domestic Servant, General",,,No pred,,,No pred,,,No pred,sales manager and domestic
-817,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+817,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 818,en[SEP]charwoman and coal dealer,41025,0.99760664,Working Proprietor (Wholesale or Retail Trade),55220,0.9887792,Charworker,,,No pred,,,No pred,,,No pred,charwoman and coal dealer
 819,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
 820,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
 821,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 822,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 823,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
-824,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
+824,en[SEP]laundress and mother goes out to work,56010,0.9199106,"Launderer,  General",99999,0.35891655,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,laundress and mother goes out to work
 825,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
 826,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 827,en[SEP]ships cook and electronics,53100,0.9916664,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,ships cook and electronics
@@ -835,12 +835,12 @@
 833,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
 834,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
 835,en[SEP]fisherman and housewife,64100,0.9520204,"Fisherman, DeepSea or Inland and Coastal Water",,,No pred,,,No pred,,,No pred,,,No pred,fisherman and housewife
-836,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+836,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 837,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
-838,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+838,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 839,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
 840,en[SEP]army and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,army and housewife
-841,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+841,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 842,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 843,en[SEP]shunter army depot railway and oil rig worker,98430,0.6608037,Railway Signaller,,,No pred,,,No pred,,,No pred,,,No pred,shunter army depot railway and oil rig worker
 844,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
@@ -852,19 +852,19 @@
 850,en[SEP]master tailor and dock labourer,97120,0.9986033,Docker,79100,0.9859925,"Tailor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,master tailor and dock labourer
 851,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 852,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
-853,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
+853,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
 854,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 855,en[SEP]plasterer and carpenter,95510,0.9846126,"Plasterer, General",,,No pred,,,No pred,,,No pred,,,No pred,plasterer and carpenter
 856,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 857,en[SEP]letting apartments and laundry worker,72000,0.7487706,"Metal Processor, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,letting apartments and laundry worker
 858,en[SEP]dressmaker and filling station proprietor,79140,0.9942399,Dressmaker,41040,0.83740884,Working Proprietor (Hiring Out),22210,0.7503744,Railway Station Master,,,No pred,,,No pred,dressmaker and filling station proprietor
-859,en[SEP]ma and gents hairdresser,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,ma and gents hairdresser
-860,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
+859,en[SEP]ma and gents hairdresser,57025,0.45191747,Women's or Men's Hairdresser,44330,0.25284255,Appraiser,14120,0.2526681,Minister of Religion,,,No pred,,,No pred,ma and gents hairdresser
+860,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
 861,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 862,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 863,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
-864,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-865,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+864,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+865,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 866,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 867,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
 868,en[SEP]hawker and aircraft planning engineer,45220,0.98498327,Street Vendor,,,No pred,,,No pred,,,No pred,,,No pred,hawker and aircraft planning engineer
@@ -884,20 +884,20 @@
 882,en[SEP]domestic servant and clerk,54020,0.77255344,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,domestic servant and clerk
 883,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 884,en[SEP]head messenger and turner and fitter,37040,0.8824805,Messenger,84100,0.7679329,Machinery Fitters and Machine Assemblers,,,No pred,,,No pred,,,No pred,head messenger and turner and fitter
-885,en[SEP]labourer and general help,99910,0.5840466,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and general help
-886,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",,,No pred,,,No pred,,,No pred,,,No pred,rigger and rigger
+885,en[SEP]labourer and general help,99910,0.5840466,Labourer,54020,0.27976844,House Servant,,,No pred,,,No pred,,,No pred,labourer and general help
+886,en[SEP]rigger and rigger,97205,0.7629059,"Hoisting Equipment Rigger, General",87400,0.4997068,"Structural Metal Preparer or Erector, Specialisation Unknown",,,No pred,,,No pred,,,No pred,rigger and rigger
 887,en[SEP]painter and royal navy,93120,0.6404849,Building Painter,,,No pred,,,No pred,,,No pred,,,No pred,painter and royal navy
 888,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
 889,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
 890,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
-891,en[SEP]clerk and custom house officer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,clerk and custom house officer
-892,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",,,No pred,,,No pred,,,No pred,,,No pred,merchant seaman and setter operator
+891,en[SEP]clerk and custom house officer,31090,0.48666835,Government Executive Officials Not Elsewhere Classified,31000,0.24669085,"Government Executive Official, Specialisation Unknown",,,No pred,,,No pred,,,No pred,clerk and custom house officer
+892,en[SEP]merchant seaman and setter operator,98135,0.99705124,"Seaman, Able or Ordinary",92120,0.23886669,Hand Compositor,41025,0.23208325,Working Proprietor (Wholesale or Retail Trade),,,No pred,,,No pred,merchant seaman and setter operator
 893,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
-894,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-895,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+894,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+895,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 896,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 897,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
-898,en[SEP]railway clerk and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,railway clerk and housewife
+898,en[SEP]railway clerk and housewife,39960,0.2884661,Railway Clerk,30000,0.265674,"Clerical or Related Worker, Specialisation Unknown",,,No pred,,,No pred,,,No pred,railway clerk and housewife
 899,en[SEP]sales rep and housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and housewife
 900,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
 901,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
@@ -908,16 +908,16 @@
 906,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 907,en[SEP]labourer and sailor,99910,0.905731,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and sailor
 908,en[SEP]office cleaner and bus conductor london transport,36040,0.87998337,Bus Conductor,55220,0.70497555,Charworker,,,No pred,,,No pred,,,No pred,office cleaner and bus conductor london transport
-909,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+909,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 910,en[SEP]short hand typist and shipping department,39310,0.9302108,"Office Clerk, General",,,No pred,,,No pred,,,No pred,,,No pred,short hand typist and shipping department
 911,en[SEP]sales manager and washing,21000,0.8303249,"Manager, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,sales manager and washing
 912,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 913,en[SEP]porter and lawyer stepfather,12110,0.9943152,Lawyer,97125,0.74735063,"Loader of Ship, Truck, Wagon or Airplane",,,No pred,,,No pred,,,No pred,porter and lawyer stepfather
 914,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
-915,en[SEP]typist and ship repairer,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,typist and ship repairer
-916,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+915,en[SEP]typist and ship repairer,39310,0.4244217,"Office Clerk, General",44330,0.3212958,Appraiser,,,No pred,,,No pred,,,No pred,typist and ship repairer
+916,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 917,en[SEP]carter and shopkeeper,98620,0.8875945,AnimalDrawn Vehicle Driver (Road),,,No pred,,,No pred,,,No pred,,,No pred,carter and shopkeeper
-918,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",,,No pred,,,No pred,,,No pred,,,No pred,master butcher and caretaker
+918,en[SEP]master butcher and caretaker,77310,0.960114,"Butcher, General",55130,0.4022537,Janitor,,,No pred,,,No pred,,,No pred,master butcher and caretaker
 919,en[SEP]assurance agent and none,44120,0.9910047,Insurance Salesman,,,No pred,,,No pred,,,No pred,,,No pred,assurance agent and none
 920,en[SEP]charwoman and unable to work,99999,0.8454085,Unspecified worktitle or several titles,55220,0.81146336,Charworker,,,No pred,,,No pred,,,No pred,charwoman and unable to work
 921,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
@@ -925,9 +925,9 @@
 923,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 924,en[SEP]stoker at sea and boiler maker,87350,0.99521613,Boilersmith,,,No pred,,,No pred,,,No pred,,,No pred,stoker at sea and boiler maker
 925,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
-926,en[SEP]char woman and patient in mental hospital,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
+926,en[SEP]char woman and patient in mental hospital,7990,0.32478687,"Other Medical, Dental, Veterinary and Related Workers",,,No pred,,,No pred,,,No pred,,,No pred,char woman and patient in mental hospital
 927,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
-928,en[SEP]charwoman and separated,55220,0.5796638,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman and separated
+928,en[SEP]charwoman and separated,55220,0.5796638,Charworker,44330,0.26619023,Appraiser,,,No pred,,,No pred,,,No pred,charwoman and separated
 929,en[SEP]cleaner and cook,53100,0.84345907,"Cook, Specialisation Unknown",,,No pred,,,No pred,,,No pred,,,No pred,cleaner and cook
 930,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
 931,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
@@ -946,23 +946,23 @@
 944,en[SEP]able seaman and domestic,54010,0.94256437,"Domestic Servant, General",98130,0.77086693,Able Seaman,,,No pred,,,No pred,,,No pred,able seaman and domestic
 945,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 946,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
-947,en[SEP]carter and office cleaner,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
+947,en[SEP]carter and office cleaner,55230,0.41595197,Window Cleaner,,,No pred,,,No pred,,,No pred,,,No pred,carter and office cleaner
 948,en[SEP]flight sgt raf,58320,0.99105096,Officer,,,No pred,,,No pred,,,No pred,,,No pred,flight sgt raf
 949,en[SEP]porter in market and restaurant manager,97145,0.9971017,Warehouse Porter,21430,0.93902636,Restaurant Manager,,,No pred,,,No pred,,,No pred,porter in market and restaurant manager
 950,en[SEP]steam boiler driver and housewife,45190,0.5000879,"Other Salesmen, Shop Assistants and Demonstrators",,,No pred,,,No pred,,,No pred,,,No pred,steam boiler driver and housewife
 951,en[SEP]sales rep and stepmother,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,sales rep and stepmother
 952,en[SEP]retail greengrocery and chemist,41030,0.7401881,Working Proprietor (Retail Trade),19990,0.5287313,"Other Professional, Technical and Related Workers Not Elsewhere Classified",,,No pred,,,No pred,,,No pred,retail greengrocery and chemist
-953,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+953,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 954,en[SEP]charwoman,55220,0.97429776,Charworker,,,No pred,,,No pred,,,No pred,,,No pred,charwoman
 955,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
-956,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),,,No pred,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
+956,en[SEP]needlewoman and royal navy,79520,0.7361114,Garment Hand Sewer (except Leather and Fur),98130,0.25729764,Able Seaman,,,No pred,,,No pred,,,No pred,needlewoman and royal navy
 957,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
-958,en[SEP]labourer and nurse,99910,0.8763752,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and nurse
+958,en[SEP]labourer and nurse,99910,0.8763752,Labourer,7110,0.24596624,"Professional Nurse, General",,,No pred,,,No pred,,,No pred,labourer and nurse
 959,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
 960,en[SEP]commission agent and silversmith,43230,0.98280346,Manufacturers' Agent,88050,0.9756364,Goldsmith and Silversmith,,,No pred,,,No pred,,,No pred,commission agent and silversmith
 961,en[SEP]ship carpenter at sea and school teacher,95455,0.9968419,Ship's Carpenter,13020,0.7713123,"Teacher, Level and Subject Unknown, Not University and Higher Education Level",,,No pred,,,No pred,,,No pred,ship carpenter at sea and school teacher
 962,en[SEP]servant and domestic servant,54020,0.98603654,House Servant,,,No pred,,,No pred,,,No pred,,,No pred,servant and domestic servant
-963,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),,,No pred,,,No pred,,,No pred,general manager and master tailor
+963,en[SEP]general manager and master tailor,79100,0.99768674,"Tailor, Specialisation Unknown",21220,0.6306858,Production Manager (except Farm),21000,0.3372555,"Manager, Specialisation Unknown",,,No pred,,,No pred,general manager and master tailor
 964,en[SEP]hm forces army and farm worker,58300,0.85425454,Military,99910,0.69453067,Labourer,,,No pred,,,No pred,,,No pred,hm forces army and farm worker
 965,en[SEP]licensee,51050,0.9957925,"Working Proprietor  , Bar and Snack Bar)",,,No pred,,,No pred,,,No pred,,,No pred,licensee
 966,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
@@ -981,7 +981,7 @@
 979,en[SEP]labourer,99910,0.99980384,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer
 980,en[SEP]post office telephones,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,post office telephones
 981,en[SEP]washing and dock labourer,97120,0.9944395,Docker,,,No pred,,,No pred,,,No pred,,,No pred,washing and dock labourer
-982,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",,,No pred,,,No pred,,,No pred,,,No pred,charing and builder
+982,en[SEP]charing and builder,95910,0.71272063,"Housebuilder, General",44330,0.4061171,Appraiser,,,No pred,,,No pred,,,No pred,charing and builder
 983,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 984,en[SEP]sail maker and unemployed,79920,0.9955329,"Sail, Tent and Awning Maker",,,No pred,,,No pred,,,No pred,,,No pred,sail maker and unemployed
 985,en[SEP]schoolmaster and separated,44330,0.9620461,Appraiser,,,No pred,,,No pred,,,No pred,,,No pred,schoolmaster and separated
@@ -994,7 +994,7 @@
 992,en[SEP]labourer and labourer,99910,0.99693066,Labourer,,,No pred,,,No pred,,,No pred,,,No pred,labourer and labourer
 993,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
 994,en[SEP]marine engineer and charwoman,55220,0.97947603,Charworker,2410,0.9648861,"Mechanical Engineer, General",,,No pred,,,No pred,,,No pred,marine engineer and charwoman
-995,en[SEP]housewife,-1,,No pred,,,No pred,,,No pred,,,No pred,,,No pred,housewife
+995,en[SEP]housewife,37040,0.30981645,Messenger,,,No pred,,,No pred,,,No pred,,,No pred,housewife
 996,en[SEP]car sprayer and laundry,56010,0.8540697,"Launderer,  General",,,No pred,,,No pred,,,No pred,,,No pred,car sprayer and laundry
 997,en[SEP]bus driver and hat blocker,79310,0.98814595,"Hat Maker, General",98540,0.967788,Motor Bus Driver,,,No pred,,,No pred,,,No pred,bus driver and hat blocker
 998,en[SEP]self employed and mersey docks and harbour board,30000,0.7367615,"Clerical or Related Worker, Specialisation Unknown",99999,0.6933802,Unspecified worktitle or several titles,,,No pred,,,No pred,,,No pred,self employed and mersey docks and harbour board
