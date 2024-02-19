@@ -294,7 +294,7 @@ class OccCANINE:
             m, s = divmod(dif_time, 60)
             h, m = divmod(m, 60)
             
-            print(f"Produced HISCO codes for {occ1.shape[0]} observations in {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds.")
+            print(f"Produced HISCO codes for {occ1.shape[0]} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
             
             saved_time = occ1.shape[0]*10 - dif_time
             m, s = divmod(saved_time, 60)
