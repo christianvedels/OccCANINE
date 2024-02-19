@@ -78,31 +78,38 @@ def Top_n_to_df(result, top_n):
 class OccCANINE:
     def __init__(self, name = "CANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
         """
-        name:           Name of the model to load (name in 'Trained_models')
-        device:         Which device should be used? Defaults to auto-detection. 
-        batch_size:     How to batch up the data
-        verbose:        Should updates be printed?  
-        baseline:       Option to load baseline (untrained) version of the model
-        hf:             Should the model be loaded from hugging face?
-        force_download: Should re-download of the model be forced?
+        Initializes the OccCANINE model with specified configurations.
+        
+        Parameters:
+        - name (str): Name of the model to load. Defaults to "CANINE". For local models, specify the model name as it appears in 'Model'.
+        - device (str or None): The computing device (CPU or CUDA) on which the model will run. If None, the device is auto-detected.
+        - batch_size (int): The number of examples to process in each batch. This affects memory usage and processing speed.
+        - verbose (bool): If True, progress updates and diagnostic information will be printed during model operations.
+        - baseline (bool): If True, loads a baseline (untrained) version of CANINE. Useful for comparison studies.
+        - hf (bool): If True, attempts to load the model from Hugging Face's model repository. If False, loads a local model specified by the 'name' parameter.
+        - force_download (bool): If True, forces a re-download of the model from the Hugging Face's model repository even if it is already cached locally.
+        
+        Raises:
+        - Exception: If 'hf' is False and a local model 'name' is not provided.
         """
         
         # Detect device
-        if not device:
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            print(f"Auto-detected device: {device}")
-            
-        # Raise error if name is not provided for local model
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
+        if verbose:
+            print(f"Using device: {self.device}")
+        
         if name == "CANINE" and not hf:
-            raise Exception("When 'hf' is False, a local model 'name' must be provided")
+            raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
         
         self.name = name
-        self.device = device
         self.batch_size = batch_size
         self.verbose = verbose
         
         # Get tokenizer
         self.tokenizer = Get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256")
+        
+        # Get key
+        self.key, self.key_desc = self._load_keys()
             
         # Load key
         key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
@@ -118,35 +125,39 @@ class OccCANINE:
         key = list(key)
         self.key_desc = dict(key)
         
-        # If-lookup for model
+        self.model = self._load_model(hf, force_download, baseline)
+        
+    def _load_keys(self):
+        # Load and return both the key and key with descriptions
+        key_df = pd.read_csv("Data/Key.csv").iloc[1:]
+        key = dict(zip(key_df.code, key_df.hisco))
+        key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
+        return key, key_desc
+    
+    def _load_model(self, hf, force_download, baseline):
         if hf:
-            model = CANINEOccupationClassifier_hub.from_pretrained(
-                "christianvedel/OccCANINE",
-                force_download = force_download
-                )
+            return CANINEOccupationClassifier_hub.from_pretrained("christianvedel/OccCANINE", force_download=force_download).to(self.device)
         else:
-            # Load state
-            model_path = name+'.bin'
-       
-            # Load the model state
-            loaded_state = torch.load(model_path)
-            
-            model = CANINEOccupationClassifier(
-                model_domain = "Multilingual_CANINE",
-                n_classes = len(self.key), 
-                dropout_rate = 0
-                ) 
-            
-            # Update states and load onto device 
+            model_path = f'{self.name}.bin'
+            loaded_state = torch.load(model_path, map_location=self.device)
+            model = CANINEOccupationClassifier(model_domain="Multilingual_CANINE", n_classes=len(self.key), dropout_rate=0)
             if not baseline:
                 model.load_state_dict(loaded_state)
-                        
-        model.to(device)   
-        
-        self.model = model
+            return model.to(self.device)
     
-    def encode(self, occ1, lang, concat_in):
-        # breakpoint()
+    def _encode(self, occ1, lang, concat_in):
+        """
+        Encodes occupational strings into a format suitable for model input.
+        
+        Parameters:
+        - occ1 (list of str): A list of occupational strings to encode.
+        - lang (str or list of str): The language(s) of the occupational strings. Can be a single language string or a list of language strings.
+        - concat_in (bool): If True, assumes that the input strings are already concatenated in the required format (e.g., occupation[SEP]language). If False, performs concatenation.
+        
+        Returns:
+        - list of str: The encoded inputs ready for model processing.
+        """
+        
         if not concat_in: # Because then it is assumed that strings are already clean
             occ1 = [occ.lower() for occ in occ1]
             occ1 = [unidecode(occ) for occ in occ1]
@@ -164,20 +175,25 @@ class OccCANINE:
                 
         return inputs
             
-    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.5, concat_in = False, get_dict = False, get_df = True):
+    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
         """
-        occ1:           List of occupational strings
-        lang:           Language (defaults to unknown)
-        batch_size:     How to batch up the data
-        what:           What to return "logits", "probs", "pred", "bin" [n] return top [n], "tokens"
-        threshold:      Prediction threshold in case of what == "pred"
-        concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
-        get_dict:       For what [n] method this is an option to return a list of dictionaries
-        get_df:         Optional argument for what = "pred". Returns nicely formatted df
+        Makes predictions on a batch of occupational strings.
+        
+        Parameters:
+        - occ1 (list of str): A list of occupational strings to predict.
+        - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
+        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
+        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
+        - concat_in (bool, optional): Specifies if the input is already concatenated in the format [occupation][SEP][language]. Defaults to False.
+        - get_dict (bool, optional): If True and 'what' is an integer, returns a list of dictionaries with predictions instead of a DataFrame. Defaults to False.
+        - get_df (bool, optional): If True and 'what' equals "pred", returns predictions in a DataFrame format. Defaults to True.
+        
+        Returns:
+        - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
         
         # Setup
-        inputs = self.encode(occ1, lang, concat_in)
+        inputs = self._encode(occ1, lang, concat_in)
         batch_size = self.batch_size
         verbose = self.verbose
         results = []
@@ -297,7 +313,7 @@ class OccCANINE:
         lang:           Language (defaults to unknown)
         concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
         """
-        inputs = self.encode(occ1, lang, concat_in)
+        inputs = self._encode(occ1, lang, concat_in)
         batch_size = self.batch_size
         verbose = self.verbose
         results = []
