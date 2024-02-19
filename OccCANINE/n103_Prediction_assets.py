@@ -44,7 +44,7 @@ def Top_n_to_df(result, top_n):
     Converts dictionary of top n predictions to df
     Parameters
     ----------
-    result:     List of dicitonaries from predict method in Finetuned_model
+    result:     List of dicitonaries from predict method in OccCANINE
     top_n:      Number of predictions
 
     Returns:    pd.DataFrame
@@ -72,9 +72,9 @@ def Top_n_to_df(result, top_n):
     
     return(x)
 
-# %% Load best model instance
-# Define the path to the saved binary file
-class Finetuned_model:
+# %% Class to load model
+
+class OccCANINE:
     def __init__(self, name = "CANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
         """
         name:           Name of the model to load (name in 'Trained_models')

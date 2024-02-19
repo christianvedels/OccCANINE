@@ -15,10 +15,10 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from OccCANINE.n103_Prediction_assets import Finetuned_model
+from OccCANINE.n103_Prediction_assets import OccCANINE
 
 # %% Load model
-model = Finetuned_model()
+model = OccCANINE()
 
 # %% Example 1
 model.predict(

@@ -13,12 +13,12 @@ os.chdir(script_directory)
 import sys
 module_path = os.path.join(script_directory, "..", "OccCANINE")
 sys.path.append(module_path)
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(verbose = True)
+model = OccCANINE(verbose = True)
 
 # %% Load data
 df_early = pd.read_stata("../Data/Application_data/Training_ship_data/indy_early.dta")

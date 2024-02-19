@@ -20,7 +20,7 @@ NOBS = 10**10
 print(f"NOBS: {NOBS}")
 
 # %% Import necessary modules
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 import pandas as pd
 
 # %% Load data
@@ -36,7 +36,7 @@ def load_data(fname, file, nrows, toyload = False):
 
 # %% Load model
 def load_model():
-    model = Finetuned_model(
+    model = OccCANINE(
         name = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
         )
     return model

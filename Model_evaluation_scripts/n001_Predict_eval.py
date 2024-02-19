@@ -34,7 +34,7 @@ import pandas as pd
 
 import sys
 sys.path.append("../OccCANINE/")
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 from n102_DataLoader import Load_val
 
 #%% Device
@@ -48,14 +48,14 @@ key, df = Load_val(
     )
 
 # %% Load model
-model = Finetuned_model(
+model = OccCANINE(
     model_name, 
     device = device, 
     batch_size = BATCH_SIZE, 
     verbose = VERBOSE
     )
 
-model_baseline = Finetuned_model(
+model_baseline = OccCANINE(
     model_name, 
     device = device, 
     batch_size = BATCH_SIZE, 

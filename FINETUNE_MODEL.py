@@ -11,11 +11,11 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from OccCANINE.n103_Prediction_assets import Finetuned_model
+from OccCANINE.n103_Prediction_assets import OccCANINE
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model()
+model = OccCANINE()
 
 # %% Load data
 df = pd.read_csv(
@@ -33,7 +33,7 @@ model.finetune(
     )
 
 # %% Finetuned model can be loaded
-model = Finetuned_model("Finetuned/Finetune_toy_model", hf = False)
+model = OccCANINE("Finetuned/Finetune_toy_model", hf = False)
 
 x = model.predict(["tailor of fine dresses"], lang = "en")
 print(x)
