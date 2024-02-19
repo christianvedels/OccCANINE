@@ -256,10 +256,10 @@ def trainer_loop(
         # Checkpoint
         torch.save(
             model.state_dict(), 
-            '../Trained_models/Checkpoint'+model_name+'.bin'
+            'Model/Checkpoint'+model_name+'.bin'
             )
         
-        tokenizer_save_path = '../Trained_models/Checkpoint' + model_name + '_tokenizer'
+        tokenizer_save_path = 'Model/Checkpoint' + model_name + '_tokenizer'
         data['tokenizer'].save_pretrained(tokenizer_save_path)
         
         # If we beat prev performance
@@ -267,11 +267,11 @@ def trainer_loop(
             print("Saved improved model")
             torch.save(
                 model.state_dict(), 
-                '../Trained_models/'+model_name+'.bin'
+                'Model/'+model_name+'.bin'
                 )
             best_accuracy = val_acc
             
-            tokenizer_save_path = '../Trained_models/' + model_name + '_tokenizer'
+            tokenizer_save_path = 'Model/' + model_name + '_tokenizer'
             data['tokenizer'].save_pretrained(tokenizer_save_path)
         
     return model, history
@@ -406,10 +406,10 @@ def trainer_loop_simple(
         # # Checkpoint
         # torch.save(
         #     model.state_dict(), 
-        #     '../Trained_models/Checkpoint'+model_name+'.bin'
+        #     'Model/Checkpoint'+model_name+'.bin'
         #     )
         
-        # tokenizer_save_path = '../Trained_models/Checkpoint_' + model_name + '_tokenizer'
+        # tokenizer_save_path = 'Model/Checkpoint_' + model_name + '_tokenizer'
         # data['tokenizer'].save_pretrained(tokenizer_save_path)
         
         # If we beat prev performance
