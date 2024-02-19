@@ -9,5 +9,5 @@ set.seed(20)
 read_csv("Data/Validation_data/EN_marr_cert_val.csv") %>% 
   filter(nchar(occ1)>15) %>% 
   sample_n(10000) %>% 
-  select(occ1) %>% 
+  select(occ1, hisco_1) %>% 
   write_csv("OccCANINE/Data/TOYDATA.csv")

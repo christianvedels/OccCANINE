@@ -110,21 +110,7 @@ class OccCANINE:
         
         # Get key
         self.key, self.key_desc = self._load_keys()
-            
-        # Load key
-        key = pd.read_csv("Data/Key.csv") # Load key and convert to dictionary
-        key = key[1:]
-        key = zip(key.code, key.hisco)
-        key = list(key)
-        self.key = dict(key)
-        
-        # Load key but with descriptions
-        key = pd.read_csv("../Data/Key.csv") # Load key and convert to dictionary
-        key = key[1:]
-        key = zip(key.code, key.en_hisco_text)
-        key = list(key)
-        self.key_desc = dict(key)
-        
+                
         self.model = self._load_model(hf, force_download, baseline)
         
     def _load_keys(self):
@@ -300,7 +286,7 @@ class OccCANINE:
             m, s = divmod(saved_time, 60)
             h, m = divmod(m, 60)
             
-            print("Estimated hours saved compared to human labeller (10 seconds per label):")
+            print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
             print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
                 
         return results
@@ -387,7 +373,8 @@ class OccCANINE:
             if verbose:
                 print(f"Produced new key for {len(unique_labels)} possible labels")
         else:
-            _, key = read_data(model_domain, toyload=True, verbose=False)
+            breakpoint()
+            key = self.key
             # Convert the key dictionary to a DataFrame for joining
             key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco']) 
             # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
