@@ -373,7 +373,7 @@ class OccCANINE:
             if verbose:
                 print(f"Produced new key for {len(unique_labels)} possible labels")
         else:
-            breakpoint()
+            # breakpoint()
             key = self.key
             # Convert the key dictionary to a DataFrame for joining
             key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco']) 
