@@ -18,7 +18,6 @@ import pandas as pd
 model = OccCANINE()
 
 # %% Load data
-
 df = pd.read_csv(
     "Data/TOYDATA_wHISCO.csv"
     )
