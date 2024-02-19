@@ -6,21 +6,23 @@ Paper: **LINK**
 
 Huggingface: **LINK**
 
+Getting started
+--------
+- See the [colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE
+- To use the model at scale please clone/download the repository. Open [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py) to get started.
+- A step-by-step installation guide can be found in [GETTING_STARTED.md](https://github.com/christianvedels/OccCANINE/blob/main/GETTING_STARTED.md)
+
 Overview
 --------
 
-This repository provides everything needed to generate automatic HISCO codes from occupational descriptions using OccCANINE. It also provides replication files for all steps from raw training data to the final trained. The main script for generating HISCO codes on new data is [PREDICT_HISCOs.py](PREDICT_HISCOs.py)
+This repository provides everything needed to generate automatic HISCO codes from occupational descriptions using OccCANINE. It also provides replication files for all steps from raw training data to the final trained. 
 
 Structure
 ---------
 
 *   **Data\_cleaning\_scripts**: Contains R scripts for processing raw data from 'Data/Raw\_data' into a format suitable for training, which is then stored in 'Data/Training\_data', 'Data/Validation\_data', and 'Data/Test\_data'.
-*   **Model\_training\_scripts**: Contains Python scripts for training models and storing them in 'Trained\_models'.
+*   **OccCANINE**: Contains Python scripts for training OccCANINE and using the already finetuned version of it.
 *   **PREDICT\_HISCOs.py**: The main product that takes occupational descriptions and outputs HISCO codes.
-
-### Large Files
-
-Due to their size, 'Raw\_data', 'Test\_data', and 'Training\_data' are not distributed via GitHub. Each directory contains a 'DROPBOX.txt' file with a Dropbox link for downloading the data.
 
 Data Cleaning
 -------------
@@ -43,19 +45,3 @@ Scripts for data cleaning are located in 'Data\_cleaning\_scripts' and should be
 
 The training data is structured with variables including the year of observation, a unique ID for every observation, the occupational description string, HISCO codes, integer codes for HISCO, the language of the description, and a string indicating the data split (train, val1, val2, or test).
 
-Overview of Training Data and Sources
--------------------------------------
-
-The training data includes a wide variety of sources such as census data, marriage records, and occupational descriptions in multiple languages, including Danish, English, Swedish, Norwegian, and more. Each source is cleaned and processed to create a consistent training dataset for the model.
-
-Updates
--------
-
-The repository includes a detailed log of updates, ranging from the addition of new models and data sources to improvements in data cleaning and model training scripts. Significant updates include the integration of the CANINE model for enhanced typo robustness and adjustments to accommodate IPUMS data.
-
-References
-----------
-
-A comprehensive list of references is provided for the data sources used in this project, including works by Clausen, Clark, Cummins, Curtis, and datasets from the Minnesota Population Center (MPC), SwedPop, and others.
-
-For more information on how to contribute or for any questions, please refer to the specific guidelines and contact information provided in this repository.
