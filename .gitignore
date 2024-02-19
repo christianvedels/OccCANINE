@@ -1,85 +1,24 @@
 
-Deliveries/230522 Human captial in the Nordics/Occupations_dk.xlsx
-Deliveries/230522 Human captial in the Nordics/~$Occupations_dk.xlsx
-Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes.csv
-Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes_sample100.csv
-Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes_sample100_quality.xlsx
-Deliveries/230522 Human captial in the Nordics/Predicted_HISCO_codes_top5.csv
-Training_data/DK_CENSUS.csv
-Training_data/UK_MARIAGE_CERTIFICATES.csv
+Data/Training_data/
+Data/Test_data/
+Data/Validation_data/
+Data/Raw_data/
+Data/Tmp_data/
+Data/Application_data/
+Data/Tmp_train/
 .Rproj.user
-Data/Raw_data/DK_CENSUS_DATA.Rdata
-Data/Raw_data/EN_MARIAGE_CERTIFICATES.csv
-Data/Raw_data/ipumsi_00001.dat
 HISCO clean.Rproj
-Deliveries/230522 Human captial in the Nordics/Occupations_dk.csv
 .Rhistory
-Data/Tmp_data/Tmp_dk_census1.Rdata
-Data/Tmp_data/Tmp_dk_census2.Rdata
 .RData
-Data/Manual_data/~$Verified_no_occupation_DK_census.xlsx
-Data/Tmp_data/Clean_DK_census.Rdata
-Data/Tmp_data/Clean_DK_census.Rdata
-Data/Tmp_data/Clean_DK_census.Rdata
-Data/Tmp_data/Clean_DK_census.Rdata
-Data/Tmp_data/Clean_DK_census.Rdata
-Data/Tmp_data/Tmp_EN_marr1.Rdata
-Data/Raw_data/bstn_01.csv
-Data/Raw_data/HISCO_Italian_Formasin_Marzona_2006.csv
-Data/Raw_data/HSN_HISCO_release_2018_01a.csv
-Data/Raw_data/HSN_HISCO_release_2020_02.csv
-Data/Raw_data/lndn1866_01.csv
-Data/Raw_data/Occupation Matrix BHMD_3001.xlsx
-Data/Raw_data/SWEDISH_CEDAR HISCO.txt
-Data/Training_data/DK_census_train.csv
-Data/Validation_data/DK_census_val.csv
-Data_cleaning_scripts/002_Cleaning_DK_census.R
-Data/Test_data/DK_census_test.csv
 .RDataTmp
 Tmp training plots/
-Tmp training plots/old
-tmp/
 Litterature/
 Trained_models/
-Manual_data/
-Raw_data/
-Test_data/
-Tmp_data/
-Training_data/
-Validation_data/
+Data/Predictions/
+Data/Tmp_finetune/
+.spyproject/
+Model_scripts/__pycache__/
 .RDataTmp1
-.spyproject/config/backups/workspace.ini.bak
-.spyproject/config/backups/workspace.ini.bak
-.spyproject/config/workspace.ini
-Data/Application_data/Copenhagen Burial Records/LICENSE_DK
-Data/Application_data/Copenhagen Burial Records/LICENSE_EN
-Data/Application_data/Copenhagen Burial Records/Link-lives Guide v.1.pdf
-Data/Application_data
-Data/Tmp_train/Test.parquet
-Data/Tmp_train/Train.parquet
-Data/Tmp_train/Val.parquet
-Data/Tmp_train/Test.csv
-Data/Tmp_train/Train.csv
-Data/Tmp_train/Val.csv
-Data/Tmp_train/Test_index.txt
-Data/Tmp_train/Train_index.txt
-Data/Tmp_train/Val_index.txt
-Data/Predictions/embeddings_w_lang.csv
-Data/Predictions/embeddings_w_lang_base.csv
-Data/Predictions/embeddings_wo_lang.csv
-Data/Predictions/embeddings_wo_lang_base.csv
-Data/Predictions/pred_data.csv
-Data/Predictions/preds_w_lang.csv
-Data/Predictions/preds_wo_lang.csv
-Data/Predictions/PredictionsCANINE/embeddings_w_lang.csv
-Data/Predictions/PredictionsCANINE/embeddings_w_lang_base.csv
-Data/Predictions/PredictionsCANINE/embeddings_wo_lang.csv
-Data/Predictions/PredictionsCANINE/embeddings_wo_lang_base.csv
-Data/Predictions/PredictionsCANINE/pred_data.csv
-Data/Predictions/PredictionsCANINE/preds_w_lang.csv
-Data/Predictions/PredictionsCANINE/preds_wo_lang.csv
-Data/Summary_data/Model_performanceCANINE.csv
-Data/Tmp_finetune
-.spyproject/config/backups/workspace.ini.bak
-.spyproject/config/workspace.ini
-Model_scripts/__pycache__/n103_Prediction_assets.cpython-311.pyc
+OccCANINE/Model/
+OccCANINE/Finetuned/
+OccCANINE/__pycache__/

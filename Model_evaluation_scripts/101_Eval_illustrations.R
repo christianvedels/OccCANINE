@@ -15,6 +15,7 @@ library(knitr)
 library(kableExtra)
 library(hisco)
 library(fixest)
+library(fwildclusterboot)
 
 source("Model_evaluation_scripts/000_Functions.R")
 source("Model_evaluation_scripts/001_Generate_eval_stats.R")
@@ -29,17 +30,21 @@ eval_canine = Generate_eval_stats("CANINE", overwrite = FALSE, toyrun = FALSE)
 # ==== What is the best threshold? ====
 # All
 p1 = eval_canine %>% filter(summary == "All") %>% 
+  mutate(
+    lang_info = ifelse(lang_info, "With language info.", "Without language info.")
+  ) %>% 
   plot_of_thresholds("All") + 
   theme(legend.position = "bottom") +
   labs(title = NULL, subtitle = NULL) + 
   scale_color_manual(values = c(red, green)) + 
   labs(
-    col = "Lang. info.",
-    shape = "Lang. info."
+    col = "",
+    shape = "",
+    y = "Metric"
   )
 
 p1
-ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.pdf", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 
 # Best overall thresholds
 all_stats = eval_canine %>% 
@@ -146,21 +151,20 @@ p1 = plot_data %>%
   geom_text(
     y = 0.4,
     aes(label = label, x = lang),
-    angle = 90,
-    fontface = "italic"
+    col = "grey", 
+    angle = 90
   ) + 
   geom_hline(aes(yintercept = value), data = all_stats, lty = 2) + 
   geom_text(
     data = all_stats,
     aes(label = scales::percent(value, 0.1), x = lang, y = value-0.075),
-    inherit.aes = FALSE,
-    fontface = "bold"
+    inherit.aes = FALSE
   ) + 
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5)
   )
 p1
-ggsave("Project_dissemination/Figures for paper/Performance_by_language.pdf", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Performance_by_language.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 
 # ==== Table of optimal thresholds for appendix ====
 plot_data %>%
@@ -220,7 +224,7 @@ p1 = eval_canine %>%
   geom_hline(yintercept = 1)
 
 p1
-ggsave("Eval_plots/Performance_lang_wise1.pdf", width = 10, height = 10, plot = p1)
+ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 10, plot = p1, dpi = 600)
 
 p1 = eval_canine %>% # Regular bar plot
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
@@ -245,7 +249,7 @@ p1 = eval_canine %>% # Regular bar plot
   )
 
 p1  
-ggsave("Eval_plots/Performance_lang_wise2.pdf", width = 6, height = 3.5, plot = p1)
+ggsave("Eval_plots/Performance_lang_wise2.png", width = 6, height = 3.5, plot = p1, dpi = 600)
 
 # ==== By hisco ====
 the_best0 = the_best %>% filter(lang_info)
@@ -342,8 +346,8 @@ p1 = plot_data %>%
     aes(x = n_label, y = y, label = label), data = labels01
   )
 
-ggsave("Eval_plots/Performance_hisco.pdf", width = 6, height = 3.5, plot = p1)
-ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.pdf", plot = p1, height = dim[1], width = dim[2])
+ggsave("Eval_plots/Performance_hisco.png", width = 6, height = 3.5, plot = p1)
+ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 
 p1
 
@@ -376,7 +380,7 @@ p1 = ses_data %>%
   theme_bw()
 
 p1
-ggsave("Project_dissemination/Figures for paper/Performance_by_ses.pdf", plot = p1, height = dim[1], width = dim[2])
+ggsave("Project_dissemination/Figures for paper/Performance_by_ses.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 
 # Regressions to test ses_value ~ model performance
 regdata = ses_data %>%
@@ -387,8 +391,7 @@ regdata = ses_data %>%
   rename(
     F1score = `F1 score`
   ) %>% 
-  drop_na() %>% 
-  filter(n > 0)
+  drop_na()
 
 mod1_acc = feols(
   Accuracy ~ ses_value, 

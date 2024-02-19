@@ -1,0 +1,1921 @@
+en_hisco_text,hisco,code
+empty, ,NA
+Non work related title,-3,0
+Source explicitly states that the person does not work,-2,1
+"Missing, no title",-1,2
+"Chemist, General",1110,3
+Organic Chemist,1120,4
+Inorganic Chemist,1130,5
+Physical Chemist,1140,6
+Analytical Chemist,1150,7
+Other Chemists,1190,8
+Physicists,1200,9
+"Physicist, General",1210,10
+Mechanics Physicist,1220,11
+Heat Physicist,1230,12
+Light Physicist,1240,13
+Sound Physicist,1250,14
+Electricity and Magnetism Physicist,1260,15
+Electronics Physicist,1270,16
+Nuclear Physicist,1280,17
+Other Physicists,1290,18
+Physical Scientists Not Elsewhere Classified,1300,19
+Geophysical Scientist,1320,20
+Geological Scientist,1330,21
+Meteorological Scientist,1340,22
+Astronomical Scientist,1350,23
+Other Physical Scientists,1390,24
+"Physical Science Technician, Specialisation Unknown",1400,25
+Chemistry Technician,1420,26
+Physics Technician,1430,27
+Other Physical Science Technicians,1490,28
+"Engineer, Specialisation Unknown",2000,29
+Architects and Town Planners,2100,30
+Building Architect,2120,31
+Town Planner,2130,32
+Landscape Architect,2140,33
+Civil Engineers,2200,34
+"Civil Engineer, General",2210,35
+Building Construction Engineer,2220,36
+Highway and Street Construction Engineer,2230,37
+Aerodrome Construction Engineer,2235,38
+Railway Construction Engineer,2240,39
+Bridge Construction Engineer,2245,40
+Sanitary Engineer,2250,41
+Hydraulics Engineer,2255,42
+Soil Mechanics Engineer,2260,43
+Other Civil Engineers,2290,44
+Electrical and Electronics Engineers,2300,45
+"Electrical Engineer, General",2305,46
+"Electronics Engineer, General",2310,47
+Power Generation Engineer,2320,48
+Power Distribution and Transmission Engineer,2330,49
+Telecommunications Engineer,2340,50
+Other Electrical and Electronics Engineers,2390,51
+Mechanical Engineers,2400,52
+"Mechanical Engineer, General",2410,53
+Industrial Machinery and Tools Engineer,2420,54
+"Mechanical Engineer (Motors and Engines, except Marine)",2430,55
+Marine Engineer,2440,56
+Ship Construction Engineer,2450,57
+Aeronautical Engineer,2460,58
+Automotive Engineer,2470,59
+"Heating, Ventilation and Refrigeration Engineer",2480,60
+Nuclear Power Engineer,2485,61
+Other Mechanical Engineers,2490,62
+Chemical Engineers,2500,63
+"Chemical Engineer, General",2510,64
+Chemical Engineer (Petroleum),2520,65
+Other Chemical Engineers,2590,66
+Metallurgists,2600,67
+Extractive Metallurgist,2620,68
+Physical Metallurgist,2630,69
+Other Metallurgists,2690,70
+Mining Engineers,2700,71
+"Mining Engineer, General",2710,72
+CoalMining Engineer,2720,73
+MetalMining Engineer,2730,74
+Petroleum and Natural Gas Engineer,2740,75
+Other Mining Engineers,2790,76
+Industrial Engineers,2800,77
+"Industrial Efficiency Engineer, General",2810,78
+Methods Engineer,2820,79
+Time and Motion Study Engineer,2830,80
+Other Industrial Engineers,2890,81
+Engineers Not Elsewhere Classified,2900,82
+Ceramics and Glass Technologist,2920,83
+Agricultural Engineer,2930,84
+Food and Drink Technologist,2940,85
+Traffic Planner,2950,86
+Other Engineers,2990,87
+Surveyors,3000,88
+"Surveyor, General",3010,89
+Land Surveyor,3020,90
+Mine Surveyor,3030,91
+Hydrographic Surveyor,3040,92
+Photogrammetrist,3050,93
+Other Surveyors,3090,94
+Draughtsmen,3100,95
+"Draughtsman, General",3110,96
+Mechanical Draughtsman,3120,97
+Electrical Draughtsman,3130,98
+Civil Engineering Draughtsman,3140,99
+Architectural Draughtsman,3150,100
+Cartographical Draughtsman,3160,101
+Technical Illustrator,3170,102
+Lithographic Artist,3180,103
+Other Draughtsmen,3190,104
+"Technician, Specialisation Unknown",3200,105
+Civil Engineering Technicians,3300,106
+"Civil Engineering Technician, General",3310,107
+Quantity Surveyor,3320,108
+Surveyor's Technician,3330,109
+Clerk of Works,3340,110
+Other Civil Engineering Technicians,3390,111
+Electrical and Electronics Engineering Technicians,3400,112
+"Electrical Engineering Technician, General",3405,113
+"Electronics Engineering Technician, General",3410,114
+Electrical Engineering Technician (High Voltage),3420,115
+Telecommunications Technician,3430,116
+Other Electrical and Electronics Engineering Technicians,3490,117
+Mechanical Engineering Technicians,3500,118
+"Mechanical Engineering Technician, General",3510,119
+Mechanical Engineering Technician (Motors and Engines),3520,120
+Aeronautical Engineering Technician,3530,121
+Automotive Engineering Technician,3540,122
+"Heating, Ventilation and Refrigeration Engineering Technician",3550,123
+Other Mechanical Engineering Technicians,3590,124
+Chemical Engineering Technicians,3600,125
+"Chemical Engineering Technical, General",3610,126
+Chemical Engineering Technician (Petroleum),3620,127
+Other Chemical Engineering Technicians,3690,128
+"Metallurgical Technician, Specialisation Unknown",3700,129
+Extractive Metallurgy Technician,3720,130
+Physical Metallurgy Technician,3730,131
+Other Metallurgical Technicians,3790,132
+Mining Technicians,3800,133
+"Mining Technician, General",3810,134
+Petroleum and Natural Gas Extraction Technician,3820,135
+Other Mining Technicians,3890,136
+Engineering Technicians Not Elsewhere Classified,3900,137
+Production Engineering Technician,3920,138
+Time and Motion Study Technician,3930,139
+Other Engineering Technicians,3990,140
+Aircraft and Ships' Officers,4000,141
+"Aircraft Pilots, Navigators and Flight Engineers",4100,142
+Air Transport Pilot,4120,143
+Aircraft Pilot (Transport or Other Purposes),4125,144
+Aircraft Pilot (except Transport),4130,145
+Flight Navigator,4140,146
+Flight Engineer,4150,147
+Flying Instructor,4160,148
+"Ships' Deck Officer or Pilot, Specialisation Unknown",4200,149
+Ship's Master (Sea),4215,150
+Ship's Master (Sea or Inland Waterways),4217,151
+Ship's Master (Inland Waterways),4220,152
+Ship's Navigating Officer,4230,153
+Ship Pilot,4240,154
+Marine Superintendent (Deck),4250,155
+Other Ships' Deck Officers and Pilots,4290,156
+Ships' Engineers,4300,157
+Ship's Chief Engineer,4315,158
+Marine Engineer Officer,4320,159
+Marine Superintendent (Technical),4330,160
+Life Scientists and Related Technicians,5000,161
+"Biologists, Zoologists and Related Scientists",5100,162
+"Biologist, General",5110,163
+Botanist,5120,164
+Zoologist,5130,165
+"Other Biologists, Zoologists and Related Scientists",5190,166
+"Bacteriologists, Pharmacologists and Related Scientists",5200,167
+Anatomist,5220,168
+Biochemist,5230,169
+Physiologist,5240,170
+Bacteriologist,5250,171
+Medical Pathologist,5260,172
+Veterinary Pathologist,5265,173
+Pharmacologist,5270,174
+Animal Scientist,5280,175
+"Other Bacteriologists, Pharmacologists and Related Scientists",5290,176
+Agronomists and Related Scientists,5300,177
+Agronomist,5320,178
+Horticulturist,5330,179
+Silviculturist,5340,180
+Soil Scientist,5350,181
+Farming Adviser,5360,182
+Other Agronomists and Related Scientists,5390,183
+"Life Science Technician, Specialisation Unknown",5400,184
+Biological Technician,5420,185
+Medical Science Technician,5430,186
+Other Life Sciences Technicians,5490,187
+"Medical Doctor, Specialisation Unknown",6100,188
+General Physician,6105,189
+General Surgeon,6110,190
+Specialised Physician,6120,191
+Specialised Surgeon,6130,192
+Public Health Physician,6140,193
+Other Medical Doctors,6190,194
+Medical Assistants,6200,195
+Medical Assistant,6210,196
+Dentists,6300,197
+"Dentist, General",6310,198
+Specialised Dentist,6320,199
+Public Health Dentist,6330,200
+Dental Assistants,6400,201
+Dental Assistant,6420,202
+School Dental Assistant,6430,203
+Dental Hygienist,6440,204
+Veterinarians,6500,205
+"Veterinarian, General",6510,206
+Public Health Veterinarian,6520,207
+Other Veterinarians,6590,208
+Veterinary Assistants,6600,209
+Veterinary Assistant,6610,210
+Pharmacists,6700,211
+Pharmacist,6710,212
+Pharmaceutical Assistants,6800,213
+Pharmaceutical Assistant,6810,214
+Dietitians and Public Health Nutritionists,6900,215
+"Dietitian, General",6910,216
+Public Health Nutritionist,6920,217
+Other Dietitians and Public Health Nutritionists,6990,218
+Professional Nurses,7100,219
+"Professional Nurse, General",7110,220
+Specialised Nurse,7120,221
+Public Health Nurse,7130,222
+Occupational Health Nurse,7140,223
+Other Professional Nurses,7190,224
+Nursing Personnel Not Elsewhere Classified,7200,225
+Auxiliary Nurse,7210,226
+Professional Midwives,7300,227
+Professional Midwife,7310,228
+Midwifery Personnel Not Elsewhere Classified,7400,229
+Auxiliary Midwife,7410,230
+Optometrists and Opticians,7500,231
+Optometrist,7520,232
+Dispensing Optician,7530,233
+Physiotherapists and Occupational Therapists,7600,234
+Physiotherapist,7620,235
+Occupational Therapist,7630,236
+Masseur,7640,237
+Medical XRay Technicians,7700,238
+Medical XRay Technician,7710,239
+"Medical, Dental, Veterinary and Related Workers Not Elsewhere Classified",7900,240
+Osteopath,7920,241
+Chiropractor,7930,242
+Sanitarian,7940,243
+Orthopaedic Technician,7950,244
+"Other Medical, Dental, Veterinary and Related Workers",7990,245
+"Statisticians, Mathematicians, Systems Analysts and Related Technicians",8000,246
+Statisticians,8100,247
+"Statistician, General",8110,248
+Mathematical Statistician,8120,249
+Statistician (Applied Statistics),8130,250
+Mathematicians and Actuaries,8200,251
+Mathematician (Pure Mathematics),8220,252
+Mathematician (Applied Mathematics),8230,253
+OperationsResearch Analyst,8240,254
+Actuary,8250,255
+Systems Analysts,8300,256
+Systems Analyst,8310,257
+Statistical and Mathematical Technicians,8400,258
+Computer Programmer,8420,259
+Other Statistical and Mathematical Technicians,8490,260
+Economists,9000,261
+"Economist, General",9010,262
+"Economist, Specialised",9020,263
+Market Research Analyst,9030,264
+Accountants,11000,265
+"Accountant, General",11010,266
+Auditor,11020,267
+Other Accountants,11090,268
+"Jurist, Specialization Unknown",12000,269
+Lawyers,12100,270
+Lawyer,12110,271
+Judges,12200,272
+Judge,12210,273
+Notaries,12300,274
+Notary,12310,275
+Solicitors,12400,276
+Solicitor,12410,277
+Jurists Not Elsewhere Classified,12900,278
+"Jurist (except Lawyer, Judge or Solicitor)",12910,279
+"Teacher, Level and Subject Unknown",13000,280
+"Teacher, Level and Subject Unknown, Not University and Higher Education Level",13020,281
+"Teacher, Level and Subject Unknown, Not Primary Education",13030,282
+"University and Higher Education Teacher, Subject Unknown",13100,283
+Teacher in Physical Sciences (Third Level),13120,284
+Teacher in Engineering and Architecture (Third Level),13125,285
+Teacher in Life and Medical Sciences (Third Level),13130,286
+Teacher in Mathematics (Third Level),13140,287
+Teacher in Economics and Commerce (Third Level),13145,288
+Teacher in Law (Third Level),13150,289
+Teacher in Education (Third Level),13155,290
+Teacher in Agricultural Science (Third Level),13160,291
+"Teacher in History, Philosophy, Sociology and Related Social Sciences (Third Level)",13165,292
+Teacher in Languages and Literature (Third Level),13170,293
+"Teacher in Medical Therapy, Advanced Nursing and Related Arts",13175,294
+Teacher in Industrial Arts (Third Level),13180,295
+Other University and Higher Education Teachers,13190,296
+"Secondary Education Teacher, Subject Unknown",13200,297
+Languages and Literature Teacher (Second Level),13215,298
+Mathematics Teacher (Second Level),13220,299
+Natural Science Teacher (Second Level),13230,300
+Social Studies Teacher (Second Level),13240,301
+Fine Arts Teacher (Second Level),13250,302
+Commercial and Secretarial Teacher (Second Level),13260,303
+Agricultural Science Teacher (Second Level),13270,304
+Domestic Science and General Nursing Teacher,13275,305
+Technical Education Teacher (Second Level),13280,306
+Other Secondary Education Teachers,13290,307
+Primary Education Teachers,13300,308
+FirstLevel Education Teacher,13320,309
+Other Primary Education Teachers,13390,310
+PrePrimary Education Teachers,13400,311
+Kindergarten Teacher,13420,312
+Other PrePrimary Education Teachers,13490,313
+Special Education Teachers,13500,314
+Teacher of the Blind,13520,315
+Teacher of the Deaf,13530,316
+Teacher of the Mentally Handicapped,13540,317
+Other Special Education Teachers,13590,318
+Teachers Not Elsewhere Classified,13900,319
+Education Methods Adviser,13920,320
+AudioVisual and Other Teaching Aid Specialist,13930,321
+Head Teacher,13940,322
+School Inspector,13950,323
+Governess,13960,324
+Other Teachers,13990,325
+Ministers of Religion and Related Members of Religious Orders,14100,326
+Minister of Religion,14120,327
+Missionary,14130,328
+Religious Worker (Member of Religious Order),14140,329
+Other Ministers of Religion and Related Members of Religious Orders,14190,330
+Workers in Religion Not Elsewhere Classified,14900,331
+Faith Healer,14920,332
+Other Workers in Religion,14990,333
+Authors and Critics,15100,334
+Author,15120,335
+Critic,15130,336
+"Author, Journalist or Related Writer, Specialisation Unknown",15900,337
+Journalist,15915,338
+"Editor, Newspapers and Periodicals",15920,339
+"SubEditor, Newspapers and Periodicals",15925,340
+Reporter,15930,341
+Radio and Television Journalist,15935,342
+Continuity and Script Editor,15940,343
+Book Editor,15945,344
+Advertising Copywriter,15950,345
+Public Relations Officer,15955,346
+Publicity Writer,15960,347
+Technical Writer,15965,348
+"Other Authors, Journalists and Related Writers",15990,349
+"Sculptor, Painter, Photographer or Related Creative Artist, Specialisation Unknown",16000,350
+"Sculptors, Painters and Related Artists",16100,351
+Sculptor,16120,352
+"Painter, Artist",16130,353
+Cartoonist,16140,354
+Engraver and Etcher (Artistic),16150,355
+Painting Restorer,16160,356
+"Other Sculptors, Painters and Related Artists",16190,357
+"Commercial Artist or Designer, Specialisation Unknown",16200,358
+Commercial Artist,16220,359
+Interior Decoration Designer,16230,360
+Industrial and Commercial Products Designer,16240,361
+Display Artist,16250,362
+Other Commercial Artists and Designers,16290,363
+Photographers and Cameramen,16300,364
+"Photographer, General",16310,365
+Portrait Photographer,16320,366
+"Photographer, Commercial Illustrator",16330,367
+News Photographer,16340,368
+Director of Photography (Motion Picture),16350,369
+Motion Picture Camera Operator,16360,370
+Television Camera Operator,16370,371
+Other Photographers and Cameramen,16390,372
+"Composer or Performing Artist, Specialisation Unknown",17000,373
+"Composers, Musicians and Singers",17100,374
+Composer,17120,375
+Orchestrator,17130,376
+Orchestra and Band Conductor,17135,377
+Instrumentalist,17140,378
+Singer,17145,379
+Vocal Group Conductor,17150,380
+"Other Composers, Musicians and Singers",17190,381
+Choreographers and Dancers,17200,382
+Choreographer,17220,383
+Dancer,17230,384
+Actors and Stage Directors,17300,385
+Actor,17320,386
+Stage Director,17330,387
+"Motion Picture, Radio and Television Director",17340,388
+StoryTeller,17350,389
+Other Actors and Stage Directors,17390,390
+"Producers, Performing Arts",17400,391
+Theatrical Producer,17420,392
+Motion Picture Producer,17430,393
+Radio and Television Producer,17440,394
+"Other Producers, Performing Arts",17490,395
+Circus Performers,17500,396
+Clown,17520,397
+Magician,17530,398
+Acrobat,17540,399
+Aerialist,17550,400
+Other Circus Performers,17590,401
+Performing Artists Not Elsewhere Classified,17900,402
+Radio and Television Announcer,17920,403
+Comp re,17930,404
+Town Cryer,17940,405
+Other Performing Artists,17990,406
+"Athletes, Sportsmen and Related Workers",18000,407
+Professional Sportsman,18020,408
+Sports Coach,18030,409
+Sports Official,18040,410
+Physical Trainer,18050,411
+"Other Athletes, Sportsmen and Related Workers",18090,412
+"Professional, Technical and Related Workers Not Elsewhere Classified",19000,413
+"Librarians, Archivists and Curators",19100,414
+Librarian,19120,415
+Archivist,19130,416
+Art Gallery and Museum Curator,19140,417
+"Other Librarians, Archivists and Curators",19190,418
+"Sociologists, Anthropologists and Related Scientists",19200,419
+Sociologist,19220,420
+Psychologist,19230,421
+Anthropologist,19240,422
+Geographer,19250,423
+Historian,19260,424
+Political Scientist,19270,425
+"Other Sociologists, Anthropologists and Related Scientists",19290,426
+Social Workers,19300,427
+"Social Worker, General",19310,428
+Social Welfare Worker,19320,429
+Culture Centre Worker,19330,430
+"Social Worker, Delinquency",19340,431
+Psychiatric Social Worker,19350,432
+Other Social Workers,19390,433
+Personnel and Occupational Specialists,19400,434
+Personnel Specialist,19420,435
+Vocational Guidance Counsellor,19430,436
+Occupational Analyst,19440,437
+Other Personnel and Occupational Specialists,19490,438
+"Philologists, Translators and Interpreters",19500,439
+Philologist,19520,440
+Translator,19530,441
+Interpreter,19540,442
+"Other Professional, Technical and Related Workers",19900,443
+Patent Agent,19920,444
+Home Economist,19930,445
+Advertising Account Executive,19940,446
+Underwriter,19950,447
+Astrologer and Fortune Teller,19960,448
+"Other Professional, Technical and Related Workers Not Elsewhere Classified",19990,449
+Legislative Officials and Government Administrators,20000,450
+Legislative Officials,20100,451
+Legislative Official,20110,452
+Government Administrators,20200,453
+Government Administrator,20210,454
+"Manager, Specialisation Unknown",21000,455
+General Managers,21100,456
+General Manager,21110,457
+Production Managers,21200,458
+Production Manager (except Farm),21220,459
+Farm Manager,21230,460
+Contractor,21240,461
+"Sales Manager, Specialisation Unknown",21300,462
+Sales Manager (except Wholesale and Retail Trade),21320,463
+Sales Manager (Wholesale Trade),21330,464
+Sales Manager (Retail Trade),21340,465
+Managers (Catering and Lodging Services),21400,466
+Hotel and Restaurant Manager,21420,467
+Restaurant Manager,21430,468
+Ship's Purser,21440,469
+Other Managers (Catering and Lodging Services),21490,470
+Managers Not Elsewhere Classified,21900,471
+Research and Development Manager,21920,472
+Administration Manager,21940,473
+Budgeting and Accounting Manager,21950,474
+Transport Operations Managers,21960,475
+Operations Manager (Postal or Telecommunications Services),21970,476
+Industrial Relations and Personnel Manager,21980,477
+Other Managers,21990,478
+"Supervisor, Foreman or Inspector, Specialisation Unknown",22000,479
+Clerical supervisors,22100,480
+"Clerical Supervisor, General",22110,481
+Other Clerical Supervisors,22190,482
+Transport and Communications Supervisors ,22200,483
+Railway Station Master,22210,484
+Postmaster,22220,485
+Railway Service Supervisor,22230,486
+Train Dispatcher,22235,487
+Railway Transport Service Inspector,22240,488
+Railway Goods Agent,22245,489
+Road Transport Service Supervisor,22250,490
+Road Passenger Transport Service Inspector,22255,491
+Air Transport Service Supervisor,22260,492
+Air Traffic Controller,22265,493
+Flight Operations Officer,22270,494
+Telecommunications Service Supervisor,22275,495
+Postal Services Supervisor,22280,496
+Other Transport and Communications Supervisors,22290,497
+Sales Supervisors,22300,498
+Sales Supervisor (Wholesale Trade),22320,499
+Sales Supervisor (Retail Trade),22330,500
+Other Sales Supervisors,22390,501
+Housekeeping and Related Service Supervisors,22400,502
+Housekeeper (except Private Service),22420,503
+"Housekeeper (Private Service, in Hotels, or in Other Institutions)",22425,504
+Housekeeper (Private Service),22430,505
+House Steward,22440,506
+Ship Chief Steward,22450,507
+Housekeeping Matron,22460,508
+Other Housekeeping and Related Service Supervisors,22490,509
+Farm Supervisors,22500,510
+Farm Supervisor,22520,511
+Production Supervisors and General Foremen,22600,512
+"Production Supervisor or Foreman, General",22610,513
+"Supervisor and General Foreman (Mining, Quarrying and WellDrilling)",22620,514
+Supervisor and General Foreman (Metal Processing),22630,515
+Supervisor and General Foreman (Chemical and Related Materials Processing),22640,516
+Supervisor and General Foreman (Manufacturing of Machinery and Metal Products),22650,517
+Supervisor and General Foreman (Man. Electrical and Electronic Equipment),22655,518
+"Supervisor and General Foreman (Man. Paper, Plastics, Rubber, etc.)",22660,519
+Supervisor and General Foreman (Food and Beverages Processing),22665,520
+Supervisor and General Foreman (Production of Textiles and Clothing Manufacturing),22670,521
+Supervisor and General Foreman (Construction Work),22675,522
+"Supervisor and General Foreman (Man. and Distribution of Electricity, Gas and Water)",22680,523
+Other Production Supervisors and General Foremen,22690,524
+"Clerical or Related Worker, Specialisation Unknown",30000,525
+"Government Executive Official, Specialisation Unknown",31000,526
+Tax Collector,31020,527
+Tax Assessor,31030,528
+Customs officer,31040,529
+Government Executive Officials Not Elsewhere Classified,31090,530
+"Stenographers, Typists and Card and TapePunching Machine Operators",32000,531
+"Stenographers, Typists and Teletypists",32100,532
+"StenographerTypist, General",32110,533
+Stenographic Secretary,32120,534
+Verbatim Reporter,32130,535
+Typist,32140,536
+Teletypist,32150,537
+"Other Stenographers, Typists and Teletypists",32190,538
+Card and TapePunching Machine Operators,32200,539
+Card and TapePunching Machine Operator,32220,540
+Other Card and TapePunching Machine Operators,32290,541
+"Bookkeepers, Cashiers and Related Workers",33000,542
+Bookkeepers and Cashiers,33100,543
+"Bookkeeper, General",33110,544
+Bookkeeping Clerk,33120,545
+Office Cashier,33130,546
+"Cashier, Office or Cash Desk",33135,547
+Bank Teller,33140,548
+Money Changer,33150,549
+Cash Desk Cashier,33160,550
+Post Office Counter Clerk,33170,551
+Other Bookkeepers and Cashiers,33190,552
+"Bookkeepers, Cashiers and Related Workers Not Elsewhere Classified",33900,553
+Cost Computing Clerk,33920,554
+Wages Clerk,33930,555
+Finance Clerk,33940,556
+"Other Bookkeepers, Cashiers and Related Workers",33990,557
+Computing Machine Operators,34000,558
+Bookkeeping and Calculating Machine Operators,34100,559
+Bookkeeping Machine Operator,34120,560
+Calculating Machine Operator,34130,561
+Automatic DataProcessing Machine Operators,34200,562
+Electronic Computer Operator,34220,563
+PunchedCard Machine Operator,34230,564
+Other Automatic DataProcessing Machine Operators,34290,565
+"Transport Conductor, Specialisation Unknown",36000,566
+Railway Passenger Train Guard,36020,567
+Sleeping or PullmanCar Attendant,36030,568
+Bus Conductor,36040,569
+Other Transport Conductors,36090,570
+"Mail Distribution Clerk, Specialisation Unknown",37000,571
+"Mail Distribution Clerk, General",37010,572
+Mail Sorting Clerk,37020,573
+Postman,37030,574
+Messenger,37040,575
+Other Mail Distribution Clerks,37090,576
+"Telephone or Telegraph Operator, Specialisation Unknown",38000,577
+Telephone Switchboard Operator,38020,578
+RadioTelephone Operator (LandBased),38030,579
+Telegrapher,38040,580
+Ship's Radio Officer,38050,581
+Flight Radio Operator,38060,582
+Other Telephone and Telegraph Operators,38090,583
+Clerical and Related Workers Not Elsewhere Classified,39000,584
+Stock Clerks,39100,585
+"Stock Clerk, General",39110,586
+Dispatching and Receiving Clerk,39120,587
+Stock Records Clerk,39130,588
+Storeroom Clerk,39140,589
+Weighing Clerk,39150,590
+Other Stock Clerks,39190,591
+Material and Production Planning Clerks,39200,592
+Material Planning Clerk,39220,593
+Production Planning Clerk,39230,594
+Correspondence and Reporting Clerks,39300,595
+"Office Clerk, General",39310,596
+Correspondence Clerk,39320,597
+Personnel Clerk,39330,598
+Legal Clerk,39340,599
+Insurance Clerk,39350,600
+Other Correspondence and Reporting Clerks,39390,601
+Receptionists and Travel Agency Clerks,39400,602
+"Receptionist, General",39410,603
+Hotel Receptionist,39420,604
+Doctor's or Dentist's Receptionist,39430,605
+Travel Agency Clerk,39440,606
+Other Receptionists and Travel Agency Clerks,39490,607
+Library and Filing Clerks,39500,608
+Library Clerk,39520,609
+Filing Clerk,39530,610
+Clerks Not Elsewhere Classified,39900,611
+Statistical Clerk,39920,612
+Coding Clerk (DataProcessing),39930,613
+Proof Reader,39940,614
+Office Machine Operator (Reproduction Processes),39950,615
+Railway Clerk,39960,616
+Other Clerks,39990,617
+Working Proprietors (Wholesale and Retail Trade),41000,618
+Working Proprietor (Wholesale Trade),41020,619
+Working Proprietor (Wholesale or Retail Trade),41025,620
+Working Proprietor (Retail Trade),41030,621
+Working Proprietor (Hiring Out),41040,622
+Buyers,42000,623
+Buyers,42200,624
+Buyer,42220,625
+Purchasing Agent,42230,626
+"Technical Salesmen, Commercial Travellers and Manufacturers Agents",43000,627
+Technical Sales and Service Advisers,43100,628
+Technical Salesman,43120,629
+Technical Service Adviser,43130,630
+Commercial Travellers and Manufacturers Agents,43200,631
+Commercial Traveller,43220,632
+Manufacturers' Agent,43230,633
+"Insurance, Real Estate, Securities and Business Services Salesmen and Auctioneers",44000,634
+"Insurance, Real Estate or Securities Salesmen, Specialisation Unknown",44100,635
+Insurance Salesman,44120,636
+Estate Agent,44130,637
+Stock Broker,44140,638
+"Other Insurance, Real Estate and Securities Salesmen",44190,639
+Business Services Salesmen,44200,640
+Business Services Salesman (except Advertising),44220,641
+Advertising Salesman,44230,642
+Auctioneers,44300,643
+Auctioneer,44320,644
+Appraiser,44330,645
+"Salesmen, Shop Assistants and Related Workers",45000,646
+"Salesmen, Shop Assistants and Demonstrators",45100,647
+Wholesale Trade Salesperson,45120,648
+"Salesperson, Wholesale or Retail Trade",45125,649
+Retail Trade Salesperson,45130,650
+Fashion Model,45140,651
+Demonstrator,45150,652
+"Other Salesmen, Shop Assistants and Demonstrators",45190,653
+"Street Vendors, Canvassers and News Vendors",45200,654
+Street Vendor,45220,655
+Canvasser,45230,656
+News Vendor,45240,657
+"Other Street Vendors, Canvassers and News Vendors",45290,658
+Sales Workers Not Elsewhere Classified,49000,659
+Pawnbroker,49020,660
+Waste Collector,49030,661
+Other Sales Workers,49090,662
+"Working Proprietor (Catering, Lodging or Leisure Services), Specialisation Unknown",51000,663
+Working Proprietor (Hotel and Restaurant),51020,664
+Working Proprietor (Restaurant),51030,665
+Working Proprietor (Guest House),51040,666
+"Working Proprietor  , Bar and Snack Bar)",51050,667
+"Other Working Proprietors (Catering, Lodging and Leisure Services)",51090,668
+"Cooks, Waiters, Bartenders and Related Workers",53000,669
+"Cook, Specialisation Unknown",53100,670
+Head Cook,53120,671
+"Cook, except Private Service",53130,672
+"Cook, Private Service",53140,673
+Ship's Cook,53150,674
+Other Cooks,53190,675
+"Waiters, Bartenders and Related Workers",53200,676
+"Waiter, General",53210,677
+Head Waiter,53220,678
+"Waiter, Formal Service",53230,679
+Wine Waiter,53240,680
+Bartender,53250,681
+"Other Waiters, Bartenders and Related Workers",53290,682
+Maids and Related Housekeeping Service Workers Not Elsewhere Classified,54000,683
+"Domestic Servant, General",54010,684
+House Servant,54020,685
+"Personal Maid, Valet",54030,686
+Nursemaid,54035,687
+Companion,54040,688
+Chambermaid and Room Attendant,54050,689
+Hotel Concierge,54055,690
+Ship's Steward,54060,691
+Other Maids and Related Housekeeping Service Workers,54090,692
+"Building Caretakers, Charworkers, Cleaners and Related Workers",55000,693
+"Building Caretaker, Specialisation Unknown",55100,694
+Concierge (Apartment House),55120,695
+Concierge (Apartment House) or Janitor,55125,696
+Janitor,55130,697
+Verger,55140,698
+Other Building Caretakers,55190,699
+"Charworkers, Cleaners and Related Workers",55200,700
+Charworker,55220,701
+Window Cleaner,55230,702
+Chimney Sweep,55240,703
+"Other Charworkers, Cleaners and Related Workers",55290,704
+"Launderers, DryCleaners and Pressers",56000,705
+"Launderer,  General",56010,706
+Laundering MachineOperator,56020,707
+DryCleaning MachineOperator,56030,708
+DryCleaner (Hand),56040,709
+Spotter (DryCleaner),56050,710
+Laundry Pressing MachineOperator,56060,711
+Presser (Hand or Machine),56065,712
+Presser (Hand),56070,713
+Wardrobe Mistress (Stage and Studio),56080,714
+"Other Launderers, DryCleaners and Pressers",56090,715
+"Hairdressers, Barbers, Beauticians and Related Workers",57000,716
+Women's Hairdresser,57020,717
+Women's or Men's Hairdresser,57025,718
+Barber Hairdresser,57030,719
+Beautician,57040,720
+Manicurist,57050,721
+MakeUp Man (Stage and Studio),57060,722
+Bath Attendant,57070,723
+"Other Barbers, Hairdressers, Beauticians and Related Workers",57090,724
+Protective Service Workers,58000,725
+FireFighters,58100,726
+FireFighter,58110,727
+Fire Prevention Specialist,58120,728
+FireSalvage Specialist,58130,729
+Aircraft Accident FireFighter,58140,730
+Policemen and Detectives,58200,731
+Policeman and other Maintainers of Law and Order (except Military),58220,732
+Military Policeman,58225,733
+Detective,58230,734
+Private Police Guard,58240,735
+Military,58300,736
+Officer,58320,737
+NonCommissioned Officer,58330,738
+Other Military Ranks,58340,739
+Protective Service Workers Not Elsewhere Classified,58900,740
+Private Inquiry Agent,58920,741
+Prison Guard,58930,742
+Watchman,58940,743
+Other Protective Service Workers,58990,744
+Service Workers Not Elsewhere Classified,59000,745
+Guides,59100,746
+Travel Guide,59120,747
+Sightseeing Guide,59130,748
+Undertakers and Embalmers,59200,749
+Undertaker,59220,750
+Embalmer,59230,751
+Other Undertakers and Embalmers,59290,752
+Other Service Workers,59900,753
+Bookmaker (Sport),59920,754
+Croupier,59930,755
+Nursing Aid,59940,756
+Practical Aid (Pharmacy),59950,757
+Practical Aid (Veterinary),59960,758
+Aircraft Cabin Attendant,59970,759
+Prostitute,59980,760
+Other Service Workers Not Elsewhere Classified,59990,761
+Farmers,61000,762
+General Farmers,61100,763
+General Farmer,61110,764
+Small Subsistence Farmer (Husbandman),61115,765
+Field Crop Farmer,61220,766
+Orchard and Related Tree and Shrub Crop Farmer,61230,767
+Vine Grower,61235,768
+Livestock Farmer,61240,769
+Dairy Farmer,61250,770
+Poultry Farmer,61260,771
+Horticultural Farmer,61270,772
+Other Specialised Farmers,61290,773
+Agricultural and Animal Husbandry Workers,62000,774
+General Farm Workers,62100,775
+"FarmWorker, General",62105,776
+"FarmHelper, General",62110,777
+Farm Servant,62120,778
+Field Crop and Vegetable Farm Workers,62200,779
+Field Crop Farm Worker,62210,780
+Vegetable Farm Worker,62220,781
+Wheat Farm Worker,62230,782
+Cotton Farm Worker,62240,783
+Rice Farm Worker,62250,784
+SugarCane Farm Worker,62260,785
+Other Field Crop and Vegetable Farm Workers,62290,786
+"Orchard, Vineyard and Related Tree and Shrub Crop Workers",62300,787
+Orchard Worker,62320,788
+Vineyard Worker,62330,789
+Tea Plantation Worker,62340,790
+Rubber Plantation Worker,62350,791
+"Other Orchard, Vineyard and Related Tree and Shrub Crop Workers",62390,792
+Livestock Workers,62400,793
+"Livestock Worker, General",62410,794
+Beef Cattle Farm Worker,62420,795
+Sheep Farm Worker,62430,796
+Pig Farm Worker,62440,797
+FurBearing Animal Farm Worker,62450,798
+Horse Worker,62460,799
+Other Livestock Workers,62490,800
+Dairy Farm Workers,62500,801
+"Dairy Farm Worker, General",62510,802
+Milker (Machine),62520,803
+Other Dairy Farm Workers,62590,804
+Poultry Farm Workers,62600,805
+"Poultry Farm Worker, General",62610,806
+Poultry Hatchery Worker,62620,807
+Other Poultry Farm Workers,62690,808
+Nursery Workers and Gardeners,62700,809
+Market Garden Worker,62720,810
+Nursery Worker,62730,811
+Gardener,62740,812
+Other Nursery Workers and Gardeners,62790,813
+Farm Machinery Operators,62800,814
+Motorised Farm Equipment Operator,62820,815
+Other Farm Machinery Operators,62890,816
+Agricultural and Animal Husbandry Workers Not Elsewhere Classified,62900,817
+Apiary Worker,62920,818
+Sericulture Worker,62930,819
+Tree Tapper (except Rubber),62940,820
+Irrigator,62950,821
+Groundsman,62960,822
+Peat Worker,62970,823
+Other Agricultural and Animal Husbandry Workers,62990,824
+Forestry Workers,63000,825
+Loggers,63100,826
+Logger (General),63110,827
+Tree Feller and Bucker,63120,828
+HighClimber (Logging),63130,829
+River Driver,63140,830
+Other Loggers,63190,831
+Forestry Workers (except Logging),63200,832
+Forest Supervisor,63220,833
+Forestry Worker,63230,834
+Timber Cruiser,63240,835
+Forest FireFighter,63250,836
+Other Forestry Workers,63290,837
+"Fishermen, Hunters and Related Workers",64000,838
+"Fisherman, DeepSea or Inland and Coastal Water",64100,839
+DeepSea Fisherman,64120,840
+Inland and Coastal Water Fisherman,64130,841
+"Fishermen, Hunters and Related Workers Not Elsewhere Classified",64900,842
+Fish Farm Worker,64920,843
+Oyster Farm Worker,64930,844
+Whale Hunter,64940,845
+Whale or Seal Hunter,64945,846
+Seal Hunter,64950,847
+Trapper and Hunter,64960,848
+"Other Fishermen, Hunters and Related Workers",64990,849
+"Miners, Quarrymen, WellDrillers and Related Workers",71000,850
+Miners and Quarrymen,71100,851
+"Miner, General",71105,852
+"Quarryman, General",71110,853
+CuttingMachine Operator (Mine),71120,854
+"MiningMachine Operator, Specialisation Unknown",71125,855
+DrillingMachine Operator (Mine and Quarry),71130,856
+Continuous MiningMachine Operator,71140,857
+ShotFirer (Mine and Quarry),71150,858
+Underground Timberman,71160,859
+Sampler (Mine),71170,860
+Other Miners and Quarrymen,71190,861
+Mineral and Stone Treaters,71200,862
+Stone Splitter,71220,863
+MineralCrushingMachine Operator,71230,864
+MineralMillingMachine Operator,71240,865
+Jig Tender,71250,866
+Floatation Man,71260,867
+Precipitator,71270,868
+Cone Operator (Mine),71280,869
+Other Mineral and Stone Treaters,71290,870
+"WellDrillers, Borers and Related Workers",71300,871
+Derrickman (Oil and Gas Wells),71320,872
+Rotary Driller (Oil and Gas Wells),71330,873
+Cable Driller (Oil and Gas Wells),71340,874
+Cementer (Oil and Gas Wells),71350,875
+WellPuller (Oil and Gas Wells),71360,876
+Acidiser (Oil and Gas Wells),71370,877
+WellDriller and Borer (except Oil and Gas Wells),71380,878
+"Other WellDrillers, Borers and Related Workers",71390,879
+"Metal Processor, Specialisation Unknown",72000,880
+"Metal Smelting, Converting or Refining Furnacemen, Specialisation Unknown",72100,881
+Blast Furnaceman (Ore Smelting),72120,882
+OpenHearth Furnaceman (Steel),72130,883
+Oxygen Furnaceman (Steel Converting),72140,884
+Bessemer Furnaceman (Steel Converting),72150,885
+Electric Arc Furnaceman (Steel Refining),72160,886
+"Furnaceman, NonFerrous Metal Converting and Refining",72170,887
+"Other Metal Smelting, Converting and Refining Furnaceman",72190,888
+"Metal RollingMill Worker, Specialisation Unknown",72200,889
+HotRoller (Steel),72220,890
+ContinuousMill Roller (Steel),72230,891
+ColdRoller (Steel),72240,892
+"Roller, NonFerrous Metals",72250,893
+Seamless Pipe and Tube Roller,72260,894
+Manipulator (Rolling Mill),72270,895
+Other Metal RollingMill Workers,72290,896
+Metal Melters and Reheaters,72300,897
+"Furnaceman, MetalMelting, except Cupola",72320,898
+Cupola Furnaceman,72330,899
+"Furnaceman, Metal Reheating",72340,900
+Other Metal Melters and Reheaters,72390,901
+Metal Casters,72400,902
+Metal Pourer,72420,903
+Centrifugal CastingMachine Operator,72430,904
+DieCastingMachine Operator,72440,905
+Continuous RodCastingMachineOperator (NonFerrous Metal),72450,906
+Other Metal Caster,72490,907
+"Metal Moulder or Coremaker, Specialisation Unknown",72500,908
+Bench Moulder (Metal),72520,909
+Floor and Pit Moulder,72530,910
+Moulder (Machine),72540,911
+Coremaker (Hand),72550,912
+Coremaker (Hand or Machine),72555,913
+Coremaker (Machine),72560,914
+Other Metal Moulders and Core Makers,72590,915
+"Metal Annealers, Temperers and CaseHardeners",72600,916
+Annealer,72620,917
+Hardener,72630,918
+CaseHardener,72640,919
+Temperer,72650,920
+"Other Metal Annealers, Temperers and CaseHardeners",72690,921
+Metal Drawers and Extruders,72700,922
+Wire Drawer (Hand),72720,923
+Wire Drawer (Hand or Machine),72725,924
+Wire Drawer (Machine),72730,925
+Seamless Pipe and Tube Drawer,72740,926
+Extruder Operator (Metal),72750,927
+Other Metal Drawers and Extruders,72790,928
+Metal Platers and Coaters,72800,929
+Electroplater,72820,930
+HotDip Plater,72830,931
+WireCoatingMachine Operator,72840,932
+Metal Sprayer,72850,933
+Other Metal Platers and Coaters,72890,934
+Metal Processors Not Elsewhere Classified,72900,935
+Metal Bluer,72920,936
+Casting Finisher,72930,937
+Metal Cleaner,72940,938
+Other Metal Processors,72990,939
+Wood Preparation Workers and Paper Makers,73000,940
+"Wood Treater, Specialisation Unknown",73100,941
+WoodSeasoning Worker,73120,942
+WoodTreating Worker,73130,943
+Other Wood Treaters,73190,944
+"Sawyer, Plywood Maker or Related WoodProcessing Worker, Specialisation Unknown",73200,945
+"Sawyer, General",73210,946
+Edge Sawyer,73220,947
+BandSaw Operator,73230,948
+Veneer Cutter,73240,949
+Plywood CoreLayingMachine Operator,73250,950
+Plywood PressOperator,73260,951
+Wood Grader,73270,952
+"Other Sawyer, Plywood Makers and Related WoodProcessing Workers",73290,953
+Paper Pulp Preparers,73300,954
+Wood Grinder,73320,955
+Chipperman,73330,956
+Digester Operator,73340,957
+Bleacher Operator,73350,958
+Beater Operator,73360,959
+Other Paper Pulp Preparers,73390,960
+"Paper Maker, Specialisation Unknown",73400,961
+PaperMakingMachine Operator (Wet End),73420,962
+PaperMakingMachine Operator (Back End),73430,963
+Supercalender Operator,73440,964
+CoatingMachine Operator,73450,965
+Paper Maker (Hand),73460,966
+Other Paper Makers,73490,967
+Chemical Processors and Related Workers,74000,968
+"Crusher, Grinder or Mixer, Specialisation Unknown",74100,969
+Crusher Operator (Chemical and Related Processes),74120,970
+MillerGrinder (Chemical and Related Processes),74130,971
+Mixingand BlendingMachine Operator (Chemical and Related Processes),74140,972
+"Other Crushers, Grinders and Mixers",74190,973
+"Cookers, Roasters and Related Heat Treaters",74200,974
+Cooker (Chemical and Related Processes),74220,975
+Roaster (Chemical and Related Processes),74230,976
+Drier Operator (Chemical and Related Processes),74240,977
+"Other Cookers, Roasters and Related HeatTreaters",74290,978
+Filter and Separator Operators,74300,979
+FilterPress Operator,74320,980
+RotaryDrum Filterer,74330,981
+Centrifugal Separator Operator,74340,982
+Crude Oil Treater (Oilfield),74350,983
+Other Filter and Separator Operators,74390,984
+"Still or Reactor Operator, Specialisation Unknown",74400,985
+"BatchStill Operator (Chemical Processes, except Petroleum)",74420,986
+"ContinuousStill Operator (Chemical Processes, except Petroleum)",74430,987
+"ReactorConverter Operator (Chemical Processes, except Petroleum)",74440,988
+Evaporator Operator,74450,989
+Extractor Operator (Wood Distillation),74460,990
+Saltmaker,74470,991
+Other Still and Reactor Operators,74490,992
+"PetroleumRefining Worker, Specialisation Unknown",74500,993
+Desulphurisation Treater (Petroleum Refining),74520,994
+Pumpman (Petroleum Refining),74530,995
+Controlman (Petroleum Refining),74550,996
+Blender (Petroleum Refining),74560,997
+Paraffin Plant Operator,74570,998
+Other PetroleumRefining Workers,74590,999
+Chemical Processors and Related Workers Not Elsewhere Classified,74900,1000
+Chemical Bleacher Operator,74915,1001
+Coke Burner,74920,1002
+CoalGas Maker,74925,1003
+Charcoal Burner,74930,1004
+Synthetic Fibre Maker,74935,1005
+Chemical Processor (Radioactive Materials),74940,1006
+Other Chemical Processors and Related Workers,74990,1007
+"Spinners, Weavers, Knitters, Dyers and Related Workers, Specialisation Unknown",75000,1008
+"Fibre Preparer, Specialisation Unknown",75100,1009
+Fibre Grader and Classer,75115,1010
+Wool Scourer,75120,1011
+Fibre Mixer and Blender,75125,1012
+Fibre Picker,75130,1013
+Fibre Carder,75135,1014
+Fibre Lapper,75140,1015
+Fibre Comber,75145,1016
+Fibre Drawer,75150,1017
+Fibre Rover,75155,1018
+Other Fibre Preparers,75190,1019
+Spinners and Winders,75200,1020
+"Spinner, Thread and Yarn",75220,1021
+Doubler,75230,1022
+Twister,75240,1023
+Winder,75250,1024
+Other Spinners and Winders,75290,1025
+Weavingand KnittingMachine Setters and PatternCard Preparers,75300,1026
+Loom Fixer,75320,1027
+KnittingMachine Setter,75330,1028
+Jacquard Design Copyist,75340,1029
+Jacquard Card Cutter,75350,1030
+Other Weaving and KnittingMachine Setters and PatternCard Preparers,75390,1031
+"Weaver, Specialisation Unknown",75400,1032
+Beam Warper,75415,1033
+Loom Threader (Hand),75420,1034
+Loom Threader (Hand or Machine),75422,1035
+Loom Threader (Machine),75425,1036
+Cloth Weaver (Hand),75430,1037
+Cotton Weaver (Hand or Machine),75432,1038
+Tapestry Maker (Hand),75435,1039
+"Cloth Weaver (Machine, except Jacquard Loom)",75440,1040
+Jacquard Weaver,75445,1041
+Lace Weaver (Machine),75450,1042
+,75452,1043
+Carpet Weaver (Hand),75455,1044
+Carpet Weaver (Hand or Machine),75457,1045
+Carpet Weaver (Machine),75460,1046
+Net Maker (Machine),75465,1047
+Fabrics Examiner,75470,1048
+Fabrics Repairer,75475,1049
+Other Weavers and Related Workers,75490,1050
+"Knitter, Specialisation Unknown",75500,1051
+Knitting MachineOperator (Garment),75520,1052
+Knitting Machine Operator (Hosiery),75530,1053
+Hosiery Knitter (Hand),75535,1054
+Knitter (HandOperated Machine),75540,1055
+Hand Knitter,75550,1056
+Other Knitters,75590,1057
+"Bleachers, Dyers and Textile Product Finishers",75600,1058
+Textile Bleacher,75615,1059
+Yarn Dyer,75620,1060
+"Yarn, Fabric or Garment Dyer",75622,1061
+Fabric Dyer,75625,1062
+Garment Dyer,75630,1063
+Textile Washer,75635,1064
+Silk Degummer,75640,1065
+WoolCarboniser,75645,1066
+Textile Shrinker,75650,1067
+Textile Fuller,75655,1068
+Textile Waterproofer,75660,1069
+Silk Weighter,75665,1070
+Textile Calender Operator,75670,1071
+"Other Bleachers, Dyers and Textile Product Finishers",75690,1072
+Rope Makers,75700,1073
+"Rope Maker, General",75710,1074
+"Wheel Turner, Rope Making",75720,1075
+"Spinners, Weavers, Knitters, Dyers and Related Workers Not Elsewhere Classified",75900,1076
+Braid Maker (Hand),75920,1077
+Braid Maker (Hand or Machine),75922,1078
+Braid Maker (Machine),75925,1079
+Crocheter (Hand),75930,1080
+Crocheter (Machine),75935,1081
+Net Maker (Hand),75940,1082
+Fur Fibre Mixer (Machine),75945,1083
+Felt Hood Former,75950,1084
+"Other Spinners, Weavers, Knitters, Dyers and Related Workers",75990,1085
+"Tanners, Fellmongers and Pelt Dressers",76000,1086
+"Tanners or Fellmonger, Specialisation Unknown",76100,1087
+Hide and Skin Grader,76120,1088
+Fellmonger,76125,1089
+Hide Flesher and Dehairer (Hand),76130,1090
+Hide Flesher and Dehairer (Machine),76135,1091
+Hide Splitter,76140,1092
+Tanner,76145,1093
+Leather Currier,76150,1094
+Leather Dyer and Stainer,76155,1095
+Other Tanners and Fellmongers,76190,1096
+"Pelt Dresser, Specialisation Unknown",76200,1097
+Pelt Grader,76220,1098
+Pelt Flesher,76230,1099
+Pelt Plucker and Trimmer,76240,1100
+Pelt Dyer (Hand),76250,1101
+Pelt Stretcher,76260,1102
+Other Pelt Dressers,76290,1103
+Food and Beverage Processors,77000,1104
+Grain Millers and Related Workers,77100,1105
+Grain Miller,77120,1106
+Rice Miller,77130,1107
+Spice Miller,77140,1108
+Other Grain Millers and Related Workers,77190,1109
+"Sugar Processor or Refiner, Specialisation Unknown",77200,1110
+SugarCane Grinder,77220,1111
+Diffuser Operator (Beet Sugar),77230,1112
+Carbonation Man (Sugar Refining),77240,1113
+Crystalliser Operator (Sugar Refining),77250,1114
+Continuous SugarRefining Machine Operator,77260,1115
+Other Sugar Processors and Refiners,77290,1116
+Butchers and Meat Preparers,77300,1117
+"Butcher, General",77310,1118
+Slaughterer,77320,1119
+Meat Cutter,77330,1120
+Sausage Maker,77340,1121
+Other Butchers and Meat Preparers,77390,1122
+Food Preservers,77400,1123
+"Preserving Cook, General",77410,1124
+FishPreserving Cook,77415,1125
+Sterilising Cook,77420,1126
+Foodstuffs Freezer,77430,1127
+Foodstuffs Dehydrator,77440,1128
+"Pickler, Food",77450,1129
+Meat and Fish Smoker,77460,1130
+Other Food Preservers,77490,1131
+Dairy Product Processors,77500,1132
+"Dairy Product Processor, General",77510,1133
+Dairy Product Pasteuriser,77520,1134
+Butter Maker,77530,1135
+Cheese Maker,77540,1136
+IceCream Maker,77550,1137
+Other Dairy Product Processors,77590,1138
+"Bakers, Pastry Cooks and Confectionery Makers",77600,1139
+"Baker, General",77610,1140
+Bread Baker,77620,1141
+Pastry Maker,77630,1142
+Macaroni Maker,77640,1143
+Chocolate Maker,77650,1144
+Confectionery Maker,77660,1145
+"Other Bakers, Pastry Cooks and Confectionery Makers",77690,1146
+"Tea, Coffee and Cocoa Preparers",77700,1147
+Coffee and Tea Taster,77720,1148
+Coffee Blender,77730,1149
+Tea Blender,77740,1150
+Coffee Roaster,77750,1151
+CocoaBean Roaster,77760,1152
+"Other Tea, Coffee and Cocoa Preparers",77790,1153
+"Brewers, Wine and Beverage Makers",77800,1154
+"Brewer, General",77810,1155
+Germination Worker (Malting),77820,1156
+Kilnman (Malting),77825,1157
+Malt Cooker,77830,1158
+FermentingRoom Man,77835,1159
+Yeast Maker,77840,1160
+Wine Worker,77850,1161
+Wine and Liquor Taster,77860,1162
+Vinegar Maker,77870,1163
+Fruit PressOperator,77880,1164
+"Other Brewers, Wine and Beverage Makers",77890,1165
+Food and Beverage Processors Not Elsewhere Classified,77900,1166
+Oil Presser (Edible Oils),77920,1167
+Refining MachineOperator (Oils and Fats),77925,1168
+Hydrogenation Operator (Oils and Fats),77930,1169
+Fish Butcher,77940,1170
+Other Food and Beverage Processors,77990,1171
+Tobacco Preparers and Tobacco Product Makers,78000,1172
+"Tobacco Preparer, Specialisation Unknown",78100,1173
+Tobacco Grader,78120,1174
+Tobacco Blender,78130,1175
+Tobacco Conditioner Operator,78140,1176
+Tobacco Stripper (Hand),78150,1177
+Tobacco Stripper (Hand or Machine),78155,1178
+Tobacco Stripper (Machine),78160,1179
+Tobacco Cutting MachineOperator,78170,1180
+Other Tobacco Preparers,78190,1181
+"Cigar Maker, Specialisation Unknown",78200,1182
+Cigar Maker (Hand),78220,1183
+Cigar Maker (Machine),78230,1184
+Other Cigar Makers,78290,1185
+Cigarette Makers,78300,1186
+Cigarette Maker (Machine),78320,1187
+Other Cigarette Makers,78390,1188
+Tobacco Preparers and Tobacco Product Makers Not Elsewhere Classified,78900,1189
+Snuff Maker,78920,1190
+Other Tobacco Preparers and Tobacco Products Makers,78990,1191
+"Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",79000,1192
+"Tailor, Specialisation Unknown",79100,1193
+"Tailor, MadetoMeasure Garments",79120,1194
+"Tailor, ReadytoWear Garments",79130,1195
+Dressmaker,79140,1196
+Other Tailors and Dressmakers,79190,1197
+Fur Tailors and Related Workers,79200,1198
+Fur Tailor,79220,1199
+Fur Pattern Maker,79230,1200
+Fur Grader and Matcher,79240,1201
+Fur Cutter,79250,1202
+Fur Nailer,79260,1203
+Other Fur Tailors and Related Workers,79290,1204
+Milliners and Hat Makers,79300,1205
+"Hat Maker, General",79310,1206
+"Milliner, General",79320,1207
+HatBlockingMachine Operator,79330,1208
+Other Milliners and Hat Makers,79390,1209
+Pattern Makers and Cutters,79400,1210
+Garment Pattern Maker,79420,1211
+Hat and Cap Pattern Maker,79430,1212
+Garment Marker,79440,1213
+"Garment Cutter, except Leather",79450,1214
+Leather Garment Cutter,79460,1215
+"Glove Cutter, except Leather",79470,1216
+"Glove Cutter, Leather or Other Material",79475,1217
+Leather Glove Cutter,79480,1218
+Other Patternmakers and Cutters,79490,1219
+Sewers and Embroiderers,79500,1220
+"Hand and Machine Sewer, General",79510,1221
+Garment Hand Sewer (except Leather and Fur),79520,1222
+Leather Garment Hand Sewer,79530,1223
+Fur Hand Sewer,79540,1224
+SewingMachine Operator,79550,1225
+Hand Embroiderer,79560,1226
+"Embroiderer, Hand or Machine",79565,1227
+Machine Embroiderer,79570,1228
+Other Sewers and Embroiderers,79590,1229
+"Upholsterer or Related Worker, Specialisation Unknown",79600,1230
+Furniture Upholsterer,79620,1231
+Vehicle Upholsterer,79630,1232
+Mattress Maker,79640,1233
+Other Upholsterers and Related Workers,79690,1234
+"Tailors, Dressmakers, Sewers, Upholsterers and Related Workers Not Elsewhere Classified",79900,1235
+"Sail, Tent and Awning Maker",79920,1236
+Umbrella Maker,79930,1237
+"Other Tailors, Dressmakers, Sewers, Upholsterers and Related Workers",79990,1238
+Shoemakers and Leather Goods Makers,80000,1239
+Shoemakers and Shoe Repairers,80100,1240
+"Shoemaker, General",80110,1241
+Orthopaedic Footwear Maker,80120,1242
+Shoe Repairer,80130,1243
+Other Shoemakers and Shoe Repairers,80190,1244
+"Shoe Cutters, Lasters, Sewers, and Related Workers",80200,1245
+Shoe PatternMaker,80215,1246
+Clicker Cutter  (Machine),80220,1247
+Shoe Cutter (Hand or Machine),80222,1248
+Shoe Cutter (Hand),80225,1249
+Uppers Preparer,80230,1250
+Sole Pressman,80235,1251
+Sole Fitter,80240,1252
+Laster,80245,1253
+Shoe Sewer (Hand or Machine),80250,1254
+Shoe Finisher,80255,1255
+"Other Shoe Cutters, Lasters, Sewers and Related Workers",80290,1256
+Leather Goods Makers,80300,1257
+"Leather Goods Maker, General",80310,1258
+Saddler and Harness Maker,80320,1259
+Leather Cutter,80330,1260
+"Leather Sewer, Hand",80340,1261
+"Leather Sewer, Machine",80350,1262
+Leather Goods Assembler,80360,1263
+Other Leather Goods Makers,80390,1264
+"Woodworker, Specialisation Unknown",81000,1265
+Cabinetmakers,81100,1266
+Cabinetmaker,81120,1267
+Other Cabinetmakers,81190,1268
+Woodworkers,81200,1269
+"Woodworking Machine Setter, General",81205,1270
+"Woodworking MachineOperator, General",81208,1271
+"Woodworking Machine SetterOperator, General",81210,1272
+Precision Sawyer,81220,1273
+"Precision Sawyer, Hand or Machine",81225,1274
+Wood Turner,81230,1275
+WoodLathe SetterOperator,81240,1276
+Wood ShapingMachine SetterOperator,81250,1277
+WoodRoutingMachine SetterOperator,81260,1278
+WoodPlaningMachine SetterOperator,81270,1279
+Wood Planer,81275,1280
+WoodSpindle CarvingMachine SetterOperator,81280,1281
+Other WoodworkingMachine Operators,81290,1282
+Cabinetmakers and Related Woodworkers Not Elsewhere Classified,81900,1283
+CoachBody Builder,81920,1284
+Cartwright,81925,1285
+Cooper,81930,1286
+Wooden Pattern Maker,81935,1287
+Wooden Model Maker,81940,1288
+Wood Carver,81945,1289
+Veneer Applier,81950,1290
+Wooden Furniture Finisher,81955,1291
+SmokingPipe Maker,81960,1292
+Marquetry Inlayer,81965,1293
+Other Cabinetmakers and Related Woodworkers,81990,1294
+Stone Cutters and Carvers,82000,1295
+Stone Cutter and Finisher,82020,1296
+Stone Grader,82030,1297
+Stonework Layout Man,82040,1298
+Stone LatheOperator,82050,1299
+Stone Letter Cutter (Hand),82060,1300
+Stone Carver (Hand),82070,1301
+Monument CarverSetter,82080,1302
+Other Stone Cutters and Carvers,82090,1303
+"Blacksmiths, Toolmakers and MachineTool Operators",83000,1304
+"Blacksmiths, Hammersmiths and ForgingPress Operators",83100,1305
+"Blacksmith, General",83110,1306
+Hammersmith,83120,1307
+DropHammer Operator,83130,1308
+ForgingPress Operator,83140,1309
+"Other Blacksmiths, Hammersmiths and ForgingPress Operators",83190,1310
+"Toolmakers, Metal Pattern Makers and Metal Markers",83200,1311
+"Toolmaker, Metal Pattern Maker and Metal Marker, General",83210,1312
+Tool and Die Maker,83220,1313
+Jig and Gauge Maker,83230,1314
+Metal Pattern Maker (Foundry),83240,1315
+Metal Marker,83250,1316
+"Other Toolmakers, Metal Pattern Makers and Metal Markers",83290,1317
+MachineTool SetterOperators,83300,1318
+"Metalworking Machine Setter, General",83305,1319
+"Metalworking Machine SetterOperator, General",83310,1320
+Lathe SetterOperator,83320,1321
+MillingMachine SetterOperator,83330,1322
+PlaningMachine SetterOperator,83340,1323
+BoringMachine SetterOperator,83350,1324
+DrillingMachine SetterOperator,83360,1325
+PrecisionGrindingMachine SetterOperator,83370,1326
+HoningMachine SetterOperator,83380,1327
+NumericalControlMachine SetterOperator,83385,1328
+Other MachineTool SetterOperators,83390,1329
+MachineTool Operators,83400,1330
+"MachineTool Operator, General",83410,1331
+Lathe Operator,83420,1332
+Milling Machine Operator,83430,1333
+Planing MachineOperator,83440,1334
+Boring MachineOperator,83450,1335
+DrillingMachine Operator,83460,1336
+Precision GrindingMachine Operator,83465,1337
+HoningMachine Operator,83470,1338
+MetalSawingMachine Operator,83475,1339
+Automatic TransferMachine Operator,83480,1340
+Other MachineTool Operators,83490,1341
+"Metal Grinders, Polishers and Tool Sharpeners",83500,1342
+Buffing and PolishingMachine Operator,83520,1343
+"Tool Grinder, Machine Tools",83530,1344
+Cutting Instruments Sharpener,83540,1345
+Saw Repairer and Sharpener,83550,1346
+Textile Card Grinder,83560,1347
+"Other Metal Grinders, Polishers and Tool Sharpeners",83590,1348
+"Blacksmiths, Toolmakers and MachineTool Operators Not Elsewhere Classified",83900,1349
+Cutler,83915,1350
+Gunsmith,83920,1351
+Locksmith,83930,1352
+Metal Spinner,83940,1353
+Metal Former (Hand),83950,1354
+MetalPress Operator,83960,1355
+MetalBendingMachine Operator,83970,1356
+PowerShear Operator,83980,1357
+"Other Blacksmiths, Toolmakers and MachineTool Operators Not Elsewhere Classified",83990,1358
+"Machinery Fitters, Machine Assemblers and PrecisionInstrument Makers (except Electrical)",84000,1359
+Machinery Fitters and Machine Assemblers,84100,1360
+"Machinery Fitter, General",84105,1361
+"Machinery FitterAssembler, General",84110,1362
+Internal Combustion Engine FitterAssembler (except Aircraft and Marine Engines),84115,1363
+Aircraft Engine FitterAssembler,84120,1364
+Marine Engine FitterAssembler,84125,1365
+Turbine FitterAssembler (except Aircraft and Marine),84130,1366
+Metalworking MachineTool FitterAssembler,84135,1367
+Mining Machinery FitterAssembler,84140,1368
+Printing Machinery FitterAssembler,84145,1369
+Textile Machinery FitterAssembler,84150,1370
+Woodworking Machinery FitterAssembler,84155,1371
+Agricultural Machinery FitterAssembler,84160,1372
+EarthMoving Equipment FitterAssembler,84165,1373
+Office Machinery FitterAssembler,84170,1374
+Machinery Erector and Installer,84175,1375
+Refrigeration and AirConditioning Plant Mechanic,84180,1376
+Airframe FitterAssembler,84185,1377
+Other Machinery Fitters and Machine Assemblers,84190,1378
+"Watch, Clock and Precision Instrument Makers",84200,1379
+Watch and Clock Assembler,84220,1380
+Watch and Clock Assembler or Repairer,84222,1381
+Watch and Clock Repairer,84225,1382
+Precision Instrument Maker,84230,1383
+Optical Instrument Maker and Repairer,84235,1384
+Precision Instrument Assembler,84240,1385
+Orthopaedic Appliance Maker and Repairer,84245,1386
+Dental Prosthesis Maker and Repairer,84250,1387
+"Other Watch, Clock and Precision Instrument Makers",84290,1388
+MotorVehicle Mechanics,84300,1389
+Automobile Mechanic,84320,1390
+Motor Truck Mechanic,84330,1391
+Motor Cycle Mechanic,84340,1392
+Other MotorVehicle Mechanics,84390,1393
+Aircraft Engine Mechanics,84400,1394
+"Aircraft Engine Mechanic, General",84410,1395
+Aircraft Engine Service Mechanic,84420,1396
+Other Aircraft Engine Mechanics,84490,1397
+"Machinery Fitter (except Electrical), Specialisation Unknown",84900,1398
+"Machinery Mechanic, General",84910,1399
+Reciprocating Steam Engine Mechanic,84915,1400
+Diesel Engine Mechanic (except Motor Vehicle),84920,1401
+Turbine Mechanic (except Aircraft and Marine Turbines),84925,1402
+Metalworking MachineTool Mechanic,84930,1403
+Mining Machinery Mechanic,84935,1404
+Printing Machinery Mechanic,84940,1405
+Textile Machinery Mechanic,84945,1406
+Woodworking Machinery Mechanic,84950,1407
+Agricultural Machinery Mechanic,84955,1408
+EarthMoving Equipment and Construction Machinery Mechanic,84960,1409
+Office Machines Mechanic,84965,1410
+Plant Maintenance Mechanic,84970,1411
+PedalCycle Repairer,84975,1412
+Oiler and Greaser (except Ships' Engines),84980,1413
+Mechanical Products Inspector and Tester,84985,1414
+Machinery Fitters (except Electrical),84990,1415
+Electrical Fitters and Related Electrical and Electronics Workers,85000,1416
+Electrical Fitters,85100,1417
+"Electrical Fitter, General",85110,1418
+Electrical Motor and Generator Fitter,85120,1419
+Electrical Transformer Fitter,85130,1420
+Electrical Switchgear and Control Apparatus Fitter,85140,1421
+Electrical Instrument Fitter,85150,1422
+Electrical Elevator and Related Equipment Fitter,85160,1423
+Other Electrical Fitters,85190,1424
+Electronics Fitters,85200,1425
+Electronics Fitter,85210,1426
+"Electronics Fitter (Radio, Television and Radar Equipment)",85220,1427
+Electronics Fitter (Medical Equipment),85230,1428
+Electronic Computer and Related Equipment Fitter,85240,1429
+Electronics Fitter (Industrial Equipment),85250,1430
+Electronic Signalling Systems Fitter,85260,1431
+Other Electronics Fitters,85290,1432
+Electrical and Electronic Equipment Assemblers,85300,1433
+Electrical Equipment Assembler,85320,1434
+Electronic Equipment Assembler,85330,1435
+Coil Winder (Machine),85340,1436
+Coil Winder (Hand or Machine),85345,1437
+Coil Winder (Hand),85350,1438
+Other Electrical and Electronic Equipment Assemblers,85390,1439
+Radio and Television Repairmen,85400,1440
+Radio and Television Mechanic,85420,1441
+Other Radio and Television Repairmen,85490,1442
+Electrical Wiremen,85500,1443
+"Electrician, General",85510,1444
+Building Electrician,85520,1445
+Aircraft Electrician,85530,1446
+Ship's Electrician,85535,1447
+Vehicle Electrician,85540,1448
+Stage and Studio Electrician,85550,1449
+Maintenance Electrician,85560,1450
+Electrical Repairman,85570,1451
+Other Electrical Wiremen,85590,1452
+"Telephone and Telegraph Installer, Specialisation Unknown",85600,1453
+Telephone and Telegraph Installer,85620,1454
+Telephone and Telegraph Mechanic,85630,1455
+Other Telephone and Telegraph Installers,85690,1456
+Electric Linemen and Cable Jointers,85700,1457
+Electric Power Lineman,85720,1458
+Electric Traction Lineman,85730,1459
+Telephone and Telegraph Lineman,85740,1460
+Electric Cable Jointer,85750,1461
+Other Electric Linemen and Cable Jointers,85790,1462
+Electrical Fitters and Related Electrical and Electronics Workers Not Elsewhere Classified,85900,1463
+Electrical and Electronic Products Inspector and Tester,85920,1464
+Other Electrical Fitters and Related Electrical and Electronics Workers,85990,1465
+Broadcasting and SoundEquipment Operators and Cinema Projectionists,86000,1466
+Broadcasting Station Operators,86100,1467
+Radio and Television Transmitting Equipment Operator,86120,1468
+Radio and Television Studio Equipment Operator,86130,1469
+Other Broadcasting Station Operators,86190,1470
+SoundEquipment Operators and Cinema Projectionists,86200,1471
+SoundRecording Equipment Operator,86220,1472
+Public Address Equipment Operator,86230,1473
+Cinema Projectionist,86240,1474
+Other SoundEquipment Operators and Cinema Projectionists,86290,1475
+"Plumbers, Welders, SheetMetal, and Structural Metal Preparers and Erectors",87000,1476
+Plumbers and Pipe Fitters,87100,1477
+"Plumber, General",87105,1478
+"Pipe Fitter, General",87110,1479
+Gas Pipe Fitter,87120,1480
+Marine Pipe Fitter,87130,1481
+Aircraft Pipe and Tube Fitter,87140,1482
+Other Plumbers and Pipe Fitters,87190,1483
+Welders and Flame Cutters,87200,1484
+"Welder, General",87210,1485
+Gas Welder,87215,1486
+Electric Arc Welder (Hand),87220,1487
+Electric Arc Welder (Hand or Machine),87222,1488
+Electric Arc Welder (Machine),87225,1489
+Thermite Welder,87230,1490
+Resistance Welder,87235,1491
+Lead Burner,87240,1492
+Brazer,87245,1493
+Flamecutter (Hand),87250,1494
+Flamecutter (Machine),87255,1495
+Solderer (Hand),87260,1496
+Other Welders and FlameCutters,87290,1497
+Sheetmetal Workers,87300,1498
+"SheetMetal Worker, General",87310,1499
+SheetMetal Marker,87320,1500
+Coppersmith,87330,1501
+Tinsmith,87340,1502
+Boilersmith,87350,1503
+Ornamental SheetMetal Worker,87360,1504
+Vehicle SheetMetal Worker,87370,1505
+Aircraft SheetMetal Worker,87380,1506
+Other SheetMetal Workers,87390,1507
+"Structural Metal Preparer or Erector, Specialisation Unknown",87400,1508
+Structural Metal Marker,87420,1509
+Structural Steel Worker (Workshop),87430,1510
+Constructional Steel Erector,87440,1511
+Metal Shipwright,87450,1512
+Ship Plater,87455,1513
+Hand Riveter,87460,1514
+Riveter (Hand or Machine),87462,1515
+Machine Riveter,87465,1516
+Pneumatic Riveter,87470,1517
+Other Structural Metal Preparers and Erectors,87490,1518
+Jewellers and Precious Metal Workers,88000,1519
+"Jeweller, General",88010,1520
+Jewellery Repairer,88020,1521
+Gem Cutter and Polisher,88030,1522
+Gem Setter,88040,1523
+Goldsmith and Silversmith,88050,1524
+Precious Metal Roller,88060,1525
+Precious Metal Leaf Roller,88070,1526
+Jewellery Engraver,88080,1527
+Other Jewellery and Precious Metal Workers,88090,1528
+"Glass Formers, Potters and Related Workers",89000,1529
+"Glass Formers, Cutters, Grinders and Finishers",89100,1530
+Glass Blower,89120,1531
+Scientific Glass Blower,89124,1532
+GlassBlowingMachine Operator,89128,1533
+Glass Lens Moulder,89132,1534
+GlassPressingMachine,89136,1535
+GlassDrawingMachine Operator,89140,1536
+PlateGlass Rollerman,89144,1537
+PlateGlass Polisher,89148,1538
+FloatGlass Bath Operator,89152,1539
+Glass Cutter,89156,1540
+Optical Glass Cutter,89160,1541
+Glass Edge Grinder,89164,1542
+Lens GrindingMachine Operator,89168,1543
+Lens PolishingMachine Operator,89172,1544
+Glass Tube Maker,89176,1545
+Glass Tube Bender,89180,1546
+"Other Glass Formers, Cutters, Grinders and Finishers",89190,1547
+"Potter or Related Clay and Abrasive Former, Specialisation Unknown",89200,1548
+"Potter, General",89210,1549
+Pottery and Porcelain Modeller,89215,1550
+Pottery and Porcelain Mould Maker,89220,1551
+Pottery and Porcelain Thrower,89225,1552
+Pottery and Porcelain Jiggerman,89230,1553
+Pottery and Porcelain Caster (Hand),89235,1554
+Brick and Tile Moulder (Hand),89240,1555
+Brick and Tile Moulder (Hand or Machine),89242,1556
+Pottery and Porcelain Presser (Hand),89245,1557
+Pottery and Porcelain Presser (Die or Hand),89247,1558
+Pottery and Porcelain DiePresser,89250,1559
+Clay ExtrudingPress Operator,89255,1560
+Abrasive Wheel Moulder,89260,1561
+Other Potters and Related Clay and Abrasive Formers,89290,1562
+Glass and Ceramics Kilnmen,89300,1563
+GlassMaking Furnaceman,89320,1564
+GlassAnnealing Furnaceman,89330,1565
+Glass Temperer,89340,1566
+Pottery and Porcelain Kilnman,89350,1567
+Brick and Tile Kilnman,89360,1568
+Other Glass and Ceramics Kilnmen,89390,1569
+"Glass Engraver or Etcher, Specialisation Unknown",89400,1570
+Glass Engraver,89420,1571
+Glass Etcher,89430,1572
+Glass Sandblaster,89440,1573
+Other Glass Engravers and Etchers,89490,1574
+Glass and Ceramics Painters and Decorators,89500,1575
+Glass Painter,89520,1576
+Ceramics Painter,89530,1577
+Ceramics Decorator,89540,1578
+Ceramics SprayPainter,89550,1579
+Ceramics Dipper,89560,1580
+Mirror Silverer,89570,1581
+Other Glass and Ceramics Painters and Decorators,89590,1582
+"Glass Formers, Potters and Related Workers Not Elsewhere Classified",89900,1583
+Glass Mixer,89920,1584
+Clay Mixer,89930,1585
+Clay Slip Maker,89940,1586
+Glaze Maker,89950,1587
+Abrasives Mixer,89960,1588
+Fibreglass Maker,89970,1589
+"Other Glass Formers, Potters and Related Workers",89990,1590
+Rubber and Plastics Product Makers,90000,1591
+"Rubber Product Maker, Specialisation Unknown",90100,1592
+Rubber Millman,90120,1593
+Rubber Calender Operator,90125,1594
+Rubber ExtrudingMachine Operator,90130,1595
+Rubber MouldingPress Operator,90135,1596
+Rubber Goods Assembler,90140,1597
+Plastics InjectionMoulding MachineOperator,90150,1598
+Plastics CompressionMoulding MachineOperator,90155,1599
+Plastics ExtrudingMachineOperator,90160,1600
+Plastics Laminator,90165,1601
+Plastics Products Assembler,90170,1602
+Plastics Products Fabricator,90180,1603
+Other Rubber and Plastics Products Makers (except Tire Makers and Tire Vulcanisers),90190,1604
+"Tire Maker or Vulcaniser, Specialisation Unknown",90200,1605
+Tire Builder,90220,1606
+Tire Moulder,90230,1607
+Tire Rebuilder,90240,1608
+Other Tire Makers and Vulcanisers,90290,1609
+Paper and Paperboard Products Makers,91000,1610
+Paper Box Maker (Hand),91020,1611
+Paper Box Maker (Hand or Machine),91025,1612
+Paper Box Maker (Machine),91030,1613
+Cardboard LiningMachine Operator,91040,1614
+Paper Box Cutting and CreasingPress Operator,91050,1615
+CardboardPress Operator,91060,1616
+Paper Bag and Envelope Maker (Machine),91070,1617
+Paper Bag and Envelope Maker (Hand or Machine),91075,1618
+Cellophane Bag Maker (Machine),91080,1619
+Other Paper and Paperboard Products Makers,91090,1620
+Printers and Related Workers,92000,1621
+Compositors and TypeSetters,92100,1622
+"Printer, General",92110,1623
+Hand Compositor,92120,1624
+Linotype Operator,92130,1625
+Monotype Keyboard Operator,92135,1626
+TypeCasting MachineOperator,92140,1627
+Printing MakerUp,92145,1628
+Imposer,92150,1629
+PhotoTypeSetting Machine Operator,92155,1630
+Other Compositors and TypeSetters,92190,1631
+Printing Pressmen,92200,1632
+Cylinder Pressman,92220,1633
+Platen Pressman,92225,1634
+Rotary Pressman,92230,1635
+Offset Pressman,92240,1636
+Direct Lithographic Pressman,92250,1637
+Rotogravure Pressman,92260,1638
+Wallpaper Printer,92270,1639
+Other Printing Pressmen,92290,1640
+Stereotypers and Electrotypers,92300,1641
+Stereotyper,92320,1642
+Electrotyper,92330,1643
+Other Stereotypers and Electrotypers,92390,1644
+"Printing Engraver, Specialisation Unknown (except PhotoEngraver)",92400,1645
+Lithographer,92415,1646
+"Metal Printing Plate, Roller and Die Engraver (Hand)",92420,1647
+"Wood, Rubber or Linoleum Block Engraver (Hand)",92430,1648
+Metal Printing Roller Engraver (Machine),92440,1649
+Engraving Pantograph Operator,92445,1650
+Lithographic Direct Transferrer,92450,1651
+Metal Engraving Etcher,92460,1652
+Other Printing Engravers (except PhotoEngravers),92490,1653
+PhotoEngravers,92500,1654
+"PhotoEngraver, General",92510,1655
+Photogravure Cameraman,92520,1656
+Photogravure Retoucher,92530,1657
+PhotoMechanical Transferrer,92540,1658
+Photogravure Etcher,92550,1659
+Printing Plate Retoucher,92560,1660
+Other PhotoEngravers,92590,1661
+Bookbinders and Related Workers,92600,1662
+Bookbinder (Hand),92620,1663
+Bookbinder (Hand or Machine),92625,1664
+Bookbinder (Machine),92630,1665
+Book Embosser (Hand),92640,1666
+Book Embosser (Hand or Machine),92645,1667
+Book Embosser (Machine),92650,1668
+Other Bookbinders and Related Workers,92690,1669
+Photographic DarkRoom Workers,92700,1670
+Colour Developer,92720,1671
+BlackandWhite Developer,92730,1672
+Photograph Printer,92740,1673
+Photograph Enlarger,92750,1674
+Other Photographic DarkRoom Workers,92790,1675
+Printers and Related Workers Not Elsewhere Classified,92900,1676
+SilkScreen Stencil Cutter,92920,1677
+SilkScreen Printer,92930,1678
+Block Printer,92940,1679
+Textile Printer,92950,1680
+Other Printers and Related Workers,92990,1681
+Painters,93000,1682
+"Painters, Construction",93100,1683
+Building Painter,93120,1684
+Structural Steel and Ship Painter,93130,1685
+"Other Painters, Construction",93190,1686
+Painters Not Elsewhere Classified,93900,1687
+BrushPainter (except Construction),93920,1688
+SprayPainter (except Construction),93930,1689
+Hand Dipper,93940,1690
+Sign Painter,93950,1691
+Automobile Painter,93960,1692
+"Other Painters, Construction",93990,1693
+Production and Related Workers Not Elsewhere Classified,94000,1694
+Musical Instrument Makers and Tuners,94100,1695
+Stringed Instrument Maker,94120,1696
+Woodwind Instrument Maker,94130,1697
+Metal Wind Instrument Maker,94140,1698
+Accordion Maker,94150,1699
+Organ Builder,94160,1700
+Piano Maker,94170,1701
+Musical Instrument Tuner,94180,1702
+Other Musical Instrument Makers and Tuners,94190,1703
+Basketry Weavers and Brush Makers,94200,1704
+Basket Maker,94220,1705
+Brush Maker (Hand),94230,1706
+Broom Maker (Hand),94240,1707
+Wicker Furniture Maker,94250,1708
+Other Basketry Weavers and Brush Makers,94290,1709
+NonMetallic Mineral Product Makers,94300,1710
+Cast Concrete Product Maker,94320,1711
+Asbestos Cement Products MachineOperator,94330,1712
+CastStone Maker,94340,1713
+Other NonMetallic Mineral Product Makers,94390,1714
+"Other Production or Related Worker, Specialisation Unknown",94900,1715
+Taxidermist,94920,1716
+Linoleum Maker,94930,1717
+Doll and Stuffed Toy Maker,94940,1718
+Rubber Stamp Maker,94950,1719
+Candle Maker,94960,1720
+Photographic Film and Paper Maker,94970,1721
+Quality Inspector,94980,1722
+Other Production and Related Workers Not Elsewhere Classified,94990,1723
+"Bricklayers, Carpenters and Other Construction Workers",95000,1724
+"Bricklayers, Stonemasons and Tile Setters",95100,1725
+Bricklayer (Construction),95120,1726
+Bricklayer (Chimney Building),95125,1727
+Firebrick Layer,95130,1728
+Bricklayer or Stonemason,95135,1729
+Stonemason (Construction),95140,1730
+Marble Setter,95145,1731
+Tile Setter,95150,1732
+Mosaic Cutter and Setter,95155,1733
+Paviour,95160,1734
+"Other Bricklayers, Stonemasons and Tile Setters",95190,1735
+"Reinforced Concreters, Cement Finishers and Terazzo Workers",95200,1736
+"Reinforced Concreter, General",95210,1737
+Concrete Shutterer,95220,1738
+Reinforcing Iron Worker,95230,1739
+Cement Finisher,95240,1740
+Terrazzo Worker,95250,1741
+"Other Reinforced Concreters, Cement Finishers and Terazzo Workers",95290,1742
+"Roofer, Specialisation Unknown",95300,1743
+Slate and Tile Roofer,95320,1744
+Composition Roofer,95330,1745
+Asphalt Roofer,95340,1746
+Metal Roofer,95350,1747
+Roof Thatcher,95360,1748
+Other Roofers,95390,1749
+"Carpenters, Joiners and Parquetry Workers",95400,1750
+"Carpenter, General",95410,1751
+Construction Carpenter,95415,1752
+Construction Joiner,95420,1753
+Stage and Studio Carpenter,95430,1754
+Wood Shipwright,95440,1755
+Ship Joiner,95445,1756
+Wooden Boatbuilder,95450,1757
+Ship's Carpenter,95455,1758
+Aircraft Joiner,95460,1759
+Bench Carpenter,95470,1760
+Parquetry Worker,95475,1761
+"Other Carpenters, Joiners and Parquetry Workers",95490,1762
+Plasterers,95500,1763
+"Plasterer, General",95510,1764
+Ornamental Plasterer,95520,1765
+Stucco Plasterer,95530,1766
+Fibrous Plasterer,95540,1767
+Other Plasterers,95590,1768
+Insulators,95600,1769
+Building Insulator (Hand),95620,1770
+Building Insulator (Machine),95630,1771
+Acoustical Insulator,95640,1772
+Boiler and Pipe Insulator,95650,1773
+Refrigeration and AirConditioning Equipment Insulator,95660,1774
+Other Insulators,95690,1775
+Glaziers,95700,1776
+Building Glazier,95720,1777
+Patent Roofing Glazier,95730,1778
+PlateGlass Glazier,95740,1779
+Leaded Glass Glazier,95750,1780
+Vehicle Glazier,95760,1781
+Other Glaziers,95790,1782
+Construction Workers Not Elsewhere Classified,95900,1783
+"Housebuilder, General",95910,1784
+Building Maintenance Man,95920,1785
+Paperhanger,95925,1786
+Carpet Planner,95930,1787
+Steeplejack,95935,1788
+Scaffolder,95940,1789
+Demolition Worker,95945,1790
+Pipe Layer,95950,1791
+Well Digger,95955,1792
+Underwater Worker,95960,1793
+Composition Tile Layer,95970,1794
+Building Exterior Cleaner,95975,1795
+Other Construction Workers,95990,1796
+Stationary Engine and Related Equipment Operators,96000,1797
+PowerGenerating Machinery Operators,96100,1798
+Steam Power Plant Operator,96120,1799
+Hydroelectric Station Operator,96130,1800
+PowerReactor Operator,96140,1801
+Turbine Operator (Power Station),96150,1802
+PowerSwitchboard Operator,96160,1803
+Load Dispatcher (Electric Power),96170,1804
+Other PowerGenerating Machinery Operators,96190,1805
+Stationary Engine and Related Equipment Operators Not Elsewhere Classified,96900,1806
+"Stationary Engine Operator, General",96910,1807
+Air Compressor Operator,96920,1808
+Gas Compressor Operator,96925,1809
+Boiler Fireman,96930,1810
+PumpingStation Operator,96940,1811
+Water Treatment Plant Operator (Waterworks),96950,1812
+Incinerator Plant Operator,96960,1813
+Refrigeration System Operator,96970,1814
+Heating and Ventilation Equipment Operator,96980,1815
+Other Stationary Engine and Related Equipment Operators,96990,1816
+"Material Handling and Related Equipment Operators, Dockers and Freight Handlers",97000,1817
+Dockers and Freight Handlers,97100,1818
+Docker,97120,1819
+"Loader of Ship, Truck, Wagon or Airplane",97125,1820
+Railway and Road Vehicle Loader,97130,1821
+Aircraft Loader,97135,1822
+Boat Loader (Liquids and Gases),97140,1823
+Warehouse Porter,97145,1824
+Hand Packer,97150,1825
+"Packer, Hand or Machine",97152,1826
+Machine Packer,97155,1827
+Machine Labeller,97160,1828
+BalePress Operator,97170,1829
+Other Dockers and Freight Handlers,97190,1830
+Riggers and Cable Splicers,97200,1831
+"Hoisting Equipment Rigger, General",97205,1832
+"Rope and Cable Splicer, General",97210,1833
+Hoisting Equipment Rigger (Construction),97220,1834
+Ship Rigger,97230,1835
+Aircraft Rigger,97240,1836
+Oil and Gas WellDrilling Rigger,97250,1837
+Suspension Bridge Cable Worker,97260,1838
+Other Riggers and Cable Splicers,97290,1839
+Crane and Hoist Operators,97300,1840
+"Crane Driver (Bridge or Gantry Crane, JibCrane, TowerCrane or Mobile Crane)",97315,1841
+Bridge or GantryCrane Operator,97320,1842
+Stationary JibCrane Operator,97325,1843
+TowerCrane Operator,97327,1844
+MobileCrane Operator,97330,1845
+Hoist Operator (Construction),97335,1846
+Hoist Operator (Mine),97340,1847
+Mine Cageman,97345,1848
+Winch Operator,97350,1849
+OpeningBridge Operator,97355,1850
+Other Crane and Hoist Operators,97390,1851
+"Excavator, Specialisation Unknown",97400,1852
+Exacavator (Hand Tools),97415,1853
+ExcavatingMachine Operator,97420,1854
+TrenchDiggingMachine Operator,97425,1855
+Bulldozer Operator,97430,1856
+Dredge Operator,97435,1857
+PileDriver Operator,97440,1858
+RoadGrader and Scraper Operator,97445,1859
+RoadRoller Operator,97450,1860
+Concrete PavingMachine Operator,97455,1861
+TarSpreading Machine Operator,97460,1862
+ConcreteMixer Operator,97470,1863
+ConcreteMixingPlant Operator,97475,1864
+Other EarthMoving and Related Machinery Operators,97490,1865
+"Material Handling Equipment Operator Not Elsewhere Classified, Specialisation Unknown",97900,1866
+LiftingTruck Operator,97920,1867
+Dumper Driver,97930,1868
+ShuttleCar Operator (Mine),97940,1869
+TimberCarrier Driver,97950,1870
+Other Material Handling Equipment Operators,97990,1871
+Transport Equipment Operators,98000,1872
+"Ships' Deck Ratings, Barge Crews and Boatmen",98100,1873
+Boatswain,98120,1874
+Able Seaman,98130,1875
+"Seaman, Able or Ordinary",98135,1876
+Ordinary Seaman,98140,1877
+"Other Ships' Deck Ratings, Barge Crews and Boatmen",98190,1878
+Ships' EngineRoom Ratings,98200,1879
+Ship's Fireman,98220,1880
+Ship's Oiler and Greaser,98230,1881
+Other Ship's EngineRoom Ratings,98290,1882
+Railway EngineDrivers and Firemen,98300,1883
+Railway Engine Driver,98320,1884
+Railway SteamEngine Fireman,98330,1885
+Assistant Railway Engine Driver,98340,1886
+Underground or Elevated Train Driver,98350,1887
+EngineDriver (Mine and Quarry),98360,1888
+Other Railway EngineDrives and Firemen,98390,1889
+"Railway Brakemen, Signalmen and Shunters",98400,1890
+Railway Brakeman (Freight Train),98420,1891
+Railway Signaller,98430,1892
+Railway Shunter,98440,1893
+Mine and Quarry Brakeman,98450,1894
+MotorVehicle Drivers,98500,1895
+Tram Driver,98520,1896
+Taxi Driver,98530,1897
+Motor Bus Driver,98540,1898
+Lorry and Van Driver (Local Transport),98550,1899
+Lorry and Van Driver (Local or LongDistance Transport),98555,1900
+Lorry and Van Driver (LongDistance Transport),98560,1901
+MotorCyclist,98570,1902
+Other MotorVehicle Drivers,98590,1903
+"Animal or AnimalDrawn Vehicle Driver, Specialisation Unknown",98600,1904
+AnimalDrawn Vehicle Driver (Road),98620,1905
+AnimalDrawn Vehicle Driver (Mine and Quarry),98630,1906
+Other Animal and AnimalDrawn Vehicle Drivers,98690,1907
+Transport Equipment Operators Not Elsewhere Classified,98900,1908
+"Dockmaster, DryDock",98920,1909
+Lock Operator (Canal or Port),98930,1910
+LighthouseMan,98940,1911
+PedalVehicle Driver,98950,1912
+Other Transport Equipment Operators,98990,1913
+"Worker, No Further Information",99900,1914
+Labourer,99910,1915
+DayLabourer,99920,1916
+Factory Worker,99930,1917
+Unspecified worktitle or several titles,99999,1918

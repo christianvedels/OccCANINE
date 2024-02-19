@@ -33,7 +33,7 @@ import torch
 import pandas as pd
 
 import sys
-sys.path.append("../Model_scripts/")
+sys.path.append("../OccCANINE/")
 from n103_Prediction_assets import Finetuned_model
 from n102_DataLoader import Load_val
 

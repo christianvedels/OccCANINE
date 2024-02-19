@@ -14,7 +14,7 @@
 `pip install transformers`
 
 ## Install other packages
-`conda install -c anaconda pandas scikit-learn seaborn`
+`conda install -c anaconda pandas scikit-learn seaborn openpyxl`
 
 ## Install SentencePiece and protobuf library (required for XML-RoBERTa)
 `conda install SentencePiece`
