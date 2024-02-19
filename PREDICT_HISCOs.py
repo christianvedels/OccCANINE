@@ -15,10 +15,10 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from OccCANINE.n103_Prediction_assets import Finetuned_model
+from OccCANINE.n103_Prediction_assets import OccCANINE
 
 # %% Load model
-model = Finetuned_model()
+model = OccCANINE()
 
 # %% Example 1
 model.predict(
@@ -47,8 +47,6 @@ model.predict(
 # %% Example 4 - 1000 (and more) are still very fast
 import pandas as pd
 df = pd.read_csv("Data/TOYDATA.csv")
-print(f"Producing HISCO codes for {df.shape[0]} observations")
-print(f"Estimated human hours saved: {df.shape[0]*10/60/60} hours")
 model.verbose = True # Set updates to True
 x = model.predict(
     df["occ1"],
@@ -56,4 +54,5 @@ x = model.predict(
     threshold = 0.22
     )
 
+x["occ1"] = df["occ1"]
 x.to_csv("Data/TOYDATA_wHISCO.csv")

@@ -12,12 +12,12 @@ os.chdir(script_directory)
 # %% Libaries
 import sys
 sys.path.append("../OccCANINE/")
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(verbose = True)
+model = OccCANINE(verbose = True)
 
 # %% Load data
 # Define a function to read the text file and extract information

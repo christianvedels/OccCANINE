@@ -14,12 +14,12 @@ print(os.getcwd())
 import sys
 module_path = os.path.join(script_directory, "..", "OccCANINE")
 sys.path.append(module_path)
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(verbose = True, device="cpu")
+model = OccCANINE(verbose = True, device="cpu")
 
 # %% Load data
 df0 = pd.read_excel("../Data/Application_data/Swedish_Strikes/National_Sweden_1859-1902.xlsx")

@@ -16,12 +16,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 # %% Libaries
 import sys
 sys.path.append("../OccCANINE/")
-from n103_Prediction_assets import Finetuned_model
+from n103_Prediction_assets import OccCANINE
 
 import pandas as pd
 
 # %% Load model
-model = Finetuned_model(verbose = True)
+model = OccCANINE(verbose = True)
 
 # %% Load data
 df = pd.read_csv("../Data/Application_data/Copenhagen Burial Records/transcribed_sources/CBP/CBP_20210309.csv")
