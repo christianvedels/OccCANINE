@@ -47,8 +47,6 @@ model.predict(
 # %% Example 4 - 1000 (and more) are still very fast
 import pandas as pd
 df = pd.read_csv("Data/TOYDATA.csv")
-print(f"Producing HISCO codes for {df.shape[0]} observations")
-print(f"Estimated human hours saved: {df.shape[0]*10/60/60} hours")
 model.verbose = True # Set updates to True
 x = model.predict(
     df["occ1"],
@@ -56,4 +54,5 @@ x = model.predict(
     threshold = 0.22
     )
 
+x["occ1"] = df["occ1"]
 x.to_csv("Data/TOYDATA_wHISCO.csv")

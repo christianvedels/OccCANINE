@@ -22,6 +22,7 @@ import torch
 from torch import nn
 from torch.optim import AdamW
 import pandas as pd
+import time
 
 # %% Get_adapted_tokenizer
 def Get_adapated_tokenizer(name):
@@ -174,11 +175,16 @@ class OccCANINE:
         get_dict:       For what [n] method this is an option to return a list of dictionaries
         get_df:         Optional argument for what = "pred". Returns nicely formatted df
         """
+        
+        # Setup
         inputs = self.encode(occ1, lang, concat_in)
         batch_size = self.batch_size
         verbose = self.verbose
         results = []
         total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
+        
+        # Timing
+        start = time.time()
         
         # Fix get dict conditionally
         if get_dict:
@@ -250,6 +256,8 @@ class OccCANINE:
                 results = Top_n_to_df(results, what)
                 
         if isinstance(what, (int, float)) and what0 == "pred":
+            # Print update
+            print("\nPrediction done. Cleaning results.")
             # Disable preds for all below threshold
             for j in range(1, what+1):
                 probs_j = results[f"prob_{j}"]
@@ -260,9 +268,25 @@ class OccCANINE:
                         results.loc[i, f"desc_{j}"] = "No pred"
                         results.loc[i, f"prob_{j}"] = float("NaN")
             
-            results.insert(0,'occ1', inputs)
+            results.insert(0,'inputs', inputs)
+            results["hisco_1"] = results["hisco_1"].fillna("-1")
                 
-        print("\n")
+        end = time.time()
+        
+        if verbose:
+            dif_time = end - start
+            m, s = divmod(dif_time, 60)
+            h, m = divmod(m, 60)
+            
+            print(f"Produced HISCO codes for {occ1.shape[0]} observations in {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds.")
+            
+            saved_time = occ1.shape[0]*10 - dif_time
+            m, s = divmod(saved_time, 60)
+            h, m = divmod(m, 60)
+            
+            print("Estimated hours saved compared to human labeller (10 seconds per label):")
+            print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
+                
         return results
     
     def forward_base(self, occ1, lang = "unk", concat_in = False):
