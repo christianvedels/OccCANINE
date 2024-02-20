@@ -19,7 +19,7 @@ from n103_Prediction_assets import OccCANINE
 import pandas as pd
 
 # %% Load model
-model = OccCANINE(verbose = True, device="cpu")
+model = OccCANINE(verbose = True)
 
 # %% Load data
 df0 = pd.read_excel("../Data/Application_data/Swedish_Strikes/National_Sweden_1859-1902.xlsx")
