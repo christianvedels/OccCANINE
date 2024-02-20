@@ -4,7 +4,7 @@ Welcome to the GitHub repository for OccCANINE, a tool designed to transform occ
 
 Paper: **LINK**
 
-Huggingface: **LINK**
+Huggingface: [**Christianvel/OccCANINE**](https://huggingface.co/Christianvedel/OccCANINE)
 
 Getting started
 --------
