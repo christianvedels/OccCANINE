@@ -2,6 +2,7 @@ Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANIN
 =====================
 *Christian Møller Dahl & Christian Vedel, University of Southern Denmark*
 
+--------
 Welcome to the GitHub repository for OccCANINE, a tool designed to transform occupational descriptions into standardized HISCO (Historical International Standard Classification of Occupations) codes automatically. Developed by Christian Møller Dahl and Christian Vedel from the University of Southern Denmark, this tool leverages the power of a finetuned language model to process and classify occupational descriptions with high accuracy, precision, and recall. 
 
 Paper: **LINK**
