@@ -44,7 +44,7 @@ model.predict(
     threshold = 0.22 # Best F1 for English
     )
 
-# %% Example 4 - 1000 (and more) are still very fast
+# %% Example 4 - 10000 (and more) are still very fast
 import pandas as pd
 df = pd.read_csv("Data/TOYDATA.csv")
 model.verbose = True # Set updates to True

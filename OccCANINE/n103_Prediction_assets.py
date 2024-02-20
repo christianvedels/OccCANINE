@@ -460,7 +460,7 @@ class OccCANINE:
         }
         
     
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False):
+    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False, save_model = True):
         """
         Trains the model with the provided processed data.
     
@@ -482,6 +482,8 @@ class OccCANINE:
             Whether to print extra details during training. Defaults to False.
         new_labels : bool, optional
             Whether new labels should be used. Defaults to false
+        save_model : bool, optional
+            Should the finetuned model be saved? Defaults to false 
     
         Returns
         -------
@@ -541,35 +543,37 @@ class OccCANINE:
             verbose = verbose,
             verbose_extra  = verbose_extra,
             attack_switch = True,
-            initial_loss = val_loss
+            initial_loss = val_loss,
+            save_model = save_model
             )
         
         # == Load best model ==
         # breakpoint()
         # Load state
-        model_path = '../OccCANINE/Finetuned/'+model_name+'.bin'
-        if not os.path.isfile(model_path):
-            print("Model did not improve in training. Realoding original model")
-            model_path = self.name+'.bin'
-   
-        # Load the model state
-        loaded_state = torch.load(model_path)
-        
-        # If-lookup for model
-        config = {
-            "model_domain": "Multilingual_CANINE",
-            "n_classes": len(self.key),
-            "dropout_rate": 0,
-            "model_type": "canine"
-        }
-        
-        model = CANINEOccupationClassifier_hub(config)
-        
-        model.load_state_dict(loaded_state)        
-        model.to(self.device)   
-        self.model = model
-        
-        print("Loaded best version of model")
+        if save_model:
+            model_path = '../OccCANINE/Finetuned/'+model_name+'.bin'
+            if not os.path.isfile(model_path):
+                print("Model did not improve in training. Realoding original model")
+                model_path = self.name+'.bin'
+       
+            # Load the model state
+            loaded_state = torch.load(model_path)
+            
+            # If-lookup for model
+            config = {
+                "model_domain": "Multilingual_CANINE",
+                "n_classes": len(self.key),
+                "dropout_rate": 0,
+                "model_type": "canine"
+            }
+            
+            model = CANINEOccupationClassifier_hub(config)
+            
+            model.load_state_dict(loaded_state)        
+            model.to(self.device)   
+            self.model = model
+            
+            print("Loaded best version of model")
         
         val_acc, val_loss = eval_model(
             self.model,
@@ -596,7 +600,8 @@ class OccCANINE:
             verbose = True,
             verbose_extra = False, 
             test_fraction = 0.1,
-            new_labels = False
+            new_labels = False,
+            save_model = True
             ):
         """
         Fine-tunes the model on the provided dataset.
@@ -630,6 +635,8 @@ class OccCANINE:
             The fraction of the dataset to be used for testing. Defaults to 0.1.
         new_labels : bool, optional
             Whether the labels are a new system of labeling. Defaults to False.
+        save_model : bool, optional
+            Whether the finetuned model should be saved. 
     
         Returns
         -------
@@ -656,7 +663,8 @@ class OccCANINE:
         self._train_model(
             processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
             verbose_extra = verbose_extra,
-            new_labels = new_labels
+            new_labels = new_labels,
+            save_model = save_model
             )
 
         print("Finetuning completed successfully.")

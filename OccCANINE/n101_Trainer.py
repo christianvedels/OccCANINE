@@ -352,7 +352,8 @@ def trainer_loop_simple(
         initial_loss,
         verbose = True,
         verbose_extra = False,
-        attack_switch = False        
+        attack_switch = False,
+        save_model = True        
         ):
     
         
@@ -403,26 +404,20 @@ def trainer_loop_simple(
             model_name
             )
         
-        # # Checkpoint
-        # torch.save(
-        #     model.state_dict(), 
-        #     'Model/Checkpoint'+model_name+'.bin'
-        #     )
-        
-        # tokenizer_save_path = 'Model/Checkpoint_' + model_name + '_tokenizer'
-        # data['tokenizer'].save_pretrained(tokenizer_save_path)
-        
         # If we beat prev performance
         if val_loss < best_loss:
-            print("Validation loss improved. Saved improved model")
-            torch.save(
-                model.state_dict(), 
-                '../OccCANINE/Finetuned/'+model_name+'.bin'
-                )
-            best_loss = val_loss
-            
-            tokenizer_save_path = '../OccCANINE/Finetuned/' + model_name + '_tokenizer'
-            data['tokenizer'].save_pretrained(tokenizer_save_path)
+            if save_model:
+                print("Validation loss improved. Saved improved model")
+                torch.save(
+                    model.state_dict(), 
+                    '../OccCANINE/Finetuned/'+model_name+'.bin'
+                    )
+                best_loss = val_loss
+                
+                tokenizer_save_path = '../OccCANINE/Finetuned/' + model_name + '_tokenizer'
+                data['tokenizer'].save_pretrained(tokenizer_save_path)
+            else:
+                print("Validation loss improved.")
         
     return model, history
 

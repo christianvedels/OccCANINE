@@ -19,17 +19,20 @@ model = OccCANINE()
 
 # %% Load data
 df = pd.read_csv(
-    "Data/TOYDATA_wHISCO.csv"
+    "Data/TOYDATA.csv"
     )
-label_cols = ["hisco_1", "hisco_2", "hisco_3", "hisco_4", "hisco_5"]
+label_cols = ["hisco_1"]
 
 # Set lang
 df["lang"] = "en"  # English
 
-# %% Finetune
+# %% Finetune HISCO
 model.finetune(
-    df, label_cols, batch_size=16, only_train_final_layer = True,
-    save_name = "Finetune_toy_model"
+    df, 
+    label_cols, 
+    batch_size=32, 
+    save_name = "Finetune_toy_model",
+    verbose_extra = True
     )
 
 # %% Finetuned model can be loaded
