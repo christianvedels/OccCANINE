@@ -118,19 +118,19 @@ visualize_embeddings = function(embeddings, name) {
 # ==== Main Execution ====
 embeddings_w_lang %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE finetuned (w. lang)")
+  visualize_embeddings("CANINE finetuned_w._lang")
 
 embeddings_w_lang_base %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE baseline (w. lang)")
+  visualize_embeddings("CANINE baseline_w._lang")
 
 embeddings_wo_lang %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE finetuned (wo. lang)")
+  visualize_embeddings("CANINE finetuned_wo._lang")
 
 embeddings_wo_lang_base %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE baseline (wo. lang)")
+  visualize_embeddings("CANINE baseline_wo._lang")
 
 
 

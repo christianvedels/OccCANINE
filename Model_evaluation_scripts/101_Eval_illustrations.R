@@ -45,6 +45,7 @@ p1 = eval_canine %>% filter(summary == "All") %>%
 
 p1
 ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
+ggsave("Project_dissemination/Figures for paper/Threshold_and_performance.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # Best overall thresholds
 all_stats = eval_canine %>% 
@@ -165,6 +166,7 @@ p1 = plot_data %>%
   )
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_language.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
+ggsave("Project_dissemination/Figures for paper/Performance_by_language.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # ==== Table of optimal thresholds for appendix ====
 plot_data %>%
@@ -225,6 +227,7 @@ p1 = eval_canine %>%
 
 p1
 ggsave("Eval_plots/Performance_lang_wise1.png", width = 10, height = 10, plot = p1, dpi = 600)
+ggsave("Eval_plots/Performance_lang_wise1.pdf", width = 10, height = 10, plot = p1, dpi = 600)
 
 p1 = eval_canine %>% # Regular bar plot
   pivot_longer(c(acc, precision, recall, f1), names_to = "stat") %>% 
@@ -250,6 +253,7 @@ p1 = eval_canine %>% # Regular bar plot
 
 p1  
 ggsave("Eval_plots/Performance_lang_wise2.png", width = 6, height = 3.5, plot = p1, dpi = 600)
+ggsave("Eval_plots/Performance_lang_wise2.pdf", width = 6, height = 3.5, plot = p1, dpi = 600)
 
 # ==== By hisco ====
 the_best0 = the_best %>% filter(lang_info)
@@ -286,17 +290,17 @@ labels99 = plot_data %>%
     n_label = quantile(n*14, p = 0.95)
   ) %>% 
   mutate(
-    y = 0.5,
+    y = 0.4,
     label = "99% of\nobservations"
   )
 
 labels01 = plot_data %>% 
   group_by(stat) %>% 
   summarise(
-    n_label = quantile(n*14, p = 0.15)
+    n_label = quantile(n*14, p = 0.20)
   ) %>% 
   mutate(
-    y = 0.5,
+    y = 0.4,
     label = "1% of\nobservations"
   )
 
@@ -348,6 +352,7 @@ p1 = plot_data %>%
 
 ggsave("Eval_plots/Performance_hisco.png", width = 6, height = 3.5, plot = p1)
 ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
+ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.pdf", plot = p1, height = dim[1], width = dim[2])
 
 p1
 
@@ -381,6 +386,7 @@ p1 = ses_data %>%
 
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_ses.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
+ggsave("Project_dissemination/Figures for paper/Performance_by_ses.pdf", plot = p1, height = dim[1], width = dim[2])
 
 # Regressions to test ses_value ~ model performance
 regdata = ses_data %>%
