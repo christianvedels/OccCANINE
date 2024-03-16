@@ -11,52 +11,82 @@ SETUP:
 """
 
 
+import argparse
+
+from importlib.resources import files
+
 import pandas as pd
 
-from hisco.prediction_assets import OccCANINE
+from hisco import OccCANINE
+
+
+def parse_args() -> argparse.Namespace:
+    _default_example_strs = [
+        ["tailor of the finest suits"],
+        ["the train's fireman"],
+        ["nurse at the local hospital"],
+    ]
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--examples', type=str, nargs='+', default=None)
+    parser.add_argument('--toy-dataset-fn-out', type=str, default=None)
+
+    parser.add_argument('--language', type=str, default='en') # TODO add arg choices based on supported languages
+    parser.add_argument('--threshold', type=float, default=0.22) # Best F1 for English
+
+    args = parser.parse_args()
+
+    if args.examples is None:
+        args.examples = _default_example_strs
+
+    return args
+
+
+def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
+    fn_keys = files('hisco').joinpath('Data/TOYDATA.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file)
+
+    return keys
 
 
 def main():
+    args = parse_args()
+
     # Load model
     model = OccCANINE()
 
-    # Example 1
-    model.predict(
-        ["tailor of the finest suits"],
-        lang="en",
-        get_dict=True,
-        threshold=0.22, # Best F1 for English
-        )
+    # Loop through single-str example
+    for example_str in args.examples:
+        occ_code, prob, occ = model.predict(
+            example_str,
+            lang=args.language,
+            get_dict=True,
+            threshold=args.threshold,
+            )[0][0]
 
-    # Example 2
-    model.predict(
-        ["the train's fireman"],
-        lang="en",
-        get_dict=True,
-        threshold=0.22, # Best F1 for English
-        )
+        print(f'HISCO code: {occ_code}. Occupation: {occ}. Certainty: {prob * 100:.2f}%')
 
-    # Example 3
-    model.predict(
-        ["nurse at the local hospital"],
-        lang="en",
-        get_dict=True,
-        threshold=0.22, # Best F1 for English
-        )
+    # Predict on toy dataset if filename for output specified
+    if args.toy_dataset_fn_out is None:
+        return
 
-    # Example 4 - 10000 (and more) are still very fast
-
-    df = pd.read_csv("Data/TOYDATA.csv")
+    print('--toy-dataset-fn-out specified -- predicting codes for toy data')
+    data = load_toydata()
     model.verbose = True # Set updates to True
 
     model_prediction = model.predict(
-        df["occ1"],
-        lang="en",
-        threshold=0.22,
+        data["occ1"],
+        lang=args.language,
+        threshold=args.threshold,
         )
 
-    model_prediction["occ1"] = df["occ1"]
-    model_prediction.to_csv("Data/TOYDATA_wHISCO.csv") # FIXME bad hardcoded default
+    model_prediction["occ1"] = data["occ1"]
+
+    print(f'Writing output to {args.toy_dataset_fn_out}')
+    model_prediction.to_csv(args.toy_dataset_fn_out)
 
 
 if __name__ == '__main__':
