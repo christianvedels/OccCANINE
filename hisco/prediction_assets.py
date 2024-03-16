@@ -9,6 +9,9 @@ Loads trained version of the models
 import os
 import time
 
+from importlib.resources import files
+from typing import Dict, Tuple
+
 import torch
 
 from torch import nn
@@ -23,6 +26,15 @@ from .model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
 from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
+
+
+def load_keys() -> pd.DataFrame:
+    fn_keys = files('hisco').joinpath('Data/Key.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file)
+
+    return keys
 
 
 # Get_adapted_tokenizer
@@ -111,11 +123,13 @@ class OccCANINE:
 
         self.model = self._load_model(hf, force_download, baseline)
 
-    def _load_keys(self):
+    def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
         # Load and return both the key and key with descriptions
-        key_df = pd.read_csv("Data/Key.csv").iloc[1:] # FIXME bad hardcoded path
+        key_df = load_keys()
+
         key = dict(zip(key_df.code, key_df.hisco))
         key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
+
         return key, key_desc
 
     def _load_model(self, hf, force_download, baseline):

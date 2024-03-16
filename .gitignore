@@ -146,3 +146,6 @@ dmypy.json
 
 # pylint
 .pylint.d
+
+# vscode
+.vscode/

@@ -87,7 +87,7 @@ def check_csv_column_consistency(folder_path):
 
 
 def read_data(model_domain, data_type = "Train", toyload = False, verbose = True):
-    if(model_domain == "Multilingual" or model_domain == "Multilingual_CANINE"):
+    if model_domain == "Multilingual" or model_domain == "Multilingual_CANINE":
 
         # Find correct path
         if data_type == "Train":
@@ -306,7 +306,7 @@ def reference_loss(df):
 
 
 # ReadData
-def read_data( # FIXME name collision after fix wrong uppercase
+def read_sample_subset_data(
     model_domain,
     downsample_top1 = True,
     upsample_below = 1000,
@@ -555,7 +555,7 @@ def load_data(
         model_size = "" # base, large, etc (many transformers have a small and large version)
         ):
     # Load data
-    df, key = read_data(
+    df, key = read_sample_subset_data(
         model_domain,
         downsample_top1 = downsample_top1,
         upsample_below = upsample_below,
@@ -563,7 +563,7 @@ def load_data(
         verbose = verbose,
         toyload = toyload
         )
-    df_train, df_val, df_test = train_test_val(df, verbose=verbose) # FIXME can tuple be unbalanced??
+    df_train, df_val, df_test = train_test_val(df, verbose=verbose) # pylint: disable=W0632
 
     # To use later
     n_obs_train = df_train.shape[0]
@@ -571,8 +571,8 @@ def load_data(
     n_obs_test = df_test.shape[0]
 
     # Get set of unique languages
-    Langs = set(df_train['lang'])
-    Occs = set(df_train['occ1'])
+    langs = set(df_train['lang'])
+    occs = set(df_train['occ1'])
 
     # Save tmp files
     save_tmp(df_train, df_val, df_test)
@@ -629,8 +629,8 @@ def load_data(
         'N_CLASSES': n_classes,
         'key': key,
         'reference_loss': reference_loss_val,
-        'Languages': Langs,
-        'Occupations': Occs
+        'Languages': langs,
+        'Occupations': occs
     }
 
 # Load_val

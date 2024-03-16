@@ -25,4 +25,5 @@ setup(
     author_email='christian-vs@sam.sdu.dk',
     url='https://github.com/christianvedels/OccCANINE',
     packages=find_packages(exclude=['cfgs', 'docs', 'examples', 'helpers', 'tests']),
+    include_package_data=True,
 )
