@@ -150,5 +150,9 @@ dmypy.json
 # vscode
 .vscode/
 Deliveries/
-Project_dissemination/Drafts/240208 Draft.pdf
-Project_dissemination/Drafts/240218 Draft.pdf
+
+# Drafts
+Project_dissemination/Drafts
+
+# Obsidian notes
+.obsidian
