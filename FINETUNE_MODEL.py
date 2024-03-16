@@ -17,26 +17,28 @@ import pandas as pd
 # %% Load model
 model = OccCANINE()
 
-# %% Load data
-df = pd.read_csv(
-    "Data/TOYDATA.csv"
-    )
-label_cols = ["hisco_1"]
-
-# Set lang
-df["lang"] = "en"  # English
-
-# %% Finetune HISCO
-model.finetune(
-    df, 
-    label_cols, 
-    batch_size=32, 
-    save_name = "Finetune_toy_model",
-    verbose_extra = True
-    )
-
-# %% Finetuned model can be loaded
-model = OccCANINE("Finetuned/Finetune_toy_model", hf = False)
-
-x = model.predict(["tailor of fine dresses"], lang = "en")
-print(x)
+# %% Run
+if __name__ == '__main__':
+    # %% Load data
+    df = pd.read_csv(
+        "hisco/Data/TOYDATA.csv"
+        )
+    label_cols = ["hisco_1"]
+    
+    # Set lang
+    df["lang"] = "en"  # English
+    
+    # %% Finetune HISCO
+    model.finetune(
+        df, 
+        label_cols, 
+        batch_size=32, 
+        save_name = "Finetune_toy_model"#,
+        # verbose_extra = True
+        )
+    
+    # %% Finetuned model can be loaded
+    model = OccCANINE("Finetuned/Finetune_toy_model", hf = False)
+    
+    x = model.predict(["tailor of fine dresses"], lang = "en")
+    print(x)
