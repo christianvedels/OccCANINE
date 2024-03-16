@@ -291,10 +291,17 @@ class OccCANINE:
             dif_time = end - start
             m, s = divmod(dif_time, 60)
             h, m = divmod(m, 60)
+            
+            try:
+                # Assuming occ1 is a DataFrame
+                nobs = occ1.shape[0]
+            except AttributeError:
+                # Fallback if occ1 does not have a .shape attribute, use len() instead
+                nobs = len(occ1)
+            
+            print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
-            print(f"Produced HISCO codes for {occ1.shape[0]} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
-
-            saved_time = occ1.shape[0]*10 - dif_time
+            saved_time = nobs*10 - dif_time
             m, s = divmod(saved_time, 60)
             h, m = divmod(m, 60)
 
