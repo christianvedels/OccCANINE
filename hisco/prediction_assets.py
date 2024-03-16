@@ -204,7 +204,7 @@ class OccCANINE:
         if get_dict:
             get_df = False
 
-        if get_df:
+        if get_df and what=="pred":
             what0 = what
             what = 5 # This is the easiest way of handling this
 
