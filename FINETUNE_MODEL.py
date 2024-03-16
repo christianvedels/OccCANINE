@@ -11,7 +11,7 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from OccCANINE.n103_Prediction_assets import OccCANINE
+from hisco import OccCANINE
 import pandas as pd
 
 # %% Load model
