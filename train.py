@@ -5,6 +5,7 @@ CANINE
 """
 
 
+import argparse
 import os
 
 import torch
@@ -13,9 +14,9 @@ from torch import nn
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 # Load modules
-from .model_assets import CANINEOccupationClassifier, load_model_from_checkpoint
-from .trainer import trainer_loop
-from .dataloader import load_data
+from hisco.model_assets import CANINEOccupationClassifier, load_model_from_checkpoint
+from hisco.trainer import trainer_loop
+from hisco.dataloader import load_data
 
 # Hyperparameters
 
@@ -41,10 +42,14 @@ MODEL_NAME = f'CANINE_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE
 # checkpoint_path = None # Provide path to load model from checkpoint path
 CHECKPOINT_PATH = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_4_lr_2e-05_batch_size_128" # FIXME bad hardcode
 
+
+def parse_args() -> argparse.Namespace:
+    raise NotImplementedError
+
+
 def main():
     # Device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
     #  Load data + tokenizer
     data = load_data(
