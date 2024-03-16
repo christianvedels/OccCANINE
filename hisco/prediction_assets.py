@@ -32,7 +32,7 @@ def load_keys() -> pd.DataFrame:
     fn_keys = files('hisco').joinpath('Data/Key.csv')
 
     with fn_keys.open() as file:
-        keys = pd.read_csv(file)
+        keys = pd.read_csv(file, skiprows=[1])
 
     return keys
 
@@ -387,6 +387,12 @@ class OccCANINE:
         else:
             # breakpoint()
             key = self.key
+            
+            # # Remove na items
+            # items = list(key.items())
+            # items.pop(0)
+            # key = dict(items)
+            
             # Convert the key dictionary to a DataFrame for joining
             key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
             # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
@@ -394,6 +400,8 @@ class OccCANINE:
             # Ensure the label columns are numeric and have the same type as the key
             for col in label_cols:
                 data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
+                
+            self.finetune_key = key
 
         # Define expected code column names
         expected_code_cols = [f'code{i}' for i in range(1, 6)]
@@ -444,19 +452,19 @@ class OccCANINE:
         print(f"{n_obs_val} observations will be used in validation.")
 
         # Save tmp files
-        save_tmp(df_train, df_val, df_test = df_val, path = "../Data/Tmp_finetune")
+        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune")
 
         # File paths for the index files
-        train_index_path = "../Data/Tmp_finetune/Train_index.txt"
-        val_index_path = "../Data/Tmp_finetune/Val_index.txt"
+        train_index_path = "Data/Tmp_finetune/Train_index.txt"
+        val_index_path = "Data/Tmp_finetune/Val_index.txt"
 
         # Calculate number of classes
         n_classes = len(key)
 
         # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
-        ds_train_attack = OCCDataset(df_path="../Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
-        ds_val = OCCDataset(df_path="../Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
+        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
 
         # Data loaders
         data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
@@ -472,7 +480,7 @@ class OccCANINE:
         }
 
 
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False, save_model = True):
+    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False, save_model = True, save_path = '../OccCANINE/Finetuned/'):
         """
         Trains the model with the provided processed data.
 
@@ -556,14 +564,15 @@ class OccCANINE:
             verbose_extra  = verbose_extra,
             attack_switch = True,
             initial_loss = val_loss,
-            save_model = save_model
+            save_model = save_model,
+            save_path = save_path
             )
 
         # == Load best model ==
         # breakpoint()
         # Load state
         if save_model:
-            model_path = '../OccCANINE/Finetuned/'+model_name+'.bin'
+            model_path = save_path + model_name+'.bin'
             if not os.path.isfile(model_path):
                 print("Model did not improve in training. Realoding original model")
                 model_path = self.name+'.bin'
@@ -574,13 +583,13 @@ class OccCANINE:
             # If-lookup for model
             config = {
                 "model_domain": "Multilingual_CANINE",
-                "n_classes": len(self.key),
+                "n_classes": len(self.finetune_key),
                 "dropout_rate": 0,
                 "model_type": "canine"
             }
 
             model = CANINEOccupationClassifier_hub(config)
-
+            # breakpoint()
             model.load_state_dict(loaded_state)
             model.to(self.device)
             self.model = model
@@ -613,7 +622,8 @@ class OccCANINE:
             verbose_extra = False,
             test_fraction = 0.1,
             new_labels = False,
-            save_model = True
+            save_model = True,
+            save_path = "Finetuned/"
             ):
         """
         Fine-tunes the model on the provided dataset.
@@ -649,6 +659,8 @@ class OccCANINE:
             Whether the labels are a new system of labeling. Defaults to False.
         save_model : bool, optional
             Whether the finetuned model should be saved.
+        save_path : str, optional
+            Where should the model be saved?
 
         Returns
         -------
@@ -658,7 +670,12 @@ class OccCANINE:
         print("======================================")
         print("==== Started finetuning procedure ====")
         print("======================================")
-
+        
+        # Make sure 'Finetuned' dir exist
+        if not os.path.exists(save_path):
+            # Create the directory
+            os.makedirs(save_path)
+        
         # Handle batch_size
         if batch_size=="Default":
             batch_size = self.batch_size
@@ -676,7 +693,8 @@ class OccCANINE:
             processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
             verbose_extra = verbose_extra,
             new_labels = new_labels,
-            save_model = save_model
+            save_model = save_model,
+            save_path = save_path
             )
 
         print("Finetuning completed successfully.")
