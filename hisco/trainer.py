@@ -352,7 +352,8 @@ def trainer_loop_simple(
         verbose = True,
         verbose_extra = False,
         attack_switch = False,
-        save_model = True
+        save_model = True,
+        save_path = '../OccCANINE/Finetuned/'
         ):
 
 
@@ -409,11 +410,11 @@ def trainer_loop_simple(
                 print("Validation loss improved. Saved improved model")
                 torch.save(
                     model.state_dict(),
-                    '../OccCANINE/Finetuned/'+model_name+'.bin'
+                    save_path+model_name+'.bin'
                     )
                 best_loss = val_loss
 
-                tokenizer_save_path = '../OccCANINE/Finetuned/' + model_name + '_tokenizer'
+                tokenizer_save_path = save_path + model_name + '_tokenizer'
                 data['tokenizer'].save_pretrained(tokenizer_save_path)
             else:
                 print("Validation loss improved.")
