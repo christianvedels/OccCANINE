@@ -21,7 +21,8 @@ model = OccCANINE()
 if __name__ == '__main__':
     # %% Load data
     df = pd.read_csv(
-        "hisco/Data/TOYDATA.csv"
+        "hisco/Data/TOYDATA.csv",
+        nrows = 100
         )
     label_cols = ["hisco_1"]
     
@@ -33,12 +34,12 @@ if __name__ == '__main__':
         df, 
         label_cols, 
         batch_size=32, 
-        save_name = "Finetune_toy_model"#,
-        # verbose_extra = True
+        save_name = "Finetuned_toy_model",
+        verbose_extra = True
         )
     
     # %% Finetuned model can be loaded
-    model = OccCANINE("Finetuned/Finetune_toy_model", hf = False)
+    model = OccCANINE("Finetuned/Finetuned_toy_model", hf = False)
     
     x = model.predict(["tailor of fine dresses"], lang = "en")
     print(x)
