@@ -58,3 +58,7 @@ def main():
             "revert94/OccCANINE",
             force_download=True,
             )
+
+
+if __name__ == '__main__':
+    main()
