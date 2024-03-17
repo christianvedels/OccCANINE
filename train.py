@@ -3,7 +3,14 @@
 Train Character Architecture with No tokenization In Neural Encoders
 CANINE
 
+Scripts serves as entry point for model training. CLI to specify file
+path intructions and hyper parameter values. Use `python train.py -h`
+for full list of arguments.
 
+Example use:
+    1) python train.py --checkpoint-path path/to/checkpoint/
+    2) python train.py --checkpoint-path path/to/checkpoint/ --batch-size 512 --dropout 0.5
+    3) python train.py --checkpoint-path path/to/checkpoint/ --model-name my-cool-model
 
 """
 
@@ -38,7 +45,7 @@ def parse_args() -> argparse.Namespace:
 
     # Parameters
     parser.add_argument('--sample-size', type=int, default=10) # FIXME this appears to not be actual size but rather a modifier: "10 to the power of this is used for training"
-    parser.add_argument('--spochs', type=int, default=50)
+    parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--batch-size', type=int, default=256)
     parser.add_argument('--learning-rate', type=float, default=2*10**-5)
     parser.add_argument('--upsample-minimum', type=int, default=0)
