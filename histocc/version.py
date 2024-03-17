@@ -1,1 +1,1 @@
-__version__ = '0.1' # FIXME discuss w/ Vedel
+__version__ = '0.1.1'
