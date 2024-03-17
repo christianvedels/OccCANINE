@@ -2,6 +2,9 @@
 """
 Train Character Architecture with No tokenization In Neural Encoders
 CANINE
+
+
+
 """
 
 
@@ -21,70 +24,74 @@ from histocc import (
     load_data,
     )
 
-# Hyperparameters
 
 # Choose which GPU to use
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-# Which training data is used for the model
-MODEL_DOMAIN = "Multilingual_CANINE"
-
-# Parameters
-SAMPLE_SIZE = 10 # 10 to the power of this is used for training
-EPOCHS = 50
-BATCH_SIZE = 256
-LEARNING_RATE = 2*10**-5
-UPSAMPLE_MINIMUM = 0
-ALT_PROB = 0.1
-INSERT_WORDS = True
-DROPOUT_RATE = 0 # Dropout rate in final layer
-MAX_LEN = 128 # Number of tokens/characters to use
-
-MODEL_NAME = f'CANINE_{MODEL_DOMAIN}_sample_size_{SAMPLE_SIZE}_lr_{LEARNING_RATE}_batch_size_{BATCH_SIZE}'
-
-# checkpoint_path = None # Provide path to load model from checkpoint path
-CHECKPOINT_PATH = "../Trained_models/CANINE_Multilingual_CANINE_sample_size_4_lr_2e-05_batch_size_128" # FIXME bad hardcode
-
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" # TODO promote to arg?
 
 def parse_args() -> argparse.Namespace:
-    raise NotImplementedError
+    parser = argparse.ArgumentParser()
+
+    # File paths, data & model choices
+    parser.add_argument('--checkpoint-path', type=str, default=None) # FIXME use "../Trained_models/CANINE_Multilingual_CANINE_sample_size_4_lr_2e-05_batch_size_128"?
+    parser.add_argument('--model-name', type=str, default=None) # TODO investigate real purpose of this and why not covered in --checkpoint-path
+    parser.add_argument('--model-domain', type=str, default='Multilingual_CANINE') # TODO Why is this called domain when description is "Which training data is used for the model"?
+
+    # Parameters
+    parser.add_argument('--sample-size', type=int, default=10) # FIXME this appears to not be actual size but rather a modifier: "10 to the power of this is used for training"
+    parser.add_argument('--spochs', type=int, default=50)
+    parser.add_argument('--batch-size', type=int, default=256)
+    parser.add_argument('--learning-rate', type=float, default=2*10**-5)
+    parser.add_argument('--upsample-minimum', type=int, default=0)
+    parser.add_argument('--alt-prob', type=float, default=0.1)
+    parser.add_argument('--dropout', type=float, default=0.0, help='Dropout rate in final layer')
+    parser.add_argument('--max-len', type=int, default=128, help='Number of tokens/characters to use')
+    parser.add_argument('--skip-insert-words', action='store_true', default=False)
+
+    args = parser.parse_args()
+
+    if args.model_name is None:
+        args.model_name = f'CANINE_{args.model_domain}_sample_size_{args.sample_size}_lr_{args.learning_rate}_batch_size_{args.batch_size}'
+
+    args.insert_words = not args.skip_insert_words
+
+    return args
 
 
 def main():
+    args = parse_args()
+
     # Device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     #  Load data + tokenizer
     data = load_data(
-        model_domain = MODEL_DOMAIN,
-        downsample_top1 = True,
-        upsample_below = UPSAMPLE_MINIMUM,
-        sample_size = SAMPLE_SIZE,
-        max_len = MAX_LEN,
-        alt_prob = ALT_PROB,
-        insert_words = INSERT_WORDS,
-        batch_size = BATCH_SIZE,
-        verbose = False
-        # , toyload=True
+        model_domain=args.model_domain,
+        downsample_top1=True,
+        upsample_below=args.upsample_minimum,
+        sample_size=args.sample_size,
+        max_len=args.max_len,
+        alt_prob=args.alt_prob,
+        insert_words=args.insert_words,
+        batch_size=args.batch_size,
+        verbose=False,
         )
 
     #  Load model
     model = CANINEOccupationClassifier(
-        model_domain=MODEL_DOMAIN,
+        model_domain=args.model_domain,
         n_classes=data['N_CLASSES'],
-        # tokenizer = data['tokenizer'], # FIXME this is not a valid arg?
-        dropout_rate=DROPOUT_RATE,
+        dropout_rate=args.dropout_rate,
         )
     model.to(device)
 
     #  Load model checkpoint
-    if CHECKPOINT_PATH:
-        model, tokenizer = load_model_from_checkpoint(CHECKPOINT_PATH, model, MODEL_DOMAIN)
+    if args.checkpoint_path is not None:
+        model, tokenizer = load_model_from_checkpoint(args.checkpoint_path, model, args.model_domain)
         data['tokenizer'] = tokenizer
 
     # Optimizer and learning scheduler
-    optimizer = AdamW(model.parameters(), lr=LEARNING_RATE)
-    total_steps = len(data['data_loader_train']) * EPOCHS
+    optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+    total_steps = len(data['data_loader_train']) * args.epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=0,
@@ -96,8 +103,8 @@ def main():
 
     model = trainer_loop( # FIXME why is there an assignment here?
         model=model,
-        epochs=EPOCHS,
-        model_name=MODEL_NAME,
+        epochs=args.epochs,
+        model_name=args.model_name,
         data=data,
         loss_fn=loss_fn,
         reference_loss=data['reference_loss'],
