@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
 """
-Created on 2024-01-15
+Scripts serves as demo. Supports passing in arbitrary occupation
+description strings and additionally showcases performance on
+toy dataset.
 
-@author: christian-vs
+Example use:
+    1) python demo.py
+    2) python demo.py --examples "man who fishes" "trainman"
+    3) python demo.py --toy-dataset-fn-out toy-dataset-example.csv
 
-Prediction for applications
-
-SETUP:
-    - See readme2.md
 """
 
 
