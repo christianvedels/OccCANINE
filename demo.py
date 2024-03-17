@@ -13,11 +13,7 @@ SETUP:
 
 import argparse
 
-from importlib.resources import files
-
-import pandas as pd
-
-from histocc import OccCANINE
+from histocc import OccCANINE, DATASETS
 
 
 def parse_args() -> argparse.Namespace:
@@ -43,15 +39,6 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
-    fn_keys = files('hisco').joinpath('Data/TOYDATA.csv')
-
-    with fn_keys.open() as file:
-        keys = pd.read_csv(file)
-
-    return keys
-
-
 def main():
     args = parse_args()
 
@@ -74,7 +61,7 @@ def main():
         return
 
     print('--toy-dataset-fn-out specified -- predicting codes for toy data')
-    data = load_toydata()
+    data = DATASETS['toydata']()
     model.verbose = True # Set updates to True
 
     model_prediction = model.predict(
@@ -86,7 +73,7 @@ def main():
     model_prediction["occ1"] = data["occ1"]
 
     print(f'Writing output to {args.toy_dataset_fn_out}')
-    model_prediction.to_csv(args.toy_dataset_fn_out)
+    model_prediction.to_csv(args.toy_dataset_fn_out, index=False)
 
 
 if __name__ == '__main__':
