@@ -17,7 +17,7 @@ from importlib.resources import files
 
 import pandas as pd
 
-from hisco import OccCANINE
+from histocc import OccCANINE
 
 
 def parse_args() -> argparse.Namespace:
