@@ -27,7 +27,7 @@ from .attacker import AttackerClass
 
 
 # Returns training data path
-def train_path(model_domain):
+def train_path(model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     if model_domain == "DK_CENSUS":
         fname = "../Data/Training_data/DK_census_train.csv"
     elif model_domain == "EN_MARR_CERT":
@@ -43,7 +43,7 @@ def train_path(model_domain):
 
     return fname
 
-def val_path(model_domain):
+def val_path(model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     if model_domain == "DK_CENSUS":
         fname = "../Data/Validation_data/DK_census_val.csv"
     elif model_domain == "EN_MARR_CERT":
@@ -459,7 +459,7 @@ class OCCDataset(Dataset):
         }
 
 #Function to return datasets
-def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain):
+def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     # File paths for the index files
     train_index_path = "../Data/Tmp_train/Train_index.txt"
     val_index_path = "../Data/Tmp_train/Val_index.txt"

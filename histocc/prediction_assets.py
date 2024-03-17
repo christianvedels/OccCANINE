@@ -451,19 +451,19 @@ class OccCANINE:
         print(f"{n_obs_val} observations will be used in validation.")
 
         # Save tmp files
-        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune")
+        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune") # FIXME avoid hardcoded paths
 
         # File paths for the index files
-        train_index_path = "Data/Tmp_finetune/Train_index.txt"
-        val_index_path = "Data/Tmp_finetune/Val_index.txt"
+        train_index_path = "Data/Tmp_finetune/Train_index.txt" # FIXME avoid hardcoded paths
+        val_index_path = "Data/Tmp_finetune/Val_index.txt" # FIXME avoid hardcoded paths
 
         # Calculate number of classes
         n_classes = len(key)
 
         # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
-        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
-        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
 
         # Data loaders
         data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
