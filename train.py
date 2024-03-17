@@ -14,9 +14,12 @@ from torch import nn
 from transformers import AdamW, get_linear_schedule_with_warmup
 
 # Load modules
-from histocc.model_assets import CANINEOccupationClassifier, load_model_from_checkpoint
-from histocc.trainer import trainer_loop
-from histocc.dataloader import load_data
+from histocc import (
+    CANINEOccupationClassifier,
+    load_model_from_checkpoint,
+    trainer_loop,
+    load_data,
+    )
 
 # Hyperparameters
 
