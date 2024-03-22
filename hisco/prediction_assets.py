@@ -29,7 +29,7 @@ from .attacker import AttackerClass
 
 
 def load_keys() -> pd.DataFrame:
-    fn_keys = files('hisco').joinpath('Data/Key.csv')
+    fn_keys = files('histocc').joinpath('Data/Key.csv')
 
     with fn_keys.open() as file:
         keys = pd.read_csv(file, skiprows=[1])

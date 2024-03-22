@@ -44,7 +44,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
-    fn_keys = files('hisco').joinpath('Data/TOYDATA.csv')
+    fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
 
     with fn_keys.open() as file:
         keys = pd.read_csv(file)

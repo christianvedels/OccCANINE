@@ -5,8 +5,8 @@
 ## 1. Create the vitual environment from an anaconda prompt (admin)
 ```
 conda update -n base -c defaults conda
-conda create --name HISCO python=3.11
-conda activate HISCO
+conda create --name occ python=3.11
+conda activate occ
 ```
 
 ## 2. Install pytorch to run on cuda 11.8
