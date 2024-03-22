@@ -9,7 +9,6 @@ Loads trained version of the models
 import os
 import time
 
-from importlib.resources import files
 from typing import Dict, Tuple
 
 import torch
@@ -22,36 +21,28 @@ from unidecode import unidecode
 import numpy as np
 import pandas as pd
 
+from .datasets import DATASETS
 from .model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
 from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
 
 
-def load_keys() -> pd.DataFrame:
-    fn_keys = files('hisco').joinpath('Data/Key.csv')
-
-    with fn_keys.open() as file:
-        keys = pd.read_csv(file, skiprows=[1])
-
-    return keys
-
-
 # Get_adapted_tokenizer
-def get_adapated_tokenizer(name):
+def get_adapated_tokenizer(name: str):
     """
     This function loads the adapted tokenizers used in training
     """
     if "CANINE" in name:
         tokenizer = load_tokenizer("Multilingual_CANINE")
     else:
-       tokenizer_save_path = name + '_tokenizer'
-       tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
+        tokenizer_save_path = name + '_tokenizer'
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer_save_path)
 
     return tokenizer
 
 
-def top_n_to_df(result, top_n):
+def top_n_to_df(result, top_n: int) -> pd.DataFrame:
     """
     Converts dictionary of top n predictions to df
     Parameters
@@ -79,10 +70,8 @@ def top_n_to_df(result, top_n):
     for i in range(1, top_n+1):
         column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
 
-    # Create a DataFrame
-    x = pd.DataFrame(rows, columns=column_names)
-
-    return(x)
+    # Return as DataFrame
+    return pd.DataFrame(rows, columns=column_names)
 
 
 class OccCANINE:
@@ -123,9 +112,12 @@ class OccCANINE:
 
         self.model = self._load_model(hf, force_download, baseline)
 
+        # Promise for later initialization
+        self.finetune_key = None
+
     def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
         # Load and return both the key and key with descriptions
-        key_df = load_keys()
+        key_df = DATASETS['keys']()
 
         key = dict(zip(key_df.code, key_df.hisco))
         key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
@@ -256,7 +248,7 @@ class OccCANINE:
             elif what == "tokens":
                 results.append(batch_input_ids)
             else:
-                raise Exception("'what' incorrectly specified")
+                raise ValueError("'what' incorrectly specified")
 
         # Clean results
         if what == "bin":
@@ -291,14 +283,14 @@ class OccCANINE:
             dif_time = end - start
             m, s = divmod(dif_time, 60)
             h, m = divmod(m, 60)
-            
+
             try:
                 # Assuming occ1 is a DataFrame
                 nobs = occ1.shape[0]
             except AttributeError:
                 # Fallback if occ1 does not have a .shape attribute, use len() instead
                 nobs = len(occ1)
-            
+
             print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
             saved_time = nobs*10 - dif_time
@@ -394,12 +386,12 @@ class OccCANINE:
         else:
             # breakpoint()
             key = self.key
-            
+
             # # Remove na items
             # items = list(key.items())
             # items.pop(0)
             # key = dict(items)
-            
+
             # Convert the key dictionary to a DataFrame for joining
             key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
             # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
@@ -407,7 +399,7 @@ class OccCANINE:
             # Ensure the label columns are numeric and have the same type as the key
             for col in label_cols:
                 data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
-                
+
             self.finetune_key = key
 
         # Define expected code column names
@@ -459,19 +451,19 @@ class OccCANINE:
         print(f"{n_obs_val} observations will be used in validation.")
 
         # Save tmp files
-        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune")
+        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune") # FIXME avoid hardcoded paths
 
         # File paths for the index files
-        train_index_path = "Data/Tmp_finetune/Train_index.txt"
-        val_index_path = "Data/Tmp_finetune/Val_index.txt"
+        train_index_path = "Data/Tmp_finetune/Train_index.txt" # FIXME avoid hardcoded paths
+        val_index_path = "Data/Tmp_finetune/Val_index.txt" # FIXME avoid hardcoded paths
 
         # Calculate number of classes
         n_classes = len(key)
 
         # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
-        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0)
-        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0)
+        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
 
         # Data loaders
         data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
@@ -677,12 +669,12 @@ class OccCANINE:
         print("======================================")
         print("==== Started finetuning procedure ====")
         print("======================================")
-        
+
         # Make sure 'Finetuned' dir exist
         if not os.path.exists(save_path):
             # Create the directory
             os.makedirs(save_path)
-        
+
         # Handle batch_size
         if batch_size=="Default":
             batch_size = self.batch_size

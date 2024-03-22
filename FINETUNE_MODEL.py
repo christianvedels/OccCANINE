@@ -11,7 +11,7 @@ script_directory = os.path.dirname(os.path.abspath(__name__))
 os.chdir(script_directory)
 
 # %% Import necessary modules
-from hisco import OccCANINE
+from histocc import OccCANINE
 import pandas as pd
 
 # %% Load model
