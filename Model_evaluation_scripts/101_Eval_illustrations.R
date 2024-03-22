@@ -137,7 +137,7 @@ plot_data = best_lang %>%
     lang = factor(lang, levels = lang[order(-value)])
   ) %>% 
   mutate(
-    label = paste0(scales::percent(value), " (", thr, ")" )
+    label = paste0(scales::percent(value, 0.1), " (", thr, ")" )
   )
 
 p1 = plot_data %>% 
@@ -167,6 +167,42 @@ p1 = plot_data %>%
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_language.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 ggsave("Project_dissemination/Figures for paper/Performance_by_language.pdf", plot = p1, height = dim[1], width = dim[2])
+
+# Same plot but only F1
+p1 = plot_data %>% 
+  filter(stat == "f1") %>% 
+  mutate(lang = factor(as.character(lang), levels = lang[order(-value)])) %>% 
+  ggplot(aes(lang, value)) + 
+  geom_bar(stat = "identity", alpha = 0.8, fill = red) +
+  scale_y_continuous(
+    labels = scales::percent,
+    breaks = seq(0,1, by = 0.1)
+  ) + 
+  theme_bw() + 
+  geom_text(
+    y = 0.4,
+    aes(label = label, x = lang),
+    col = "grey", 
+    angle = 90,
+    size = 6
+  ) + 
+  geom_hline(
+    aes(yintercept = 0.9), 
+    data = all_stats %>% filter(stat == "f1"), 
+    lty = 2
+  ) + 
+  geom_text(
+    data = all_stats %>% filter(stat == "f1"),
+    aes(label = "90%", x = "is", y = 0.95),
+    inherit.aes = FALSE,
+    size = 8
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+  ) + 
+  labs(x = "Language", y = "F1")
+p1
+ggsave("Project_dissemination/Youtube_video/Slides/Figures/F1_multiling.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 
 # ==== Table of optimal thresholds for appendix ====
 plot_data %>%
