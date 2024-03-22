@@ -123,7 +123,7 @@ def eval_model(model, data_loader, loss_fn, device):
 # Plot training
 def plot_progress(train_losses, val_losses, train_acc, val_acc, reference_loss, model_name):
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 8))
+    _, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 8))
 
     ax1.plot(train_losses, color='blue', label='Training Loss')
     ax1.plot(val_losses, color='red', label='Validation Loss')
@@ -355,8 +355,6 @@ def trainer_loop_simple(
         save_model = True,
         save_path = '../OccCANINE/Finetuned/'
         ):
-
-
     history = defaultdict(list)
     best_loss = initial_loss
 
@@ -366,7 +364,6 @@ def trainer_loop_simple(
         # Show details
         print("----------")
         print(f"Epoch {epoch + 1}/{epochs}")
-
 
         # Switch when below reference loss
         if(attack_switch):
@@ -393,7 +390,7 @@ def trainer_loop_simple(
         print(f"Train loss {train_loss}, accuracy {train_acc}")
 
         # Run eval
-        history, val_acc, val_loss = run_eval_simple(
+        history, _, val_loss = run_eval_simple(
             model,
             data,
             loss_fn,

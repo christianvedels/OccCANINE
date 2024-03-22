@@ -1,1 +1,1 @@
-include hisco/Data/*.csv
+include histocc/Data/*.csv

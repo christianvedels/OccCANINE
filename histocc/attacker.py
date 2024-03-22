@@ -5,25 +5,25 @@ Created on Wed Aug 16 13:33:15 2023
 @author: chris
 """
 
+
 import random
 import string
+
 
 # Build the Sentiment Classifier class
 class AttackerClass:
     # Constructor class
     def __init__(self, df):
-        # super(AttackerClass, self).__init__()
         all_text = ' '.join(str(item) for item in df['occ1'].tolist())
         self.word_list = all_text.split()
 
     # attack
     def attack(self, x_string, alt_prob = 0.1, insert_words = True):
-        # breakpoint()
         x_string = [x_string]
         x_string_copy = x_string.copy()
 
-        if(alt_prob == 0): # Then don't waste time
-            return(x_string_copy)
+        if alt_prob == 0: # Then don't waste time
+            return x_string_copy
 
         # Alter chars
         for i in range(len(x_string_copy)):
@@ -31,7 +31,6 @@ class AttackerClass:
             if random.random() < alt_prob:
                 continue
 
-            # breakpoint()
             string_i = x_string_copy[i]
 
             num_letters = len(string_i)

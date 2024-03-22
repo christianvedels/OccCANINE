@@ -1,23 +1,19 @@
-# -*- coding: utf-8 -*-
 """
-Created on 2024-01-15
+Scripts serves as demo. Supports passing in arbitrary occupation
+description strings and additionally showcases performance on
+toy dataset.
 
-@author: christian-vs
+Example use:
+    1) python demo.py
+    2) python demo.py --examples "man who fishes" "trainman"
+    3) python demo.py --toy-dataset-fn-out toy-dataset-example.csv
 
-Prediction for applications
-
-SETUP:
-    - See readme2.md
 """
 
 
 import argparse
 
-from importlib.resources import files
-
-import pandas as pd
-
-from hisco import OccCANINE
+from histocc import OccCANINE, DATASETS
 
 
 def parse_args() -> argparse.Namespace:
@@ -42,7 +38,6 @@ def parse_args() -> argparse.Namespace:
 
     return args
 
-
 def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
     fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
 
@@ -50,6 +45,7 @@ def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
         keys = pd.read_csv(file)
 
     return keys
+
 
 
 def main():
@@ -74,7 +70,7 @@ def main():
         return
 
     print('--toy-dataset-fn-out specified -- predicting codes for toy data')
-    data = load_toydata()
+    data = DATASETS['toydata']()
     model.verbose = True # Set updates to True
 
     model_prediction = model.predict(
@@ -86,7 +82,7 @@ def main():
     model_prediction["occ1"] = data["occ1"]
 
     print(f'Writing output to {args.toy_dataset_fn_out}')
-    model_prediction.to_csv(args.toy_dataset_fn_out)
+    model_prediction.to_csv(args.toy_dataset_fn_out, index=False)
 
 
 if __name__ == '__main__':

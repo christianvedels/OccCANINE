@@ -16,9 +16,9 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-exec(open('hisco/version.py').read())
+exec(open('histocc/version.py').read())
 setup(
-    name='hisco',
+    name='histocc',
     version=__version__,
     description='Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE.',
     author='Christian Vedel',
