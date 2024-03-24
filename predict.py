@@ -2,9 +2,8 @@
 CLI for predicting HISCO codes based on .csv-file.
 
 Example use:
-    1) python predict.py FIXME
-
---fn-in "C:/Users/tsdj/Dropbox/Data (1)/Test_data/DE_ipums_test.csv" --col occ1 --fn-out C:/Users/tsdj/Downloads/tmp/tmp.csv
+    1) python predict.py --fn-in path/to/input/data.csv --col occ1 --fn-out path/to/output/data.csv
+    2) python predict.py --fn-in path/to/input/data.csv --col occ1 --fn-out path/to/output/data.csv --language en
 
 """
 
