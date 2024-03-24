@@ -70,6 +70,8 @@ def main():
         threshold=args.threshold,
         )
 
+    model_prediction["occ1"] = data["occ1"]
+
     print(f'Writing output to {args.toy_dataset_fn_out}')
     model_prediction.to_csv(args.toy_dataset_fn_out, index=False)
 
