@@ -11,7 +11,7 @@ import pandas as pd
 __ALL__ = ['DATASETS']
 
 def _load_keys() -> pd.DataFrame:
-    fn_keys = files('hisco').joinpath('Data/Key.csv')
+    fn_keys = files('histocc').joinpath('Data/Key.csv')
 
     with fn_keys.open() as file:
         keys = pd.read_csv(file, skiprows=[1])
@@ -20,7 +20,7 @@ def _load_keys() -> pd.DataFrame:
 
 
 def _load_toydata() -> pd.DataFrame:
-    fn_keys = files('hisco').joinpath('Data/TOYDATA.csv')
+    fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
 
     with fn_keys.open() as file:
         keys = pd.read_csv(file)
