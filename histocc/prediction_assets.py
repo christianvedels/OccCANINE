@@ -28,6 +28,14 @@ from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
 
 
+def load_keys() -> pd.DataFrame:
+    fn_keys = files('histocc').joinpath('Data/Key.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file, skiprows=[1])
+
+    return keys
+
 # Get_adapted_tokenizer
 def get_adapated_tokenizer(name: str):
     """

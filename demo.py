@@ -38,6 +38,15 @@ def parse_args() -> argparse.Namespace:
 
     return args
 
+def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
+    fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file)
+
+    return keys
+
+
 
 def main():
     args = parse_args()
