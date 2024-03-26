@@ -10,6 +10,9 @@ green = "#2c5c34"
 red = "#b33d3d"
 orange = "#DE7500"
 
+# ==== capK ====
+capK = read_csv2("Data/Key.csv") %>% NROW() # Max number of categories
+
 # ==== Pred_to_pred ====
 # Transforms the pred files outputted from n301_predict_eval.py to label predictions
 
@@ -144,12 +147,40 @@ Run_tests = function(pred, truth){
       )
     )
   
+  # Cohens Kappa 
+  # We just use the first HISCO code, since the first part is just about
+  # frequency anyway
+  n_k1 = x %>% 
+    group_by(pred_hisco_1) %>% 
+    count()
+  
+  n_k2 = x %>% 
+    group_by(hisco_1) %>% 
+    count()
+  
+  p_e = n_k1 %>% # Same code by random chance
+    full_join(n_k2, by = c("pred_hisco_1"="hisco_1")) %>% 
+    mutate_at(
+      vars(-group_cols()),
+      function(x) ifelse(is.na(x), 0, x)
+    ) %>% 
+    mutate(y = n.x*n.y) %>% 
+    ungroup() %>% 
+    summarise(
+      1/n()^2 * sum(y)
+    ) %>% unlist() %>% unname()
+  
+  cat("\nSame code by random chance:", p_e)
+  
+  # Sum all
   sum_all =  x %>% 
     ungroup() %>%  
     mutate(n = n()) %>% 
     summarise_at(c("acc", "precision", "recall", "n"), .funs = mean) %>% 
     mutate(
-      f1 = 2*precision*recall/(precision+recall)
+      f1 = 2*precision*recall/(precision+recall),
+      ckappa = (acc - p_e)/(1- p_e),
+      p_e = p_e
     ) %>% 
     mutate(
       summary = "All"
