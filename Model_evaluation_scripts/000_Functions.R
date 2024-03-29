@@ -147,44 +147,18 @@ Run_tests = function(pred, truth){
       )
     )
   
-  # Cohens Kappa 
-  # We just use the first HISCO code, since the first part is just about
-  # frequency anyway
-  n_k1 = x %>% 
-    group_by(pred_hisco_1) %>% 
-    count()
-  
-  n_k2 = x %>% 
-    group_by(hisco_1) %>% 
-    count()
-  
-  p_e = n_k1 %>% # Same code by random chance
-    full_join(n_k2, by = c("pred_hisco_1"="hisco_1")) %>% 
-    mutate_at(
-      vars(-group_cols()),
-      function(x) ifelse(is.na(x), 0, x)
-    ) %>% 
-    mutate(y = n.x*n.y) %>% 
-    ungroup() %>% 
-    summarise(
-      1/n()^2 * sum(y)
-    ) %>% unlist() %>% unname()
-  
-  cat("\nSame code by random chance:", p_e)
-  
   # Sum all
   sum_all =  x %>% 
     ungroup() %>%  
     mutate(n = n()) %>% 
     summarise_at(c("acc", "precision", "recall", "n"), .funs = mean) %>% 
     mutate(
-      f1 = 2*precision*recall/(precision+recall),
-      ckappa = (acc - p_e)/(1- p_e),
-      p_e = p_e
+      f1 = 2*precision*recall/(precision+recall)
     ) %>% 
     mutate(
       summary = "All"
-    )
+    ) %>% 
+    mutate(c_kappa = cohens_kappa(x))
   
   sum_lang = x %>% 
     group_by(lang) %>% 
@@ -197,6 +171,17 @@ Run_tests = function(pred, truth){
       summary = "Lang"
     )
   
+  tmp = foreach(l = unique(x$lang), .combine = "bind_rows") %do% {
+    data.frame(
+      lang = l,
+      c_kappa = cohens_kappa(x %>% filter(lang == l))
+    )
+  }
+  
+  sum_lang = sum_lang %>% 
+    left_join(tmp, by = "lang")
+  
+  
   sum_source = x %>% 
     group_by(Source) %>% 
     mutate(n = n()) %>% 
@@ -207,6 +192,16 @@ Run_tests = function(pred, truth){
     mutate(
       summary = "Source"
     )
+  
+  tmp = foreach(s = unique(x$Source), .combine = "bind_rows") %do% {
+    data.frame(
+      Source = s,
+      c_kappa = cohens_kappa(x %>% filter(Source == s))
+    )
+  }
+  
+  sum_source = sum_source %>% 
+    left_join(tmp, by = "Source")
   
   sum_hisco1 = x %>% 
     group_by(hisco_1) %>% 
@@ -227,6 +222,22 @@ Run_tests = function(pred, truth){
   ) %>% bind_rows()
   
   return(res)
+}
+
+# ==== cohens_kappa ====
+# Calculates cohens kappa from predictions and labels
+cohens_kappa = function(x){
+  relevant_x = x %>% 
+    select(pred_hisco_1, hisco_1) %>% 
+    data.frame()
+  suppressMessages({
+    suppressWarnings({
+      res = psych::cohen.kappa(relevant_x)
+    })
+  })
+  
+  
+  return(res$kappa)
 }
 
 # ==== floor0 ====
