@@ -40,7 +40,7 @@ p1 = eval_canine %>% filter(summary == "All") %>%
   labs(
     col = "",
     shape = "",
-    y = "Metric"
+    y = "Statistic"
   )
 
 p1
@@ -128,6 +128,14 @@ all_stats = eval_canine %>%
   filter(value == max(value)) %>% 
   mutate(
     lang = "it"
+  ) %>% 
+  mutate(
+    stat = case_when(
+      stat == "acc" ~ "Accuracy",
+      stat == "f1" ~ "F1 score",
+      stat == "precision" ~ "Precision",
+      stat == "recall" ~ "Recall"
+    )
   )
 
 plot_data = best_lang %>%  
@@ -141,6 +149,14 @@ plot_data = best_lang %>%
   )
 
 p1 = plot_data %>% 
+  mutate(
+    stat = case_when(
+      stat == "acc" ~ "Accuracy",
+      stat == "f1" ~ "F1 score",
+      stat == "precision" ~ "Precision",
+      stat == "recall" ~ "Recall"
+    )
+  ) %>% 
   ggplot(aes(lang, value)) + 
   geom_bar(stat = "identity", alpha = 0.8, fill = red) +
   scale_y_continuous(
@@ -165,7 +181,8 @@ p1 = plot_data %>%
     axis.text.x = element_text(angle = 90, vjust = 0.5)
   ) + 
   labs(
-    y = "Statistic"
+    y = "Statistic",
+    x = "Language"
   )
   
 p1
@@ -210,6 +227,14 @@ p1 = eval_canine %>%
   filter(lang_info) %>%
   mutate(
     share_in_training = n/sum(n)
+  ) %>% 
+  mutate(
+    stat = case_when(
+      stat == "acc" ~ "Accuracy",
+      stat == "f1" ~ "F1 score",
+      stat == "precision" ~ "Precision",
+      stat == "recall" ~ "Recall"
+    )
   ) %>% 
   ggplot(aes(share_in_training, value, label = lang)) +
   geom_label(alpha = 0.5, size = 4) +
@@ -392,7 +417,7 @@ p1 = ses_data %>%
   geom_point(size = 0.1, shape = 4)  + 
   geom_smooth(col = red) +
   theme_bw() +
-  labs(y = "Statistic", "Socio-Economic Score (hiscam)")
+  labs(y = "Statistic", x = "Socio-Economic Score (HISCAM)")
 
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_ses.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
