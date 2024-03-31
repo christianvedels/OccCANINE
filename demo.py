@@ -14,6 +14,7 @@ Example use:
 import argparse
 
 from histocc import OccCANINE, DATASETS
+import pandas as pd
 
 
 def parse_args() -> argparse.Namespace:
