@@ -65,7 +65,7 @@ construct_label = function(x){
 }
 
 # visualize_embeddings: Function to perform t-SNE and generate plots
-visualize_embeddings = function(embeddings, name) {
+run_tsne = function(embeddings) {
   # t-SNE Computation
   set.seed(20)  # for reproducibility
   tmp = embeddings %>% select(-c(occ1, hisco_1, only1, first_digit, lang, en_hisco_text)) 
@@ -81,7 +81,13 @@ visualize_embeddings = function(embeddings, name) {
   # tsne_data3d$first_digit = embeddings$first_digit
   # tsne_data3d$label = construct_label(embeddings)
   
+  return(
+    tsne_data
+  )
   
+}
+
+plot_emb = function(tsne_data, name){
   
   # 2D Visualization using ggplot2
   p1 = tsne_data %>% 
@@ -113,25 +119,67 @@ visualize_embeddings = function(embeddings, name) {
   # save(p3d, file = fname)
   
   
+  return(
+    tsne_data
+  )
+  
 }
 
 # ==== Main Execution ====
-embeddings_w_lang %>% 
+res_w_lang = embeddings_w_lang %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE finetuned_w._lang")
+  run_tsne() %>% 
+  plot_emb("CANINE_finetuned_w._lang")
 
-embeddings_w_lang_base %>% 
+res_w_lang_base = embeddings_w_lang_base %>% 
   prep_emb() %>% 
-  visualize_embeddings("CANINE baseline_w._lang")
+  run_tsne() %>% 
+  plot_emb("CANINE_baseline_w._lang")
 
-embeddings_wo_lang %>% 
-  prep_emb() %>% 
-  visualize_embeddings("CANINE finetuned_wo._lang")
+# res_wo_lang = embeddings_wo_lang %>% 
+#   prep_emb() %>% 
+#   run_tsne() %>% 
+#   plot_emb("CANINE_finetuned_wo._lang")
+# 
+# res_wo_lang_base = embeddings_wo_lang_base %>% 
+#   prep_emb() %>% 
+#   run_tsne() %>% 
+#   plot_emb("CANINE_baseline_wo._lang")
 
-embeddings_wo_lang_base %>% 
-  prep_emb() %>% 
-  visualize_embeddings("CANINE baseline_wo._lang")
+# ==== Plot of both at once ====
+res_w_lang = res_w_lang %>% 
+  mutate(
+    Model = "(b) OccCANINE"
+  )
 
+res_w_lang_base = res_w_lang_base %>% 
+  mutate(
+    Model = "(a) CANINE"
+  )
 
+p1 = res_w_lang_base %>% 
+  bind_rows(res_w_lang) %>% 
+  ggplot(aes(x=V1, y=V2, col = first_digit)) +
+  geom_point(alpha=0.7, size = 0.5) +
+  labs(
+    col = "First HISCO\ndigit"
+  ) +
+  facet_wrap(~Model) +
+  theme_bw() + 
+  theme(
+    legend.position = "bottom", 
+    legend.title=element_text(size = 8)
+  )
+p1
 
+ggsave(
+  "Project_dissemination/Figures for paper/Plot_tsne_2d.pdf", 
+  plot=p1, width=6, height=4, dpi = 600
+)
+
+ggsave(
+  "Project_dissemination/Figures for paper/Plot_tsne_2d.png", 
+  plot=p1, width=6, height=4, dpi = 600
+)
+  
 

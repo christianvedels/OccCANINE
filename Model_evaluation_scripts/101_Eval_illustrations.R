@@ -163,7 +163,11 @@ p1 = plot_data %>%
   ) + 
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5)
+  ) + 
+  labs(
+    y = "Statistic"
   )
+  
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_language.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 ggsave("Project_dissemination/Figures for paper/Performance_by_language.pdf", plot = p1, height = dim[1], width = dim[2])
@@ -319,20 +323,16 @@ p1 = plot_data %>%
   mutate(
     n_approx = n*14
   ) %>% 
-  # filter(pct_of_train<0.01) %>% 
+  drop_na(stat) %>%
   ggplot(aes(n_approx, value, label = hisco_1)) +
   geom_smooth(se = FALSE, col = red) + 
   geom_point(size = 0.1, shape = 4) + 
-  # geom_label(alpha = 0.5) +
   facet_wrap(~stat) + 
   theme_bw() +
-  # scale_x_log10() +
   scale_y_continuous(
     labels = scales::percent,
   ) + 
-  scale_x_log10(
-    # labels = scales::percent,
-  ) +
+  scale_x_log10() +
   labs(
     x = "N in training",
     y = "Statistic"
@@ -350,11 +350,20 @@ p1 = plot_data %>%
     aes(x = n_label, y = y, label = label), data = labels01
   )
 
+p1
 ggsave("Eval_plots/Performance_hisco.png", width = 6, height = 3.5, plot = p1)
 ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
 ggsave("Project_dissemination/Figures for paper/Performance_by_hisco.pdf", plot = p1, height = dim[1], width = dim[2])
 
 p1
+
+# N HISCO codes above / below 
+cutoff = q99$n %>% unique()
+
+plot_data %>% 
+  group_by(stat) %>% 
+  filter(n >= cutoff) %>%
+  count()
 
 # ==== Performance by SES ====
 ses_data = eval_canine %>% 
@@ -382,7 +391,8 @@ p1 = ses_data %>%
   facet_wrap(~stat) + 
   geom_point(size = 0.1, shape = 4)  + 
   geom_smooth(col = red) +
-  theme_bw()
+  theme_bw() +
+  labs(y = "Statistic", "Socio-Economic Score (hiscam)")
 
 p1
 ggsave("Project_dissemination/Figures for paper/Performance_by_ses.png", plot = p1, height = dim[1], width = dim[2], dpi = 600)
@@ -460,6 +470,17 @@ etable(
   signif.code=NA
 )
 
+# ==== Cohens kappa ====
+the_best
 
-  
+x = eval_canine %>% 
+  filter(summary == "All") %>% 
+  filter(lang_info) 
 
+x %>% 
+  ggplot(aes(thr, c_kappa)) + 
+  geom_point() +
+  theme_bw()
+
+x %>% 
+  filter(c_kappa == max(c_kappa))
