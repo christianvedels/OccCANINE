@@ -21,12 +21,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Custom modules
+from .datasets import DATASETS
 from .model_assets import load_tokenizer, update_tokenizer
 from .attacker import AttackerClass
 
 
 # Returns training data path
-def train_path(model_domain):
+def train_path(model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     if model_domain == "DK_CENSUS":
         fname = "../Data/Training_data/DK_census_train.csv"
     elif model_domain == "EN_MARR_CERT":
@@ -42,7 +43,7 @@ def train_path(model_domain):
 
     return fname
 
-def val_path(model_domain):
+def val_path(model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     if model_domain == "DK_CENSUS":
         fname = "../Data/Validation_data/DK_census_val.csv"
     elif model_domain == "EN_MARR_CERT":
@@ -142,7 +143,7 @@ def read_data(model_domain, data_type = "Train", toyload = False, verbose = True
     df['occ1'] = df['occ1'].apply(lambda val: " " if pd.isna(val) else val)
 
     # Key
-    key = pd.read_csv("../Data/Key.csv") # Load key and convert to dictionary
+    key = DATASETS['keys']() # Load key and convert to dictionary
     key = key[1:]
     key = zip(key.code, key.hisco)
     key = list(key)
@@ -341,14 +342,14 @@ def train_test_val(df, verbose = False, max_testval = 10**5, testval_fraction = 
 # Concat_string
 # Makes one string with language and then occupational description
 def concat_string(occ1, lang):
-    occ1 = str(occ1).strip("'[]'") # FIXME what does this do - correct this is a calid str that surrounds..?
+    occ1 = str(occ1).strip("'[]'") # pylint: disable=E1310
     # Implement random change to lang 'unknown' here:
     cat_sequence = "<s>" + lang + "</s></s>" + occ1 + "</s>"
 
     return(cat_sequence)
 
 def concat_string_canine(occ1, lang):
-    occ1 = str(occ1).strip("'[]'") # FIXME what does this do - correct this is a calid str that surrounds..?
+    occ1 = str(occ1).strip("'[]'") # pylint: disable=E1310
     # Implement random change to lang 'unknown' here:
     cat_sequence = lang + "[SEP]" + occ1
 
@@ -425,7 +426,7 @@ class OCCDataset(Dataset):
         if(random.random()<self.unk_lang_prob):
             lang = "unk"
 
-        occ1 = str(occ1).strip("'[]'")
+        occ1 = str(occ1).strip("'[]'") # pylint: disable=E1310
 
         # Implement random change to lang 'unknown' here:
         if self.model_domain == "Multilingual_CANINE":
@@ -458,7 +459,7 @@ class OCCDataset(Dataset):
         }
 
 #Function to return datasets
-def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain):
+def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain): # FIXME move to datasets.py and avoid hardcoded paths
     # File paths for the index files
     train_index_path = "../Data/Tmp_train/Train_index.txt"
     val_index_path = "../Data/Tmp_train/Val_index.txt"
