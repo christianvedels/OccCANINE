@@ -32,11 +32,15 @@ You are now ready to use OccCANINE for automatic HISCO codes.
 
 To obtain HISCO codes for a dataset `example.csv`, which has a column `occ1` with occupational descriptions you can run the following to get a csv `output.csv` with HISCO codes:
 
-`python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv`
+```
+python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv
+```
 
 OccCANINE works well in a multlingual setting without having the language specified. But the performance is even better when the language is explicitly provided. To specify that the occupational descriptions are English (`en`) you can run the following:
 
-`python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv --language en`
+```
+python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv --language en
+```
 
 You can specify any of the 13 languages in which it was trained on. Here is a full list of languages OccCANINE is trained on, and the abbreviation used:
 + English: "en"
