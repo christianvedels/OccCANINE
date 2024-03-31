@@ -28,5 +28,29 @@ pip install path/to/cloned/repo
 ```
 
 ## Predict HISCO codes
-You are now ready to use OccCANINE for automatic HISCO codes
-Open [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py) to get started.
+You are now ready to use OccCANINE for automatic HISCO codes. 
+
+To obtain HISCO codes for a dataset `example.csv`, which has a column `occ1` with occupational descriptions you can run the following to get a csv `output.csv` with HISCO codes:
+
+`python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv`
+
+OccCANINE works well in a multlingual setting without having the language specified. But the performance is even better when the language is explicitly provided. To specify that the occupational descriptions are English (`en`) you can run the following:
+
+`python predict.py --fn-in path/to/example.csv --col occ1 --fn-out path/to/output.csv --language en`
+
+You can specify any of the 13 languages in which it was trained on. Here is a full list of languages OccCANINE is trained on, and the abbreviation used:
++ English: "en"
++ Danish: "da"
++ Swedish: "se"
++ Dutch: "nl"
++ Catalan: "ca"
++ French: "fr"
++ Norwegian: "no"
++ Icelandic: "is"
++ Portugese: "pt"
++ German: "ge/de"
++ Spanish: "es"
++ Italian: "it"
++ Greek: "gr"
+
+Of course, OccCANINE has many options to tinker with. To get started writing a full script to handle your specific need we recommend starting with: [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)
