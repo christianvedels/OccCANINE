@@ -2,7 +2,7 @@
 
 // some helper functions: using a global object DTWidget so that it can be used
 // in JS() code, e.g. datatable(options = list(foo = JS('code'))); unlike R's
-// dynamic scoping, when 'code' is eval'ed, JavaScript does not know objects
+// dynamic scoping, when 'code' is eval()'ed, JavaScript does not know objects
 // from the "parent frame", e.g. JS('DTWidget') will not work unless it was made
 // a global object
 var DTWidget = {};
@@ -493,9 +493,7 @@ HTMLWidgets.widget({
               $input.parent().hide(); $x.show().trigger('show'); filter[0].selectize.focus();
             },
             input: function() {
-              var v1 = JSON.stringify(filter[0].selectize.getValue()), v2 = $input.val();
-              if (v1 === '[]') v1 = '';
-              if (v1 !== v2) filter[0].selectize.setValue(v2 === '' ? [] : JSON.parse(v2));
+              if ($input.val() === '') filter[0].selectize.setValue([]);
             }
           });
           var $input2 = $x.children('select');
@@ -1400,7 +1398,7 @@ HTMLWidgets.widget({
           console.log('The search keyword for column ' + i + ' is undefined')
           return;
         }
-        $(td).find('input').first().val(v).trigger('input');
+        $(td).find('input').first().val(v);
         searchColumn(i, v);
       });
       table.draw();
