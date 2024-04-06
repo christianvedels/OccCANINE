@@ -326,7 +326,7 @@ rbind(
 ```
 
 .footnote[
-***See '[PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)'***
+***See '[PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)' or [colab](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb)***
 ]
 
 
