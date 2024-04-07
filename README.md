@@ -10,8 +10,9 @@ Paper: [https://arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
 
 Huggingface: [Christianvel/OccCANINE](https://huggingface.co/Christianvedel/OccCANINE)
 
-Slides: [Breaking the HISCO barrier](https://raw.githack.com/christianvedels/OccCANINE/main/Project_dissemination/HISCO%20Slides/Slides.html)
+Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/main/Project_dissemination/HISCO%20Slides/Slides.html)
 
+How-to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
 
 Getting started
 --------
@@ -19,6 +20,8 @@ Getting started
 - A step-by-step installation guide can be found in [GETTING_STARTED.md](https://github.com/christianvedels/OccCANINE/blob/main/GETTING_STARTED.md)
 - Run `python predict.py --fn-in path/to/input/data.csv --col occ1 --fn-out path/to/output/data.csv --language [lang]` in the command line to get HISCO codes for all the descriptions found in the `occ1` column in the inputted data. See [predict.py](https://github.com/christianvedels/OccCANINE/blob/main/predict.py) for details.
 - To see a simple script which reads data and uses OccCANINE to obtain HISCO codes see  [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py).
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=WhuxccXOS_EwY9Il" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Overview
 --------
