@@ -21,7 +21,7 @@ Getting started
 - Run `python predict.py --fn-in path/to/input/data.csv --col occ1 --fn-out path/to/output/data.csv --language [lang]` in the command line to get HISCO codes for all the descriptions found in the `occ1` column in the inputted data. See [predict.py](https://github.com/christianvedels/OccCANINE/blob/main/predict.py) for details.
 - To see a simple script which reads data and uses OccCANINE to obtain HISCO codes see  [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py).
 
-[![How to use OccCANINE](https://img.youtube.com/vi/BF_oNe-sABQ?si=WhuxccXOS_EwY9Il/0.jpg)](https://www.youtube.com/watch?v=BF_oNe-sABQ?si=WhuxccXOS_EwY9Il)
+[![How to use OccCANINE](https://img.youtube.com/vi/BF_oNe-sABQ&ab_channel=SDUeconhist/0.jpg)](https://www.youtube.com/watch?v=BF_oNe-sABQ?si=WhuxccXOS_EwY9Il)
 
 Overview
 --------
