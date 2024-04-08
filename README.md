@@ -12,7 +12,7 @@ Huggingface: [Christianvel/OccCANINE](https://huggingface.co/Christianvedel/OccC
 
 Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/main/Project_dissemination/HISCO%20Slides/Slides.html)
 
-How-to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
+How to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
 
 Getting started
 --------
