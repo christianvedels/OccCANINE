@@ -14,6 +14,22 @@ Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/Occ
 
 How to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
 
+<details>
+  <summary>How to cite</summary>
+
+  ```
+  @misc{OccC2024breaking,
+      title={Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE}, 
+      author={Christian Møller Dahl and Torben Johansen and Christian Vedel},
+      year={2024},
+      eprint={2402.13604},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+      url={https://arxiv.org/abs/2402.13604}
+  }
+  ```
+</details>
+
 Getting started
 --------
 - See the [colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE
