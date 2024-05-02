@@ -1,5 +1,6 @@
 # Getting started
 - See [Colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE.
+- **New to Python?** You can use the above notebook from a webbrowser or install python on your own system via this link: [Miniconda](https://docs.anaconda.com/free/miniconda/miniconda-install/)
 - To use the model, follow the below setup guide.
 
 ## Create environment
