@@ -9,7 +9,7 @@ SETUP:
 """
 
 # Import necessary modules
-from histocc  import OccCANINE
+from histocc import OccCANINE
 import pandas as pd
 
 # Load model
