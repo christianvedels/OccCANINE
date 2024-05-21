@@ -134,7 +134,6 @@ class: middle
 
 1. Introduction to OccCANINE and its performance
 2. How to use OccCANINE
-3. HISCO codes in one line with CLI
 
 ???
 Here's the plan

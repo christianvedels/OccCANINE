@@ -116,6 +116,61 @@ knitr::include_graphics("Figures/logo_offwhite.png")
 ]
 ]
 
+---
+# Data examples
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+```{r echo=FALSE}
+load("Data_example_presentation.Rdata")
+rownames(tmp) = NULL
+
+tmp = tmp %>% 
+  select(occ1) %>% 
+  filter(nchar(occ1) > 20) %>% 
+  rename(`Raw entry` = occ1)
+
+DT::datatable(
+  tmp,
+  fillContainer = FALSE, options = list(pageLength = 5)
+)
+```
+
+---
+# HISCO codes
+- Derived from ISCO (International Standard Classification of Occupations) 
+- Invented for the sake of international comparability  
+- Introduced by Leuwen, Maas, Miles (2002) based on ISCO68  
+- Hiearchical structure well suited for analysis
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="709px"}
+knitr::include_graphics("Figures/HISCO structure.png")
+```
+
+
+---
+class: middle
+# OccCANINE
+.pull-left[
+- New tool to make research using historical occupations easier
+
+- 10000 observations in 27 seconds (rather than 27 hours)
+
+- Language model, OccCANINE:
+  + **Input:** "En" + "He is a farmer"
+  + **Output:** HISCO code 61110 (probability=0.989589)
+  
+- Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
+]
+
+.pull-right[
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=n3PxM8PkrB5esyPI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*Youtube video on how to use it*
+https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
+]
 
 ---
 ### Open questions:
@@ -143,73 +198,7 @@ knitr::include_graphics("Figures/TypeB.webp")
 ```
 ]
 
----
-# Data examples
-```{r echo = FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-```
 
-
-```{r echo=FALSE}
-load("Data_example_presentation.Rdata")
-rownames(tmp) = NULL
-
-tmp = tmp %>% 
-  select(occ1) %>% 
-  filter(nchar(occ1) > 23) %>% 
-  rename(`Raw entry` = occ1)
-
-DT::datatable(
-  tmp,
-  fillContainer = FALSE, options = list(pageLength = 5)
-)
-```
-
----
-class: middle
-# OccCANINE
-.pull-left[
-- New tool to make research using historical occupations easier
-- Language model, OccCANINE:
-  + **Input:** "En" + "He is a farmer"
-  + **Output:** HISCO code 61110 (probability=0.989589)
-  
-- Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
-]
-
-.pull-right[
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=n3PxM8PkrB5esyPI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-*Youtube video on how to use it*
-https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
-]
-
----
-# HISCO codes
-- Derived from ISCO (International Standard Classification of Occupations) 
-- Invented for the sake of international comparability  
-- Introduced by Leuwen, Maas, Miles (2002) based on ISCO68  
-- Hiearchical structure well suited for analysis
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="709px"}
-knitr::include_graphics("Figures/HISCO structure.png")
-```
-
----
-class: middle
-.pull-left[
-# The old solution
-- Spend weeks, months or years manually reading and categorizing 
-
-- 17865 different occupational descriptions fit with "farm servant" in DK censuses ("in service", "servant girl", "servant boy", "servant woman", "servant karl") 
-
-- Spelling mistakes, negations, and different spelling conventions
-]
-
-???
-- Does not work well
-- Takes time
-- Does not scale
 
 ---
 class: middle
@@ -500,7 +489,7 @@ See more details in the paper
 
 ---
 # Application: Copenhagen Burial Records 
-*Data from CPH burial records - 94% accuracy*
+*Data from CPH burial records - 95% accuracy*
 
 *388,057 Copenhageners from around ~1861 to ~1911*
 
@@ -594,6 +583,8 @@ class: middle
 - Something that took weeks, months and years, now takes an afternoon
 - Enables new research 
 - Enables more time on caring about the quality of sources and their nature
+
+- We will further train ***OccCANINE*** during the summer $\rightarrow$ *please share data*
 
 ]
 
