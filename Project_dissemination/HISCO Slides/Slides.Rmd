@@ -117,6 +117,16 @@ knitr::include_graphics("Figures/logo_offwhite.png")
 ]
 
 ---
+class: middle
+# Hvad kan man bruge det til?
+
+.pull-left[
+- **Direkte applikation:** Vi har nu beskæftigelsesdata på individ-niveau helt tilbage til 1787
+- **Indirekte:** Vi har en sprogmodel, der forstår noget *substantielt/semantisk* om beskæftigelser (nemmere end at lære det udenad)
+- **Analogi:** Meget offentlig data indeholder fritekst-felter. Man kan gøre lignende for at systematisere det.
+]
+
+---
 # Data examples
 ```{r echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -124,18 +134,28 @@ library(tidyverse)
 
 
 ```{r echo=FALSE}
-load("Data_example_presentation.Rdata")
+# load("Data_example_presentation.Rdata")
+# Danish:
+# tmp = readxl::read_excel("CopenhagenBurials_05_manual_check.xlsx", skip = 1)
+suppressWarnings({
+  tmp = read_csv("../../Data/Validation_data/DK_census_val.csv", col_types = "c")
+})
 rownames(tmp) = NULL
 
-tmp = tmp %>% 
-  select(occ1) %>% 
-  filter(nchar(occ1) > 20) %>% 
+set.seed(20)
+tmp = tmp %>%
+  distinct() %>% 
+  select(occ1) %>%
+  filter(nchar(occ1) > 30) %>% 
+  sample_n(500) %>% 
   rename(`Raw entry` = occ1)
 
 DT::datatable(
   tmp,
   fillContainer = FALSE, options = list(pageLength = 5)
 )
+
+
 ```
 
 ---
@@ -478,17 +498,7 @@ See more details in the paper
 **Summary:** Description goes in, probabilities comes out
 
 ---
-# Possible expansions
-
-- Other coding schemes
-- Different settings 
-- Different historical data: Trade statistics 
-- Potential retraining based on feedback
-
-- Utilizing the inherent structural understanding in this model 
-
----
-# Application: Copenhagen Burial Records 
+# Application 1: Copenhagen Burial Records 
 *Data from CPH burial records - 95% accuracy*
 
 *388,057 Copenhageners from around ~1861 to ~1911*
@@ -541,7 +551,7 @@ Data from Link Lives. See https://link-lives.dk/
 ]
 
 ---
-# Application: Copenhagen Burial Records
+# Application 1: Copenhagen Burial Records
 ```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 p1 = data0 %>% 
   mutate(
@@ -575,6 +585,89 @@ ggsave("Figures/CPH_stats.png", plot = p1, width = 6, height = 4)
 ```
 
 ![CPH](Figures/CPH_stats.png)
+
+---
+class: middle
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left-wide[
+- Danish censuses 1787-1901
+- 13.5 mil. observations
+- Contains a string every year describing peoples occupation
+
+- We can turn these 13.5 million descriptions into HISCO codes in ~2 hours on a laptop with 96% accuracy
+- Census data for 1787, 1801, 1845, 1880 was part of the training data of OccCANINE
+
+
+#### Available:
+[Vedel, Christian; Dahl, Christian Møller; Johansen, Torben S. D., 2024, "HISCO codes for Danish Census data", https://doi.org/10.7910/DVN/WZILNI, Harvard Dataverse, V3](https://doi.org/10.7910/DVN/WZILNI)
+
+]
+
+.pull-right-narrow[
+![Filled form](https://upload.wikimedia.org/wikipedia/commons/9/9a/Folket%C3%A6lling-1840.jpg)
+]
+
+---
+# What were the occupational shifts?
+
+.pull-left-narrow[
+- From farming to manufacturing
+]
+.pull-right-wide[
+![DK_income](Figures/Major_group.png)
+]
+
+---
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left[
+- We can proxy for income by looking at the average income of each occupation.
+- For now based on 1915 average incomes
+- Extensions possble
+
+
+**How do we turn 1915 incomes into HISCO-code-level incomes?** $\rightarrow$ ***Also use OccCANINE***
+
+$$
+\mathbb{E}(w_i|h_j)=\sum_i^N w_i \frac{\overset{OccCANINE}{\overbrace{Pr(h_j|w_i)}}\overset{Prior}{\overbrace{Pr(w_i)}}}{\underset{Normalization / Evidence}{\underbrace{Pr(h_j)}}}
+$$
+]
+
+.pull-right[
+![1915](Figures/TableX_example.png)
+]
+
+---
+# Danish Economic History in three bullets
+.pull-left[
+- When was the economic take-off in Denmark?
+- Latter half of 19th century (Henriksen, 2006)
+- Wages: From among the poorest to being among the richest in the period 1850-1900 (Khaustova, Sharp, 2015)
+- **But how much of this is driven by occupational shifts?**
+  + *Answer*: Some of it was
+]
+
+.pull-right-narrow[
+![DK_hist](Figures/DK_EH.webp)
+*I've heard the creameries also played a role (Lampe & Sharp, 2019)*
+]
+
+
+---
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left-wide[
+![DK_income](Figures/DK_occ_income.png)
+]
+
+.pull-right-narrow[
+- Stable (occupational) incomes until mid 1800s
+- Sharp shift upwards
+- People started taking jobs that (eventually) would pay more 
+
+]
+
 
 ---
 class: middle
