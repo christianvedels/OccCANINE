@@ -14,6 +14,7 @@ Example use:
 import argparse
 
 from histocc import OccCANINE, DATASETS
+import pandas as pd
 
 
 def parse_args() -> argparse.Namespace:
@@ -37,6 +38,15 @@ def parse_args() -> argparse.Namespace:
         args.examples = _default_example_strs
 
     return args
+
+def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
+    fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file)
+
+    return keys
+
 
 
 def main():

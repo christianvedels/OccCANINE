@@ -28,6 +28,14 @@ from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
 
 
+def load_keys() -> pd.DataFrame:
+    fn_keys = files('histocc').joinpath('Data/Key.csv')
+
+    with fn_keys.open() as file:
+        keys = pd.read_csv(file, skiprows=[1])
+
+    return keys
+
 # Get_adapted_tokenizer
 def get_adapated_tokenizer(name: str):
     """
@@ -260,22 +268,21 @@ class OccCANINE:
         if isinstance(what, (int, float)):
             if not get_dict:
                 results = top_n_to_df(results, what)
-
+            
         if isinstance(what, (int, float)) and what0 == "pred":
-            # Print update
             print("\nPrediction done. Cleaning results.")
-            # Disable preds for all below threshold
-            for j in range(1, what+1):
-                probs_j = results[f"prob_{j}"]
-                test_j = probs_j > threshold
-                for i in range(results.shape[0]):
-                    if not test_j[i]:
-                        results.loc[i,f"hisco_{j}"] = float("NaN")
-                        results.loc[i, f"desc_{j}"] = "No pred"
-                        results.loc[i, f"prob_{j}"] = float("NaN")
-
-            results.insert(0,'inputs', inputs)
-            results["hisco_1"] = results["hisco_1"].fillna("-1")
+        
+            # Vectorized operation to mask predictions below the threshold
+            for j in range(1, what + 1):
+                prob_column = f"prob_{j}"
+                mask = results[prob_column] <= threshold
+                results.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
+        
+            # First, ensure "hisco_1" is of type string to avoid mixing data types
+            results["hisco_1"] = results["hisco_1"].astype(str)
+            results["hisco_1"].fillna("-1", inplace=True)
+            
+            results.insert(0, 'inputs', inputs)
 
         end = time.time()
 

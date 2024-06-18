@@ -5,11 +5,6 @@ Created on Wed Jan 24 17:13:47 2024
 @author: christian-vs
 """
 
-
-import os
-script_directory = os.path.dirname(os.path.abspath(__name__))
-os.chdir(script_directory)
-
 # %% Import necessary modules
 from histocc import OccCANINE
 import pandas as pd
@@ -19,17 +14,17 @@ model = OccCANINE()
 
 # %% Run
 if __name__ == '__main__':
-    # %% Load data
+    # Load data
     df = pd.read_csv(
-        "hisco/Data/TOYDATA.csv",
-        nrows = 100
+        "histocc/Data/TOYDATA.csv",
+        nrows = 1000 # Use more data when doing this for real
         )
     label_cols = ["hisco_1"]
     
     # Set lang
     df["lang"] = "en"  # English
     
-    # %% Finetune HISCO
+    # Finetune HISCO
     model.finetune(
         df, 
         label_cols, 
@@ -38,7 +33,7 @@ if __name__ == '__main__':
         verbose_extra = True
         )
     
-    # %% Finetuned model can be loaded
+    # Finetuned model can be loaded
     model = OccCANINE("Finetuned/Finetuned_toy_model", hf = False)
     
     x = model.predict(["tailor of fine dresses"], lang = "en")

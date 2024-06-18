@@ -10,6 +10,9 @@ green = "#2c5c34"
 red = "#b33d3d"
 orange = "#DE7500"
 
+# ==== capK ====
+capK = read_csv2("Data/Key.csv") %>% NROW() # Max number of categories
+
 # ==== Pred_to_pred ====
 # Transforms the pred files outputted from n301_predict_eval.py to label predictions
 
@@ -144,6 +147,7 @@ Run_tests = function(pred, truth){
       )
     )
   
+  # Sum all
   sum_all =  x %>% 
     ungroup() %>%  
     mutate(n = n()) %>% 
@@ -153,7 +157,8 @@ Run_tests = function(pred, truth){
     ) %>% 
     mutate(
       summary = "All"
-    )
+    ) %>% 
+    mutate(c_kappa = cohens_kappa(x))
   
   sum_lang = x %>% 
     group_by(lang) %>% 
@@ -166,6 +171,17 @@ Run_tests = function(pred, truth){
       summary = "Lang"
     )
   
+  tmp = foreach(l = unique(x$lang), .combine = "bind_rows") %do% {
+    data.frame(
+      lang = l,
+      c_kappa = cohens_kappa(x %>% filter(lang == l))
+    )
+  }
+  
+  sum_lang = sum_lang %>% 
+    left_join(tmp, by = "lang")
+  
+  
   sum_source = x %>% 
     group_by(Source) %>% 
     mutate(n = n()) %>% 
@@ -176,6 +192,16 @@ Run_tests = function(pred, truth){
     mutate(
       summary = "Source"
     )
+  
+  tmp = foreach(s = unique(x$Source), .combine = "bind_rows") %do% {
+    data.frame(
+      Source = s,
+      c_kappa = cohens_kappa(x %>% filter(Source == s))
+    )
+  }
+  
+  sum_source = sum_source %>% 
+    left_join(tmp, by = "Source")
   
   sum_hisco1 = x %>% 
     group_by(hisco_1) %>% 
@@ -196,6 +222,22 @@ Run_tests = function(pred, truth){
   ) %>% bind_rows()
   
   return(res)
+}
+
+# ==== cohens_kappa ====
+# Calculates cohens kappa from predictions and labels
+cohens_kappa = function(x){
+  relevant_x = x %>% 
+    select(pred_hisco_1, hisco_1) %>% 
+    data.frame()
+  suppressMessages({
+    suppressWarnings({
+      res = psych::cohen.kappa(relevant_x)
+    })
+  })
+  
+  
+  return(res$kappa)
 }
 
 # ==== floor0 ====

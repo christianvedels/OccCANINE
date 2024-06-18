@@ -9,10 +9,11 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      ratio: '16:9'
 editor_options: 
   chunk_output_type: console
 ---
-class: center, inverse
+class: center, inverse, middle
 
 ```{r xaringan-panelset, echo=FALSE}
 xaringanExtra::use_panelset()
@@ -88,14 +89,108 @@ xaringanExtra::use_progress_bar(color = "#808080", location = "top")
 
 
 # Breaking the HISCO Barrier: 
-## *AI and Occupational Data Standardization*
-### Christian Møller-Dahl
-### Christian Vedel
+## *Automatic Occupational Standardization with OccCANINE*
+### Christian Møller-Dahl, Torben Johansen, Christian Vedel
 ### University of Southern Denmark, HEDG
 
 #### Twitter: @ChristianVedel,
 #### Email: christian-vs@sam.sdu.dk
+#### arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
 #### Updated `r Sys.Date()` 
+
+
+---
+class: middle, inverse, center
+
+.huge123[**OccCANINE**]
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="150px", out.width="150px"}
+knitr::include_graphics("Figures/logo_offwhite.png")
+```
+
+
+.footnote[
+.small123[
+*Logo: Matt Curtis + Bing image*
+]
+]
+
+---
+class: middle
+# Hvad kan man bruge det til?
+
+.pull-left[
+- **Direkte applikation:** Vi har nu beskæftigelsesdata på individ-niveau helt tilbage til 1787
+- **Indirekte:** Vi har en sprogmodel, der forstår noget *substantielt/semantisk* om beskæftigelser (nemmere end at lære det udenad)
+- **Analogi:** Meget offentlig data indeholder fritekst-felter. Man kan gøre lignende for at systematisere det.
+]
+
+---
+# Data examples
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+```{r echo=FALSE}
+# load("Data_example_presentation.Rdata")
+# Danish:
+# tmp = readxl::read_excel("CopenhagenBurials_05_manual_check.xlsx", skip = 1)
+suppressWarnings({
+  tmp = read_csv("../../Data/Validation_data/DK_census_val.csv", col_types = "c")
+})
+rownames(tmp) = NULL
+
+set.seed(20)
+tmp = tmp %>%
+  distinct() %>% 
+  select(occ1) %>%
+  filter(nchar(occ1) > 30) %>% 
+  sample_n(500) %>% 
+  rename(`Raw entry` = occ1)
+
+DT::datatable(
+  tmp,
+  fillContainer = FALSE, options = list(pageLength = 5)
+)
+
+
+```
+
+---
+# HISCO codes
+- Derived from ISCO (International Standard Classification of Occupations) 
+- Invented for the sake of international comparability  
+- Introduced by Leuwen, Maas, Miles (2002) based on ISCO68  
+- Hiearchical structure well suited for analysis
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="709px"}
+knitr::include_graphics("Figures/HISCO structure.png")
+```
+
+
+---
+class: middle
+# OccCANINE
+.pull-left[
+- New tool to make research using historical occupations easier
+
+- 10000 observations in 27 seconds (rather than 27 hours)
+
+- Language model, OccCANINE:
+  + **Input:** "En" + "He is a farmer"
+  + **Output:** HISCO code 61110 (probability=0.989589)
+  
+- Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
+]
+
+.pull-right[
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=n3PxM8PkrB5esyPI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*Youtube video on how to use it*
+https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
+]
 
 ---
 ### Open questions:
@@ -107,7 +202,7 @@ xaringanExtra::use_progress_bar(color = "#808080", location = "top")
 
 ### Barriers:
 
-.pull-left[
+.pull-left-narrow[
 **Type A:**
 ```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="300px"}
 knitr::include_graphics("Figures/TypeA.png")
@@ -118,79 +213,49 @@ knitr::include_graphics("Figures/TypeA.png")
 
 .pull-right[
 .red[**Type B:**]
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="300px"}
-knitr::include_graphics("Figures/TypeB.png")
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px"}
+knitr::include_graphics("Figures/TypeB.webp")
 ```
 ]
 
----
-# Motivation
-
-.pull-left[
-- The 2023 Nobel Prize was given to Claudia Goldin
-> *"for having advanced our understanding of women’s labour market outcomes"* (NobelPrize.org, 2023)
-
-- This type of work inherently requires data about the labour market
-
-- *We are working on an algorithm, which can automatically classify occupations based on raw textual entries from archival data*
-
-]
-
-.pull-right[
-![ClaudiaGoldin](https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Claudia_Goldin_%28cropped%29.jpg/1024px-Claudia_Goldin_%28cropped%29.jpg)
-*Claudia Goldin, wikimedia*
-]
-
 
 
 ---
-# Data examples
-```{r echo = FALSE, message=FALSE, warning=FALSE}
-library(tidyverse)
-```
-
-
-```{r echo=FALSE}
-load("Data_example_presentation.Rdata")
-rownames(tmp) = NULL
-
-tmp = tmp %>% 
-  select(occ1) %>% 
-  filter(nchar(occ1) > 23) %>% 
-  rename(`Raw entry` = occ1)
-
-DT::datatable(
-  tmp,
-  fillContainer = FALSE, options = list(pageLength = 5)
-)
-```
-
----
-# HISCO codes
-- Derived from ISCO (International Standard Classification of Occupations) 
-- Invented for the sake of international comparability  
-- Introduced by Leuwen, Maas, Miles (2002) based on ISCO68  
-- Hiearchical structure well suited for analysis
-
-![HISCO](Figures/HISCO structure.png)
-
----
-.pull-left[
-# The old solution
-- Spend weeks, months or years manually reading and categorising 
-
-- 17865 different occupational descriptions fit with "farm servant" in DK censuses ("in service", "servant girl", "servant boy", "servant woman", "servant karl") 
-
-- Spelling mistakes, **negations**, and different spelling conventions
-]
-
-.pull-right[
+class: middle
 # Our solution
+.pull-left[
 ![Arhcitecture](Figures/Architecture_small.png)
-- Use existing categorised archives 
-- Fine tune a Language model to replicate their findings 
-- **CANINE:** Transformer at character level
+.center[
+### OccCANINE
 ]
+]
+
+.pull-right[
+.middle[
+
+- We train a Neural Network for 27 days on all of the data
+- Augment input during training
+
+.red[
+~10k HISCO codes in 27 seconds  
+~100k HISCO codes in 5 min.  
+~1 million HISCO codes in 45 min.  
+$\rightarrow$ **All with high precision and recall**
+
+]
+]
+]
+
+.footnote[
+Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Representation (Clark et al., TACL 2022)
+]
+
+???
+- Fairly simple neural network
+- Transformer architecture: CANINE
+- Character level: fairly robust to typos, spelling mistakes, and changing spelling conventions
+- Finetuned to predict HISCO codes
+- **Really fast**
 
 ---
 ## Thanks to data contributors
@@ -237,6 +302,7 @@ DT::datatable(
 
 
 ---
+
 # The product
 ```{r echo=TRUE, message=TRUE, warning=TRUE, eval=FALSE}
 # Example prompts
@@ -246,7 +312,6 @@ model.predict("The train's fireman")
 ```
 
 --
-
 ```{r echo=FALSE, message=TRUE, warning=TRUE}
 # Example prompts
 rbind(
@@ -270,7 +335,7 @@ rbind(
 ```
 
 .footnote[
-***See 'PREDICT_HISCOs.py'***
+***See '[PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)' or [colab](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb)***
 ]
 
 
@@ -300,25 +365,24 @@ p2d_wolang_base = loadR2("Figures/CANINE baseline (wo. lang)Interactive_tsne_2d.
 p2d_wolang = loadR2("Figures/CANINE finetuned (wo. lang)Interactive_tsne_2d.Rdata")
 ```
 
-# Why do we want a finetuned model?
+# The advantage of OccCANINE as a language model
 .pull-left-narrow[
 - The model learns to understand occupational structures *semantically*
-- Vastly improves performance* 
+- *This is evident from the the embeddings: 768 dimensions reduced to 2*
 - Natural starting point for other general tasks related to occupation
-
-*This is evident from the the embeddings: 768 dimensions reduced to 2* $\rightarrow$
+ $\rightarrow$
 ]
 
 .pull-right-wide[
 .panelset[
-.panel[.panel-name[Unaligned CANINE]
+.panel[.panel-name[CANINE]
 .center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5, fig.align='center'}
 p2d_wlang_base %>% layout(autosize = F, width = 500, height = 400)
 ```
 ]
 ]
-.panel[.panel-name[Finetuned CANINE]
+.panel[.panel-name[OccCANINE]
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
 p2d_wlang %>% layout(autosize = F, width = 500, height = 400)
 ```
@@ -346,40 +410,9 @@ p2d_wlang %>% layout(autosize = F, width = 500, height = 400)
 
 ---
 # Test data performance (2/2) 
-.panelset[
-.panel[.panel-name[All]
-.center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
-knitr::include_graphics("Figures/All.png")
-```
-]
-]
-.panel[.panel-name[Swedish]
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
-knitr::include_graphics("Figures/Lang_se.png")
-```
-]
-.panel[.panel-name[English]
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
-knitr::include_graphics("Figures/Lang_en.png")
-```
-]
-.panel[.panel-name[Danish]
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
-knitr::include_graphics("Figures/Lang_da.png")
-```
-]
-.panel[.panel-name[Dutch]
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=7, fig.height=5}
-knitr::include_graphics("Figures/Lang_nl.png")
-```
-]
-.panel[.panel-name[All languages]
 ```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
 knitr::include_graphics("Figures/Performance_by_language.png")
 ```
-]
-]
 
 ---
 # The nature of the mistakes
@@ -412,20 +445,51 @@ knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.p
 ```
 ]
 ]
-.panel[.panel-name[More]
-.center[
-#### *More in Figures/CANINE_preds_w_lang*
+]
+
+---
+# Out of distribution
+
+| Dataset                   | N checked | Accuracy | Exact agreement | Subst. agreement |
+|---------------------------|-----------|----------|-----------------|------------------|
+| Copenhagen Burial Records | 200       | 0.950    | -               | -                |
+| Training Ship Data        | 200       | 0.985    | 0.820           | 0.965            |
+| Swedish Strikes           | 200       | 0.945    | 0.805           | 0.935            |
+| Dutch Familiegeld         | 200       | 0.925    | 0.670           | 0.925            |
+
+
+.footnote[
+.small123[
+$^*$ *Thanks to Bram Hilkens*  
+See more details in the paper
 ]
 ]
-]
+
 
 ---
 # Differential error rates
+.pull-left-narrow[
+- Performs best for the most common HISCO codes (99% --> 524 HISCO codes)
+- (As does squishy wet neural networks)
+]
+
+.pull-right-wide[
 ![HISCO_count](Figures/Performance_by_hisco.png)
+]
 
 ---
 # Bias
+
+.pull-left-narrow[
+- Potential problem: If error rates are correlated with Socio-Economic Status
+- Turns out its not
+- Not in a regression setting either
+]
+
+.pull-right-wide[
 ![SES](Figures/Performance_by_ses.png)
+]
+
 
 ---
 # Architecture
@@ -434,17 +498,8 @@ knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.p
 **Summary:** Description goes in, probabilities comes out
 
 ---
-# Possible expansions
-
-- Other coding schemes
-- Different settings 
-- Different historical data: Trade statistics 
-
-- Utilizing the inherent structural understanding in this model 
-
----
-# Application: Copenhagen Burial Records 
-*Data from CPH burial records - 94% accuracy*
+# Application 1: Copenhagen Burial Records 
+*Data from CPH burial records - 95% accuracy*
 
 *388,057 Copenhageners from around ~1861 to ~1911*
 
@@ -496,7 +551,7 @@ Data from Link Lives. See https://link-lives.dk/
 ]
 
 ---
-# Application: Copenhagen Burial Records
+# Application 1: Copenhagen Burial Records
 ```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 p1 = data0 %>% 
   mutate(
@@ -532,20 +587,107 @@ ggsave("Figures/CPH_stats.png", plot = p1, width = 6, height = 4)
 ![CPH](Figures/CPH_stats.png)
 
 ---
+class: middle
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left-wide[
+- Danish censuses 1787-1901
+- 13.5 mil. observations
+- Contains a string every year describing peoples occupation
+
+- We can turn these 13.5 million descriptions into HISCO codes in ~2 hours on a laptop with 96% accuracy
+- Census data for 1787, 1801, 1845, 1880 was part of the training data of OccCANINE
+
+
+#### Available:
+[Vedel, Christian; Dahl, Christian Møller; Johansen, Torben S. D., 2024, "HISCO codes for Danish Census data", https://doi.org/10.7910/DVN/WZILNI, Harvard Dataverse, V3](https://doi.org/10.7910/DVN/WZILNI)
+
+]
+
+.pull-right-narrow[
+![Filled form](https://upload.wikimedia.org/wikipedia/commons/9/9a/Folket%C3%A6lling-1840.jpg)
+]
+
+---
+# What were the occupational shifts?
+
+.pull-left-narrow[
+- From farming to manufacturing
+]
+.pull-right-wide[
+![DK_income](Figures/Major_group.png)
+]
+
+---
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left[
+- We can proxy for income by looking at the average income of each occupation.
+- For now based on 1915 average incomes
+- Extensions possble
+
+
+**How do we turn 1915 incomes into HISCO-code-level incomes?** $\rightarrow$ ***Also use OccCANINE***
+
+$$
+\mathbb{E}(w_i|h_j)=\sum_i^N w_i \frac{\overset{OccCANINE}{\overbrace{Pr(h_j|w_i)}}\overset{Prior}{\overbrace{Pr(w_i)}}}{\underset{Normalization / Evidence}{\underbrace{Pr(h_j)}}}
+$$
+]
+
+.pull-right[
+![1915](Figures/TableX_example.png)
+]
+
+---
+# Danish Economic History in three bullets
+.pull-left[
+- When was the economic take-off in Denmark?
+- Latter half of 19th century (Henriksen, 2006)
+- Wages: From among the poorest to being among the richest in the period 1850-1900 (Khaustova, Sharp, 2015)
+- **But how much of this is driven by occupational shifts?**
+  + *Answer*: Some of it was
+]
+
+.pull-right-narrow[
+![DK_hist](Figures/DK_EH.webp)
+*I've heard the creameries also played a role (Lampe & Sharp, 2019)*
+]
+
+
+---
+# Application 2: Danish Census data (1787-1901)
+
+.pull-left-wide[
+![DK_income](Figures/DK_occ_income.png)
+]
+
+.pull-right-narrow[
+- Stable (occupational) incomes until mid 1800s
+- Sharp shift upwards
+- People started taking jobs that (eventually) would pay more 
+
+]
+
+
+---
+class: middle
 # Conclusion
 .pull-left[
 - Something that took weeks, months and years, now takes an afternoon
 - Enables new research 
 - Enables more time on caring about the quality of sources and their nature
 
-**Steps ahead:**  
-- Figuring how to make this as useful as possible
+- We will further train ***OccCANINE*** during the summer $\rightarrow$ *please share data*
+
 ]
 
 .pull-right[
 **Feel free to reach out**  
 Twitter: @ChristianVedel  
 christian-vs@sam.sdu.dk  
+
+
+See guide on YouTube: https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
 ]
 
 
