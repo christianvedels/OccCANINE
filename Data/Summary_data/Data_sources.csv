@@ -14,7 +14,7 @@ EN_parish_[x].csv;en;de Pleijt, Nuvolari, Weisdorf (2020);HISCO labelled parish 
 IS_ipums_[x].csv;is;MPC (2020);IPUMS international census data. Icelandic census 1901, 1910;Census;
 DK_cedar_[x].csv;da;Ford (2023);Occupational descriptions tranlated from Swedish CEDAR;Descriptions;
 SE_cedar_[x].csv;se;Ford (2023);Occupational descriptions extracted from Swedish CEDAR;Descriptions;
-DE_ipums_[x].csv;de;"MPC (2020); Statistics Netherlands";IPUMS international census data;Census;
+DE_ipums_[x].csv;ge;"MPC (2020); Statistics Netherlands";IPUMS international census data;Census;
 DK_orsted_[x].csv;da;Ford (2023);Occupational descriptions used in Ford (2023);Descriptions;
 EN_oclack_[x].csv;en;O-clack;https://github.com/rlzijdeman/o-clack/tree/master;Descriptions;
 EN_loc_[x].csv;en;Mooney (2016);London Occupational codes;Descriptions;
@@ -22,3 +22,6 @@ SE_chalmers_[x].csv;se;Ford (2023);Occupational descriptions from Ford (2023);De
 IT_fm_[x].csv;it;Fornasin & Marzona (2016);Italian occupational descriptions;Descriptions;
 HISCO_website_[x].csv;mult;HISCO website;Descriptions from HISCO website. historyofwork.iisg.nl;Descriptions;
 EN_ship_data_[x].csv;en;Schneider & Gao (2019);English training ship data;Census;
+GE_occupational_census;ge;Albers & Kappner (2024);HISCO codes for occupations in the 1884 German occupational census;Descriptions;
+SE_titles;se;Heikkuri (2024);Swedish occupational titles;Descriptions;
+EN_PortArthur;en;Tuffin (2020);Penal colony occupations;Descriptions;
