@@ -232,13 +232,19 @@ x = pipeline(
 x = pipeline(
   "Data/Tmp_data/German_occupational_census.Rdata",
   "GE_occupational_census",
-  lang = "ge"
+  lang
 )
 
 x = pipeline(
   "Data/Tmp_data/German1939.Rdata",
   "GE_occupations1939",
-  lang = "ge"
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Selgert_Gottlich_German.Rdata",
+  "GE_Selgert_Gottlich",
+  lang
 )
 
 # ==== Run pipelines Iceland ====
