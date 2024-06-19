@@ -54,7 +54,7 @@ def format_hisco(
 
 
 def clean_hisco(
-        formatted_hisco: list[int],
+        formatted_hisco: list[int] | np.ndarray,
         rev_mapping: dict[int, str],
         ) -> str:
     if formatted_hisco[0] in _HISCO_SPECIAL_VALS:
@@ -201,9 +201,9 @@ def clean_hisco_seq_blocky(
 
 class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     # Pre-initialization declaration to show guaranteed attribute existence
-    format_seq: Callable = None
-    clean_seq: Callable = None
-    lookup_hisco: dict[int, int] = None
+    format_seq: Callable
+    clean_seq: Callable
+    lookup_hisco: dict[int, int]
 
     def __init__(
             self,
@@ -275,7 +275,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         return self._max_seq_len
 
     @property
-    def num_classes(self) -> int:
+    def num_classes(self) -> list[int]:
         return [max(self.map_idx_char) + 1] * self._max_seq_len
 
     def transform_label(self, raw_input: str | pd.DataFrame) -> np.ndarray | None:
