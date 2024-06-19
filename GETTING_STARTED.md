@@ -9,6 +9,7 @@ conda create -n hisco python=3.11 numpy pandas scikit-learn matplotlib seaborn
 conda activate hisco
 conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=12.1 -c pytorch -c nvidia
 pip install unidecode transformers
+pip install textattack[tensorflow]
 ```
 
 ### Optionally verify PyTorch installation
