@@ -4,10 +4,15 @@ Formatter for seq2seq-based HISCO systems
 '''
 
 
+import math
+
 from functools import partial
 from typing import Callable
 
 import numpy as np
+import pandas as pd
+
+from histocc import DATASETS
 
 from .constants import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
 
@@ -17,6 +22,8 @@ MAP_HISCO_IDX = {
 }
 MAP_IDX_HISCO = {value: key for key, value in MAP_HISCO_IDX.items()}
 
+# TODO we directly access below sets while passing above lookups as args
+# Probably stick to same approach for both sets and lookups
 _HISCO_SPECIAL_KEYS = {str(hisco_char) for hisco_char in range(-3, 0)}
 _HISCO_SPECIAL_VALS = {MAP_HISCO_IDX[key] for key in _HISCO_SPECIAL_KEYS}
 
@@ -196,6 +203,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     # Pre-initialization declaration to show guaranteed attribute existence
     format_seq: Callable = None
     clean_seq: Callable = None
+    lookup_hisco: dict[int, int] = None
 
     def __init__(
             self,
@@ -228,9 +236,37 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
             sep_value=self.sep_value,
             )
 
-    def sanitize(self, raw_input) -> str | None:
-        # FIXME Think of type of `raw_input`. Potentially a 1-row pd.DataFrame, consisting of five columns, each containing an integer
-        return raw_input
+        # FIXME Dislike below pattern but approach with least impact
+        # of existing code
+        keys = DATASETS['keys']()
+        self.lookup_hisco = dict(keys[['code', 'hisco']].values)
+
+    def sanitize(self, raw_input: str | pd.DataFrame) -> str | None:
+        if isinstance(raw_input, str) or raw_input is None:
+            return raw_input
+
+        # FIXME Dislike below pattern but approach with least impact
+        # of existing code
+        sanitized = []
+
+        for i in range(1, self.max_num_codes + 1):
+            code = raw_input[f'code{i}'].item()
+            hisco = self.lookup_hisco[code]
+
+            if math.isnan(hisco):
+                break
+
+            hisco = str(hisco)
+
+            if len(hisco) == 4:
+                # Mistakenly stripped leading zero due to int coding
+                hisco = '0' + hisco
+
+            sanitized.append(hisco)
+
+        sanitized = self.sep_value.join(sanitized)
+
+        return sanitized
 
     @property
     def max_seq_len(self) -> int:
@@ -241,8 +277,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     def num_classes(self) -> int:
         return [max(self.map_idx_char) + 1] * self._max_seq_len
 
-    def transform_label(self, raw_input) -> np.ndarray | None:
-        # FIXME Think of type of `raw_input`. Potentially a 1-row pd.DataFrame, consisting of five columns, each containing an integer
+    def transform_label(self, raw_input: str | pd.DataFrame) -> np.ndarray | None:
         seq = self.sanitize(raw_input)
 
         if seq is None:
@@ -256,7 +291,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         return clean
 
 
-# TODO consider implementing register
+# TODO consider implementing register decorator
 def blocky5() -> BlockyHISCOFormatter:
     formatter = BlockyHISCOFormatter(
         max_num_codes=5,
