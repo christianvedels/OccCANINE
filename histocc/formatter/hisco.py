@@ -192,7 +192,7 @@ def clean_hisco_seq_blocky(
     return clean
 
 
-class HISCOFormatter:
+class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     # Pre-initialization declaration to show guaranteed attribute existence
     format_seq: Callable = None
     clean_seq: Callable = None
@@ -254,3 +254,15 @@ class HISCOFormatter:
         clean = self.clean_seq(raw_pred)
 
         return clean
+
+
+# TODO consider implementing register
+def blocky5() -> BlockyHISCOFormatter:
+    formatter = BlockyHISCOFormatter(
+        max_num_codes=5,
+        map_char_idx=MAP_HISCO_IDX,
+        map_idx_char=MAP_IDX_HISCO,
+        sep_value='&',
+    )
+
+    return formatter
