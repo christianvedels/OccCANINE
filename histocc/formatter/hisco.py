@@ -14,11 +14,23 @@ MAP_HISCO_IDX = {
 }
 MAP_IDX_HISCO = {value: key for key, value in MAP_HISCO_IDX.items()}
 
+_HISCO_SPECIAL_KEYS = {str(hisco_char) for hisco_char in range(-3, 0)}
+_HISCO_SPECIAL_VALS = {MAP_HISCO_IDX[key] for key in _HISCO_SPECIAL_KEYS}
 
-def format_hisco(raw_hisco: str, mapping: dict[str, int]) -> list[int]:
-    if raw_hisco in mapping:
+
+def format_hisco(
+        raw_hisco: str,
+        mapping: dict[str, int],
+        broadcast: bool = False,
+        ) -> list[int]:
+    if raw_hisco in _HISCO_SPECIAL_KEYS:
         # Occurs only for -1, -2, and -3 cases
-        return [mapping[raw_hisco]]
+        label = [mapping[raw_hisco]]
+
+        if broadcast: # Broadcast 1 token to 5 tokens for fixed block sizes
+            label *= 5
+
+        return label
 
     # Unless in -1, -2, or -3 special case, code should be 5 chars
     assert len(raw_hisco) == 5, raw_hisco
@@ -31,10 +43,13 @@ def format_hisco(raw_hisco: str, mapping: dict[str, int]) -> list[int]:
     return label
 
 
-def clean_hisco(formatted_hisco: list[int], rev_mapping: dict[int, str]) -> str:
-    if len(formatted_hisco) == 1:
-        # Occurs only for -1, -2, and -3 cases
-
+def clean_hisco(
+        formatted_hisco: list[int],
+        rev_mapping: dict[int, str],
+        ) -> str:
+    if formatted_hisco[0] in _HISCO_SPECIAL_VALS:
+        # If first token is one of special HISCO codes (-1, -2, -3),
+        # disregard all following tokens
         return rev_mapping[formatted_hisco[0]]
 
     # Unless in -1, -2, or -3 special case, code should be 5 chars
@@ -81,6 +96,7 @@ def format_hisco_seq(
 
 def clean_hisco_seq(
         raw_pred: np.ndarray,
+        rev_mapping: dict[int, str],
         sep_value: str = '',
 ) -> str:
     # Strip all BOS tokens
@@ -100,10 +116,71 @@ def clean_hisco_seq(
     chunks = []
 
     for idx_sep in np.where(pred == SEP_IDX)[0]:
-        chunks.append(clean_hisco(pred[start_idx:idx_sep]))
+        chunks.append(clean_hisco(pred[start_idx:idx_sep], rev_mapping))
         start_idx = idx_sep + 1
 
-    chunks.append(clean_hisco(pred[start_idx:]))
+    chunks.append(clean_hisco(pred[start_idx:], rev_mapping))
+
+    clean = sep_value.join(chunks)
+
+    # TODO consider adding cycle consistency check
+
+    return clean
+
+
+def format_hisco_seq_blocky(
+        raw_seq: str,
+        max_num_codes: int,
+        mapping: dict[str, int],
+        sep_value: str = '',
+) -> np.ndarray:
+    if sep_value == '':
+        seq = [raw_seq]
+    else:
+        seq = raw_seq.split(sep_value)
+
+    assert len(seq) <= max_num_codes, raw_seq
+
+    label = [BOS_IDX]
+
+    for hisco_code in seq:
+        label.extend(format_hisco(hisco_code, mapping, broadcast=True))
+
+    # Now pad till `max_num_codes` achieved
+    padding = (max_num_codes - len(seq)) * 5
+    label.extend([PAD_IDX] * padding)
+
+    label.append(EOS_IDX)
+
+    label = np.array(label)
+
+    # TODO consider adding a cycle consistency check here
+
+    return label.astype('float')
+
+
+def clean_hisco_seq_blocky(
+        raw_pred: np.ndarray,
+        num_blocks: int,
+        rev_mapping: dict[int, str],
+        sep_value: str = '',
+) -> str:
+    # Loop over all sub-sequences, here referred to as "chunks"
+    start_idx = 1 # skip initial BOS
+
+    chunks = []
+
+    for _ in range(num_blocks):
+        end_idx = start_idx + 5
+
+        chunk = raw_pred[start_idx:end_idx]
+
+        if chunk[0] == PAD_IDX:
+            chunks.append('')
+        else:
+            chunks.append(clean_hisco(chunk, rev_mapping))
+
+        start_idx = end_idx
 
     clean = sep_value.join(chunks)
 
