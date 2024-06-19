@@ -4,6 +4,9 @@ Formatter for seq2seq-based HISCO systems
 '''
 
 
+from functools import partial
+from typing import Callable
+
 import numpy as np
 
 from .constants import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
@@ -187,3 +190,67 @@ def clean_hisco_seq_blocky(
     # TODO consider adding cycle consistency check
 
     return clean
+
+
+class HISCOFormatter:
+    # Pre-initialization declaration to show guaranteed attribute existence
+    format_seq: Callable = None
+    clean_seq: Callable = None
+
+    def __init__(
+            self,
+            max_num_codes: int,
+            map_char_idx: dict[str, int],
+            map_idx_char: dict[int, str],
+            sep_value: str = '',
+    ):
+        self.max_num_codes = max_num_codes
+        self.map_char_idx = map_char_idx
+        self.map_idx_char = map_idx_char
+        self.sep_value = sep_value
+
+        # A sequence has maximum length of 5 (each HISCO code) times number of HISCO codes + 2 due to BOS & EOS tokens
+        self._max_seq_len = self.max_num_codes * 5 + 2
+
+        self.initialize()
+
+    def initialize(self) -> None:
+        self.format_seq = partial(
+            format_hisco_seq_blocky,
+            max_num_codes=self.max_num_codes,
+            mapping=self.map_char_idx,
+            sep_value=self.sep_value,
+            )
+        self.clean_seq = partial(
+            clean_hisco_seq_blocky,
+            num_blocks=self.max_num_codes,
+            rev_mapping=self.map_idx_char,
+            sep_value=self.sep_value,
+            )
+
+    def sanitize(self, raw_input) -> str | None:
+        # FIXME Think of type of `raw_input`. Potentially a 1-row pd.DataFrame, consisting of five columns, each containing an integer
+        return raw_input
+
+    @property
+    def max_seq_len(self) -> int:
+        print(f'Max. seq. len.: {self.max_num_codes} * 5 + 2, since BOS and EOS token.')
+        return self._max_seq_len
+
+    @property
+    def num_classes(self) -> int:
+        return [max(self.map_idx_char) + 1] * self._max_seq_len
+
+    def transform_label(self, raw_input) -> np.ndarray | None:
+        # FIXME Think of type of `raw_input`. Potentially a 1-row pd.DataFrame, consisting of five columns, each containing an integer
+        seq = self.sanitize(raw_input)
+
+        if seq is None:
+            return None
+
+        return self.format_seq(seq)
+
+    def clean_pred(self, raw_pred: np.ndarray) -> str:
+        clean = self.clean_seq(raw_pred)
+
+        return clean
