@@ -186,7 +186,7 @@ def clean_hisco_seq_blocky(
         chunk = raw_pred[start_idx:end_idx]
 
         if chunk[0] == PAD_IDX:
-            chunks.append('')
+            pass
         else:
             chunks.append(clean_hisco(chunk, rev_mapping))
 
@@ -251,11 +251,12 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
 
         for i in range(1, self.max_num_codes + 1):
             code = raw_input[f'code{i}'].item()
-            hisco = self.lookup_hisco[code]
 
-            if math.isnan(hisco):
+            if code is None or math.isnan(code):
+                # If hit NaN, assume subsequent values are also NaN
                 break
 
+            hisco = self.lookup_hisco[code]
             hisco = str(hisco)
 
             if len(hisco) == 4:
