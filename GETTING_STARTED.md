@@ -53,7 +53,7 @@ You can specify any of the 13 languages in which it was trained on. Here is a fu
 + Norwegian: "no"
 + Icelandic: "is"
 + Portugese: "pt"
-+ German: "ge/de"
++ German: "ge"
 + Spanish: "es"
 + Italian: "it"
 + Greek: "gr"
