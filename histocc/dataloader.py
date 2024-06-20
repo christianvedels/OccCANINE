@@ -376,7 +376,8 @@ class OCCDataset(Dataset):
         alt_prob = 0,
         insert_words = False,
         unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
-        model_domain = ""
+        model_domain = "",
+        new_attack = False # New attack method
     ):
         self.df_path = df_path
         self.tokenizer = tokenizer
@@ -390,6 +391,7 @@ class OCCDataset(Dataset):
         self.n_classes = n_classes
         self.formatter = formatter
         self.colnames = pd.read_csv(df_path, nrows=10).columns.tolist()
+        self.new_attack = new_attack
 
         self.setup_target_formatter()
 
@@ -434,7 +436,7 @@ class OCCDataset(Dataset):
             occ1,
             alt_prob = self.alt_prob,
             insert_words = self.insert_words,
-            use_textattack=True # Uses 'TextAttack' attacker
+            use_textattack=self.new_attack # Uses 'TextAttack' attacker
             )
 
         # Change lanuage to 'unknown' = "unk" in some cases
