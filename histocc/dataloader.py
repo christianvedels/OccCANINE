@@ -9,6 +9,9 @@ import os
 import io
 import random
 
+from functools import partial
+from typing import Callable
+
 import torch
 
 from sklearn.model_selection import train_test_split
@@ -24,6 +27,7 @@ import matplotlib.pyplot as plt
 from .datasets import DATASETS
 from .model_assets import load_tokenizer, update_tokenizer
 from .attacker import AttackerClass
+from .formatter import BlockyHISCOFormatter
 
 
 # Returns training data path
@@ -189,7 +193,7 @@ def resample(
             category_counts = df['code1'].value_counts()
             print(category_counts)
 
-    if upsample_below>0:
+    if upsample_below > 0:
         # Upsampling the remaining data
         # Labels with less than 'upsample_below' have an 'upsample_below' observations
         # added to the data
@@ -237,7 +241,7 @@ def subset_to_smaller(df, sample_size):
 
 # Labels to bin function
 # Returns binary array
-def labels_to_bin(df, max_value):
+def labels_to_bin(df: pd.DataFrame, max_value: int):
     df_codes = df[["code1", "code2", "code3", "code4", "code5"]]
 
     if len(df) == 1: # Handle single row efficiently
@@ -357,16 +361,18 @@ def concat_string_canine(occ1, lang):
 
 #Dataset
 class OCCDataset(Dataset):
+    transform_label: Callable
     # Constructor Function
     def __init__(
         self,
-        df_path,
-        n_obs,
+        df_path: str,
+        n_obs: int,
         tokenizer,
         attacker,
         max_len,
         n_classes,
         index_file_path,
+        formatter: BlockyHISCOFormatter | None = None,
         alt_prob = 0,
         insert_words = False,
         unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
@@ -382,7 +388,10 @@ class OCCDataset(Dataset):
         self.model_domain = model_domain
         self.n_obs = n_obs
         self.n_classes = n_classes
+        self.formatter = formatter
         self.colnames = pd.read_csv(df_path, nrows=10).columns.tolist()
+
+        self.setup_target_formatter()
 
         # Make sure dir exists
         if not os.path.exists(os.path.dirname(df_path)):
@@ -392,16 +401,22 @@ class OCCDataset(Dataset):
         with open(index_file_path, 'r') as index_file:
             self.index_data = index_file.readlines()
 
-    # Length magic method
+    def setup_target_formatter(self):
+        if self.formatter is None:
+            self.transform_label = partial(labels_to_bin, max_value=self.n_classes)
+        else:
+            self.transform_label = self.formatter.transform_label
+
     def __len__(self):
         return self.n_obs
 
-    # get item magic method
     def __getitem__(self, item):
         # Get the byte offset from the stored index data
         byte_offset_line = self.index_data[item].strip()
+
         if not byte_offset_line:
             raise ValueError(f"Empty line encountered in index file at item {item}")
+
         byte_offset = int(byte_offset_line)
 
         # Use the byte offset to read the specific row from the data file
@@ -411,7 +426,7 @@ class OCCDataset(Dataset):
             df = pd.read_csv(io.StringIO(row.decode('utf-8')), names=self.colnames)
 
         occ1 = str(df.occ1.tolist()[0])
-        target = labels_to_bin(df, self.n_classes)
+        target = self.transform_label(df)
         lang = str(df.lang.tolist()[0])
 
         # Implement Attack() here
@@ -423,7 +438,7 @@ class OCCDataset(Dataset):
 
         # Change lanuage to 'unknown' = "unk" in some cases
         # Warning("CANINEOccupationClassifier: pair of sequences: [CLS] A [SEP] B [SEP]")
-        if(random.random()<self.unk_lang_prob):
+        if(random.random() < self.unk_lang_prob):
             lang = "unk"
 
         occ1 = str(occ1).strip("'[]'") # pylint: disable=E1310
@@ -455,23 +470,38 @@ class OCCDataset(Dataset):
             'occ1': cat_sequence,
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
-            'targets': torch.tensor(target, dtype=torch.long)
+            'targets': torch.tensor(target, dtype=torch.long) # FIXME consider appropriate type and align with formatter
         }
 
-#Function to return datasets
-def datasets(n_obs_train, n_obs_val, n_obs_test, tokenizer, attacker, max_len, n_classes, alt_prob, insert_words, model_domain): # FIXME move to datasets.py and avoid hardcoded paths
+
+def datasets(
+        n_obs_train: int,
+        n_obs_val: int,
+        n_obs_test: int,
+        tokenizer,
+        attacker,
+        max_len,
+        n_classes,
+        alt_prob,
+        insert_words,
+        model_domain,
+        formatter: BlockyHISCOFormatter | None = None,
+        ): # FIXME move to datasets.py and avoid hardcoded paths
+    '''Function to return datasets
+    '''
     # File paths for the index files
     train_index_path = "../Data/Tmp_train/Train_index.txt"
     val_index_path = "../Data/Tmp_train/Val_index.txt"
     test_index_path = "../Data/Tmp_train/Test_index.txt"
 
     # Instantiating OCCDataset with index file paths
-    ds_train = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
-    ds_train_attack = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain)
-    ds_val = OCCDataset(df_path="../Data/Tmp_train/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
-    ds_test = OCCDataset(df_path="../Data/Tmp_train/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain)
+    ds_train = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
+    ds_train_attack = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, formatter=formatter)
+    ds_val = OCCDataset(df_path="../Data/Tmp_train/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
+    ds_test = OCCDataset(df_path="../Data/Tmp_train/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
 
     return ds_train, ds_train_attack, ds_val, ds_test
+
 
 def create_data_loader(ds_train, ds_train_attack, ds_val, ds_test, batch_size):
     data_loader_train = DataLoader(
@@ -540,6 +570,7 @@ def save_tmp(df_train, df_val, df_test, path = "../Data/Tmp_train/", verbose = T
     if verbose:
         print(f"Saved tmp files to {path}")
 
+
 # Load data
 def load_data(
         model_domain = "DK_CENSUS",
@@ -553,7 +584,8 @@ def load_data(
         verbose = False,
         toyload = False,
         tokenizer = "No tokenizer", # If no tokenizer is provided one will be created
-        model_size = "" # base, large, etc (many transformers have a small and large version)
+        model_size = "", # base, large, etc (many transformers have a small and large version)
+        formatter: BlockyHISCOFormatter | None = None,
         ):
     # Load data
     df, key = read_sample_subset_data(
@@ -579,9 +611,9 @@ def load_data(
     save_tmp(df_train, df_val, df_test)
 
     # Downsample if larger than 100k
-    if df.shape[0]>10**5:
+    if df.shape[0] > 10**5:
         df = df.sample(n = 10**5, random_state=20)
-        df_train = df_train.sample(n = 10**5, random_state=20)
+        df_train = df_train.sample(n=10**5, random_state=20)
 
     # Load tokenizer (if non is provided)
     if tokenizer == "No tokenizer":
@@ -612,7 +644,8 @@ def load_data(
         n_classes=n_classes,
         alt_prob = alt_prob,
         insert_words = insert_words,
-        model_domain = model_domain
+        model_domain = model_domain,
+        formatter=formatter,
         )
 
     # Data loaders
@@ -621,7 +654,7 @@ def load_data(
         batch_size = batch_size
         )
 
-    return {
+    return { # TODO this should be a dataclass
         'data_loader_train': data_loader_train,
         'data_loader_train_attack': data_loader_train_attack,
         'data_loader_val': data_loader_val,
@@ -634,10 +667,10 @@ def load_data(
         'Occupations': occs
     }
 
-# Load_val
-# Simple loader for validation data
 
 def load_val(model_domain, sample_size, toyload = False):
+    ''' Simple loader for validation data
+    '''
     df, key = read_data(model_domain, data_type = "Validation", toyload = toyload)
 
     # Make id unique by keeping the first occurrence of each id
