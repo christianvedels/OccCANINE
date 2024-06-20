@@ -113,13 +113,3 @@ class AttackerClass:
                         x_string_copy[i] = " ".join(occ_as_word_list)
 
         return x_string_copy
-
-if __name__ == '__main__':
-    
-    # Old version
-    df = pd.read_csv("Data/TOYDATA.csv")
-    attacker = AttackerClass(df)
-
-    results = attacker.attack(df['occ1'].tolist(), use_textattack = True)
-    print(results)
-
