@@ -418,7 +418,8 @@ class OCCDataset(Dataset):
         occ1 = self.attacker.attack(
             occ1,
             alt_prob = self.alt_prob,
-            insert_words = self.insert_words
+            insert_words = self.insert_words,
+            use_textattack=True # Uses 'TextAttack' attacker
             )
 
         # Change lanuage to 'unknown' = "unk" in some cases
