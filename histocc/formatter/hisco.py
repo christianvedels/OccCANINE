@@ -14,7 +14,7 @@ import pandas as pd
 
 from histocc import DATASETS
 
-from .constants import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
+from .constants import PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
 
 
 MAP_HISCO_IDX = {
@@ -28,7 +28,7 @@ _HISCO_SPECIAL_KEYS = {str(hisco_char) for hisco_char in range(-3, 0)}
 _HISCO_SPECIAL_VALS = {MAP_HISCO_IDX[key] for key in _HISCO_SPECIAL_KEYS}
 
 
-def format_hisco(
+def format_hisco( # pylint: disable=C0116
         raw_hisco: str,
         mapping: dict[str, int],
         broadcast: bool = False,
@@ -53,7 +53,7 @@ def format_hisco(
     return label
 
 
-def clean_hisco(
+def clean_hisco( # pylint: disable=C0116
         formatted_hisco: list[int] | np.ndarray,
         rev_mapping: dict[int, str],
         ) -> str:
@@ -73,7 +73,7 @@ def clean_hisco(
     return ''.join(cleaned)
 
 
-def format_hisco_seq(
+def format_hisco_seq( # pylint: disable=C0116
         raw_seq: str,
         max_num_codes: int,
         mapping: dict[str, int],
@@ -104,7 +104,7 @@ def format_hisco_seq(
     return label.astype('float')
 
 
-def clean_hisco_seq(
+def clean_hisco_seq( # pylint: disable=C0116
         raw_pred: np.ndarray,
         rev_mapping: dict[int, str],
         sep_value: str = '',
@@ -138,7 +138,7 @@ def clean_hisco_seq(
     return clean
 
 
-def format_hisco_seq_blocky(
+def format_hisco_seq_blocky( # pylint: disable=C0116
         raw_seq: str,
         max_num_codes: int,
         mapping: dict[str, int],
@@ -169,7 +169,7 @@ def format_hisco_seq_blocky(
     return label.astype('float')
 
 
-def clean_hisco_seq_blocky(
+def clean_hisco_seq_blocky( # pylint: disable=C0116
         raw_pred: np.ndarray,
         num_blocks: int,
         rev_mapping: dict[int, str],
@@ -200,6 +200,31 @@ def clean_hisco_seq_blocky(
 
 
 class BlockyHISCOFormatter: # TODO consider implementing base formatter class
+    '''
+    Formatter class to map HISCO codes into format suitable for seq2seq model.
+    Always codes a HISCO code as 5 integers, even if the code is, e.g., '-1',
+    as its purpose is to code it in a way where each HISCO code occupies same
+    number of elements, hence the 'blocky' part of the class' name.
+
+    Parameters
+    ----------
+    max_num_codes : int
+        Maximum number of HISCO codes for input. To ensure fixed length of
+        coded version, the output of `self.transform_label` always has length
+        `max_num_codes * 5 + 2`, where `+ 2` arises due to BOS and EOS tokens
+    map_char_idx : dict[str, int]
+        Lookup to map from a character of a HISCO code to its corresponding
+        integer when coded for a seq2seq model. This includes the 13 different
+        characters (-3, -2, ..., 9) as well as certain special tokens such as
+        BOS and EOS tokens.
+    map_idx_char : dict[int, str]
+        The reverse mapping of `map_char_idx`
+    sep_value : str
+        Character (or string, in principle) used to denote separation of multiple
+        HISCO codes in input. If `'&'`, then an input `'12345&-1'` will be split
+        into two parts, those being `'12345` and `'-1'`.
+
+    '''
     # Pre-initialization declaration to show guaranteed attribute existence
     format_seq: Callable
     clean_seq: Callable
@@ -217,12 +242,13 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         self.map_idx_char = map_idx_char
         self.sep_value = sep_value
 
-        # A sequence has maximum length of 5 (each HISCO code) times number of HISCO codes + 2 due to BOS & EOS tokens
+        # A sequence has maximum length of 5 (each HISCO code) times number of
+        # HISCO codes + 2 due to BOS & EOS tokens
         self._max_seq_len = self.max_num_codes * 5 + 2
 
         self.initialize()
 
-    def initialize(self) -> None:
+    def initialize(self) -> None: # pylint: disable=C0116
         self.format_seq = partial(
             format_hisco_seq_blocky,
             max_num_codes=self.max_num_codes,
@@ -241,7 +267,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         keys = DATASETS['keys']()
         self.lookup_hisco = dict(keys[['code', 'hisco']].values)
 
-    def sanitize(self, raw_input: str | pd.DataFrame) -> str | None:
+    def sanitize(self, raw_input: str | pd.DataFrame) -> str | None: # pylint: disable=C0116
         if isinstance(raw_input, str) or raw_input is None:
             return raw_input
 
@@ -270,15 +296,47 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         return sanitized
 
     @property
-    def max_seq_len(self) -> int:
+    def max_seq_len(self) -> int: # pylint: disable=C0116
         print(f'Max. seq. len.: {self.max_num_codes} * 5 + 2, since BOS and EOS token.')
         return self._max_seq_len
 
     @property
-    def num_classes(self) -> list[int]:
+    def num_classes(self) -> list[int]: # pylint: disable=C0116
         return [max(self.map_idx_char) + 1] * self._max_seq_len
 
     def transform_label(self, raw_input: str | pd.DataFrame) -> np.ndarray | None:
+        '''
+        Given a sequence of HISCO codes as defined by a str or a 1-row
+        pd.DataFrame, return a representaion suitable for a seq2seq model.
+
+        Parameters
+        ----------
+        raw_input : str | pd.DataFrame
+            Either a string of HISCO codes, separated by `self.sep_value`, or a 1-row
+            pd.DataFrame with columns `['code1', 'code2', ..., f'code{self.max_num_codes}]`,
+            each an integer present as a key in `self.lookup_hisco`
+
+            If input is a string, its format, assuming `self.sep_value == '&'`, could be of
+            the form '12345&34567&-1', '-3', '67890', i.e., consisting of either five digit
+            codes or one of the special codes '-1', '-2', '-3'.
+
+        Returns
+        -------
+        np.ndarray | None
+            1D array of length `self.max_num_codes * 5 + 2` of floats, with each float
+            representing a non-negative integer in the range 0-`self.map_idx_char)`.
+
+        Examples
+        -------
+        When parameterized `self.max_num_codes = 5`, `map_char_idx = MAP_HISCO_IDX`,
+        and `self.sep_value = '&'` and provided with an input `'12345&-1'`, returns
+        an np.ndarray
+            array([
+              2.,  9., 10., 11., 12., 13.,  7.,  7.,  7.,  7.,  7.,  1.,  1.,
+              1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,
+              3.])
+
+        '''
         seq = self.sanitize(raw_input)
 
         if seq is None:
@@ -287,13 +345,40 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         return self.format_seq(seq)
 
     def clean_pred(self, raw_pred: np.ndarray) -> str:
-        clean = self.clean_seq(raw_pred)
+        '''
+        Reverses the transformation applied by `self.transform_label` to convert a sequence of
+        encoded HISCO codes back into a readable string format.
 
-        return clean
+        Note that this method will always return a string. It does not support transforming
+        back to the 1-row pd.DataFrame format supported by `self.transform_label`.
+
+        Parameters
+        ----------
+        raw_pred : np.ndarray
+            A 1D numpy array of integers representing a sequence of encoded HISCO codes.
+            This array is typically the output from a seq2seq model and has a length
+            of `self.max_num_codes * 5 + 2`.
+
+        Returns
+        -------
+        str
+            A string of HISCO codes separated by `self.sep_value`, reconstructed from the
+            encoded sequence.
+
+        Examples
+        --------
+        When parameterized `self.max_num_codes = 5`, `map_idx_char = MAP_IDX_HISCO`,
+        and `self.sep_value = '&'`, provided with an input array like
+        `array([2.,  9., 10., 11., 12., 13.,  7.,  7.,  7.,  7.,  7.,  1.,  1.,  1.,  1.,
+                1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  1.,  3.])`, returns a string
+        like `'12345&-1'`.
+
+        '''
+        return self.clean_seq(raw_pred)
 
 
 # TODO consider implementing register decorator
-def blocky5() -> BlockyHISCOFormatter:
+def blocky5() -> BlockyHISCOFormatter: # pylint: disable=C0116
     formatter = BlockyHISCOFormatter(
         max_num_codes=5,
         map_char_idx=MAP_HISCO_IDX,
