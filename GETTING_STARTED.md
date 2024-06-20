@@ -11,6 +11,15 @@ conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=
 pip install unidecode transformers
 ```
 
+Only required if training or finetuning:
+```
+git clone https://github.com/QData/TextAttack.git
+cd TextAttack
+pip install . 
+pip install tensorflow_hub
+```
+
+
 ### Optionally verify PyTorch installation
 ```
 python -c "import torch; print(torch.cuda.get_device_name(0))"
