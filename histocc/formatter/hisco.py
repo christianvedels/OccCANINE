@@ -12,7 +12,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 
-from histocc import DATASETS
+from ..datasets import DATASETS
 
 from .constants import PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
 
