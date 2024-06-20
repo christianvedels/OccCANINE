@@ -112,29 +112,15 @@ class CANINEOccupationClassifier(nn.Module):
         return self.out(output)
 
 
-# Build the Classifier for HF hub
-class CANINEOccupationClassifier_hub(nn.Module, PyTorchModelHubMixin):
-    # Constructor class
+class CANINEOccupationClassifier_hub(CANINEOccupationClassifier, PyTorchModelHubMixin):
+    ''' Build the Classifier for HF hub
+    '''
     def __init__(self, config):
-        super().__init__()
-        self.basemodel = getModel(config["model_domain"])
-        self.drop = nn.Dropout(p=config["dropout_rate"])
-        self.out = nn.Linear(self.basemodel.config.hidden_size, config["n_classes"])
-
-    def resize_token_embeddings(self, n):
-        pass # Do nothing CANINE should never be resized
-
-    # Forward propagaion class
-    def forward(self, input_ids, attention_mask):
-        outputs = self.basemodel(
-          input_ids=input_ids,
-          attention_mask=attention_mask
+        super().__init__(
+            n_classes=config["n_classes"],
+            model_domain=config['model_domain'],
+            dropout_rate=config['dropout_rate'],
         )
-        pooled_output = outputs.pooler_output
-
-        #  Add a dropout layer
-        output = self.drop(pooled_output)
-        return self.out(output)
 
 
 # Load model from checkpoint
