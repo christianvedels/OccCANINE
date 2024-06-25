@@ -304,7 +304,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     def num_classes(self) -> list[int]: # pylint: disable=C0116
         return [max(self.map_idx_char) + 1] * self._max_seq_len
 
-    def transform_label(self, raw_input: str | pd.DataFrame | pd.Sries) -> np.ndarray | None:
+    def transform_label(self, raw_input: str | pd.DataFrame | pd.Series) -> np.ndarray | None:
         '''
         Given a sequence of HISCO codes as defined by a str or a 1-row
         pd.DataFrame, return a representaion suitable for a seq2seq model.
