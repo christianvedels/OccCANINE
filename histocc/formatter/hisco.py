@@ -267,7 +267,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         keys = DATASETS['keys']()
         self.lookup_hisco = dict(keys[['code', 'hisco']].values)
 
-    def sanitize(self, raw_input: str | pd.DataFrame) -> str | None: # pylint: disable=C0116
+    def sanitize(self, raw_input: str | pd.DataFrame | pd.Series) -> str | None: # pylint: disable=C0116
         if isinstance(raw_input, str) or raw_input is None:
             return raw_input
 
@@ -304,17 +304,18 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
     def num_classes(self) -> list[int]: # pylint: disable=C0116
         return [max(self.map_idx_char) + 1] * self._max_seq_len
 
-    def transform_label(self, raw_input: str | pd.DataFrame) -> np.ndarray | None:
+    def transform_label(self, raw_input: str | pd.DataFrame | pd.Sries) -> np.ndarray | None:
         '''
         Given a sequence of HISCO codes as defined by a str or a 1-row
         pd.DataFrame, return a representaion suitable for a seq2seq model.
 
         Parameters
         ----------
-        raw_input : str | pd.DataFrame
+        raw_input : str | pd.DataFrame | pd.DataFrame
             Either a string of HISCO codes, separated by `self.sep_value`, or a 1-row
             pd.DataFrame with columns `['code1', 'code2', ..., f'code{self.max_num_codes}]`,
-            each an integer present as a key in `self.lookup_hisco`
+            each an integer present as a key in `self.lookup_hisco`, or a pd.Series corresponding
+            to such a 1-row pd.DataFrame
 
             If input is a string, its format, assuming `self.sep_value == '&'`, could be of
             the form '12345&34567&-1', '-3', '67890', i.e., consisting of either five digit
