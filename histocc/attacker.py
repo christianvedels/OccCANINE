@@ -174,7 +174,7 @@ class AttackerClass:
         return sentence
 
     # attack
-    def attack(self, x_string, alt_prob=0.1, insert_words=True, n_trans=3):
+    def attack(self, x_string, alt_prob=0.8, insert_words=True, n_trans=3):
         """
         Performs an attack on the input strings by applying text transformations.
         
@@ -202,8 +202,8 @@ class AttackerClass:
 
         # Augment strings
         for i in range(len(x_string_copy)):
-            # alt_prob probability that nothing will happen to the string
-            if random.random() < alt_prob:
+            # alt_prob probability that something will happen to the string
+            if random.random() > alt_prob:
                 continue
 
             string_i = x_string_copy[i]
