@@ -221,9 +221,10 @@ class AdversarialStrings():
         # Run OccCANINE prediction for all labels at setup
         self.pred0 = self._run_OccCANINE_predicts(df.occ1.tolist(), df.lang.tolist())
         
-    def _goalfunction(self, pred0, aug_text):
+    def _goalfunction(self, pred0_bin, aug_text):
         """
-        Decides when an augmentation has been successful.
+        Decides when an augmentation has been successful. Based on the binary 
+        representation, which is indifferent to order. 
 
         Parameters:
         pred0: Original prediction.
@@ -233,7 +234,7 @@ class AdversarialStrings():
         bool: True if the augmented prediction is different from the original.
         """
         pred_aug = self.predictor.predict(aug_text, lang = self.lang, what = "bin")[0].tolist()
-        return pred_aug != pred0
+        return pred_aug != pred0_bin
     
     def _isnan_to_str(self, x):
         if isinstance(x, str):
@@ -333,7 +334,7 @@ class AdversarialStrings():
             return None, -1
 
         # Predict HISCO codes from raw string
-        pred0 = self.predictor.predict([text], lang = lang, what = "bin")[0].tolist()
+        pred0_bin = self.predictor.predict([text], lang = lang, what = "bin")[0].tolist()
         aug_text = text
         
         for i in range(n_max):
@@ -345,7 +346,7 @@ class AdversarialStrings():
             else:
                 aug_text = self.attacker.attack(aug_text, alt_prob = alt_prob, n_trans=n_trans)
             
-            if self._goalfunction(pred0, aug_text):
+            if self._goalfunction(pred0_bin, aug_text):
                 if verbose_extra:
                     print(f"Succeful attack after {i+1} augments:\n{text} --> {aug_text[0]}")
                     
