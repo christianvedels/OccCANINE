@@ -449,7 +449,10 @@ def load_training_data(folder = "../Data/Training_data", toyload=False, verbose 
             if verbose:
                 print(f"\nRead {file} (N = {n_df})")
             
-    df = combined_df   
+    df = combined_df 
+    
+    # Make sure that all occ1 are strings
+    df["occ1"] = [str(x) for x in df["occ1"].tolist()]
     
     return df
 
