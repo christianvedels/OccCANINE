@@ -532,7 +532,7 @@ class OccDatasetV2(Dataset):
             file.seek(self.map_item_byte_index[item])
             row = file.readline()
             data = pd.read_csv(
-                io.StringIO(row.decode('utf-8')), 
+                io.StringIO(row.decode('utf-8')),
                 names=self.colnames,
                 dtype={'occ1': str}, # TODO define full dtype-mapping in self.__init__
                 )
@@ -562,7 +562,7 @@ class OccDatasetV2(Dataset):
         if random.random() < self.unk_lang_prob:
             lang = 'unk'
 
-        return '[SEP]'.join((occ_descr, lang))
+        return '[SEP]'.join((lang, occ_descr)) # TODO '[SEP]' should be a (global) const
 
     def __len__(self) -> int:
         return len(self.map_item_byte_index)
@@ -575,7 +575,7 @@ class OccDatasetV2(Dataset):
         target = self.formatter.transform_label(record)
 
         # Augment occupational description and language and
-        # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION'
+        # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION>'
         input_seq = self._prepare_input(occ_descr, lang)
 
         # Encode input sequence
@@ -625,7 +625,10 @@ class OccDatasetV2InMem(OccDatasetV2):
             use_textattack=use_textattack,
             unk_lang_prob=unk_lang_prob,
         )
-        self.frame = pd.read_csv(fname_data)
+        self.frame = pd.read_csv(
+            fname_data,
+            usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+        )
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
         ''' We avoid using any mapping when loading dataset into memory,
