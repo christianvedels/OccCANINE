@@ -20,6 +20,26 @@ import math
 import os
 import time
 import sys
+import string
+import random
+
+# Lang. abbreviation mappings
+lang_mapping = { # OccCANINE --> facebook/m2m100_418M: Table A1 --> Table 1
+    'ca': 'ca',  # Catalan
+    'da': 'da',  # Danish
+    'ge': 'de',  # German
+    'en': 'en',  # English
+    'es': 'es',  # Spanish
+    'fr': 'fr',  # French
+    'gr': 'el',  # Greek
+    'is': 'is',  # Icelandic
+    'it': 'it',  # Italian
+    'nl': 'nl',  # Dutch
+    'no': 'no',  # Norwegian
+    'pt': 'pt',  # Portuguese 
+    'se': 'sv',  # Swedish 
+    'unk': 'unk' # Unknown
+}
 
 class Translator():
     """
@@ -49,22 +69,7 @@ class Translator():
 
 
         # Lang. abbreviation mappings
-        self.lang_mapping = { # OccCANINE --> facebook/m2m100_418M: Table A1 --> Table 1
-            'ca': 'ca',  # Catalan
-            'da': 'da',  # Danish
-            'ge': 'de',  # German
-            'en': 'en',  # English
-            'es': 'es',  # Spanish
-            'fr': 'fr',  # French
-            'gr': 'el',  # Greek
-            'is': 'is',  # Icelandic
-            'it': 'it',  # Italian
-            'nl': 'nl',  # Dutch
-            'no': 'no',  # Norwegian
-            'pt': 'pt',  # Portuguese 
-            'se': 'sv',  # Swedish 
-            'unk': 'unk' # Unknown
-        }
+        self.lang_mapping = lang_mapping 
         
     def translate(self, text, lang_from, lang_to):
         """
@@ -358,6 +363,45 @@ class AdversarialStrings():
                 break
             
         return aug_text[0], (i+1)
+
+def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, max_length = 10):
+    words = random.randint(min_words, max_words)
+    word_lengths = [random.randint(min_length, max_length) for _ in range(words)]
+    
+    words = [''.join(random.choices(string.ascii_lowercase, k=x)) for x in word_lengths]
+    
+    sentence = ' '.join(words)
+    
+    return sentence
+    
+def generate_random_strings(num_strings):
+    """
+    Generates random strings and assigns a random valid language.
+
+    Parameters:
+    num_strings (int): Number of random strings to generate.
+
+    Returns:
+    pd.DataFrame: DataFrame containing random strings, label -1, and a random valid language.
+    """
+    random_strings = [generate_advanced_gibberish() for _ in range(num_strings)]
+    
+    valid_languages = [lang for lang in lang_mapping.keys() if lang != 'unk']
+    random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
+    return pd.DataFrame(
+        {'occ1': random_strings, 
+         'hisco_1': [-1]*num_strings,
+         'hisco_2': [' ']*num_strings,
+         'hisco_3': [' ']*num_strings,
+         'hisco_4': [' ']*num_strings,
+         'hisco_5': [' ']*num_strings,
+         'code1': [2]*num_strings,
+         'code2': [' ']*num_strings,
+         'code3': [' ']*num_strings,
+         'code4': [' ']*num_strings,
+         'code5': [' ']*num_strings,
+         'lang': random_langs
+        })
                 
 def load_training_data(folder = "../Data/Training_data", toyload=False, verbose = True, sample_size = None):
     """
@@ -532,17 +576,34 @@ def translated_strings_wrapper(toyload=False, verbose=True, sample_size = 1000):
     
     # Save results
     df.to_csv("../Data/Adversarial_data/Translated_data.csv")
+    
+def generate_random_strings_wrapper(num_strings=1000):
+    """
+    Wrapper function to generate random strings with the label -1 and save them.
+
+    Parameters:
+    num_strings (int, optional): Number of random strings to generate. Defaults to 1000.
+    string_length (int, optional): Length of each random string. Defaults to 10.
+
+    Returns:
+    None
+    """
+    random_strings_df = generate_random_strings(num_strings)
+    random_strings_df.to_csv("../Data/Adversarial_data/Random_strings.csv", index=False)
+    print(f"Generated {num_strings} random strings with label -1.")
 
 if __name__ == '__main__':
     
     # Using attacker.attack to generates adv. examples:
-    generate_adversarial_wrapper(double_translate=False, sample_size = 10000, n_max = 20)
+    generate_adversarial_wrapper(double_translate=False, sample_size = 100000, n_max = 20)
     
     # Using double translation to generates adv. examples (takes longer):
-    generate_adversarial_wrapper(double_translate=True, sample_size = 1000, n_max = 20)
+    generate_adversarial_wrapper(double_translate=True, sample_size = 10000, n_max = 20)
     
     # Generating strings in every language (takes longer)
-    translated_strings_wrapper(sample_size = 1000)
+    translated_strings_wrapper(sample_size = 100000)
+    
+    generate_random_strings_wrapper(num_strings=1000000)
     
 
 
