@@ -11,7 +11,7 @@ Purpose: Defines model classes
 
 import torch
 
-import torch.nn as nn
+from torch import nn, Tensor
 
 from huggingface_hub import PyTorchModelHubMixin
 
@@ -21,6 +21,9 @@ from transformers import (
     CanineModel,
     AutoTokenizer,
 )
+
+from .layers import TransformerDecoder
+
 
 # Model path from domain
 def modelPath(model_domain, model_size = ""):
@@ -91,7 +94,7 @@ def getModel(model_domain, model_size = ""):
 class CANINEOccupationClassifier(nn.Module):
     # Constructor class
     def __init__(self, n_classes, model_domain, dropout_rate):
-        super(CANINEOccupationClassifier, self).__init__()
+        super().__init__()
         self.basemodel = getModel(model_domain)
         self.drop = nn.Dropout(p=dropout_rate)
         self.out = nn.Linear(self.basemodel.config.hidden_size, n_classes)
@@ -112,29 +115,77 @@ class CANINEOccupationClassifier(nn.Module):
         return self.out(output)
 
 
-# Build the Classifier for HF hub
-class CANINEOccupationClassifier_hub(nn.Module, PyTorchModelHubMixin):
-    # Constructor class
+class CANINEOccupationClassifier_hub(CANINEOccupationClassifier, PyTorchModelHubMixin):
+    ''' Build the Classifier for HF hub
+    '''
     def __init__(self, config):
+        super().__init__(
+            n_classes=config["n_classes"],
+            model_domain=config['model_domain'],
+            dropout_rate=config['dropout_rate'],
+        )
+
+
+class Seq2SeqOccCANINE(nn.Module):
+    def __init__(
+            self,
+            model_domain,
+            num_classes: list[int],
+            dropout_rate: float | None = None,
+    ):
         super().__init__()
-        self.basemodel = getModel(config["model_domain"])
-        self.drop = nn.Dropout(p=config["dropout_rate"])
-        self.out = nn.Linear(self.basemodel.config.hidden_size, config["n_classes"])
+
+        self.seq_len: int = len(num_classes)
+        self.vocab_size: int = max(num_classes) + 1
+        self.dropout_rate: float = dropout_rate if dropout_rate else 0.0
+
+        self.encoder = getModel(model_domain)
+        self.decoder = TransformerDecoder( # TODO add args to __init__
+            num_decoder_layers=3,
+            emb_size=self.encoder.base_model.config.hidden_size,
+            nhead=8,
+            vocab_size=self.vocab_size,
+            dropout=self.dropout_rate,
+        )
 
     def resize_token_embeddings(self, n):
         pass # Do nothing CANINE should never be resized
 
-    # Forward propagaion class
-    def forward(self, input_ids, attention_mask):
-        outputs = self.basemodel(
+    def encode(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+    ) -> Tensor:
+        encoding = self.encoder( # TODO we could potentially avoiding running, e.g., pooling, as we use prev state
           input_ids=input_ids,
           attention_mask=attention_mask
         )
-        pooled_output = outputs.pooler_output
 
-        #  Add a dropout layer
-        output = self.drop(pooled_output)
-        return self.out(output)
+        return encoding.last_hidden_state
+
+    def decode(
+            self,
+            memory: Tensor,
+            target: Tensor,
+            target_mask: Tensor,
+            target_padding_mask: Tensor,
+    ) -> Tensor:
+        out = self.decoder(memory, target, target_mask, target_padding_mask)
+
+        return out
+
+    def forward(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+            target: Tensor,
+            target_mask: Tensor,
+            target_padding_mask: Tensor,
+    ) -> Tensor:
+        memory = self.encode(input_ids, attention_mask)
+        out = self.decode(memory, target, target_mask, target_padding_mask)
+
+        return out
 
 
 # Load model from checkpoint
