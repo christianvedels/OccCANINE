@@ -150,7 +150,7 @@ class Translator():
         """
         return self.lang_mapping.get(lang, lang)  # Default to returning the same abbreviation if not found
     
-class HiddenPrints:
+class HiddenPrints: # https://stackoverflow.com/a/45669280
     """
     A context manager to suppress print statements.
     """
@@ -365,6 +365,19 @@ class AdversarialStrings():
         return aug_text[0], (i+1)
 
 def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, max_length = 10):
+    """
+    Generates a string of random words with specified constraints on the number of words 
+    and their lengths.
+
+    Parameters:
+    min_words (int): Minimum number of words in the generated string.
+    max_words (int): Maximum number of words in the generated string.
+    min_length (int): Minimum length of each word.
+    max_length (int): Maximum length of each word.
+
+    Returns:
+    str: A string consisting of random words separated by spaces.
+    """
     words = random.randint(min_words, max_words)
     word_lengths = [random.randint(min_length, max_length) for _ in range(words)]
     
