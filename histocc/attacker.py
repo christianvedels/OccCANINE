@@ -174,14 +174,13 @@ class AttackerClass:
         return sentence
 
     # attack
-    def attack(self, x_string, alt_prob=0.8, insert_words=True, n_trans=3):
+    def attack(self, x_string, alt_prob=0.8, n_trans=3):
         """
         Performs an attack on the input strings by applying text transformations.
         
         Parameters:
         x_string (list or str): The input string or list of strings to attack.
         alt_prob (float): The probability of altering each string.
-        insert_words (bool): Whether to insert random words from the DataFrame into the strings.
         n_trans (int): The number of transformations to apply.
         
         Returns:
