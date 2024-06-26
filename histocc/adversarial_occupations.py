@@ -488,7 +488,7 @@ def generate_adversarial_wrapper(toyload=False, double_translate = True, verbose
     3. Iterates over each row in the dataset, attempting to find adversarial examples.
     4. Saves the results to a CSV file.
     """    
-    from attacker import AttackerClass # Fix with relative import instead
+    from attacker import AttackerClass # FIXME with relative import instead
     
     df = load_training_data(toyload=toyload, sample_size=sample_size)
     df = df.drop_duplicates()
