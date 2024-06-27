@@ -19,8 +19,6 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
 
         # Loss to push towards occupations, and where loss is
         # invariant towards the order of predicted "blocks"
-        # TODO we can probably remove the ignore, as we should never hit
-        # a case with any PAD elements in self._order_invariant_loss
         self.cross_entropy = nn.CrossEntropyLoss(
             ignore_index=pad_idx,
             reduction='none',
@@ -46,7 +44,7 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
     ) -> Tensor:
         return self.padding_cross_entropy(
             yhat,
-            self.padding_mask.repeat(yhat.size(0), 1),
+            self.padding_mask.repeat(yhat.size(0), 1), # expand mask to batch size
         )
 
     def _order_invariant_loss(
@@ -64,10 +62,7 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
             end_idx = start_idx + self.block_size
 
             if (target[:, start_idx:end_idx] == self.pad_idx).all():
-                # Only padding remains
-                # TODO verify OK with break, i.e., there should be no
-                # target HISCO code #3 if there is no #2, etc.
-                break
+                break # Only padding remains
 
             block_losses = []
 
@@ -85,7 +80,7 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
             block_loss = block_losses.mean()
             losses.append(block_loss)
 
-        return sum(losses) / self.nb_blocks # scale to ensure order length invariane
+        return sum(losses) / len(losses) # scale to ensure order length invariant
 
     def forward(
             self,
