@@ -169,7 +169,7 @@ class TestOrderInvariantSeq2SeqCrossEntropy(unittest.TestCase):
 
         # A "perfect" prediction with at least one HISCO code present will
         # have non-zero loss due to push-to-pad mechanism
-        self.assertGreater(full_loss.item(), self.loss._pad_push_weight) # pylint: disable=W0212
+        self.assertGreater(full_loss.item(), self.loss.push_to_pad_scale_factor) # pylint: disable=W0212
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ invariant to the order of which "blocks" (i.e., HISCO codes)
 are predicted.
 
 The motivation is that we do not particularly care whether
-a model predicts whether an occupational description correponds
+a model predicts whether an occupational description corresponds
 to
     1) Farmer & fisher
     2) Fisher & farmer
@@ -15,15 +15,13 @@ the occupational description.
 '''
 
 import torch
-
 from torch import nn, Tensor
-
 
 class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
     '''
     seq2seq-style loss function for sequences consisting of
     `nb_blocks` blocks, all of size `block_size`. The module
-    consists of two types of losses
+    consists of two types of losses:
 
     1) BLOCK ORDER-INVARIANT CLASSIFICATION
     For each target block, calculate the loss with respect
@@ -46,13 +44,12 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
     that the loss for the second target block only depends on
     the observations in the batch for which the second target
     block is not empty.
-    # TODO verify this
 
     2) PUSH TOWARDS SPARSITY
     To ensure the model is pushed towards only producing as
     many candidates as there are actual non-empty target blocks,
-    apply cross entropy with respect to the enstire sequence,
-    using `pad_idx` as the target value
+    apply cross entropy with respect to the entire sequence,
+    using `pad_idx` as the target value.
 
     Parameters
     ----------
@@ -62,7 +59,7 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
         Number of blocks. Excluding BOS and EOS tokens, each
         sequence has length `nb_blocks * block_size`.
     block_size : int
-        Number of elements in each block.Excluding BOS and EOS
+        Number of elements in each block. Excluding BOS and EOS
         tokens, each sequence has length `nb_blocks * block_size`.
     push_to_pad_scale_factor : float
         Scaling factor applied to the second part of the loss.
@@ -93,16 +90,17 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
         self.cross_entropy = nn.CrossEntropyLoss(
             ignore_index=pad_idx,
             reduction='none',
-            )
+        )
 
         # Loss to push towards padding
         self.padding_cross_entropy = nn.CrossEntropyLoss(
             label_smoothing=push_to_pad_label_smoothing,
-            )
+        )
+
         padding_mask = torch.full(
             size=(1, self.nb_blocks * self.block_size),
             fill_value=self.pad_idx,
-            )
+        )
         # We need to register the mask as a buffer to ensure it
         # is correctly moved to new device when loss module is
         # moved
@@ -140,15 +138,15 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
                 candidate_start_idx = candidate_block * self.block_size
                 candidate_end_idx = candidate_start_idx + self.block_size
 
-                block_losses.append(self.cross_entropy(
+                block_loss = self.cross_entropy(
                     yhat[:, :, candidate_start_idx:candidate_end_idx],
                     target[:, start_idx:end_idx],
-                ).mean(axis=1, keepdims=True))
+                ).mean(dim=1, keepdim=True)
+                block_losses.append(block_loss)
 
-            block_losses = torch.concat(block_losses, axis=1)
-            block_losses, _ = block_losses.min(axis=1)
-            block_loss = block_losses.mean()
-            losses.append(block_loss)
+            block_losses = torch.cat(block_losses, dim=1)
+            block_loss, _ = block_losses.min(dim=1)
+            losses.append(block_loss.mean())
 
         return sum(losses) / len(losses) # scale to ensure invariant to number of target blocks
 
@@ -158,15 +156,15 @@ class OrderInvariantSeq2SeqCrossEntropy(nn.Module):
             target: Tensor, # [BATCH_SIZE, BLOCK_SIZE * NB_BLOCKS + 2]
     ) -> Tensor: # pylint: disable=C0116
         '''
+        Forward pass for the loss calculation.
 
         Parameters
         ----------
         yhat : Tensor
-            [BATCH_SIZE, `block_size * nb_blocks + 1`, VOCAB_SIZE]-shaped
-            tensor consisting of the output from a forward pass from a model.
-            The model does not predict the initial BOS-token, but there is space
-            for a final EOS token, which explains the `+ 1`-part of the tensor's
-            second dimension.
+            [BATCH_SIZE, `block_size * nb_blocks + 1`, VOCAB_SIZE]-shaped tensor
+            consisting of the output from a forward pass from a model. The model
+            does not predict the initial BOS-token, but there is space for a final
+            EOS token, which explains the `+ 1`-part of the tensor's second dimension.
         target : Tensor
             [BATCH_SIZE, `block_size * nb_blocks + 2`]-shaped tensor consisting
             of the target corresponding to the model output from the given forward
