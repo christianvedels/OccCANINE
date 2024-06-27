@@ -25,7 +25,7 @@ from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
 import pandas as pd
 
-from . import OccCANINE
+from .prediction_assets import OccCANINE
 from .attacker import AttackerClass
 
 
@@ -44,10 +44,10 @@ lang_mapping = { # OccCANINE --> facebook/m2m100_418M: Table A1 --> Table 1
     'no': 'no',  # Norwegian
     'pt': 'pt',  # Portuguese
     'se': 'sv',  # Swedish
-    'unk': 'unk' # Unknown
+    'unk': 'unk', # Unknown
 }
 
-class Translator():
+class Translator:
     """
     A class to handle translation tasks using the facebook/m2m100_418M model.
     """
@@ -96,9 +96,9 @@ class Translator():
         if lang_from=='unk' or lang_to=='unk':
             raise NotImplementedError("A way of handling unknown languages is not implemented yet")
 
-        # Test types
         if isinstance(text, str):
             text = [text]
+
         if not isinstance(text, list):
             raise TypeError("Should be 'list' or 'str'")
 
@@ -163,6 +163,7 @@ class HiddenPrints: # https://stackoverflow.com/a/45669280
     _original_stdout = sys.stdout
 
     def __enter__(self):
+        self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w', encoding='utf-8')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -207,11 +208,13 @@ def eta(i, start_time: float, cap_n: int) -> str:
     return eta_str
 
 
-class AdversarialStrings():
-    lang: str = None
+class AdversarialStrings:
     """
     This class implements everything for finding adversial strings
     """
+
+    lang: str = None
+
     def __init__(
             self,
             attacker: AttackerClass,
@@ -285,7 +288,6 @@ class AdversarialStrings():
             res.append(res_i)
 
         return res
-
 
     def _validate_augmentation(self, text, labels, i):
         """
