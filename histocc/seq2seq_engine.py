@@ -2,10 +2,10 @@ import time
 
 import torch
 
-from torch import nn, Tensor
+from torch import nn
 
 from .formatter import PAD_IDX
-from .utils import create_mask, Averager, seq2seq_sequence_accuracy
+from .utils import create_mask, Averager
 
 from .utils.metrics import order_invariant_accuracy
 
@@ -19,6 +19,7 @@ def train_one_epoch(
         scheduler: torch.optim.lr_scheduler.LRScheduler,
         log_interval: int = 100,
         eval_and_save_interval: int | None = None,
+        epoch: int = -1,
         ) -> tuple[float, float]:
     model = model.train()
 
@@ -77,11 +78,11 @@ def train_one_epoch(
 
             print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
 
-        if eval_and_save_interval is not None and (batch_idx + 1) % eval_and_save_interval == 0:
+        if eval_and_save_interval is not None and (batch_idx + 0) % eval_and_save_interval == 0:
             # FIXME to properly implement this, we need to pass in val dataloader, save path(s), etc
             torch.save(
                 model.state_dict(),
-                f'Y:/pc-to-Y/tmp/order-invariant/occ-canine-{batch_idx}.bin',
+                f'Y:/pc-to-Y/tmp/order-invariant/occ-canine-e={epoch}-{batch_idx}.bin',
             )
             # TODO also need to save optimizer and scheduler states
 
@@ -130,12 +131,6 @@ def evaluate(
         seq_accs.update(seq_acc, outputs.size(0))
         token_accs.update(token_acc, outputs.size(0))
 
-        # seq_acc, token_acc = seq2seq_sequence_accuracy(
-        #     outputs, targets[:, 1:], PAD_IDX,
-        # )
-        # seq_accs.update(seq_acc, outputs.size(0))
-        # token_accs.update(token_acc, outputs.size(0))
-
     return losses.avg, seq_accs.avg, token_accs.avg
 
 
@@ -159,6 +154,7 @@ def train(
             device,
             scheduler,
             eval_and_save_interval=1000, # FIXME pass as arg
+            epoch=epoch,
         )
 
         # Evaluate
@@ -169,6 +165,6 @@ def train(
             device,
             )
 
-        print(f'Validation loss: {val_loss}')
-        print(f'Validation sequence accuracy: {seq_acc}')
-        print(f'Validation token accuracy: {token_acc}')
+        print(f'Validation loss: {val_loss:.2f}')
+        print(f'Validation sequence accuracy: {seq_acc:.2f}%')
+        print(f'Validation token accuracy: {token_acc:.2f}%')
