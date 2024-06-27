@@ -66,6 +66,21 @@ class TestBlockyHISCOFormatter(unittest.TestCase):
 
         self.assertEqual(result, expected_output)
 
+    def test_clean_messy_pred(self):
+        raw_pred = np.array([
+            2,
+            1,  1,  1,  1,  1,
+            13, 16, 11, 12, 8,
+            1,  1,  1,  1,  8, # messy, but we sort 8 away gracefully as in chunk with PAD_IDX
+            14, 9,  9,  9,  13,
+            13, 1,  1,  1,  1, # messy, but we sort 13 away gracefully as in chunk with PAD_IDX
+            1,
+        ]).astype(int)
+        expected_output = '58340&61115'
+
+        result = self.formatter.clean_pred(raw_pred)
+
+        self.assertEqual(result, expected_output)
 
 if __name__ == '__main__':
     unittest.main()

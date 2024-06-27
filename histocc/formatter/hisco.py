@@ -185,7 +185,7 @@ def clean_hisco_seq_blocky( # pylint: disable=C0116
 
         chunk = raw_pred[start_idx:end_idx]
 
-        if chunk[0] == PAD_IDX:
+        if (chunk == PAD_IDX).any():
             pass
         else:
             chunks.append(clean_hisco(chunk, rev_mapping))
