@@ -378,24 +378,20 @@ class OCCDataset(Dataset):
         index_file_path,
         formatter: BlockyHISCOFormatter | None = None,
         alt_prob = 0,
-        insert_words = False,
         unk_lang_prob = 0.25, # Probability of changing lang to 'unknown'
-        model_domain = "",
-        new_attack = False # New attack method
+        model_domain = ""
     ):
         self.df_path = df_path
         self.tokenizer = tokenizer
         self.max_len = max_len
         self.attacker = attacker
         self.alt_prob = alt_prob # Probability of text alteration in Attacker()
-        self.insert_words = insert_words # Should random word insertation occur in Attacker()
         self.unk_lang_prob = unk_lang_prob
         self.model_domain = model_domain
         self.n_obs = n_obs
         self.n_classes = n_classes
         self.formatter = formatter
         self.colnames = pd.read_csv(df_path, nrows=10).columns.tolist()
-        self.new_attack = new_attack
 
         self.setup_target_formatter()
 
@@ -438,9 +434,7 @@ class OCCDataset(Dataset):
         # Implement Attack() here
         occ1 = self.attacker.attack(
             occ1,
-            alt_prob = self.alt_prob,
-            insert_words = self.insert_words,
-            use_textattack=self.new_attack # Uses 'TextAttack' attacker
+            alt_prob = self.alt_prob
             )
 
         # Change lanuage to 'unknown' = "unk" in some cases
@@ -652,7 +646,6 @@ def datasets(
         max_len,
         n_classes,
         alt_prob,
-        insert_words,
         model_domain,
         formatter: BlockyHISCOFormatter | None = None,
         ): # FIXME move to datasets.py and avoid hardcoded paths
@@ -664,10 +657,10 @@ def datasets(
     test_index_path = "../Data/Tmp_train/Test_index.txt"
 
     # Instantiating OCCDataset with index file paths
-    ds_train = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
-    ds_train_attack = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, formatter=formatter)
-    ds_val = OCCDataset(df_path="../Data/Tmp_train/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
-    ds_test = OCCDataset(df_path="../Data/Tmp_train/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, formatter=formatter)
+    ds_train = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, model_domain=model_domain, formatter=formatter)
+    ds_train_attack = OCCDataset(df_path="../Data/Tmp_train/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, model_domain=model_domain, formatter=formatter)
+    ds_val = OCCDataset(df_path="../Data/Tmp_train/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, model_domain=model_domain, formatter=formatter)
+    ds_test = OCCDataset(df_path="../Data/Tmp_train/Test.csv", n_obs=n_obs_test, tokenizer=tokenizer, attacker=attacker, max_len=max_len, n_classes=n_classes, index_file_path=test_index_path, alt_prob=0, model_domain=model_domain, formatter=formatter)
 
     return ds_train, ds_train_attack, ds_val, ds_test
 
@@ -748,7 +741,6 @@ def load_data(
         sample_size = 4,
         max_len = 50,
         alt_prob = 0.1,
-        insert_words = True,
         batch_size = 16,
         verbose = False,
         toyload = False,
@@ -812,7 +804,6 @@ def load_data(
         max_len=max_len,
         n_classes=n_classes,
         alt_prob = alt_prob,
-        insert_words = insert_words,
         model_domain = model_domain,
         formatter=formatter,
         )
