@@ -8,4 +8,12 @@ from .model_assets import (
     load_tokenizer,
     )
 from .trainer import trainer_loop
-from .dataloader import load_data
+from .dataloader import (
+    load_data,
+    OccDatasetV2,
+    OccDatasetV2InMem,
+)
+from .loss import (
+    Seq2SeqCrossEntropy,
+    OrderInvariantSeq2SeqCrossEntropy,
+)
