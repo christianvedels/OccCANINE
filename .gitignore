@@ -1,4 +1,5 @@
 
+# Data
 Data/Training_data/
 Data/Test_data/
 Data/Validation_data/
@@ -6,6 +7,9 @@ Data/Raw_data/
 Data/Tmp_data/
 Data/Application_data/
 Data/Tmp_train/
+Data/Adversarial_data/
+
+# Other stuff
 .Rproj.user
 HISCO clean.Rproj
 .Rhistory
@@ -161,3 +165,4 @@ Project_dissemination/Drafts
 Finetuned/
 Project_dissemination/Release tweet/Tweet.docx
 histocc/Data/Tmp_finetune/
+
