@@ -1,35 +1,38 @@
-# Cleaning O-Clack https://github.com/rlzijdeman/o-clack
-# Created:    2023-11-06
+# PortArthur occupations
+# Created:    2024-06-18
 # Auhtors:    Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:    This script cleans titles from O-Clack
+# Purpose:    Clean Port Arthur penal station HISCO codes
 #
-# Output:     Clean tmp version of the inputted data
+# Output:     Clean tmp version of the data
 
 # ==== Libraries =====
 library(tidyverse)
 source("Data_cleaning_scripts/000_Functions.R")
 library(foreach)
-library(readODS)
 
 # ==== Read data ====
-data0 = read_csv("Data/Raw_data/O-clack/n2h_2.csv")
+data0 = read_csv2("Data/Raw_data/2404_New_data/Port_Arthur_penal_station/PortArthur.csv")
 
 # ==== Cleaning data0 ====
-data0 = data0 %>%
-  # Remove anything with a note
-  filter(is.na(comments)) %>% 
-  filter(napp.eq.hisco == 1) %>% 
+data0 = data0 %>% 
   rename(
-    occ1 = napp.title,
-    hisco_1 = hisco.code.num
+    occ1 = `Port Arthur occupation`,
+    hisco_1 = `HISCO Code`
   ) %>% 
+  select(occ1, hisco_1) %>% 
+  drop_na()
+
+# ==== More cleaning ====
+data0 = data0 %>% 
   mutate( # Clean string:
     occ1 = str_replace_all(occ1, "[^[:alnum:] ]", "") %>% tolower()
   ) %>% 
-  select(occ1, hisco_1) %>% 
   mutate(
     hisco_1 = as.numeric(hisco_1)
+  ) %>% 
+  mutate(
+    hisco_1 = ifelse(is.na(hisco_1), -1, hisco_1)
   )
 
 data0 = data0 %>%
@@ -40,27 +43,19 @@ data0 = data0 %>%
     hisco_5 = " "
   )
 
-# Add extra occupations with 'and'
 set.seed(20)
 combinations = Combinations(data0, and = "and")
 
 combinations = combinations %>%
-  mutate(
-    hisco_3 = " ",
-    hisco_4 = " ",
-    hisco_5 = " "
-  ) %>% 
   mutate_all(as.character)
 
 data1 = data0 %>% 
   mutate_all(as.character) %>% 
   bind_rows(combinations)
 
+# Remove cases with 2 of the same occupation
 data1 = data1 %>% 
-  drop_na(occ1)
-
-# Upsample
-data1 = data1 %>% sample_n(10*NROW(data1), replace = TRUE)
+  filter(hisco_1 != hisco_2)
 
 # ==== Check against authoritative HISCO list ====
 load("Data/Key.Rdata")
@@ -114,4 +109,5 @@ data1 = data1 %>%
   mutate(RowID = 1:n())
 
 # ==== Save ====
-save(data1, file = "Data/Tmp_data/Clean_O_CLACK.Rdata")
+save(data1, file = "Data/Tmp_data/PortArthur.Rdata")
+

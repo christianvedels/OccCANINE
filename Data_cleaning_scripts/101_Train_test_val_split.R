@@ -132,11 +132,23 @@ x = pipeline(
   lang
 )
 
+x = pipeline(
+  "Data/Tmp_data/PortArthur.Rdata",
+  "EN_PortArthur",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Patentee.Rdata",
+  "EN_patentee",
+  lang
+)
+
 # ==== Run pipelines Canada ====
 x = pipeline(
   "Data/Tmp_data/Clean_CA_IPUMS.Rdata",
   "EN_ca_ipums",
-  "unk" # Unknown language (french and english mix)
+  "unk" # Unknown language (French and English mix)
 )
 
 # ==== Run pipelines NL ====
@@ -175,6 +187,12 @@ x = pipeline(
   lang
 )
 
+x = pipeline(
+  "Data/Tmp_data/Swedish_titles.Rdata",
+  "SE_titles",
+  lang
+)
+
 # ==== Run pipelines NO ====
 lang = "no"
 
@@ -202,12 +220,30 @@ x = pipeline(
   lang
 )
 
-# ==== Run pipelines DE ====
-lang = "de"
+# ==== Run pipelines GE ====
+lang = "ge"
 
 x = pipeline(
   "Data/Tmp_data/Clean_DE_IPUMS.Rdata",
-  "DE_ipums",
+  "GE_ipums",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/German_occupational_census.Rdata",
+  "GE_occupational_census",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/German1939.Rdata",
+  "GE_occupations1939",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/Selgert_Gottlich_German.Rdata",
+  "GE_Selgert_Gottlich",
   lang
 )
 
@@ -235,6 +271,8 @@ x = pipeline(
   "HISCO_website",
   lang = "In_data"
 )
+
+
 
 # ==== Training data stats ====
 summary0 = Data_summary(out = c("plain", "data"))

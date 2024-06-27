@@ -11,6 +11,12 @@ conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=
 pip install unidecode transformers
 ```
 
+Only required if training or finetuning:
+```
+pip install tensorflow_hub
+```
+
+
 ### Optionally verify PyTorch installation
 ```
 python -c "import torch; print(torch.cuda.get_device_name(0))"
@@ -53,7 +59,7 @@ You can specify any of the 13 languages in which it was trained on. Here is a fu
 + Norwegian: "no"
 + Icelandic: "is"
 + Portugese: "pt"
-+ German: "ge/de"
++ German: "ge"
 + Spanish: "es"
 + Italian: "it"
 + Greek: "gr"
