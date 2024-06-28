@@ -97,7 +97,12 @@ def order_invariant_accuracy(
         block_size: int = 5,
 ) -> tuple[Tensor, Tensor]:
     max_index = torch.argmax(output, dim=2).detach().cpu()
-    _target = target.detach().cpu() # To allow in-place operations to not change input
+    _target = target.detach().cpu()
+
+    # FIXME currently, we treat a prediction which cover all labels
+    # but ALSO predict a code which is NOT in the set of labels as
+    # correct. We probably want to treat as a case an incorrect to
+    # not inflate accuracy
 
     hits = []
 
