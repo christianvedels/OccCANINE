@@ -17,18 +17,50 @@ class AttackerClass:
     """
     A class used to perform various text attack transformations on a DataFrame.
     """
-    def __init__(self, df: pd.DataFrame):
+
+    qwerty = {
+        'a': 'qwsz', 'b': 'vghn', 'c': 'xdfv', 'd': 'serfcx', 'e': 'wsdr',
+        'f': 'rtgvcd', 'g': 'tyhbvf', 'h': 'yujnbg', 'i': 'ujklo', 'j': 'uikmnh',
+        'k': 'ijolm', 'l': 'kop', 'm': 'njkl', 'n': 'bhjm', 'o': 'iklp',
+        'p': 'ol', 'q': 'wa', 'r': 'edft', 's': 'wedxz', 't': 'rfgy',
+        'u': 'yhji', 'v': 'cfgb', 'w': 'qase', 'x': 'zsdc', 'y': 'tghu',
+        'z': 'asx',
+    }
+
+    def __init__(
+            self,
+            alt_prob: float = 0.8,
+            n_trans: int = 3,
+            df: pd.DataFrame | None = None,
+    ):
         """
         Initializes the AttackerClass with a DataFrame.
 
         Parameters:
         df (pd.DataFrame): A DataFrame containing text data in a column named 'occ1'.
         """
-        all_text = ' '.join(str(item) for item in df['occ1'].tolist())
-        self.word_list = all_text.split()
 
-    # Helper functions for transformations
-    def random_character_deletion(self, sentence: str) -> str:
+        self.alt_prob = alt_prob
+        self.n_trans = n_trans
+
+        self.transformations = [
+            self.random_character_deletion,
+            self.qwerty_substitution,
+            self.random_character_insertion,
+            self.random_character_substitution,
+            self.neighboring_character_swap,
+            self.word_swap,
+        ]
+
+        if df is not None:
+            # TODO discuss if we want to weight the words. Current
+            # no-duplicates approach does not sample with weights
+            all_text = ' '.join(item for item in df['occ1'].unique())
+            self.word_list = list(set(all_text.split()))
+            self.transformations.append(self.insert_random_word)
+
+    @staticmethod
+    def random_character_deletion(sentence: str) -> str:
         """
         Randomly deletes a character from the sentence.
 
@@ -55,27 +87,21 @@ class AttackerClass:
         Returns:
         str: The sentence with one character substituted by a neighboring QWERTY character.
         """
-        qwerty = {
-            'a': 'qwsz', 'b': 'vghn', 'c': 'xdfv', 'd': 'serfcx', 'e': 'wsdr',
-            'f': 'rtgvcd', 'g': 'tyhbvf', 'h': 'yujnbg', 'i': 'ujklo', 'j': 'uikmnh',
-            'k': 'ijolm', 'l': 'kop', 'm': 'njkl', 'n': 'bhjm', 'o': 'iklp',
-            'p': 'ol', 'q': 'wa', 'r': 'edft', 's': 'wedxz', 't': 'rfgy',
-            'u': 'yhji', 'v': 'cfgb', 'w': 'qase', 'x': 'zsdc', 'y': 'tghu',
-            'z': 'asx'
-        }
+
         if not sentence:
             return sentence
 
         index = random.randint(0, len(sentence) - 1)
         char = sentence[index]
 
-        if char in qwerty:
-            substitute = random.choice(qwerty[char])
+        if char in self.qwerty:
+            substitute = random.choice(self.qwerty[char])
             return sentence[:index] + substitute + sentence[index + 1:]
 
         return sentence
 
-    def random_character_insertion(self, sentence: str) -> str:
+    @staticmethod
+    def random_character_insertion(sentence: str) -> str:
         """
         Inserts a random character into the sentence.
 
@@ -93,7 +119,8 @@ class AttackerClass:
 
         return sentence[:index] + char + sentence[index:]
 
-    def random_character_substitution(self, sentence: str) -> str:
+    @staticmethod
+    def random_character_substitution(sentence: str) -> str:
         """
         Substitutes a random character in the sentence with another random character.
 
@@ -111,7 +138,8 @@ class AttackerClass:
 
         return sentence[:index] + char + sentence[index + 1:]
 
-    def neighboring_character_swap(self, sentence: str) -> str:
+    @staticmethod
+    def neighboring_character_swap(sentence: str) -> str:
         """
         Swaps two neighboring characters in the sentence.
 
@@ -128,7 +156,8 @@ class AttackerClass:
 
         return sentence[:index] + sentence[index + 1] + sentence[index] + sentence[index + 2:]
 
-    def word_swap(self, sentence: str) -> str:
+    @staticmethod
+    def word_swap(sentence: str) -> str:
         """
         Swaps two neighboring words in the sentence.
 
@@ -175,23 +204,20 @@ class AttackerClass:
         Returns:
         str: The transformed sentence.
         """
-        transformations = [
-            self.random_character_deletion,
-            self.qwerty_substitution,
-            self.random_character_insertion,
-            self.random_character_substitution,
-            self.neighboring_character_swap,
-            self.word_swap,
-            self.insert_random_word
-        ]
 
         for _ in range(n_trans):
-            transformation = random.choice(transformations)
+            transformation = random.choice(self.transformations)
             sentence = transformation(sentence)
 
         return sentence
 
-    def attack(self, x_string: str | list[str], alt_prob: float = 0.8, n_trans: int = 3) -> list[str]:
+    def attack(self, input_string: str) -> str:
+        if random.random() > self.alt_prob:
+            return input_string
+
+        return self.apply_transformations(input_string, n_trans=self.n_trans)
+
+    def attack_multiple(self, x_string: str | list[str], alt_prob: float = 0.8, n_trans: int = 3) -> list[str]:
         """
         Performs an attack on the input strings by applying text transformations.
 
@@ -235,11 +261,11 @@ def main():
     '''Test the AttackerClass
     '''
     df = pd.read_csv(r"C:\Users\sa-tsdj\Documents\GitHub\OccCANINE\Data\Training_data\Train.csv", nrows=100)
-    attacker = AttackerClass(df)
+    attacker = AttackerClass(df=df)
 
     test_strings = df['occ1'].tolist()
 
-    attacked_strings = attacker.attack(test_strings, alt_prob=0.3, n_trans=10)
+    attacked_strings = attacker.attack_multiple(test_strings, alt_prob=0.3, n_trans=10)
 
     print("\nAttacked strings:")
 
