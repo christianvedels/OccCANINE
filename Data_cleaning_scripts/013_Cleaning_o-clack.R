@@ -40,63 +40,17 @@ data0 = data0 %>%
     hisco_5 = " "
   )
 
-# Add extra occupations with 'och'
+# Add extra occupations with 'and'
 set.seed(20)
-# This is a growing vector, and it is slow. But this was quick to implement.
-# Please forgive me
-combinations = foreach(i = 1:NROW(data0), .combine = "bind_rows") %do% {
-  occ_i = data0$occ1[i]
-  
-  if(data0$hisco_1[i] == -1){ # Handle no occupation
-    return(
-      data.frame(occ1 = NA)
-    )
-  }
-  
-  # Generate 10 combinations with 'and' (och)
-  x10_combinations = foreach(r = 1:10, .combine = "bind_rows") %do% {
-    occ_r = sample(data0$occ1, 1)
-    occ_ir = paste(occ_i, "och", occ_r)
-    hisco_r = data0 %>% 
-      filter(occ1 == occ_r) %>% 
-      select(hisco_1) %>% unlist()
-    
-    if(length(hisco_r)>1){
-      hisco_r = hisco_r[1]
-    }
-    
-    # If no occupaiton
-    if(hisco_r == -1){
-      return(
-        data.frame(
-          occ1 = occ_ir,
-          hisco_1 = data0$hisco_1[i],
-          hisco_2 = " "
-        ) %>% mutate_all(as.character)
-      )
-    }
-    
-    data.frame(
-      occ1 = occ_ir,
-      hisco_1 = data0$hisco_1[i],
-      hisco_2 = hisco_r
-    ) %>% remove_rownames() %>% mutate_all(as.character)
-  }
-  
-  res = x10_combinations %>% mutate_all(as.character)
-  
-  cat(i, "of", NROW(data0), "             \r")
-  
-  return(res)
-}
-
+combinations = Combinations(data0, and = "and")
 
 combinations = combinations %>%
   mutate(
     hisco_3 = " ",
     hisco_4 = " ",
     hisco_5 = " "
-  )
+  ) %>% 
+  mutate_all(as.character)
 
 data1 = data0 %>% 
   mutate_all(as.character) %>% 

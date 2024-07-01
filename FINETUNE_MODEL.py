@@ -20,21 +20,21 @@ if __name__ == '__main__':
         nrows = 1000 # Use more data when doing this for real
         )
     label_cols = ["hisco_1"]
-    
+
     # Set lang
     df["lang"] = "en"  # English
-    
+
     # Finetune HISCO
     model.finetune(
-        df, 
-        label_cols, 
-        batch_size=32, 
+        df,
+        label_cols,
+        batch_size=32,
         save_name = "Finetuned_toy_model",
         verbose_extra = True
         )
-    
+
     # Finetuned model can be loaded
     model = OccCANINE("Finetuned/Finetuned_toy_model", hf = False)
-    
+
     x = model.predict(["tailor of fine dresses"], lang = "en")
     print(x)
