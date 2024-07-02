@@ -11,7 +11,9 @@ except ImportError:
     pass
 
 
-def update_summary(step: int, metrics, filename, write_header=False, log_wandb=False):
+def update_summary(step: int, metrics, filename, log_wandb=False):
+    write_header = not os.path.isfile(filename)
+
     rowd = OrderedDict(step=step)
     rowd.update(metrics)
 
