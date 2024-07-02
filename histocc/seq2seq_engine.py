@@ -78,13 +78,12 @@ def train_one_epoch(
         samples_per_sec.update(outputs.size(0) / elapsed)
 
         if batch_idx % log_interval == 0 or batch_idx == last_step:
-            print(f'Batch {batch_idx + 1} of {len(data_loader)}')
-            print(f'Average training loss: {losses.avg:.2f}')
-            print(f'Average batch time: {batch_time.avg:.2f}')
-            print(f'Average data batch time: {batch_time_data.avg:.2f}')
-            print(f'Samples/second: {samples_per_sec.avg:.2f}')
-
-            print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}). Train loss: {losses.avg:.2f}')
+            # print(f'Average training loss: {losses.avg:.2f}')
+            # print(f'Average batch time: {batch_time.avg:.2f}')
+            # print(f'Average data batch time: {batch_time_data.avg:.2f}')
+            # print(f'Samples/second: {samples_per_sec.avg:.2f}')
+            # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
 
         if save_interval is not None and current_step % save_interval == 0:
             states = {
@@ -102,10 +101,6 @@ def train_one_epoch(
                 loss_fn=loss_fn,
                 device=device,
             )
-
-            print(f'Validation loss: {eval_loss:.2f}')
-            print(f'Validation sequence accuracy: {eval_seq_acc:.2f}%')
-            print(f'Validation token accuracy: {eval_token_acc:.2f}%')
 
             update_summary(
                 current_step,
@@ -186,7 +181,7 @@ def train(
         log_wandb: bool = False,
         ):
     while current_step < total_steps:
-        print(f'Completed {current_step} of {total_steps} steps')
+        print(f'Completed {current_step} of {total_steps} steps. Starting new epoch.')
 
         current_step = train_one_epoch(
             model,
@@ -203,15 +198,3 @@ def train(
             data_loader_eval=data_loaders['data_loader_val'],
             log_wandb=log_wandb,
         )
-
-        # Evaluate
-        val_loss, seq_acc, token_acc = evaluate(
-            model,
-            data_loaders['data_loader_val'],
-            loss_fn,
-            device,
-            )
-
-        print(f'Validation loss: {val_loss:.2f}')
-        print(f'Validation sequence accuracy: {seq_acc:.2f}%')
-        print(f'Validation token accuracy: {token_acc:.2f}%')
