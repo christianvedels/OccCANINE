@@ -483,19 +483,24 @@ class OccDatasetV2(Dataset):
             formatter: BlockyHISCOFormatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
-            alt_prob: float = 0.0,
-            insert_words: bool = False,
-            use_textattack: bool = False,
-            unk_lang_prob: float = 0.0,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+            data: pd.DataFrame | None = None,
     ):
         self.fname_data = fname_data
         self.formatter = formatter
         self.tokenizer = tokenizer
         self.max_input_len = max_input_len
-        self.alt_prob = alt_prob
-        self.insert_words = insert_words
-        self.use_textattack = use_textattack
+
+        self.training = training
         self.unk_lang_prob = unk_lang_prob
+        self.attacker = AttackerClass(
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            df=data,
+        )
 
         self.colnames: pd.Index = pd.read_csv(fname_data, nrows=1).columns
         self.map_item_byte_index = self._setup_mapping(fname_index)
@@ -504,13 +509,6 @@ class OccDatasetV2(Dataset):
         # Example value for 'occ1': 42
         # This is then read as an int; since we read 1 row at a time, we
         # may wrongly infer type in such cases
-
-        if use_textattack:
-            # attacker = AttackerClass(...)
-            # self.attack = attacker.attack
-            raise NotImplementedError('Use of `AttackerClass` not supported yet')
-        else:
-            self.attack = self._no_attack
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
         # TODO ask Vedel about structure. Is shuffling implemented?
@@ -533,28 +531,22 @@ class OccDatasetV2(Dataset):
 
         return data.iloc[0]
 
-    def _no_attack(
-            self,
-            x_string: str,
-            alt_prob: float, # pylint: disable=W0613
-            insert_words: bool, # pylint: disable=W0613
-            use_textattack: bool, # pylint: disable=W0613
-    )  -> str:
-        ''' Fallback option when `AttackerClass` not available
-        '''
-        return x_string
+    def _augment_occ_descr_lang(self, occ_descr: str, lang: str) -> tuple[str, str]:
+        if not self.training:
+            return occ_descr, lang
 
-    def _prepare_input(self, occ_descr: str, lang: str) -> str:
-        occ_descr: str = self.attack( # TODO pass in params at construction since fixed? No need to feed as input each call
-            x_string=occ_descr,
-            alt_prob=self.alt_prob,
-            insert_words=self.insert_words,
-            use_textattack=self.use_textattack,
-        ) # FIXME need to fix output type. Seems could be str or list[str] as is
-        occ_descr = occ_descr.strip("'[]'") # TODO should probably happen before we augment
+        occ_descr = self.attacker.attack(occ_descr)
+        occ_descr = occ_descr.strip("'[]'")
+        # TODO should probably happen before we augment
+        # FIXME do we still need this?
 
         if random.random() < self.unk_lang_prob:
             lang = 'unk'
+
+        return occ_descr, lang
+
+    def _prepare_input(self, occ_descr: str, lang: str) -> str:
+        occ_descr, lang = self._augment_occ_descr_lang(occ_descr, lang)
 
         return '[SEP]'.join((lang, occ_descr)) # TODO '[SEP]' should be a (global) const
 
@@ -603,25 +595,27 @@ class OccDatasetV2InMem(OccDatasetV2):
             formatter: BlockyHISCOFormatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
-            alt_prob: float = 0.0,
-            insert_words: bool = False,
-            use_textattack: bool = False,
-            unk_lang_prob: float = 0.0,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
     ):
+        self.frame = pd.read_csv(
+            fname_data,
+            usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+        )
+
         super().__init__(
             fname_data=fname_data,
             fname_index=fname_index,
             formatter=formatter,
             tokenizer=tokenizer,
             max_input_len=max_input_len,
+            training=training,
             alt_prob=alt_prob,
-            insert_words=insert_words,
-            use_textattack=use_textattack,
+            n_trans=n_trans,
             unk_lang_prob=unk_lang_prob,
-        )
-        self.frame = pd.read_csv(
-            fname_data,
-            usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+            data=self.frame[['occ1']],
         )
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
