@@ -2,12 +2,14 @@
 # Data
 Data/Training_data/
 Data/Test_data/
-Data/Validation_data/
+Data/Validation_data1/
+Data/Validation_data2/
 Data/Raw_data/
 Data/Tmp_data/
 Data/Application_data/
 Data/Tmp_train/
 Data/Adversarial_data/
+
 
 # Other stuff
 .Rproj.user
