@@ -168,3 +168,5 @@ Finetuned/
 Project_dissemination/Release tweet/Tweet.docx
 histocc/Data/Tmp_finetune/
 
+# W&B
+/wandb/
