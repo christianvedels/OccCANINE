@@ -9,6 +9,7 @@ conda create -n hisco python=3.11 numpy pandas scikit-learn matplotlib seaborn
 conda activate hisco
 conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=12.1 -c pytorch -c nvidia
 pip install unidecode transformers
+conda install sentencepiece
 ```
 
 Only required if training or finetuning:
@@ -35,7 +36,7 @@ pip install path/to/cloned/repo
 ```
 
 ## Predict HISCO codes
-You are now ready to use OccCANINE for automatic HISCO codes. 
+You are now ready to use OccCANINE for automatic HISCO codes.
 
 To obtain HISCO codes for a dataset `example.csv`, which has a column `occ1` with occupational descriptions you can run the following to get a csv `output.csv` with HISCO codes:
 

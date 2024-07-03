@@ -251,7 +251,12 @@ class AdversarialStrings:
         Returns:
         bool: True if the augmented prediction is different from the original.
         """
-        pred_aug = self.predictor.predict(aug_text, lang = self.lang, what = "bin")[0].tolist()
+        pred_aug = self.predictor.predict(aug_text, lang = self.lang, what = "bin")
+        
+        if len(pred_aug) != 1:
+            raise ValueError(f"Somehow more than one occupational description was passed to OccCANINE.predict(); Input: {aug_text}")
+        
+        pred_aug = pred_aug[0].tolist()
         return pred_aug != pred0_bin
 
     def _isnan_to_str(self, x):
@@ -319,11 +324,11 @@ class AdversarialStrings:
 
         labels = [self._isnan_to_str(x) for x in labels]
 
-        test2 = all([x==y for x, y in zip(self.pred0[i], labels)]) # FIXME check similiarity based on membership (not order dependent)
+        test2 = all([x==y for x, y in zip(self.pred0[i], labels)])
 
         return test1 and test2
 
-    def get_adv_string(self, text, lang, labels, i, verbose_extra = False, n_max = 100, alt_prob = 1, n_trans=3, double_translate = True):
+    def get_adv_string(self, text, lang, labels, i, verbose_extra = False, n_max = 100, double_translate = True):
         """
         Runs adversarial attack on a piece of text.
 
@@ -333,8 +338,6 @@ class AdversarialStrings:
         labels (list): The expected labels.
         verbose_extra (bool): If True, prints additional information.
         n_max (int): Maximum number of augmentation attempts.
-        alt_prob (float): Probability of strings transformation in attacker.attack()
-        n_trans (float): Number of transformations attacker.attack()
         double_translate (bool): If True, double translation is used as the primary augmentation.
 
 
@@ -342,9 +345,10 @@ class AdversarialStrings:
         tuple: The adversarial text and the number of attempts.
         """
         self.lang = lang
+        self.lang_to = 'en'
 
-        if lang == 'en':
-            raise NotImplementedError("English not implemented yet. Would translate from English to English")
+        if lang == 'en': 
+            self.lang_to = 'fr' # Translate through french if input is 'en'
 
         # Validate augmentation
         test = self._validate_augmentation(text, labels, i)
@@ -352,23 +356,23 @@ class AdversarialStrings:
             return None, -1
 
         # Predict HISCO codes from raw string
-        pred0_bin = self.predictor.predict([text], lang = lang, what = "bin")[0].tolist()
+        pred0_bin = self.predictor.predict(text, lang = lang, what = "bin")[0].tolist()
         aug_text = text
 
         for i in range(n_max):
             if double_translate:
-                aug_text1 = self.translator.double_translate(aug_text, self.lang, lang_to="en")
+                aug_text1 = self.translator.double_translate(aug_text, self.lang, lang_to=self.lang_to)[0]
                 if aug_text1 == aug_text: # Then it is stuck in a loop
-                    aug_text1 = self.attacker.attack(aug_text, alt_prob = alt_prob, n_trans=n_trans)
+                    aug_text1 = self.attacker.attack(aug_text)
                 aug_text = aug_text1
             else:
-                aug_text = self.attacker.attack(aug_text, alt_prob = alt_prob, n_trans=n_trans)
+                aug_text = self.attacker.attack(aug_text) # Arguments in construction of class
 
             if self._goalfunction(pred0_bin, aug_text):
                 if verbose_extra:
-                    print(f"Succeful attack after {i+1} augments:\n{text} --> {aug_text[0]}")
+                    print(f"Succeful attack after {i+1} augments:\n{text} --> {aug_text}")
 
-                    pred = self.predictor.predict([text], lang = lang, get_dict = True)
+                    pred = self.predictor.predict(text, lang = lang, get_dict = True)
                     print("")
                     print("Initial label prediction:")
                     print(pred)
@@ -381,7 +385,7 @@ class AdversarialStrings:
 
                 break
 
-        return aug_text[0], (i+1)
+        return aug_text, (i+1)
 
 
 def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, max_length = 10):
@@ -439,39 +443,54 @@ def generate_random_strings(num_strings):
         })
 
 
-def load_training_data(folder = "../Data/Training_data", toyload=False, verbose = True, sample_size = None):
+def load_training_data(data_path = "Data/Training_data", toyload=False, verbose = True, sample_size = None, return_lang_counts = False):
     """
     Loads and combines training data from CSV files in the specified folder.
 
     Parameters:
-    folder (str): The folder containing the CSV files.
+    data_path (str): The folder containing the CSV files.
     toyload (bool): If True, loads only a small subset of data for testing.
     verbose (bool): If True, prints progress information.
     sample_size (float): Number of observations to read. Defaults to reading all
+    return_lang_countsreturn_lang_counts (bool): Should each language's proportion be estimated and returned. (Used in 'translated_strings_wrapper')
 
     Returns:
-    pd.DataFrame: The combined dataframe of training data.
+    tuple: The combined dataframe of training data and a dictionary with lang. counts (if return_lang_counts is True).
     """
-    fnames = os.listdir(folder)
+    fnames = os.listdir(data_path)
 
+    if toyload:
+        fnames = fnames[0:2]+[fnames[5]]
+    
     if sample_size:
         share_of_sample = sample_size // len(fnames)
 
     # Initialize an empty dataframe to store the data
     combined_df = pd.DataFrame()
+    
+    lang_counts = {}
+        
     # Loop through the file list and read each CSV file into the combined dataframe
     for file in fnames:
         if file.endswith(".csv"):  # Make sure the file is a CSV file
-            file_path = os.path.join(folder, file)
+            file_path = os.path.join(data_path, file)
 
             if toyload:
-                df = pd.read_csv(file_path, nrows = 2)#10000)
+                df = pd.read_csv(file_path, nrows = 25)
             else:
                 df = pd.read_csv(file_path)
 
             df = df.drop(columns=['RowID'])
             df = df.drop_duplicates()
             df["source"] = file
+            
+            # Update language counts
+            if return_lang_counts:
+                for lang, count in df['lang'].value_counts().items():
+                    if lang in lang_counts:
+                        lang_counts[lang] += count
+                    else:
+                        lang_counts[lang] = count
 
             # Handling 'share_of_sample' larger than samples in n
             actual_n = df.shape[0] if share_of_sample > df.shape[0] else share_of_sample
@@ -486,18 +505,30 @@ def load_training_data(folder = "../Data/Training_data", toyload=False, verbose 
                 print(f"\nRead {file} (N = {n_df})")
 
     df = combined_df
-
+    
     # Make sure that all occ1 are strings
-    df["occ1"] = [str(x) for x in df["occ1"].tolist()]
-
+    df["occ1"] = df["occ1"].astype(str)
+    
+    if return_lang_counts:
+        # Aggregate language counts into proportions
+        total_count = sum(lang_counts.values())
+        lang_counts = {lang: int(sample_size * count / total_count) for lang, count in lang_counts.items()}
+        return df, lang_counts
+    
     return df
 
 
-def generate_adversarial_wrapper(toyload=False, double_translate = True, verbose_extra=False, sample_size = 1000, n_max = 10):
+def generate_adversarial_wrapper(
+        data_path, storage_path,
+        toyload=False, double_translate = True, sample_size = 1000, n_max = 10, 
+        verbose=True, verbose_extra=False, alt_prob = 1, n_trans=1
+        ):
     """
     Main function to generate adversarial examples.
 
     Parameters:
+    data_path (str): Which folder can the data be found it? The function will load all the .csv files in this destination
+    storage_path (str): Where should the results be stored?
     toyload (bool): If True, loads only a small subset of data for testing.
     double_translate (bool): Should double translation be the primary augmentation? Otherwise it is just attacker.attack()
     sample_size (int): Number of observations to use
@@ -511,7 +542,7 @@ def generate_adversarial_wrapper(toyload=False, double_translate = True, verbose
     4. Saves the results to a CSV file.
     """
 
-    df = load_training_data(toyload=toyload, sample_size=sample_size)
+    df = load_training_data(data_path = data_path, toyload=toyload, sample_size=sample_size)
     df = df.drop_duplicates()
 
     n_df = df.shape[0]
@@ -521,7 +552,7 @@ def generate_adversarial_wrapper(toyload=False, double_translate = True, verbose
     translator = Translator()
 
     # Init attacker class
-    attacker = AttackerClass(df)
+    attacker = AttackerClass(alt_prob = alt_prob, n_trans=n_trans, df=df)
 
     # Predictor
     hisco_predictor = OccCANINE(name = "CANINE")
@@ -552,23 +583,38 @@ def generate_adversarial_wrapper(toyload=False, double_translate = True, verbose
         n_augs = res_i[1]
         res_i = pd.DataFrame({'aug_string': [res_i[0]], 'attempts': [res_i[1]]}) # Convert to DataFrame
         results = pd.concat([results, res_i])
-
-        print(f"{eta(i=i, start_time=start_time, cap_n=cap_n)} --> Stopped after {n_augs} of {n_max}")
+        
+        if verbose:
+            print(f"{eta(i=i, start_time=start_time, cap_n=cap_n)} --> Stopped after {n_augs} of {n_max}")
         i += 1
 
     # Reset the index of the results DataFrame if necessary
     results.reset_index(drop=True, inplace=True)
     df.reset_index(drop=True, inplace=True)
-    results = pd.concat([df, results], ignore_index=True, axis=1)
+    results = pd.concat([df, results], axis=1)
+    
+    # Make 'occ1' the augmented strings - store original string as 'original_occ1'
+    original_occ1 = results['occ1'].tolist()
+    aug_string = results['aug_string'].tolist()
+    results['occ1'] = aug_string
+    results['original_occ1'] = original_occ1
 
-    results.to_csv(f"../Data/Adversarial_data/Adv_data_double_translate{double_translate}.csv")
+    results = results[results['occ1'].notna()]
+    
+    results = results.drop(columns='aug_string')
+    
+    # Save results
+    fname = os.path.join(storage_path, f"Adv_data_double_translate{double_translate}.csv")
+    results.to_csv(fname, index = False)
 
 
-def translated_strings_wrapper(toyload=False, verbose=True, sample_size = 1000):
+def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=True, sample_size = 1000):
     """
     Translates occupation strings in a dataset to multiple languages using a predefined translator.
 
     Parameters:
+    data_path (str): Which folder can the data be found it? The function will load all the .csv files in this destination
+    storage_path (str): Where should the results be stored?
     toyload (bool, optional): Determines whether to load a smaller toy dataset or the full dataset. Defaults to True.
     verbose (bool, optional): If True, prints progress updates during the translation process. Defaults to True.
 
@@ -584,41 +630,83 @@ def translated_strings_wrapper(toyload=False, verbose=True, sample_size = 1000):
     7. Concatenates the results into a single DataFrame.
     8. Saves the DataFrame containing the translated strings.
     """
-
+    
     # Init translator
     translator = Translator()
-
-    df = load_training_data(toyload=toyload, sample_size = sample_size)
+    
+    df, lang_counts = load_training_data(data_path = data_path, toyload=toyload, sample_size = sample_size, return_lang_counts=True)
     df = df.drop_duplicates()
     df = df[df['lang'] != 'unk']
 
     n_df = df.shape[0]
     print(f"\nRead everything (N = {n_df})")
+    print()
+    
+    if verbose:
+        print("The following number of translations will be produced*:")
+        n_total = sum(lang_counts.values())
+        for lang in lang_counts:
+            n_lang = lang_counts[lang]
+            pct_lang = n_lang / n_total
+            print(f" --> {n_lang} will be translated into '{lang}' -- {pct_lang:.2%}")
+        
+        print("   *This reflects proportions in the full traning data")
+        
 
     results = pd.DataFrame()
-    for lang in translator.lang_mapping:
+    for lang in lang_counts:
         if lang == 'unk':
             continue
         df_lang = df[df['lang'] != lang]  # Only translate those that are not already in the target language
+        
+        # Sample df_lang to be of size given by lang_proportions
+        n_lang = lang_counts[lang]
+        actual_n = df_lang.shape[0] if n_lang > df_lang.shape[0] else n_lang # Handling cases with too large n
+        
+        df_lang = df_lang.sample(actual_n)
+        
+        if n_lang == 0:
+            print(f"--> Finished translating {n_lang} observations to '{lang}'")
+            continue
+        
+        # PERFORM TRANSLATION:
         translated_occ = translator.translate(df_lang['occ1'].tolist(), lang_from=df_lang['lang'].tolist()[0], lang_to=lang)
 
         if verbose:
-            print(f"--> Finished translating to {lang}")
+            print(f"--> Finished translating {n_lang} observations to '{lang}'")
 
-        res_i = pd.DataFrame(translated_occ) # Convert to DataFrame
-        results = pd.concat([results, res_i], ignore_index=True)
-
-    results.reset_index(drop=True, inplace=True)
-
+        res_i = pd.DataFrame({'translated_occ': translated_occ}) # Convert to DataFrame
+        res_i.reset_index(drop=True, inplace=True)
+        df_lang.reset_index(drop=True, inplace=True)
+        res_i = pd.concat([df_lang, res_i], axis=1)
+        
+        # set lang
+        res_i['original_lang'] = res_i['lang']
+        res_i['lang'] = [lang for i in range(len(res_i))]
+        
+        results = pd.concat([results, res_i])
+            
+    # Make 'occ1' the augmented strings - store original string as 'original_occ1'
+    original_occ1 = results['occ1'].tolist()
+    translated_occ = results['translated_occ'].tolist()
+    results['occ1'] = translated_occ
+    results['original_occ1'] = original_occ1
+    results = results.drop(columns='translated_occ')
+    
     # Save results
-    df.to_csv("../Data/Adversarial_data/Translated_data.csv")
+    fname = os.path.join(storage_path, "Translated_data.csv")
+    results.to_csv(fname, index = False)
+    
+    print("\n\n")
+    
 
 
-def generate_random_strings_wrapper(num_strings=1000):
+def generate_random_strings_wrapper(storage_path, num_strings=1000):
     """
     Wrapper function to generate random strings with the label -1 and save them.
 
     Parameters:
+    storage_path (str): Where should the results be stored?
     num_strings (int, optional): Number of random strings to generate. Defaults to 1000.
     string_length (int, optional): Length of each random string. Defaults to 10.
 
@@ -626,23 +714,8 @@ def generate_random_strings_wrapper(num_strings=1000):
     None
     """
     random_strings_df = generate_random_strings(num_strings)
-    random_strings_df.to_csv("../Data/Adversarial_data/Random_strings.csv", index=False)
+    
+    fname = os.path.join(storage_path, "Random_strings.csv")
+    random_strings_df.to_csv(fname, index = False)
 
     print(f"Generated {num_strings} random strings with label -1.")
-
-
-def main():
-    # Using attacker.attack to generates adv. examples:
-    generate_adversarial_wrapper(double_translate=False, sample_size = 100000, n_max = 20)
-
-    # Using double translation to generates adv. examples (takes longer):
-    generate_adversarial_wrapper(double_translate=True, sample_size = 10000, n_max = 20)
-
-    # Generating strings in every language (takes longer)
-    translated_strings_wrapper(sample_size = 100000)
-
-    generate_random_strings_wrapper(num_strings=1000000)
-
-
-if __name__ == '__main__':
-    main()
