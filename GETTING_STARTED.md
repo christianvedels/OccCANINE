@@ -13,9 +13,6 @@ pip install unidecode transformers
 
 Only required if training or finetuning:
 ```
-git clone https://github.com/QData/TextAttack.git
-cd TextAttack
-pip install . 
 pip install tensorflow_hub
 ```
 
