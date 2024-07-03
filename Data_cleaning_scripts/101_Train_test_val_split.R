@@ -1,5 +1,5 @@
 # Train test and validation split
-# Updated:    2023-11-06
+# Updated:    2024-07-02
 # Auhtors:    Christian Vedel [christian-vs@sam.sdu.dk],
 #
 # Purpose:    Splits all clean tmp files into training, test and validation

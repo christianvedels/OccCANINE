@@ -236,22 +236,28 @@ Save_train_val_test = function(x, Name, language = NA){
   }
   
   # Filter data
+  # browser()
   x_test = x %>% 
     filter(split == "Test")
-  x_val = x %>% 
-    filter(grepl("Val", split))
+  x_val1 = x %>% 
+    filter(split == "Val1")
+  x_val2 = x %>% 
+    filter(split == "Val2")
   x_train = x %>% 
     filter(split == "Train")
   
   # Make file names
   fname_test = paste0("Data/Test_data/", Name, "_test.csv")
-  fname_val = paste0("Data/Validation_data/", Name, "_val.csv")
+  fname_val1 = paste0("Data/Validation_data1/", Name, "_val1.csv")
+  fname_val2 = paste0("Data/Validation_data2/", Name, "_val2.csv")
   fname_train = paste0("Data/Training_data/", Name, "_train.csv")
   
   x_test %>% 
     write_csv0(fname_test)
-  x_val %>% 
-    write_csv0(fname_val)
+  x_val1 %>% 
+    write_csv0(fname_val1)
+  x_val2 %>% 
+    write_csv0(fname_val2)
   x_train %>% 
     write_csv0(fname_train)
 }
@@ -440,11 +446,17 @@ Data_summary = function(out = "plain"){
       n_train = n,
       n_train_unique = n_unique
     )
-  val = n_in_dir("Validation_data") %>% 
-    mutate(f = gsub("val", "[x]", f)) %>% 
+  val1 = n_in_dir("Validation_data1") %>% 
+    mutate(f = gsub("val1", "[x]", f)) %>% 
     rename(
-      n_val = n,
-      n_val_unique = n_unique
+      n_val1 = n,
+      n_val1_unique = n_unique
+    )
+  val2 = n_in_dir("Validation_data2") %>% 
+    mutate(f = gsub("val2", "[x]", f)) %>% 
+    rename(
+      n_val2 = n,
+      n_val2_unique = n_unique
     )
   test = n_in_dir("Test_data") %>% 
     mutate(f = gsub("test", "[x]", f)) %>% 
@@ -455,21 +467,23 @@ Data_summary = function(out = "plain"){
   
   # Clean counts
   res = train %>% 
-    left_join(val, by = c("f", "lang")) %>% 
+    left_join(val1, by = c("f", "lang")) %>% 
+    left_join(val2, by = c("f", "lang")) %>% 
     left_join(test, by = c("f", 'lang'))
   
   res = res %>% 
     mutate(
-      n = n_train + n_val + n_test
+      n = n_train + n_val1 + n_val1 + n_test
     ) %>% 
     arrange(-n) %>% 
     mutate(
       pct_train = paste0(round(100*n/sum(n), 3),"%")
     ) %>% 
-    select(-n_val_unique, -n_test_unique)
+    select(-n_val1_unique, -n_val2_unique, -n_test_unique)
   
   Ntrain = res$n_train %>% sum() %>% million()
-  Nval = res$n_val %>% sum() %>% million()
+  Nval1 = res$n_val1 %>% sum() %>% million()
+  Nval2 = res$n_val2 %>% sum() %>% million()
   Ntest = res$n_val %>% sum() %>% million()
   capN = res$n %>% sum() %>% million()
   
@@ -478,7 +492,8 @@ Data_summary = function(out = "plain"){
     group_by(lang) %>% 
     summarise(
       n_train = sum(n_train),
-      n_val = sum(n_val),
+      n_val1 = sum(n_val1),
+      n_val2 = sum(n_val2),
       n_test = sum(n_test),
       n = sum(n)
     ) %>% 
@@ -493,7 +508,8 @@ Data_summary = function(out = "plain"){
     group_by(f) %>% 
     summarise(
       n_train = sum(n_train),
-      n_val = sum(n_val),
+      n_val1 = sum(n_val1),
+      n_val2 = sum(n_val2),
       n_test = sum(n_test),
       n = sum(n)
     ) %>% 
@@ -514,7 +530,8 @@ Data_summary = function(out = "plain"){
     group_by(Type) %>% 
     summarise(
       n_train = sum(n_train),
-      n_val = sum(n_val),
+      n_val1 = sum(n_val1),
+      n_val2 = sum(n_val2),
       n_test = sum(n_test),
       n = sum(n)
     ) %>% 
@@ -528,7 +545,8 @@ Data_summary = function(out = "plain"){
   if("plain" %in% out){
     cat("\n")
     cat("\nTraining data:   ", Ntrain, "million observations")
-    cat("\nValidation data: ", Nval, "million observations")
+    cat("\nValidation data 1: ", Nval1, "million observations")
+    cat("\nValidation data 2: ", Nval2, "million observations")
     cat("\nTest data:       ", Ntest, "million observations")
     cat("\n---> In total:   ", capN, "million observations")
     cat("\n\nAmount of data by source:\n")
@@ -541,12 +559,11 @@ Data_summary = function(out = "plain"){
     
     cat("\n\nFor readme:")
     res %>% 
-      select(f, n, n_train, n_train_unique, Description, Source , lang, Type) %>% 
+      select(f, n, n_train, Description, Source , lang, Type) %>% 
       rename(
         `File name` = f,
         `N` = n,
         `N train` = n_train,
-        `N unique strings` = n_train_unique,
         Reference = Source,
         Language = lang
       ) %>% 
