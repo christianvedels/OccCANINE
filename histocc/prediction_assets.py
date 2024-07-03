@@ -178,7 +178,7 @@ class OccCANINE:
         Makes predictions on a batch of occupational strings.
 
         Parameters:
-        - occ1 (list of str): A list of occupational strings to predict.
+        - occ1 (list or str): A list of occupational strings to predict.
         - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
         - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
         - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
@@ -189,7 +189,11 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
-
+        
+        # Handle list vs str
+        if isinstance(occ1, str):
+            occ1 = [occ1]
+        
         # Setup
         inputs = self._encode(occ1, lang, concat_in)
         batch_size = self.batch_size
