@@ -344,6 +344,31 @@ class BlockOrderInvariantLoss(nn.Module):
 
         return sum(losses) / len(losses) # scale to ensure invariant to number of target blocks
 
+    def _get_target_mask(
+            self,
+            target: Tensor, # [BATCH_SIZE, BLOCK_SIZE * NB_BLOCKS]
+    ) -> Tensor:
+        # Number of target blocks for each observation in batch
+        num_target_blocks = torch.argmax((target == self.pad_idx).long(), dim=1) // self.nb_blocks
+
+        # If there are NO padding elements, i.e., number of target
+        # blocks equals self.nb_blocks, the above code will wrongly
+        # lead to everything being set to True (where it should be
+        # False). This occurs as num_target_blocks will only contain
+        # zeros for the respective target, meaning the argmax above
+        # will lead to a zero. We know that zero should NEVER occur,
+        # and we can thus fix this by casting all zeros the the maximum
+        # number of target blocks
+        num_target_blocks[num_target_blocks == 0] = self.nb_blocks
+
+        # 0:self.nb_blocks-arrangement used to create mask
+        arrangement = torch.arange(self.nb_blocks).expand(len(target), -1).to(self.padding_mask.device)
+
+        # Mask to indicate which block losses should be discarded
+        target_mask = arrangement >= num_target_blocks.unsqueeze(1)
+
+        return target_mask
+
     def forward(
             self,
             yhat: Tensor, # [BATCH_SIZE, BLOCK_SIZE * NB_BLOCKS + 1, VOCAB]
@@ -376,15 +401,7 @@ class BlockOrderInvariantLoss(nn.Module):
         # If a target consists of k blocks, only count the first
         # k candidate blocks as relevant prediction and push all
         # other towards padding
-
-        # Number of target blocks for each observation in batch
-        num_target_blocks = torch.argmax((target == self.pad_idx).long(), dim=1) // self.nb_blocks
-
-        # 0:self.nb_blocks-arrangement used to create mask
-        arrangement = torch.arange(self.nb_blocks).expand(len(yhat), -1).to(self.padding_mask.device)
-
-        # Mask to indicate which block losses should be discarded
-        target_mask = arrangement >= num_target_blocks.unsqueeze(1)
+        target_mask = self._get_target_mask(target)
 
         order_invariant_loss = self._order_invariant_loss(yhat, target, target_mask)
         push_to_pad_loss = self._push_to_pad(yhat, target_mask)
