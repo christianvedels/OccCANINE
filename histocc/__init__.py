@@ -16,4 +16,5 @@ from .dataloader import (
 from .loss import (
     Seq2SeqCrossEntropy,
     OrderInvariantSeq2SeqCrossEntropy,
+    BlockOrderInvariantLoss,
 )
