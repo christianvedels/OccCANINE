@@ -357,7 +357,7 @@ class BlockOrderInvariantLoss(nn.Module):
         # False). This occurs as num_target_blocks will only contain
         # zeros for the respective target, meaning the argmax above
         # will lead to a zero. We know that zero should NEVER occur,
-        # and we can thus fix this by casting all zeros the the maximum
+        # and we can thus fix this by casting all zeros to the maximum
         # number of target blocks
         num_target_blocks[num_target_blocks == 0] = self.nb_blocks
 
