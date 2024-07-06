@@ -631,6 +631,54 @@ class OccDatasetV2InMem(OccDatasetV2):
         return len(self.frame)
 
 
+class OccDatasetV2InMemMultipleFiles(OccDatasetV2):
+    def __init__(
+            self,
+            fnames_data: list[str],
+            formatter: BlockyHISCOFormatter,
+            tokenizer: CanineTokenizer,
+            max_input_len: int,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+    ):
+        frames = [
+            pd.read_csv(
+                f,
+                usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+                dtype={'lang': str},
+                converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
+            ) for f in fnames_data
+        ]
+        self.frame = pd.concat(frames)
+
+        super().__init__(
+            fname_data=fnames_data[0], # we define self.colnames in parent class by reading 1 row
+            fname_index='',
+            formatter=formatter,
+            tokenizer=tokenizer,
+            max_input_len=max_input_len,
+            training=training,
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            unk_lang_prob=unk_lang_prob,
+            data=self.frame[['occ1']],
+        )
+
+    def _setup_mapping(self, fname_index: str) -> dict[int, int]:
+        ''' We avoid using any mapping when loading dataset into memory,
+        hence overwrite with ghost method
+        '''
+        return {}
+
+    def _get_record(self, item: int) -> pd.Series:
+        return self.frame.iloc[item]
+
+    def __len__(self) -> int:
+        return len(self.frame)
+
+
 def datasets(
         n_obs_train: int,
         n_obs_val: int,
