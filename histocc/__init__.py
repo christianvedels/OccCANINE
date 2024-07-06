@@ -12,6 +12,7 @@ from .dataloader import (
     load_data,
     OccDatasetV2,
     OccDatasetV2InMem,
+    OccDatasetV2InMemMultipleFiles,
 )
 from .loss import (
     Seq2SeqCrossEntropy,
