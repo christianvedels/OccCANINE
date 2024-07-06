@@ -297,7 +297,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
 
     @property
     def max_seq_len(self) -> int: # pylint: disable=C0116
-        print(f'Max. seq. len.: {self.max_num_codes} * 5 + 2, since BOS and EOS token.')
+        # Max. seq. len.: {self.max_num_codes} * 5 + 2, since BOS and EOS token.
         return self._max_seq_len
 
     @property
