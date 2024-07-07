@@ -6,13 +6,13 @@ Created on Fri Jul  5 14:49:29 2024
 """
 
 if __name__ == '__main__':
-    from histocc.class_activation.diagnostics import StringGradient
+    from histocc.class_activation import StringGradient
     
-    x = StringGradient(n=3, verbose = True)
+    x = StringGradient(n=1, verbose = True)
     
     
-    x.visualize_text_gradients("agent for sewing machine company", 631)
-    x.visualize_gradients("agent for sewing machine company", 631)
+    x.visualize_text_gradients("agent for sewing machine company xyznmfajnpe", 631)
+    x.visualize_gradients("agent for sewing machine company xyznmfajnpe", 631)
     
     # x = ClassActivation()
     

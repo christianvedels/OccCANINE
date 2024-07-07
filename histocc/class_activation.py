@@ -12,7 +12,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
-from IPython.display import display, HTML
 
 class ClassActivation():
     
@@ -221,6 +220,8 @@ class StringGradient:
         for letters in self._generate_ngrams(self.letters, n):
             x_i = self._change_ngram(x, loc, letters)
             alternative_x.append(x_i)
+        
+        
             
         probs_alt = self.model.predict(alternative_x, lang=lang, what="probs")
         probs_alt = [prob[target_class] for prob in probs_alt]
