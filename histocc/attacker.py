@@ -50,6 +50,7 @@ class AttackerClass:
             self.random_character_substitution,
             self.neighboring_character_swap,
             self.word_swap,
+            self.add_leading_trailing_characters,
         ]
 
         if df is not None:
@@ -192,6 +193,22 @@ class AttackerClass:
         occ_as_word_list.insert(insert_index, random_word)
 
         return " ".join(occ_as_word_list)
+    
+    @staticmethod
+    def add_leading_trailing_characters(sentence: str) -> str:
+        """
+        Adds 1 to 8 leading and trailing random lowercase ASCII characters to the sentence.
+
+        Parameters:
+        sentence (str): The input sentence.
+
+        Returns:
+        str: The sentence with added leading and trailing random characters.
+        """
+        characters = string.ascii_lowercase + ' ' # All lowercase + space
+        leading_chars = ''.join(random.choices(characters, k=random.randint(1, 8)))
+        trailing_chars = ''.join(random.choices(characters, k=random.randint(1, 8)))
+        return leading_chars + ' ' + sentence + ' ' + trailing_chars
 
     def apply_transformations(self, sentence: str, n_trans: int) -> str:
         """
@@ -260,12 +277,12 @@ class AttackerClass:
 def main():
     '''Test the AttackerClass
     '''
-    df = pd.read_csv(r"C:\Users\sa-tsdj\Documents\GitHub\OccCANINE\Data\Training_data\Train.csv", nrows=100)
+    df = pd.read_csv(r"Data/TOYDATA.csv", nrows=1000)
     attacker = AttackerClass(df=df)
 
     test_strings = df['occ1'].tolist()
 
-    attacked_strings = attacker.attack_multiple(test_strings, alt_prob=0.3, n_trans=10)
+    attacked_strings = attacker.attack_multiple(test_strings, alt_prob=1, n_trans=10)
 
     print("\nAttacked strings:")
 
