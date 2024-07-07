@@ -276,7 +276,7 @@ class StringGradient:
             
             if self.verbose:
                 string_loc = ''.join([input_text[i] for i in range(loc, loc + self.n)])
-                print(f'--> Computed pseudo-gradient for {string_loc}')
+                print(f"--> Computed pseudo-gradient for '{string_loc}'")
             
         self.ngrams = ngrams
         self.grads = grads
