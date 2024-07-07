@@ -5,8 +5,8 @@ Created on Fri Jul  5 14:37:11 2024
 @author: chris
 """
 
-from .prediction_assets import OccCANINE
-from .attacker import AttackerClass
+from ..prediction_assets import OccCANINE
+from ..attacker import AttackerClass
 import string
 import pandas as pd
 import numpy as np
@@ -171,6 +171,7 @@ class StringGradient:
         self.letters = self._letters()
         self.n = n
         self.verbose = verbose
+
         self.ngrams = None
         self.grads = None
 
@@ -200,7 +201,7 @@ class StringGradient:
         x = x[:where] + what + x[where + len(what):]
         return x
     
-    def _manual_grad_computation(self, x, loc, target_class, n, lang="en"):
+    def _manual_grad_computation(self, x, loc, target_class, n, what = "probs", lang="en"):
         """
         Computes the gradient for an n-gram at a specific location in the input string.
 
@@ -209,21 +210,30 @@ class StringGradient:
             loc (int): The location of the n-gram in the string.
             target_class (int): The target class index.
             n (int): The length of the n-gram.
+            what (str): What is passed to OccCANINE.predict(). Defaults to "probs". "logits" is a reasonable alternative
             lang (str): The language of the input string.
 
         Returns:
             float: The computed gradient for the n-gram.
         """
-        prob = self.model.predict([x], lang=lang, what="probs")[0][target_class]
-        
+        prob = self.model.predict([x], lang=lang, what=what)
+
+        if what == "probs":
+            prob =  prob[0][target_class]
+        elif what == "logits":
+            prob = prob[0].cpu().numpy()[0][target_class]
+        else:
+            raise NotImplementedError(f"No implementation for 'what' = {what}")
+
         alternative_x = []
         for letters in self._generate_ngrams(self.letters, n):
             x_i = self._change_ngram(x, loc, letters)
             alternative_x.append(x_i)
-        
-        
             
-        probs_alt = self.model.predict(alternative_x, lang=lang, what="probs")
+        probs_alt = self.model.predict(alternative_x, lang=lang, what=what)
+        if what == "logits": # Handle logits
+            probs_alt = probs_alt[0].cpu().numpy()
+
         probs_alt = [prob[target_class] for prob in probs_alt]
         return prob - np.mean(probs_alt)  # How much larger is prob because of this n-gram?
     
@@ -240,7 +250,7 @@ class StringGradient:
         """
         return [''.join(ngram) for ngram in product(letters, repeat=n)]
     
-    def compute_gradients(self, input_text, target_class, lang="en"):
+    def compute_gradients(self, input_text, target_class, what="probs", lang="en", recompute=False):
         """
         Computes gradients for all n-grams in the input text with respect to the target class.
 
@@ -248,14 +258,19 @@ class StringGradient:
             input_text (str): The input text.
             target_class (int): The target class index.
             lang (str): The language of the input text.
+            what (str): What is passed to OccCANINE.predict(). Defaults to "probs". "logits" is a reasonable alternative
+            recompute (bool): Whether to recompute the gradients even if they are cached.
 
         Returns:
             tuple: A tuple containing a list of n-grams and their corresponding gradients.
         """
+        if not recompute and self.ngrams is not None and self.grads is not None:
+            return self.ngrams, self.grads
+        
         grads = []
         ngrams = []
         for loc in range(len(input_text) - self.n + 1):
-            grad_loc = self._manual_grad_computation(input_text, loc, target_class, self.n, lang=lang)
+            grad_loc = self._manual_grad_computation(input_text, loc, target_class, self.n, what=what, lang=lang)
             grads.append(grad_loc)
             ngrams.append(input_text[loc:loc + self.n])
             
@@ -268,7 +283,7 @@ class StringGradient:
         
         return ngrams, grads
         
-    def visualize_gradients(self, input_text, target_class, lang="en"):
+    def visualize_gradients(self, input_text, target_class, what="probs", lang="en", recompute=False):
         """
         Visualizes the gradients of n-grams in the input text using a bar chart.
 
@@ -276,8 +291,9 @@ class StringGradient:
             input_text (str): The input text.
             target_class (int): The target class index.
             lang (str): The language of the input text.
+            recompute (bool): Whether to recompute the gradients even if they are cached.
         """
-        ngrams, gradients = self.compute_gradients(input_text, target_class, lang)
+        ngrams, gradients = self.compute_gradients(input_text, target_class, what=what, lang=lang, recompute=recompute)
         
         fig, ax = plt.subplots()
         norm = plt.Normalize(vmin=min(gradients), vmax=max(gradients))
@@ -291,8 +307,9 @@ class StringGradient:
         plt.ylabel('Gradient Value')
         plt.title(f'{self.n}-gram Gradients Visualization')
         plt.show()
+
         
-    def visualize_text_gradients(self, input_text, target_class, lang="en"):
+    def visualize_text_gradients(self, input_text, target_class, what="probs", lang="en", recompute=False):
         """
         Visualizes the gradients of n-grams in the input text with color-coded text.
 
@@ -300,8 +317,10 @@ class StringGradient:
             input_text (str): The input text.
             target_class (int): The target class index.
             lang (str): The language of the input text.
+            what (str): What is passed to OccCANINE.predict(). Defaults to "probs". "logits" is a reasonable alternative
+            recompute (bool): Whether to recompute the gradients even if they are cached.
         """
-        ngrams, gradients = self.compute_gradients(input_text, target_class, lang)
+        ngrams, gradients = self.compute_gradients(input_text, target_class, what=what, lang=lang, recompute=recompute)
         ngram_gradients = {input_text[loc:loc + self.n]: grad for loc, grad in enumerate(gradients)}
 
         # Aggregate gradients for each character
@@ -336,6 +355,7 @@ class StringGradient:
             ax.text(i * 0.05, 0.5, char, fontsize=20, ha='center', va='center', bbox=dict(facecolor=color, edgecolor=color))
 
         plt.show()
+
     
     # TODO: Which chars can be removed which decreases prob the least?
     # TODO: Use next word generation transformer to generate text

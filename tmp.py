@@ -6,23 +6,11 @@ Created on Fri Jul  5 14:49:29 2024
 """
 
 if __name__ == '__main__':
-    from histocc.class_activation import StringGradient
-    
-    x = StringGradient(n=1, verbose = True)
-    
-    
-    x.visualize_text_gradients("agent for sewing machine company xyznmfajnpe", 631)
-    x.visualize_gradients("agent for sewing machine company xyznmfajnpe", 631)
-    
-    # x = ClassActivation()
-    
-    # for i in range(3, 1919):
-    #     res_i, prob = x.max_class_change(i, verbose = True)
-    #     print(f"---> {i}: {res_i} -- {prob:.4f}")
-    
-    y=2
-    
-    
-    
-    
-    
+    from histocc.diagnostics.class_activation import StringGradient
+        
+    text = "agent for sewing machine company"
+
+    x = StringGradient(n=2, verbose = True)
+
+    x.visualize_text_gradients(text, 631, what="logits")
+    x.visualize_gradients(text, 631, what = "logits")
