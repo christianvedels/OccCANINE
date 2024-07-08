@@ -252,10 +252,10 @@ class AdversarialStrings:
         bool: True if the augmented prediction is different from the original.
         """
         pred_aug = self.predictor.predict(aug_text, lang = self.lang, what = "bin")
-        
+
         if len(pred_aug) != 1:
             raise ValueError(f"Somehow more than one occupational description was passed to OccCANINE.predict(); Input: {aug_text}")
-        
+
         pred_aug = pred_aug[0].tolist()
         return pred_aug != pred0_bin
 
@@ -347,7 +347,7 @@ class AdversarialStrings:
         self.lang = lang
         self.lang_to = 'en'
 
-        if lang == 'en': 
+        if lang == 'en':
             self.lang_to = 'fr' # Translate through french if input is 'en'
 
         # Validate augmentation
@@ -435,10 +435,10 @@ def generate_random_strings(num_strings):
          'hisco_4': [' ']*num_strings,
          'hisco_5': [' ']*num_strings,
          'code1': [2]*num_strings,
-         'code2': [' ']*num_strings,
-         'code3': [' ']*num_strings,
-         'code4': [' ']*num_strings,
-         'code5': [' ']*num_strings,
+         'code2': ['']*num_strings,
+         'code3': ['']*num_strings,
+         'code4': ['']*num_strings,
+         'code5': ['']*num_strings,
          'lang': random_langs
         })
 
@@ -461,15 +461,15 @@ def load_training_data(data_path = "Data/Training_data", toyload=False, verbose 
 
     if toyload:
         fnames = fnames[0:2]+[fnames[5]]
-    
+
     if sample_size:
         share_of_sample = sample_size // len(fnames)
 
     # Initialize an empty dataframe to store the data
     combined_df = pd.DataFrame()
-    
+
     lang_counts = {}
-        
+
     # Loop through the file list and read each CSV file into the combined dataframe
     for file in fnames:
         if file.endswith(".csv"):  # Make sure the file is a CSV file
@@ -483,7 +483,7 @@ def load_training_data(data_path = "Data/Training_data", toyload=False, verbose 
             df = df.drop(columns=['RowID'])
             df = df.drop_duplicates()
             df["source"] = file
-            
+
             # Update language counts
             if return_lang_counts:
                 for lang, count in df['lang'].value_counts().items():
@@ -505,22 +505,22 @@ def load_training_data(data_path = "Data/Training_data", toyload=False, verbose 
                 print(f"\nRead {file} (N = {n_df})")
 
     df = combined_df
-    
+
     # Make sure that all occ1 are strings
     df["occ1"] = df["occ1"].astype(str)
-    
+
     if return_lang_counts:
         # Aggregate language counts into proportions
         total_count = sum(lang_counts.values())
         lang_counts = {lang: int(sample_size * count / total_count) for lang, count in lang_counts.items()}
         return df, lang_counts
-    
+
     return df
 
 
 def generate_adversarial_wrapper(
         data_path, storage_path,
-        toyload=False, double_translate = True, sample_size = 1000, n_max = 10, 
+        toyload=False, double_translate = True, sample_size = 1000, n_max = 10,
         verbose=True, verbose_extra=False, alt_prob = 1, n_trans=1
         ):
     """
@@ -583,7 +583,7 @@ def generate_adversarial_wrapper(
         n_augs = res_i[1]
         res_i = pd.DataFrame({'aug_string': [res_i[0]], 'attempts': [res_i[1]]}) # Convert to DataFrame
         results = pd.concat([results, res_i])
-        
+
         if verbose:
             print(f"{eta(i=i, start_time=start_time, cap_n=cap_n)} --> Stopped after {n_augs} of {n_max}")
         i += 1
@@ -592,7 +592,7 @@ def generate_adversarial_wrapper(
     results.reset_index(drop=True, inplace=True)
     df.reset_index(drop=True, inplace=True)
     results = pd.concat([df, results], axis=1)
-    
+
     # Make 'occ1' the augmented strings - store original string as 'original_occ1'
     original_occ1 = results['occ1'].tolist()
     aug_string = results['aug_string'].tolist()
@@ -600,9 +600,9 @@ def generate_adversarial_wrapper(
     results['original_occ1'] = original_occ1
 
     results = results[results['occ1'].notna()]
-    
+
     results = results.drop(columns='aug_string')
-    
+
     # Save results
     fname = os.path.join(storage_path, f"Adv_data_double_translate{double_translate}.csv")
     results.to_csv(fname, index = False)
@@ -630,10 +630,10 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
     7. Concatenates the results into a single DataFrame.
     8. Saves the DataFrame containing the translated strings.
     """
-    
+
     # Init translator
     translator = Translator()
-    
+
     df, lang_counts = load_training_data(data_path = data_path, toyload=toyload, sample_size = sample_size, return_lang_counts=True)
     df = df.drop_duplicates()
     df = df[df['lang'] != 'unk']
@@ -641,7 +641,7 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
     n_df = df.shape[0]
     print(f"\nRead everything (N = {n_df})")
     print()
-    
+
     if verbose:
         print("The following number of translations will be produced*:")
         n_total = sum(lang_counts.values())
@@ -649,26 +649,26 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
             n_lang = lang_counts[lang]
             pct_lang = n_lang / n_total
             print(f" --> {n_lang} will be translated into '{lang}' -- {pct_lang:.2%}")
-        
+
         print("   *This reflects proportions in the full traning data")
-        
+
 
     results = pd.DataFrame()
     for lang in lang_counts:
         if lang == 'unk':
             continue
         df_lang = df[df['lang'] != lang]  # Only translate those that are not already in the target language
-        
+
         # Sample df_lang to be of size given by lang_proportions
         n_lang = lang_counts[lang]
         actual_n = df_lang.shape[0] if n_lang > df_lang.shape[0] else n_lang # Handling cases with too large n
-        
+
         df_lang = df_lang.sample(actual_n)
-        
+
         if n_lang == 0:
             print(f"--> Finished translating {n_lang} observations to '{lang}'")
             continue
-        
+
         # PERFORM TRANSLATION:
         translated_occ = translator.translate(df_lang['occ1'].tolist(), lang_from=df_lang['lang'].tolist()[0], lang_to=lang)
 
@@ -679,26 +679,26 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
         res_i.reset_index(drop=True, inplace=True)
         df_lang.reset_index(drop=True, inplace=True)
         res_i = pd.concat([df_lang, res_i], axis=1)
-        
+
         # set lang
         res_i['original_lang'] = res_i['lang']
         res_i['lang'] = [lang for i in range(len(res_i))]
-        
+
         results = pd.concat([results, res_i])
-            
+
     # Make 'occ1' the augmented strings - store original string as 'original_occ1'
     original_occ1 = results['occ1'].tolist()
     translated_occ = results['translated_occ'].tolist()
     results['occ1'] = translated_occ
     results['original_occ1'] = original_occ1
     results = results.drop(columns='translated_occ')
-    
+
     # Save results
     fname = os.path.join(storage_path, "Translated_data.csv")
     results.to_csv(fname, index = False)
-    
+
     print("\n\n")
-    
+
 
 
 def generate_random_strings_wrapper(storage_path, num_strings=1000):
@@ -714,7 +714,7 @@ def generate_random_strings_wrapper(storage_path, num_strings=1000):
     None
     """
     random_strings_df = generate_random_strings(num_strings)
-    
+
     fname = os.path.join(storage_path, "Random_strings.csv")
     random_strings_df.to_csv(fname, index = False)
 
