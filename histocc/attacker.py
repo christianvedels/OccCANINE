@@ -50,6 +50,7 @@ class AttackerClass:
             self.random_character_substitution,
             self.neighboring_character_swap,
             self.word_swap,
+            self.add_leading_trailing_characters,
         ]
 
         if df is not None:
@@ -192,6 +193,39 @@ class AttackerClass:
         occ_as_word_list.insert(insert_index, random_word)
 
         return " ".join(occ_as_word_list)
+    
+    @staticmethod
+    def add_leading_trailing_characters(sentence: str, nchars = 20) -> str:
+        """
+        Adds 1 to 'nchars' leading and trailing random lowercase ASCII characters to the sentence.
+        There is a 50 percent chance of leading characters being added and a 50 percent chance
+        for trailing characters. If both fail (25 percent chance) then both leading and
+        trailing characters will be added
+
+        Parameters:
+        sentence (str): The input sentence.
+        nchars (int): Number of chars to add (defaults to 20)
+
+        Returns:
+        str: The sentence with added leading and trailing random characters.
+        """
+        characters = string.ascii_lowercase + ' ' # All lowercase + space
+        
+        if random.random() > 0.5:
+            leading_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
+        else:
+            leading_chars = ''
+        
+        if random.random() > 0.5:
+            trailing_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
+        else:
+            trailing_chars = ''
+        
+        if leading_chars == '' and trailing_chars == '':
+            leading_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
+            trailing_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
+        
+        return leading_chars + ' ' + sentence + ' ' + trailing_chars
 
     def apply_transformations(self, sentence: str, n_trans: int) -> str:
         """
@@ -260,12 +294,12 @@ class AttackerClass:
 def main():
     '''Test the AttackerClass
     '''
-    df = pd.read_csv(r"C:\Users\sa-tsdj\Documents\GitHub\OccCANINE\Data\Training_data\Train.csv", nrows=100)
+    df = pd.read_csv(r"Data/TOYDATA.csv", nrows=10)
     attacker = AttackerClass(df=df)
 
     test_strings = df['occ1'].tolist()
 
-    attacked_strings = attacker.attack_multiple(test_strings, alt_prob=0.3, n_trans=10)
+    attacked_strings = attacker.attack_multiple(test_strings, alt_prob=1, n_trans=1)
 
     print("\nAttacked strings:")
 
