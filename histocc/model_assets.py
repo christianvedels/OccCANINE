@@ -192,6 +192,58 @@ class Seq2SeqOccCANINE(nn.Module):
         return out
 
 
+class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
+    def __init__(
+            self,
+            model_domain,
+            num_classes: list[int],
+            num_classes_flat: int,
+            dropout_rate: float | None = None,
+            decoder_dim_feedforward: int | None = None,
+    ):
+        super().__init__(
+            model_domain=model_domain,
+            num_classes=num_classes,
+            dropout_rate=dropout_rate,
+            decoder_dim_feedforward=decoder_dim_feedforward,
+        )
+
+        self.linear_decoder = nn.Linear(
+            self.encoder.base_model.config.hidden_size,
+            num_classes_flat,
+        )
+        self.linear_decoder_drop = nn.Dropout(p=dropout_rate)
+
+    def encode(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+    ) -> tuple[Tensor, Tensor]:
+        encoding = self.encoder(
+          input_ids=input_ids,
+          attention_mask=attention_mask
+        )
+
+        return encoding.last_hidden_state, encoding.pooler_output
+
+    def forward(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+            target: Tensor,
+            target_mask: Tensor,
+            target_padding_mask: Tensor,
+    ) -> tuple[Tensor, Tensor]:
+        memory, pooled_memory = self.encode(input_ids, attention_mask)
+
+        out_seq2seq = self.decode(memory, target, target_mask, target_padding_mask)
+
+        out_linear = self.linear_decoder(pooled_memory)
+        out_linear = self.linear_decoder_drop(out_linear)
+
+        return out_seq2seq, out_linear
+
+
 # Load model from checkpoint
 def load_model_from_checkpoint(checkpoint_path, model, model_domain):
     # Handle string
