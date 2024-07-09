@@ -26,6 +26,7 @@ from histocc import (
     load_tokenizer,
     Seq2SeqOccCANINE,
     BlockOrderInvariantLoss,
+    CANINEOccupationClassifier_hub,
 )
 from histocc.seq2seq_engine import train
 from histocc.formatter import (
@@ -34,8 +35,6 @@ from histocc.formatter import (
     PAD_IDX,
 )
 from histocc.utils import wandb_init
-
-from histocc.model_assets import CANINEOccupationClassifier_hub
 
 try:
     # want to do import to set has_wandb even if not used directly
