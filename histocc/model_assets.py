@@ -132,6 +132,7 @@ class Seq2SeqOccCANINE(nn.Module):
             model_domain,
             num_classes: list[int],
             dropout_rate: float | None = None,
+            decoder_dim_feedforward: int | None = None,
     ):
         super().__init__()
 
@@ -140,11 +141,14 @@ class Seq2SeqOccCANINE(nn.Module):
         self.dropout_rate: float = dropout_rate if dropout_rate else 0.0
 
         self.encoder = getModel(model_domain)
-        self.decoder = TransformerDecoder( # TODO add args to __init__
+        self.decoder_dim_feedforward = decoder_dim_feedforward if decoder_dim_feedforward else self.encoder.base_model.config.hidden_size
+
+        self.decoder = TransformerDecoder(
             num_decoder_layers=3,
             emb_size=self.encoder.base_model.config.hidden_size,
             nhead=8,
             vocab_size=self.vocab_size,
+            dim_feedforward=self.decoder_dim_feedforward,
             dropout=self.dropout_rate,
         )
 

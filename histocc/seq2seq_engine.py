@@ -6,10 +6,12 @@ import torch
 from torch import nn
 
 from .formatter import PAD_IDX
-from .utils import create_mask, Averager
-
-from .utils.metrics import order_invariant_accuracy
-from .utils.log_util import update_summary
+from .utils import (
+    create_mask,
+    Averager,
+    order_invariant_accuracy,
+    update_summary,
+)
 
 
 def train_one_epoch(
@@ -79,9 +81,6 @@ def train_one_epoch(
 
         if batch_idx % log_interval == 0 or batch_idx == last_step:
             print(f'Batch {batch_idx + 1} of {len(data_loader)}. Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}). Train loss: {losses.avg:.2f}')
-            # print(f'Average training loss: {losses.avg:.2f}')
-            # print(f'Average batch time: {batch_time.avg:.2f}')
-            # print(f'Average data batch time: {batch_time_data.avg:.2f}')
             # print(f'Samples/second: {samples_per_sec.avg:.2f}')
             # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
 
@@ -92,6 +91,7 @@ def train_one_epoch(
                 'scheduler': scheduler.state_dict(),
                 'step': current_step,
             }
+            torch.save(states, os.path.join(save_dir, f'{current_step}.bin'))
             torch.save(states, os.path.join(save_dir, 'last.bin'))
 
         if eval_interval is not None and current_step % eval_interval == 0:

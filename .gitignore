@@ -170,3 +170,6 @@ histocc/Data/Tmp_finetune/
 
 # W&B
 /wandb/
+
+# Helper scripts not for sharing
+/helper_scripts/

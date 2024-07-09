@@ -54,8 +54,6 @@ class AttackerClass:
         ]
 
         if df is not None:
-            # TODO discuss if we want to weight the words. Current
-            # no-duplicates approach does not sample with weights
             all_text = ' '.join(item for item in df['occ1'].unique())
             self.word_list = list(set(all_text.split()))
             self.transformations.append(self.insert_random_word)
