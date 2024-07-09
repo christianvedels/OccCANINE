@@ -14,6 +14,7 @@ from .dataloader import (
     OccDatasetV2,
     OccDatasetV2InMem,
     OccDatasetV2InMemMultipleFiles,
+    OccDatasetMixerInMemMultipleFiles,
 )
 from .loss import (
     Seq2SeqCrossEntropy,
