@@ -3,3 +3,4 @@ from .order_invariant import (
     OrderInvariantSeq2SeqCrossEntropy,
     BlockOrderInvariantLoss,
 )
+from .mixer import LossMixer
