@@ -132,6 +132,7 @@ class Seq2SeqOccCANINE(nn.Module):
             model_domain,
             num_classes: list[int],
             dropout_rate: float | None = None,
+            decoder_dim_feedforward: int | None = None,
     ):
         super().__init__()
 
@@ -140,11 +141,14 @@ class Seq2SeqOccCANINE(nn.Module):
         self.dropout_rate: float = dropout_rate if dropout_rate else 0.0
 
         self.encoder = getModel(model_domain)
-        self.decoder = TransformerDecoder( # TODO add args to __init__
+        self.decoder_dim_feedforward = decoder_dim_feedforward if decoder_dim_feedforward else self.encoder.base_model.config.hidden_size
+
+        self.decoder = TransformerDecoder(
             num_decoder_layers=3,
             emb_size=self.encoder.base_model.config.hidden_size,
             nhead=8,
             vocab_size=self.vocab_size,
+            dim_feedforward=self.decoder_dim_feedforward,
             dropout=self.dropout_rate,
         )
 
@@ -186,6 +190,58 @@ class Seq2SeqOccCANINE(nn.Module):
         out = self.decode(memory, target, target_mask, target_padding_mask)
 
         return out
+
+
+class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
+    def __init__(
+            self,
+            model_domain,
+            num_classes: list[int],
+            num_classes_flat: int,
+            dropout_rate: float | None = None,
+            decoder_dim_feedforward: int | None = None,
+    ):
+        super().__init__(
+            model_domain=model_domain,
+            num_classes=num_classes,
+            dropout_rate=dropout_rate,
+            decoder_dim_feedforward=decoder_dim_feedforward,
+        )
+
+        self.linear_decoder = nn.Linear(
+            self.encoder.base_model.config.hidden_size,
+            num_classes_flat,
+        )
+        self.linear_decoder_drop = nn.Dropout(p=dropout_rate)
+
+    def encode(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+    ) -> tuple[Tensor, Tensor]:
+        encoding = self.encoder(
+          input_ids=input_ids,
+          attention_mask=attention_mask
+        )
+
+        return encoding.last_hidden_state, encoding.pooler_output
+
+    def forward(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+            target: Tensor,
+            target_mask: Tensor,
+            target_padding_mask: Tensor,
+    ) -> tuple[Tensor, Tensor]:
+        memory, pooled_memory = self.encode(input_ids, attention_mask)
+
+        out_seq2seq = self.decode(memory, target, target_mask, target_padding_mask)
+
+        out_linear = self.linear_decoder(pooled_memory)
+        out_linear = self.linear_decoder_drop(out_linear)
+
+        return out_seq2seq, out_linear
 
 
 # Load model from checkpoint

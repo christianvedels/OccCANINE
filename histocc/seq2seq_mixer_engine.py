@@ -4,6 +4,7 @@ import time
 import torch
 
 from torch import nn
+from sklearn.metrics import accuracy_score
 
 from .formatter import PAD_IDX
 from .utils import (
@@ -12,10 +13,12 @@ from .utils import (
     order_invariant_accuracy,
     update_summary,
 )
+from .model_assets import Seq2SeqMixerOccCANINE
+from .loss import LossMixer
 
 
 def train_one_epoch(
-        model: nn.Module,
+        model: Seq2SeqMixerOccCANINE,
         data_loader: torch.utils.data.DataLoader,
         loss_fn: nn.Module,
         optimizer: torch.optim.Optimizer,
@@ -46,25 +49,31 @@ def train_one_epoch(
 
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
-        targets = batch['targets'].to(device)
+        targets_seq2seq = batch['targets_seq2seq'].to(device)
+        targets_linear = batch['targets_linear'].to(device)
 
         batch_time_data.update(time.time() - end)
 
         # Prepare target as input for seq2seq model
-        target_input = targets[:, :-1]
-        target_mask, target_padding_mask = create_mask(target_input, PAD_IDX, device)
+        target_seq2seq_input = targets_seq2seq[:, :-1]
+        target_mask, target_padding_mask = create_mask(target_seq2seq_input, PAD_IDX, device)
 
         # Forward pass
-        outputs = model(
+        out_seq2seq, out_linear = model(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            target=target_input,
+            target=target_seq2seq_input,
             target_mask=target_mask,
             target_padding_mask=target_padding_mask,
         )
 
-        loss = loss_fn(outputs, targets)
-        losses.update(loss.item(), outputs.size(0))
+        loss = loss_fn(
+            out_seq2seq=out_seq2seq,
+            out_linear=out_linear,
+            target_seq2seq=targets_seq2seq,
+            target_linear=targets_linear,
+            )
+        losses.update(loss.item(), out_seq2seq.size(0))
 
         # Backward pass & step
         optimizer.zero_grad()
@@ -77,7 +86,7 @@ def train_one_epoch(
 
         elapsed = time.time() - end
         batch_time.update(elapsed)
-        samples_per_sec.update(outputs.size(0) / elapsed)
+        samples_per_sec.update(out_seq2seq.size(0) / elapsed)
 
         if batch_idx % log_interval == 0 or batch_idx == last_step:
             print(f'Batch {batch_idx + 1} of {len(data_loader)}. Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}). Train loss: {losses.avg:.2f}')
@@ -94,8 +103,9 @@ def train_one_epoch(
             torch.save(states, os.path.join(save_dir, f'{current_step}.bin'))
             torch.save(states, os.path.join(save_dir, 'last.bin'))
 
-        if eval_interval is not None and current_step % eval_interval == 0:
-            eval_loss, eval_seq_acc, eval_token_acc = evaluate(
+        if (eval_interval is not None and current_step % eval_interval == 0) or current_step == 15001:
+            print('Starting eval pass')
+            eval_loss, eval_loss_linear, eval_loss_seq2seq, eval_seq_acc, eval_token_acc, eval_flat_acc = evaluate(
                 model=model,
                 data_loader=data_loader_eval,
                 loss_fn=loss_fn,
@@ -109,8 +119,11 @@ def train_one_epoch(
                     'batch_time_data': batch_time_data.avg,
                     'train_loss': losses.avg,
                     'val_loss': eval_loss,
+                    'val_loss_linear': eval_loss_linear,
+                    'val_loss_seq2seq': eval_loss_seq2seq,
                     'seq_acc': eval_seq_acc,
                     'token_acc': eval_token_acc,
+                    'flat_acc': eval_flat_acc,
                     'lr': scheduler.get_last_lr()[0],
                 },
                 filename=os.path.join(save_dir, 'logs.csv'),
@@ -128,47 +141,73 @@ def evaluate(
         data_loader: torch.utils.data.DataLoader,
         loss_fn: nn.Module,
         device: torch.device,
+        log_interval: int = 100,
         ):
     model = model.eval()
 
     losses = Averager()
+    losses_linear = Averager()
+    losses_seq2seq = Averager()
+
     token_accs = Averager()
     seq_accs = Averager()
+    flat_accs = Averager()
 
-    for batch in data_loader:
+    for batch_idx, batch in enumerate(data_loader):
         input_ids = batch["input_ids"].to(device)
         attention_mask = batch["attention_mask"].to(device)
-        targets = batch['targets'].to(device)
+        targets_seq2seq = batch['targets_seq2seq'].to(device)
+        targets_linear = batch['targets_linear'].to(device)
 
         # Prepare target as input for seq2seq model
-        target_input = targets[:, :-1]
-        target_mask, target_padding_mask = create_mask(target_input, PAD_IDX, device)
+        target_seq2seq_input = targets_seq2seq[:, :-1]
+        target_mask, target_padding_mask = create_mask(target_seq2seq_input, PAD_IDX, device)
 
         # Forward pass
-        outputs = model(
+        out_seq2seq, out_linear = model(
             input_ids=input_ids,
             attention_mask=attention_mask,
-            target=target_input,
+            target=target_seq2seq_input,
             target_mask=target_mask,
             target_padding_mask=target_padding_mask,
         )
 
-        loss = loss_fn(outputs, targets)
-        losses.update(loss.item(), outputs.size(0))
+        loss = loss_fn(
+            out_seq2seq=out_seq2seq,
+            out_linear=out_linear,
+            target_seq2seq=targets_seq2seq,
+            target_linear=targets_linear,
+            )
+        loss_linear = loss_fn.loss_fn_linear(out_linear, targets_linear)
+        loss_seq2seq = loss_fn.loss_fn_seq2seq(out_seq2seq, targets_seq2seq)
+        
+        losses.update(loss.item(), out_seq2seq.size(0))
+        losses_linear.update(loss_linear.item(), out_seq2seq.size(0))
+        losses_seq2seq.update(loss_seq2seq.item(), out_seq2seq.size(0))
 
         seq_acc, token_acc = order_invariant_accuracy(
-            outputs, targets[:, 1:], PAD_IDX, 5, 5,
+            out_seq2seq, targets_seq2seq[:, 1:], PAD_IDX, 5, 5,
         )
-        seq_accs.update(seq_acc.item(), outputs.size(0))
-        token_accs.update(token_acc.item(), outputs.size(0))
+        seq_accs.update(seq_acc.item(), out_seq2seq.size(0))
+        token_accs.update(token_acc.item(), out_seq2seq.size(0))
 
-    return losses.avg, seq_accs.avg, token_accs.avg
+        # Linear decoder accuracy
+        preds_linear = torch.sigmoid(out_linear) > 0.5
+        preds_linear = preds_linear.float().cpu()
+
+        acc_flat = accuracy_score(preds_linear, targets_linear.cpu())
+        flat_accs.update(acc_flat, preds_linear.size(0))
+
+        if batch_idx % log_interval == 0:
+            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Accuracy (seq/token/flat): ({seq_accs.avg:.2f}/{token_accs.avg:.2f}/{flat_accs.avg:.2f}). Validation loss: {losses.avg:.2f}')
+
+    return losses.avg, losses_linear.avg, losses_seq2seq.avg, seq_accs.avg, token_accs.avg, flat_accs.avg
 
 
 def train(
-        model: nn.Module,
+        model: Seq2SeqMixerOccCANINE,
         data_loaders: dict[str, torch.utils.data.DataLoader], # TODO split or use dataclass
-        loss_fn: nn.Module,
+        loss_fn: LossMixer,
         optimizer: torch.optim.Optimizer,
         device: torch.device,
         scheduler: torch.optim.lr_scheduler.LRScheduler,

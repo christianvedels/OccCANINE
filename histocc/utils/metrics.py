@@ -104,6 +104,9 @@ def order_invariant_accuracy(
     # correct. We probably want to treat as a case an incorrect to
     # not inflate accuracy
 
+    # TODO consider implementation which discard PAD_IDX
+    # values token accuracy to get more meaningful metric
+
     hits = []
 
     for target_block in range(nb_blocks):

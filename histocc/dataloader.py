@@ -7,6 +7,7 @@ https://medium.com/@keruchen/train-a-xlm-roberta-model-for-text-classification-o
 
 
 import io
+import math
 import os
 import random
 
@@ -629,6 +630,152 @@ class OccDatasetV2InMem(OccDatasetV2):
 
     def __len__(self) -> int:
         return len(self.frame)
+
+
+class OccDatasetV2InMemMultipleFiles(OccDatasetV2):
+    def __init__(
+            self,
+            fnames_data: list[str],
+            formatter: BlockyHISCOFormatter,
+            tokenizer: CanineTokenizer,
+            max_input_len: int,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+    ):
+        frames = [
+            pd.read_csv(
+                f,
+                usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+                dtype={'lang': str},
+                converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
+            ) for f in fnames_data
+        ]
+        self.frame = pd.concat(frames)
+
+        super().__init__(
+            fname_data=fnames_data[0], # we define self.colnames in parent class by reading 1 row
+            fname_index='',
+            formatter=formatter,
+            tokenizer=tokenizer,
+            max_input_len=max_input_len,
+            training=training,
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            unk_lang_prob=unk_lang_prob,
+            data=self.frame[['occ1']],
+        )
+
+    def _setup_mapping(self, fname_index: str) -> dict[int, int]:
+        ''' We avoid using any mapping when loading dataset into memory,
+        hence overwrite with ghost method
+        '''
+        return {}
+
+    def _get_record(self, item: int) -> pd.Series:
+        return self.frame.iloc[item]
+
+    def __len__(self) -> int:
+        return len(self.frame)
+
+
+class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
+    def __init__(
+            self,
+            fnames_data: list[str],
+            formatter: BlockyHISCOFormatter,
+            tokenizer: CanineTokenizer,
+            max_input_len: int,
+            num_classes_flat: int,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+    ):
+        frames = [
+            pd.read_csv(
+                f,
+                usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+                dtype={'lang': str},
+                converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
+            ) for f in fnames_data
+        ]
+        self.frame = pd.concat(frames)
+
+        super().__init__(
+            fname_data=fnames_data[0], # we define self.colnames in parent class by reading 1 row
+            fname_index='',
+            formatter=formatter,
+            tokenizer=tokenizer,
+            max_input_len=max_input_len,
+            training=training,
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            unk_lang_prob=unk_lang_prob,
+            data=self.frame[['occ1']],
+        )
+
+        self.num_classes_flat = num_classes_flat
+
+    def _setup_mapping(self, fname_index: str) -> dict[int, int]:
+        ''' We avoid using any mapping when loading dataset into memory,
+        hence overwrite with ghost method
+        '''
+        return {}
+
+    def _get_record(self, item: int) -> pd.Series:
+        return self.frame.iloc[item]
+
+    def _get_target_linear(self, record: pd.Series) -> np.ndarray:
+        target = np.zeros(self.num_classes_flat)
+
+        for i in range(1, self.formatter.max_num_codes + 1):
+            code = record[f'code{i}']
+
+            if math.isnan(code):
+                break
+
+            target[int(code)] = 1 # f'code{i}' column may have type float -> cast
+
+        return target
+
+    def __len__(self) -> int:
+        return len(self.frame)
+
+    def __getitem__(self, item: int) -> dict[str, str | Tensor]:
+        record = self._get_record(item)
+
+        occ_descr: str = record.occ1
+        lang: str = record.lang
+        targets_seq2seq = self.formatter.transform_label(record)
+        target_linear = self._get_target_linear(record)
+
+        # Augment occupational description and language and
+        # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION>'
+        input_seq = self._prepare_input(occ_descr, lang)
+
+        # Encode input sequence
+        encoded_input_seq = self.tokenizer.encode_plus(
+            input_seq,
+            add_special_tokens=True,
+            padding='max_length',
+            max_length=self.max_input_len,
+            return_token_type_ids=False,
+            return_attention_mask=True,
+            return_tensors='pt',
+            truncation = True
+        )
+
+        batch_data = {
+            'occ1': input_seq,
+            'input_ids': encoded_input_seq['input_ids'].flatten(),
+            'attention_mask': encoded_input_seq['attention_mask'].flatten(),
+            'targets_seq2seq': torch.tensor(targets_seq2seq, dtype=torch.long),
+            'targets_linear': torch.tensor(target_linear, dtype=torch.float),
+        }
+
+        return batch_data
 
 
 def datasets(
