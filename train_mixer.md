@@ -7,14 +7,19 @@ SET TRAIN_DATA=Z:/faellesmappe/tsdj/hisco/data/Training_data\CA_bcn_train.csv Z:
 SET VAL_DATA=Z:/faellesmappe/tsdj/hisco/data/Validation_data1\CA_bcn_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\DK_cedar_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\DK_census_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\DK_orsted_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_ca_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_loc_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_marr_cert_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_oclack_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_parish_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_patentee_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_PortArthur_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_ship_data_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_uk_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\EN_us_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\FR_desc_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\GE_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\GE_occupational_census_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\GE_occupations1939_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\GE_Selgert_Gottlich_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\HISCO_website_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\HSN_database_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\IS_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\IT_fm_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\JIW_database_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\NO_ipums_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\SE_cedar_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\SE_chalmers_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\SE_swedpop_val1.csv Z:/faellesmappe/tsdj/hisco/data/Validation_data1\SE_titles_val1.csv
 ```
 
-# Baseline
+## Baseline
+
+Initialize encoder using `OccCANINE-V1`, warmup for 3000 steps, no decoder dropout, 50% weight to both components
 ```
 SET CUDA_VISIBLE_DEVICES=0
 python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-mixer/baseline --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --seq2seq-weight 0.5 --train-data %TRAIN_DATA% --val-data %VAL_DATA%
 ```
 
-# test
+## Weighted
+
+Baseline, but with 90% weight to linear loss components.
+The purpose of this is to partially balance with respect to magnitudes of individual loss components, where the linear components is much smaller in magnitude.
 ```
-SET CUDA_VISIBLE_DEVICES=0
-python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/mixer --log-interval 10 --eval-interval 100 --save-interval 1000 --initial-checkpoint occ-canine-v1 --train-data C:/Users/sa-tsdj/Documents/GitHub/OccCANINE/Data/Tmp_finetune/Train.csv --val-data C:/Users/sa-tsdj/Documents/GitHub/OccCANINE/Data/Tmp_finetune/Val.csv
+SET CUDA_VISIBLE_DEVICES=2
+python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-mixer/s2s-weight=0.1 --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --seq2seq-weight 0.1 --train-data %TRAIN_DATA% --val-data %VAL_DATA%
 ```

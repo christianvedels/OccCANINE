@@ -105,7 +105,7 @@ def train_one_epoch(
 
         if (eval_interval is not None and current_step % eval_interval == 0) or current_step == 15001:
             print('Starting eval pass')
-            eval_loss, eval_seq_acc, eval_token_acc, eval_flat_acc = evaluate(
+            eval_loss, eval_loss_linear, eval_loss_seq2seq, eval_seq_acc, eval_token_acc, eval_flat_acc = evaluate(
                 model=model,
                 data_loader=data_loader_eval,
                 loss_fn=loss_fn,
@@ -119,6 +119,8 @@ def train_one_epoch(
                     'batch_time_data': batch_time_data.avg,
                     'train_loss': losses.avg,
                     'val_loss': eval_loss,
+                    'val_loss_linear': eval_loss_linear,
+                    'val_loss_seq2seq': eval_loss_seq2seq,
                     'seq_acc': eval_seq_acc,
                     'token_acc': eval_token_acc,
                     'flat_acc': eval_flat_acc,
@@ -144,6 +146,9 @@ def evaluate(
     model = model.eval()
 
     losses = Averager()
+    losses_linear = Averager()
+    losses_seq2seq = Averager()
+
     token_accs = Averager()
     seq_accs = Averager()
     flat_accs = Averager()
@@ -173,7 +178,12 @@ def evaluate(
             target_seq2seq=targets_seq2seq,
             target_linear=targets_linear,
             )
+        loss_linear = loss_fn.loss_fn_linear(out_linear, targets_linear)
+        loss_seq2seq = loss_fn.loss_fn_seq2seq(out_seq2seq, targets_seq2seq)
+        
         losses.update(loss.item(), out_seq2seq.size(0))
+        losses_linear.update(loss_linear.item(), out_seq2seq.size(0))
+        losses_seq2seq.update(loss_seq2seq.item(), out_seq2seq.size(0))
 
         seq_acc, token_acc = order_invariant_accuracy(
             out_seq2seq, targets_seq2seq[:, 1:], PAD_IDX, 5, 5,
@@ -191,7 +201,7 @@ def evaluate(
         if batch_idx % log_interval == 0:
             print(f'Batch {batch_idx + 1} of {len(data_loader)}. Accuracy (seq/token/flat): ({seq_accs.avg:.2f}/{token_accs.avg:.2f}/{flat_accs.avg:.2f}). Validation loss: {losses.avg:.2f}')
 
-    return losses.avg, seq_accs.avg, token_accs.avg, flat_accs.avg
+    return losses.avg, losses_linear.avg, losses_seq2seq.avg, seq_accs.avg, token_accs.avg, flat_accs.avg
 
 
 def train(

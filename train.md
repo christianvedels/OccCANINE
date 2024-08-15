@@ -9,7 +9,7 @@ SET VAL_DATA=Z:/faellesmappe/tsdj/hisco/data/Validation_data1\CA_bcn_val1.csv Z:
 
 ## Baseline
 
-Initialize encoder using `OccCANINE-V1`, warmup for 3000 steps, no decoder dropout,
+Initialize encoder using `OccCANINE-V1`, warmup for 3000 steps, no decoder dropout
 ```
 SET CUDA_VISIBLE_DEVICES=1
 python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/baseline --train-data %TRAIN_DATA% --val-data %VAL_DATA% --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1
