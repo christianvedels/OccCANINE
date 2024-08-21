@@ -129,4 +129,4 @@ data1_isco68 = data0 %>%
 
 # ==== Save ====
 save(data1_occicem, file = "Data/Tmp_data/EN_IPUMS_UK_OCCICEM.Rdata")
-save(data1_isco68, file = "Data/Tmp_data/EN_IPUMS_UK_OCCICEM.Rdata")
+save(data1_isco68, file = "Data/Tmp_data/EN_IPUMS_UK_ISCO68.Rdata")
