@@ -170,7 +170,8 @@ Keep_only_relevant = function(x){
     "code4", 
     "code5", 
     "split",
-    "lang"
+    "lang",
+    "synthetic_combination"
   )
   
   res = x[,which(names(x)%in%relevant_vars)]
