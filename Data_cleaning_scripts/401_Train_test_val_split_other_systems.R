@@ -44,7 +44,8 @@ pipeline = function(x, name, lang){
     Keep_only_relevant(
       other_to_keep = c(
         "synthetic_combination", 
-        paste0("PSTI_", 1:5)
+        paste0("PSTI_", 1:5),
+        paste0("OCC1950_1", 1:5)
       )
     )
   
@@ -63,5 +64,25 @@ x = pipeline(
   "EN_PSTI_CAMPOP",
   lang
 )
+
+x = pipeline(
+  "Data/Tmp_data/EN_IPUMS_OCC1950.Rdata",
+  "EN_OCC1950_IPUMS_US",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/EN_IPUMS_UK_OCCICEM.Rdata",
+  "EN_OCCICEM_IPUMS_UK",
+  lang
+)
+
+x = pipeline(
+  "Data/Tmp_data/EN_IPUMS_UK_ISCO68.Rdata",
+  "EN_ISCO68_IPUMS_UK",
+  lang
+)
+
+
 
 
