@@ -184,6 +184,17 @@ write_csv0 = function(x, fname){
   write_csv(x, fname)
 }
 
+# ==== ensure_path_exists ====
+ensure_path_exists = function(file_path) {
+  # Extract the directory part from the file path
+  dir_path = dirname(file_path)
+  
+  # Check if the directory exists; if not, create it
+  if (!dir.exists(dir_path)) {
+    dir.create(dir_path, recursive = TRUE)
+  }
+}
+
 # ==== Save_train_val_test ====
 # Saves train test val data
 # x:        Data containing 'split'
@@ -261,6 +272,12 @@ Save_train_val_test = function(x, Name, language = NA, dir = "standard"){
   } else {
     stop("The 'dir' provided is not implemented")
   }
+
+  # Make sure path exists 
+  lapply(
+    list(fname_test, fname_val1, fname_val2, fname_train), 
+    ensure_path_exists
+    )
   
   x_test %>% 
     write_csv0(fname_test)
