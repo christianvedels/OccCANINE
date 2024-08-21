@@ -9,6 +9,11 @@ Data/Tmp_data/
 Data/Application_data/
 Data/Tmp_train/
 Data/Adversarial_data/
+Data/Test_data_other/
+Data/Training_data_other/
+Data/Validation_data1_other/
+Data/Validation_data2_other/
+
 
 
 # Other stuff
