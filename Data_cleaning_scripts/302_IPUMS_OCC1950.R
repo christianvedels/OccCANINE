@@ -77,7 +77,8 @@ data1 = data0 %>%
     function(x){
       ifelse(is.na(x), " ", x)
     }
-  )
+  ) %>% 
+  mutate(RowID = 1:n())
 
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/EN_IPUMS_OCC1950.Rdata")
