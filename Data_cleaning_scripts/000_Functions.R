@@ -325,6 +325,7 @@ translate = function(x, key){
 
 # ==== Combinations ====
 Combinations = function(x, and = "and"){
+  require(foreach)
   set.seed(20)
 
   # Initiating empty frame
