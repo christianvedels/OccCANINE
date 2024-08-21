@@ -90,7 +90,10 @@ data1 = data1 %>%
     }
   ) %>% 
   ungroup() %>% 
-  mutate(RowID = 1:n())
+  mutate(RowID = 1:n()) %>% 
+  mutate(
+    occ1 = tolower(occ1)
+  )
 
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/EN_PSTI.Rdata")
