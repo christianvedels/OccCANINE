@@ -154,7 +154,10 @@ Validate_split = function(x){
 
 # ==== Keep_only_relevant ====
 # Selects only the variables which are common across all data
-Keep_only_relevant = function(x){
+# x:              Data frame
+# other_to_keep:  Other vars to keep
+
+Keep_only_relevant = function(x, other_to_keep = NA){
   relevant_vars = c(
     "Year",
     "RowID",
@@ -170,9 +173,12 @@ Keep_only_relevant = function(x){
     "code4", 
     "code5", 
     "split",
-    "lang",
-    "synthetic_combination"
+    "lang"
   )
+  
+  if(!all(is.na(other_to_keep))){ # If any, add other vars to list
+    relevant_vars = c(relevant_vars, other_to_keep)
+  }
   
   res = x[,which(names(x)%in%relevant_vars)]
   return(res)
