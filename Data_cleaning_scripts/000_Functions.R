@@ -189,8 +189,9 @@ write_csv0 = function(x, fname){
 # x:        Data containing 'split'
 # Name      Name of the data. Will be saved as [Name]_[x].csv, where x is test, train, etc.
 # language: Language 'da', 'en', 'nl' or 'se', ...
+# dir:      Two options "standard" or "other". Defaults to "standard"
 
-Save_train_val_test = function(x, Name, language = NA){
+Save_train_val_test = function(x, Name, language = NA, dir = "standard"){
   # Throw error if incorrect language
   valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'es', 'pt', 'gr', 'unk', 'ge', 'is', 'unk', 'it', 'In_data')
   if(!language %in% valid_languages){
@@ -247,10 +248,19 @@ Save_train_val_test = function(x, Name, language = NA){
     filter(split == "Train")
   
   # Make file names
-  fname_test = paste0("Data/Test_data/", Name, "_test.csv")
-  fname_val1 = paste0("Data/Validation_data1/", Name, "_val1.csv")
-  fname_val2 = paste0("Data/Validation_data2/", Name, "_val2.csv")
-  fname_train = paste0("Data/Training_data/", Name, "_train.csv")
+  if(dir == "standard"){
+    fname_test = paste0("Data/Test_data/", Name, "_test.csv")
+    fname_val1 = paste0("Data/Validation_data1/", Name, "_val1.csv")
+    fname_val2 = paste0("Data/Validation_data2/", Name, "_val2.csv")
+    fname_train = paste0("Data/Training_data/", Name, "_train.csv")
+  } else if(dir == "other"){ # For other systems of classification
+    fname_test = paste0("Data/Test_data_other/", Name, "_test.csv")
+    fname_val1 = paste0("Data/Validation_data1_other/", Name, "_val1.csv")
+    fname_val2 = paste0("Data/Validation_data2_other/", Name, "_val2.csv")
+    fname_train = paste0("Data/Training_data_other/", Name, "_train.csv")
+  } else {
+    stop("The 'dir' provided is not implemented")
+  }
   
   x_test %>% 
     write_csv0(fname_test)
