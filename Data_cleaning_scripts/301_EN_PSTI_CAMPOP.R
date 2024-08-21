@@ -77,6 +77,9 @@ data2 = data_single_occ %>%
   ) %>% 
   mutate(
     synthetic_combination = 1
+  ) %>% 
+  filter(
+    PSTI_1 != PSTI_2
   )
 
 data1 = data1 %>% 

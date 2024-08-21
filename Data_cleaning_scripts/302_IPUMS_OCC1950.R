@@ -58,6 +58,9 @@ data2 = data1 %>%
   ) %>% 
   mutate(
     synthetic_combination = 1
+  ) %>% 
+  filter(
+    OCC1950_1 != OCC1950_2
   )
 
 data1 = data0 %>% 
