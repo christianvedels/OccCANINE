@@ -620,3 +620,38 @@ Data_summary = function(out = "plain"){
     ))
   }
 }
+
+
+# ==== summary_other_data ====
+
+summary_other_data = function(){
+  # Load counts 
+  train = n_in_dir("Training_data_other") %>% 
+    mutate(f = gsub("train", "[x]", f)) %>% 
+    rename(
+      n_train = n,
+      n_train_unique = n_unique
+    )
+  val1 = n_in_dir("Validation_data1_other") %>% 
+    mutate(f = gsub("val1", "[x]", f)) %>% 
+    rename(
+      n_val1 = n,
+      n_val1_unique = n_unique
+    )
+  val2 = n_in_dir("Validation_data2_other") %>% 
+    mutate(f = gsub("val2", "[x]", f)) %>% 
+    rename(
+      n_val2 = n,
+      n_val2_unique = n_unique
+    )
+  test = n_in_dir("Test_data_other") %>% 
+    mutate(f = gsub("test", "[x]", f)) %>% 
+    rename(
+      n_test = n,
+      n_test_unique = n_unique
+    )
+  
+  
+}
+
+
