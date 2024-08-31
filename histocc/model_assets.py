@@ -212,7 +212,7 @@ class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
             self.encoder.base_model.config.hidden_size,
             num_classes_flat,
         )
-        self.linear_decoder_drop = nn.Dropout(p=dropout_rate)
+        self.linear_decoder_drop = nn.Dropout(p=self.dropout_rate)
 
     def encode(
             self,
@@ -225,6 +225,23 @@ class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
         )
 
         return encoding.last_hidden_state, encoding.pooler_output
+
+    def forward_linear(
+            self,
+            input_ids: Tensor,
+            attention_mask: Tensor,
+    ) -> Tensor:
+        ''' Helper method for forward pass not dependent on targets.
+        Useful in cases where only the linear decoder outputs are
+        needed.
+
+        '''
+        _, pooled_memory = self.encode(input_ids, attention_mask)
+
+        out_linear = self.linear_decoder(pooled_memory)
+        out_linear = self.linear_decoder_drop(out_linear)
+
+        return out_linear
 
     def forward(
             self,

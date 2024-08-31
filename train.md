@@ -45,26 +45,12 @@ python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/canine-init-dropout 
 
 ```
 SET CUDA_VISIBLE_DEVICES=1
-python eval_v2.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/baseline/95000.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/baseline/95000.csv
-```
-
-## Dropout
-
-```
-SET CUDA_VISIBLE_DEVICES=2
-python eval_v2.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/dropout/95000.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/dropout/95000.csv
+python eval_s2s.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/baseline/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/baseline/val-1-s2s-baseline-s=1600000.csv
 ```
 
 ## CANINE initialization
 
 ```
 SET CUDA_VISIBLE_DEVICES=3
-python eval_v2.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/canine-init/95000.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/canine-init/95000.csv
-```
-
-## CANINE initialization, dropout
-
-```
-SET CUDA_VISIBLE_DEVICES=0
-python eval_v2.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/canine-init-dropout/95000.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/canine-init-dropout/95000.csv
+python eval_s2s.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/canine-init/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/canine-init/val-1-s2s-canine-init-s=1595000.csv
 ```

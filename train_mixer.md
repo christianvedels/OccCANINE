@@ -23,3 +23,19 @@ The purpose of this is to partially balance with respect to magnitudes of indivi
 SET CUDA_VISIBLE_DEVICES=2
 python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-mixer/s2s-weight=0.1 --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --seq2seq-weight 0.1 --train-data %TRAIN_DATA% --val-data %VAL_DATA%
 ```
+
+# Evaluation
+
+## Baseline
+
+```
+SET CUDA_VISIBLE_DEVICES=0
+python eval_mixer.py --val-data %VAL_DATA% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\val-1-mixer-s2s=50-s=1590000.csv
+```
+
+# Weighted
+
+```
+SET CUDA_VISIBLE_DEVICES=2
+python eval_mixer.py --val-data %VAL_DATA% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\val-1-mixer-s2s=10-s=1605000.csv
+```
