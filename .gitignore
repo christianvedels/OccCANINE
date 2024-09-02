@@ -13,6 +13,9 @@ Data/Test_data_other/
 Data/Training_data_other/
 Data/Validation_data1_other/
 Data/Validation_data2_other/
+Data/eval-results/
+Data/models/
+Data/backup/
 
 
 
@@ -178,3 +181,6 @@ histocc/Data/Tmp_finetune/
 
 # Helper scripts not for sharing
 /helper_scripts/
+
+
+
