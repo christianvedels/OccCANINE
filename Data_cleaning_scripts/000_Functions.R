@@ -655,3 +655,61 @@ summary_other_data = function(){
 }
 
 
+# ==== check_if_same() + check_all_in_dir() ====
+# check_if_same(): Checks if fname is the same file across both dirs
+# check_all_in_dir(): Runs the above function on all files in a dir
+
+check_if_same = function(fname, domain = "Training_data"){
+  
+  dir1 = paste0("Data/Data_backup/", domain)
+  dir2 = paste0("Data/", domain)
+  
+  fpath1 = paste0(dir1, "/", fname)
+  fpath2 = paste0(dir2, "/", fname)
+  
+  suppressWarnings({
+    data1 = read_csv(fpath1, progress = FALSE, show_col_types = FALSE)
+    data2 = read_csv(fpath2, progress = FALSE, show_col_types = FALSE)
+  })
+  
+  res = all(data1$RowID == data2$RowID)
+  
+  return(res)
+}
+
+check_all_in_dir = function(dir, verbose = FALSE){
+  require(foreach)
+  require(tidyverse)
+  require(progress)
+  
+  
+  dir1 = paste0("Data/Data_backup/", dir)
+  dir2 = paste0("Data/", dir)
+  
+  # Check that files are the same
+  fs1 = list.files(dir1)
+  fs2 = list.files(dir2)
+  
+  test1 = all(fs1 == fs2)
+  
+  # Setup of progress bar:
+  progress_bar_format = paste0(
+    "Checking '",
+    dir, "': [:bar] :elapsedfull -- :current of :total"
+  )
+  pb = progress_bar$new(
+    total = length(fs1),
+    format = progress_bar_format
+  )
+  
+  # Loop that runs test on all files in the two dirs:
+  res = foreach(f = fs1, .combine = "c") %do% {
+    if(verbose) cat("\n",f)
+    res = check_if_same(f, dir)
+    pb$tick()
+    res
+  }
+  
+  res = all(res)
+  return(res)
+}
