@@ -183,6 +183,6 @@ histocc/Data/Tmp_finetune/
 # Helper scripts not for sharing
 /helper_scripts/
 
+# .vs
+.vs/
 
-
-Data/Data_backup/Test_data/CA_bcn_test.csv
