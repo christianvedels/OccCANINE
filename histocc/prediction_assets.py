@@ -83,7 +83,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 
 
 class OccCANINE:
-    def __init__(self, name = "CANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
+    def __init__(self, name = "OccCANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
         """
         Initializes the OccCANINE model with specified configurations.
 
@@ -117,8 +117,8 @@ class OccCANINE:
 
         # Get key
         self.key, self.key_desc = self._load_keys()
-
-        self.model = self._load_model(hf, force_download, baseline)
+        
+        self.model, self.model_type = self._load_model(hf, force_download, baseline)        
 
         # Promise for later initialization
         self.finetune_key = None
@@ -133,15 +133,59 @@ class OccCANINE:
         return key, key_desc
 
     def _load_model(self, hf, force_download, baseline):
+        
+        # Load state
+        model_path = f'{self.name}'
+        loaded_state = torch.load(model_path, map_location=self.device)
+        
+        # Determine model type
+        model_type = self._derive_model_type(loaded_state)
+             
         if hf:
-            return CANINEOccupationClassifier_hub.from_pretrained("christianvedel/OccCANINE", force_download=force_download).to(self.device)
+            model = CANINEOccupationClassifier_hub.from_pretrained(f"christianvedel/{self.name}", force_download=force_download).to(self.device)
+            model.to(self.device)
         else:
-            model_path = f'{self.name}.bin'
             loaded_state = torch.load(model_path, map_location=self.device)
             model = CANINEOccupationClassifier(model_domain="Multilingual_CANINE", n_classes=len(self.key), dropout_rate=0)
             if not baseline:
                 model.load_state_dict(loaded_state)
-            return model.to(self.device)
+            model.to(self.device)
+            
+        return model, model_type
+        
+    def _derive_model_type(self, loaded_state):
+        """
+        Derives the model type 'flat', 'seq2seq' or 'mix' based on model arch
+        """
+        
+        error_message = "Model type could not be automatically identified"
+        
+        # Determine model type
+        if len(loaded_state) > 100: # If very long it is probably the old
+            # OLD CASE:
+            loaded_state_keys = loaded_state.keys()
+            if 'basemodel.pooler.dense.bias' in loaded_state_keys:
+                model_type = 'flat'
+            else:
+                raise NotImplementedError(error_message)
+        elif len(loaded_state) == 4:
+            # NEW CASE
+            _ = 1
+            model_dict_keys = loaded_state['model'].keys()
+            
+            if 'linear_decoder.bias' in model_dict_keys:
+                model_type = 'mix'
+            elif 'decoder.head.weight' in model_dict_keys: 
+                model_type = 'seq2seq'
+            else:
+                raise NotImplementedError(error_message)
+        else:
+            raise NotImplementedError(error_message)
+        
+        
+        return model_type
+            
+        
 
     def _encode(self, occ1, lang, concat_in):
         """
@@ -172,6 +216,7 @@ class OccCANINE:
             inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
 
         return inputs
+    
 
     def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
         """
