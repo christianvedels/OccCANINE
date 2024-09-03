@@ -13,6 +13,10 @@ Data/Test_data_other/
 Data/Training_data_other/
 Data/Validation_data1_other/
 Data/Validation_data2_other/
+Data/eval-results/
+Data/models/
+Data/backup/
+Data/Data_backup/
 
 
 
@@ -178,3 +182,7 @@ histocc/Data/Tmp_finetune/
 
 # Helper scripts not for sharing
 /helper_scripts/
+
+
+
+Data/Data_backup/Test_data/CA_bcn_test.csv
