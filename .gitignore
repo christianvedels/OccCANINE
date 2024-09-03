@@ -16,6 +16,7 @@ Data/Validation_data2_other/
 Data/eval-results/
 Data/models/
 Data/backup/
+Data/Data_backup/
 
 
 
@@ -184,3 +185,4 @@ histocc/Data/Tmp_finetune/
 
 
 
+Data/Data_backup/Test_data/CA_bcn_test.csv
