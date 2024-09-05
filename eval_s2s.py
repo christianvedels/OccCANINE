@@ -76,6 +76,7 @@ def evaluate(
 
     inputs = []
     preds_raw = []
+    probs_s2s_raw = []
     labels_raw = []
 
     batch_time = Averager()
@@ -101,12 +102,14 @@ def evaluate(
             start_symbol=BOS_IDX,
             )
         outputs = outputs.detach().cpu().numpy()
+        probs = probs.cpu().numpy()
 
         # Store input in its original string format
         inputs.extend(batch['occ1'])
 
-        # Store predictions
+        # Store predictions and associated "probabilities"
         preds_raw.append(outputs)
+        probs_s2s_raw.append(probs)
 
         # Store labels
         targets = targets.detach().cpu().numpy()
@@ -122,6 +125,7 @@ def evaluate(
         end = time.time()
 
     preds_raw = np.concatenate(preds_raw)
+    probs_s2s_raw = np.concatenate(probs_s2s_raw)
     labels_raw = np.concatenate(labels_raw)
 
     preds = list(map(
@@ -137,6 +141,7 @@ def evaluate(
         'input': inputs,
         'label': labels,
         'pred': preds,
+        **{f'prob_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
     })
 
     preds.to_csv(fn_out, index=False)
