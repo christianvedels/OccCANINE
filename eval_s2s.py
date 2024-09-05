@@ -178,7 +178,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = Seq2SeqOccCANINE(
-        model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+        model_domain='Multilingual_CANINE',
         num_classes=formatter.num_classes,
     ).to(device)
 
