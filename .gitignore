@@ -1,11 +1,26 @@
 
+# Data
 Data/Training_data/
 Data/Test_data/
-Data/Validation_data/
+Data/Validation_data1/
+Data/Validation_data2/
 Data/Raw_data/
 Data/Tmp_data/
 Data/Application_data/
 Data/Tmp_train/
+Data/Adversarial_data/
+Data/Test_data_other/
+Data/Training_data_other/
+Data/Validation_data1_other/
+Data/Validation_data2_other/
+Data/eval-results/
+Data/models/
+Data/backup/
+Data/Data_backup/
+
+
+
+# Other stuff
 .Rproj.user
 HISCO clean.Rproj
 .Rhistory
@@ -161,3 +176,13 @@ Project_dissemination/Drafts
 Finetuned/
 Project_dissemination/Release tweet/Tweet.docx
 histocc/Data/Tmp_finetune/
+
+# W&B
+/wandb/
+
+# Helper scripts not for sharing
+/helper_scripts/
+
+
+
+Data/Data_backup/Test_data/CA_bcn_test.csv
