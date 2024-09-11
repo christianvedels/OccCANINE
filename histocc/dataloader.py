@@ -776,6 +776,88 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         }
 
         return batch_data
+    
+class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2):
+    """
+    Dataloader which takes 'inputs' a list of occupational strings instead of loading files. 
+    """
+    def __init__(
+            self,
+            inputs: list[str],
+            fname_index: str,
+            formatter: BlockyHISCOFormatter,
+            tokenizer: CanineTokenizer,
+            max_input_len: int,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+            data: pd.DataFrame | None = None,
+    ):
+        self.inputs = inputs
+        self.formatter = formatter
+        self.tokenizer = tokenizer
+        self.max_input_len = max_input_len
+
+        self.training = training
+        self.unk_lang_prob = unk_lang_prob
+        self.attacker = AttackerClass(
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            df=data,
+        )
+
+        # Since we don't have a filename to read the columns from,
+        # let's assume the column names based on the given example.
+        self.colnames = ['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5']
+        self.map_item_byte_index = self._setup_mapping(fname_index)
+
+    def _get_record(self, item: int) -> pd.Series:
+        row_data = self.inputs[item].split(',')
+        data = {colname: value for colname, value in zip(self.colnames, row_data)}
+
+        return pd.Series(data)
+
+    def _setup_mapping(self, fname_index: str) -> dict[int, int]:
+        with open(fname_index, 'r', encoding='utf-8') as file:
+            byte_offsets = file.readlines()
+
+        return {idx: int(offset) for idx, offset in enumerate(byte_offsets)}
+
+    def __len__(self) -> int:
+        return len(self.inputs)
+
+    def __getitem__(self, item: int) -> dict[str, str | Tensor]:
+        record = self._get_record(item)
+
+        occ_descr: str = record['occ1']
+        lang: str = record['lang']
+        target = self.formatter.transform_label(record)
+
+        # Augment occupational description and language and
+        # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION>'
+        input_seq = self._prepare_input(occ_descr, lang)
+
+        # Encode input sequence
+        encoded_input_seq = self.tokenizer.encode_plus(
+            input_seq,
+            add_special_tokens=True,
+            padding='max_length',
+            max_length=self.max_input_len,
+            return_token_type_ids=False,
+            return_attention_mask=True,
+            return_tensors='pt',
+            truncation=True
+        )
+
+        batch_data = {
+            'occ1': input_seq,  # Legacy name...
+            'input_ids': encoded_input_seq['input_ids'].flatten(),
+            'attention_mask': encoded_input_seq['attention_mask'].flatten(),
+            'targets': torch.tensor(target, dtype=torch.long),
+        }
+
+        return batch_data
 
 
 def datasets(
