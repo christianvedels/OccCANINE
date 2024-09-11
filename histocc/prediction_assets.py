@@ -15,6 +15,7 @@ import torch
 
 from torch import nn
 from torch.optim import AdamW
+from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from unidecode import unidecode
 
@@ -22,7 +23,31 @@ import numpy as np
 import pandas as pd
 
 from .datasets import DATASETS
-from .model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
+from .model_assets import (
+    CANINEOccupationClassifier, 
+    CANINEOccupationClassifier_hub, 
+    Seq2SeqOccCANINE,
+    Seq2SeqMixerOccCANINE,
+    load_tokenizer
+    )
+
+from .dataloader import (
+    OccDatasetV2FromAlreadyLoadedInputs
+    )
+
+from histocc.formatter import (
+    blocky5,
+    BOS_IDX,
+)
+
+from histocc.utils import Averager
+from histocc.utils.decoder import (
+    flat_decode_flat_model,
+    flat_decode_mixer,
+    greedy_decode, 
+    mixer_greedy_decode,
+    )
+
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
 from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
@@ -118,10 +143,20 @@ class OccCANINE:
         # Get key
         self.key, self.key_desc = self._load_keys()
         
+        # Formatter
+        self.formatter = blocky5() # TODO: Handle other model specs
+        
+        # Model and model type
         self.model, self.model_type = self._load_model(hf, force_download, baseline)        
-
+        
+        # Prediction type
+        self.prediction_type = None # Will be changed in any prediction
+        
         # Promise for later initialization
         self.finetune_key = None
+        
+        # Max seq len: Maybe don't make this an arg? Changig it to something longer would require retraining?
+        self.max_seq_len = 128
 
     def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
         # Load and return both the key and key with descriptions
@@ -134,23 +169,49 @@ class OccCANINE:
 
     def _load_model(self, hf, force_download, baseline):
         
+        # TODO: Implement loading form hugging face. Inserting original code below:
+        # if hf:
+            # model = CANINEOccupationClassifier_hub.from_pretrained(f"christianvedel/{self.name}", force_download=force_download).to(self.device)
+            # model.to(self.device)
+        
         # Load state
         model_path = f'{self.name}'
         loaded_state = torch.load(model_path, map_location=self.device)
         
         # Determine model type
         model_type = self._derive_model_type(loaded_state)
-             
-        if hf:
-            model = CANINEOccupationClassifier_hub.from_pretrained(f"christianvedel/{self.name}", force_download=force_download).to(self.device)
-            model.to(self.device)
-        else:
-            loaded_state = torch.load(model_path, map_location=self.device)
-            model = CANINEOccupationClassifier(model_domain="Multilingual_CANINE", n_classes=len(self.key), dropout_rate=0)
-            if not baseline:
-                model.load_state_dict(loaded_state)
-            model.to(self.device)
+        
+        # Load depending on model type
+        if model_type == 'flat':
+            model = CANINEOccupationClassifier(
+                model_domain="Multilingual_CANINE", 
+                n_classes = len(self.key), dropout_rate=0
+                )
+                
+        elif model_type == 'seq2seq':
+            model = Seq2SeqOccCANINE(
+                model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+                num_classes=self.formatter.num_classes,
+            )
             
+        elif model_type == 'mix':
+            model = Seq2SeqMixerOccCANINE(
+                model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+                num_classes=self.formatter.num_classes,
+                num_classes_flat = len(self.key), # TODO make arg or infer from formatter
+            )
+        else:
+            raise NotImplementedError("Somehow an undefined 'model_type' was used")
+        
+        # Load params to model if not baseline:
+        if not baseline:
+            if model_type == 'flat':
+                model.load_state_dict(loaded_state)
+            else: 
+                model.load_state_dict(loaded_state['model'])
+                        
+        model.to(self.device)
+        
         return model, model_type
         
     def _derive_model_type(self, loaded_state):
@@ -185,8 +246,461 @@ class OccCANINE:
         
         return model_type
             
-        
+    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True, behavior = "good", prediction_type = None, k_pred = 5):
+        """
+        Makes predictions on a batch of occupational strings.
 
+        Parameters:
+        - occ1 (list or str): A list of occupational strings to predict.
+        - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
+        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin". Defaults to "pred".
+        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
+        - concat_in (bool, optional): Specifies if the input is already concatenated in the format [occupation][SEP][language]. Defaults to False.
+        - get_dict (bool, optional): If True and 'what' is an integer, returns a list of dictionaries with predictions instead of a DataFrame. Defaults to False.
+        - get_df (bool, optional): If True and 'what' equals "pred", returns predictions in a DataFrame format. Defaults to True.
+        - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
+        - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
+        - k_pred (int): Maximum number of predicted occupational codes to keep
+        
+        **Details.**
+        *behvaior* 
+        When 'fast' is chosen, the prediction will be based on a simple 'flat' decoder with one output neuron per possible class.
+        When 'good' is chosen, the prediction will be based on a seq2seq transformer decoder. 
+        The 'good' option is in the order of 5-10 times slower than the 'fast' option but performance is worse. 
+        Se the paper for more details https://arxiv.org/abs/2402.13604
+        
+        *prediciton_type*
+        The output from the CANINE transformer model needs to be turned into predictions. This option allows you to pick how you want this to happen.
+        'flat' is the simplest. This takes the pooled output and feeds it into a single layer of output neurons with one output for each HISCO code.
+        'greedy' runs the seq2seq transformer decoder in a greedy fashion. I.e. picking the most likely digit at each step.
+        'full' evaluates all possible digit combinations through the seq2seq decoder and returns a probability of each of all the possible HISCO codes.
+        Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases. 
+
+        Returns:
+        - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
+        """
+        # Validate prediction arguments' compatability
+        prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
+        
+        # Handle list vs str
+        if isinstance(occ1, str):
+            occ1 = [occ1]
+        
+        # Clean string
+        occ1 = self._prep_str(occ1)
+        
+        # Data loader
+        dataset = OccDatasetV2FromAlreadyLoadedInputs(
+            inputs = occ1,
+            lang = lang,
+            fname_index=1, # Dummy argument
+            formatter = self.formatter,
+            tokenizer = self.tokenizer,
+            max_input_len=128,
+            training=False,
+        )
+        
+        data_loader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=False
+            )
+                
+        # Timing
+        start = time.time()
+        
+        # Run prediction type
+        if prediction_type == 'flat':
+            out, out_type, inputs = self._predict_flat(data_loader)
+        if prediction_type == 'greedy': 
+            out, out_type, inputs = self._predict_greedy(data_loader)
+        if prediction_type == 'full':
+            out, out_type, inputs = self._predict_full(data_loader)
+            
+        # Return format
+        result = self._format(out, out_type, what, inputs, lang, threshold, k_pred)
+        
+        
+        # Time keeping
+        end = time.time()
+        if self.verbose:
+            self._end_message(start, end, occ1)
+        
+        # Return
+        return result
+        
+    def _predict_flat(self, data_loader): # TODO: Make sure it also works for model_type="mix"
+        """
+        Makes predictions on a batch of occupational strings.
+
+        Parameters:
+        - data_loader (DataLoader)
+
+        Returns:
+        - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
+        """
+        model = self.model.eval()
+        
+        # Setup
+        verbose = self.verbose
+        results = []
+        inputs = []
+        total_batches = len(data_loader)
+        
+        batch_time = Averager()
+        batch_time_data = Averager()
+        
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+        
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = flat_decode_mixer
+        elif self.model_type == "flat":
+            decoder = flat_decode_flat_model
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the flat prediciton")
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+
+            input_str = batch['occ1']
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+            
+            batch_time_data.update(time.time() - end)
+
+            with torch.no_grad():
+                output = decoder(
+                    model = model,
+                    descr = input_ids,
+                    input_attention_mask = attention_mask
+                    )
+             
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])    
+            
+            batch_time.update(time.time() - end)
+                
+            if batch_idx % 1 == 0 and verbose:
+                print(f'Finished prediction for batch {batch_idx} of {total_batches}')
+                print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
+                print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+            
+            end = time.time()
+            
+            batch_logits = output
+            batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
+            results.append(batch_predicted_probs)
+            
+        
+        out_type = 'probs'
+        
+        return results, out_type, inputs
+        
+    @torch.no_grad
+    def _predict_greedy(self, data_loader):
+        model = self.model.eval()
+
+        inputs = []
+
+        preds_s2s_raw = []
+        probs_s2s_raw = []
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+                        
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+        
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = mixer_greedy_decode
+        elif self.model_type == "seq2seq":
+            decoder = greedy_decode
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
+        
+        # Setup
+        verbose = self.verbose
+        total_batches = len(data_loader)
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+            
+            batch_time_data.update(time.time() - end)
+            
+            outputs = decoder(
+                model = model,
+                descr = input_ids,
+                input_attention_mask = attention_mask,
+                device = self.device,
+                max_len = data_loader.dataset.formatter.max_seq_len,
+                start_symbol = BOS_IDX,
+                )
+            outputs_s2s = outputs[0].cpu().numpy()
+            probs_s2s = outputs[1].cpu().numpy()
+            
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+            
+            # Store predictions
+            preds_s2s_raw.append(outputs_s2s)
+            probs_s2s_raw.append(probs_s2s)
+
+            batch_time.update(time.time() - end)
+            
+            if batch_idx % 1 == 0 and verbose:
+                print(f'Finished prediction for batch {batch_idx} of {total_batches}')
+                print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
+                print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+            
+            end = time.time()
+
+        preds_s2s_raw = np.concatenate(preds_s2s_raw)
+        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        
+        preds_s2s = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            preds_s2s_raw,
+        ))
+
+        preds = pd.DataFrame({
+            'input': inputs,
+            'pred_s2s': preds_s2s,
+            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+        })
+        
+        out_type = 'greedy'
+        
+        return preds, out_type, inputs
+            
+    def _validate_and_update_prediction_parameters(self, behavior, prediction_type):
+        """
+        Wraps all the validation and updating of 'behavior' and 'prediction_type'
+        and makes sure that they are compatible with 'self.model_type'
+
+        Parameters:
+        - behavior (str): Chosen behavior (see docstring of '.predict()')
+        - prediction_type (str or None): Chosen prediction type (see docstring of '.predict()')
+
+        Returns:
+        - Possibly updated 'prediction_type'
+        """
+        
+        # Validate 'behavior'
+        test = behavior in ['good', 'fast']
+        if not test:
+            raise NotImplementedError(f"behavior: '{behavior}' is not implemented")
+            
+        # Validate 'behavior'
+        test = self._behavior_compatible(behavior)
+        if not test:
+            raise NotImplementedError(f"behavior: '{behavior}' is not implemented for the loaded model, which has model type: '{self.model_type}'. Please specify different model in initialization or change 'behavior'.")
+            
+        # Set 'prediction_type' based on 'behavior'
+        # If 'prediction_type' is not None then that prediction type overwrites
+        if prediction_type is not None:
+            _ = 1 # Change nothing
+        else:
+            if behavior == "fast":
+                prediction_type = "flat"
+            if behavior == "good":
+                prediction_type = "greedy"
+            
+            print(f"Based on chosen 'behavior' ({behavior}) 'prediction_type' ({prediction_type}) was automatically set to '{prediction_type}'")
+        
+        # Validate 'prediction_type'
+        test = prediction_type in ['flat', 'greedy', 'full']
+        if not test:
+            raise NotImplementedError(f"prediction_type: '{prediction_type}' is not implemented")
+            
+        # Validate prediction type is compatible with model type
+        test = self._prediction_type_compatible(prediction_type)
+        if not test:
+            raise NotImplementedError(f"There is not implemented solution for handling: prediction_type: '{prediction_type}' togehter with model_type: '{self.model_type}'")
+        self.prediction_type = prediction_type
+        
+        return prediction_type
+        
+            
+    def _prediction_type_compatible(self, prediction_type):
+        """
+        Makes sure that the chosen combination of prediction type and model type
+        are compatible
+
+        Parameters:
+        - prediction_type (str): Prediction type: 'flat', 'greedy', 'full'
+        
+        """        
+        if self.model_type == "mix":
+            res = True # Then all prediction types are possible
+        elif self.model_type == "seq2seq":
+            if prediction_type in ['greedy', 'full']: # Valid types for seq2seq
+                res = True
+            else:
+                res = False
+        elif self.model_type == "flat":
+            if prediction_type in ['flat']: # Valid types for flat
+                res = True
+            else:
+                res = False
+        else:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'prediction_type' was used but somehow passed the first 
+                check. 
+                """
+                )
+        
+        return res
+    
+    def _behavior_compatible(self, behavior):
+        """
+        Makes sure that the chosen combination of prediction type and model type
+        are compatible
+
+        Parameters:
+        - behavior (str): Behavior type: 'good' or 'fast'
+        
+        """
+        if not behavior in ['good', 'fast']:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'behavior' was used but somehow passed the first 
+                check. 
+                """
+                )
+        
+        if self.model_type == "mix":
+            res = True # Then all prediction types are possible
+        elif self.model_type == "seq2seq":
+            if behavior in ['good']: # Valid types for seq2seq
+                res = True
+            else:
+                res = False
+        elif self.model_type == "flat":
+            if behavior in ['fast']: # Valid types for flat
+                res = True
+            else:
+                res = False
+        else:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'behavior' was used but somehow passed the first 
+                check. 
+                """
+                )
+        
+        return res
+    
+    def _prep_str(self, occ1):
+        """
+        Prepares occupational strings into a format suitable for model input.
+
+        Parameters:
+        - occ1 (list of str): A list of occupational strings to encode.
+
+        Returns:
+        - list of str: Strings which are cleaned form non standard characters and in lower case
+        """
+
+        occ1 = [occ.lower() for occ in occ1]
+        occ1 = [unidecode(occ) for occ in occ1]
+
+        return occ1
+    
+    @staticmethod
+    def _end_message(start, end, inputs):
+        dif_time = end - start
+        m, s = divmod(dif_time, 60)
+        h, m = divmod(m, 60)
+
+        try:
+            # Assuming occ1 is a DataFrame
+            nobs = inputs.shape[0]
+        except AttributeError:
+            # Fallback if occ1 does not have a .shape attribute, use len() instead
+            nobs = len(inputs)
+
+        print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
+
+        saved_time = nobs*10 - dif_time
+        m, s = divmod(saved_time, 60)
+        h, m = divmod(m, 60)
+
+        print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
+        print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
+    
+    def _format(self, out, out_type, what, inputs, lang, threshold, k_pred):
+        """ 
+        Formats preditions based on out, out_type and 'what'
+
+        Parameters:
+        - out: Model output
+        - out_type: What is the output type? "greedy" or "probs"
+        - what (str or int, optional): Specifies what to return. Options are "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
+        - threshold (float): threshold to use (only relevant if out_type == "probs")
+        - k_pred (int): Maximum number of predicted occupational codes to keep
+
+        Returns:
+        - Depends on the 'what' parameter.
+        """
+        
+        if out_type == "probs":
+            
+            if what == "probs":
+                # Unnest
+                res = np.vstack(out)
+                
+                # Validate shape
+                assert res.shape[0] == len(inputs), "N rows in inputs should equal N rows in output"
+                assert res.shape[1] == len(self.key), "N cols should equal number of entries in self.key"
+                                
+            elif what == "pred":
+                res = []
+                for probs in out:
+                    for row in probs:
+                        topk_indices = np.argsort(row)[-k_pred:][::-1]
+                        row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
+                        row = [item for sublist in row for item in sublist] # Flatten list
+                        res.append(row)
+                                                
+                column_names = []
+                for i in range(1, k_pred+1):
+                    column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
+                               
+                res = pd.DataFrame(res, columns=column_names)
+                
+                # Vectorized operation to mask predictions below the threshold
+                for j in range(1, k_pred+1):
+                    prob_column = f"prob_{j}"
+                    mask = res[prob_column] <= threshold
+                    res.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
+            
+                # First, ensure "hisco_1" is of type string to avoid mixing data types
+                res["hisco_1"] = res["hisco_1"].astype(str)
+                res["hisco_1"].fillna("-1", inplace=True)
+                
+                res.insert(0, 'occ1', inputs)
+            
+            else:
+                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
+                
+                
+        elif out_type == "greedy":
+            res = out # TODO: Turn into same format as above. 
+       
+        
+       
+        return res
+               
+    
     def _encode(self, occ1, lang, concat_in):
         """
         Encodes occupational strings into a format suitable for model input.
@@ -216,9 +730,8 @@ class OccCANINE:
             inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
 
         return inputs
-    
-
-    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
+        
+    def predict_old(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
         """
         Makes predictions on a batch of occupational strings.
 
