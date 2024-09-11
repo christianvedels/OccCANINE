@@ -3,7 +3,7 @@ import torch
 from torch import nn, Tensor
 
 from .masking import generate_square_subsequent_mask
-from ..model_assets import Seq2SeqOccCANINE, Seq2SeqMixerOccCANINE
+from ..model_assets import Seq2SeqOccCANINE, Seq2SeqMixerOccCANINE, CANINEOccupationClassifier
 
 
 def greedy_decode(
@@ -81,6 +81,37 @@ def mixer_greedy_decode(
         prob_seq = torch.cat([prob_seq, next_prob], dim=1)
 
     return seq, prob_seq, linear_topk, prob_linear_topk
+
+def flat_decode_flat_model(
+        model: Seq2SeqMixerOccCANINE,
+        descr: Tensor,
+        input_attention_mask: Tensor,
+        ):
+    """
+    Minimal decoder to handle everything as decoders in same module.
+    Flat decoder for decoding based on 'flat' model (v1 of OccCANINE).
+    
+    """
+    
+    logits = model.forward(descr, input_attention_mask)
+    
+    return logits
+
+def flat_decode_mixer(
+        model: Seq2SeqMixerOccCANINE,
+        descr: Tensor,
+        input_attention_mask: Tensor,
+        ):
+    """
+    Minimal decoder used for fast 'flat' decoding of mixed output models. 
+    
+    """
+    _, pooled_memory = model.encode(descr, input_attention_mask)
+
+    # Linear output
+    logits = model.linear_decoder(pooled_memory)
+            
+    return logits
 
 
 def greedy_decode_for_training(
