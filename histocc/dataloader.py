@@ -777,13 +777,14 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
 
         return batch_data
     
-class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2):
+class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torben how this works
     """
     Dataloader which takes 'inputs' a list of occupational strings instead of loading files. 
     """
     def __init__(
             self,
             inputs: list[str],
+            lang: str,
             fname_index: str,
             formatter: BlockyHISCOFormatter,
             tokenizer: CanineTokenizer,
@@ -806,23 +807,25 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2):
             n_trans=n_trans,
             df=data,
         )
+                
+        # Handle singular lang
+        if isinstance(lang, str):
+            lang = [lang for i in inputs]
+        self.lang = lang
 
-        # Since we don't have a filename to read the columns from,
-        # let's assume the column names based on the given example.
-        self.colnames = ['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5']
+        self.colnames = ['occ1', 'lang']
         self.map_item_byte_index = self._setup_mapping(fname_index)
 
-    def _get_record(self, item: int) -> pd.Series:
-        row_data = self.inputs[item].split(',')
-        data = {colname: value for colname, value in zip(self.colnames, row_data)}
-
-        return pd.Series(data)
+    def _get_record(self, item: int) -> dict:
+        occ_descr = self.inputs[item]
+        lang = self.lang[item]
+        return {'occ1': occ_descr, 'lang': lang}
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
-        with open(fname_index, 'r', encoding='utf-8') as file:
-            byte_offsets = file.readlines()
-
-        return {idx: int(offset) for idx, offset in enumerate(byte_offsets)}
+        ''' We avoid using any mapping when loading dataset into memory,
+        hence overwrite with ghost method
+        '''
+        return {}
 
     def __len__(self) -> int:
         return len(self.inputs)
@@ -832,7 +835,13 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2):
 
         occ_descr: str = record['occ1']
         lang: str = record['lang']
-        target = self.formatter.transform_label(record)
+        # target = self.formatter.transform_label(record)
+        
+        # Ensure list
+        if isinstance(occ_descr, list):
+            if not len(occ_descr)==1:
+                raise ValueError(f"In self.__getitem__: 'occ_descr' had length {len(occ_descr)}")
+            occ_descr = occ_descr[0]
 
         # Augment occupational description and language and
         # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION>'
@@ -853,8 +862,7 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2):
         batch_data = {
             'occ1': input_seq,  # Legacy name...
             'input_ids': encoded_input_seq['input_ids'].flatten(),
-            'attention_mask': encoded_input_seq['attention_mask'].flatten(),
-            'targets': torch.tensor(target, dtype=torch.long),
+            'attention_mask': encoded_input_seq['attention_mask'].flatten()
         }
 
         return batch_data
