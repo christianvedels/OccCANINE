@@ -45,9 +45,13 @@ pipeline = function(x, name, lang){
       other_to_keep = c(
         "synthetic_combination", 
         paste0("PSTI_", 1:5),
-        paste0("OCC1950_1", 1:5)
+        paste0("OCC1950_", 1:5),
+        paste0("OCCICEM_", 1:5),
+        paste0("ISCO68A_", 1:5)
       )
     )
+  
+  cat(paste("\nVars:", paste(names(x), collapse = ", ")))
   
   cat("\nSaving data")
   x %>% 
@@ -84,5 +88,10 @@ x = pipeline(
 )
 
 
+# Check var names
+train_fs = list.files("Data/Training_data_other", full.names = TRUE)
+for(f in train_fs){
+  read_csv(f, n_max = 100) %>% names() %>% print()
+}
 
 
