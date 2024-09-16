@@ -87,16 +87,18 @@ xaringanExtra::use_progress_bar(color = "#808080", location = "top")
 ```
 
 
-
+.huge123[
 # Breaking the HISCO Barrier: 
 ## *Automatic Occupational Standardization with OccCANINE*
-### Christian Møller-Dahl, Torben Johansen, Christian Vedel
-### University of Southern Denmark, HEDG
+]
 
-#### Twitter: @ChristianVedel,
-#### Email: christian-vs@sam.sdu.dk
-#### arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
-#### Updated `r Sys.Date()` 
+#### Christian Møller-Dahl, Torben Johansen, Christian Vedel
+#### University of Southern Denmark, HEDG
+
+**Twitter: @ChristianVedel,**  
+**Email: christian-vs@sam.sdu.dk**  
+**arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)**  
+**Updated `r Sys.Date()`**
 
 
 ---
@@ -117,16 +119,6 @@ knitr::include_graphics("Figures/logo_offwhite.png")
 ]
 
 ---
-class: middle
-# Hvad kan man bruge det til?
-
-.pull-left[
-- **Direkte applikation:** Vi har nu beskæftigelsesdata på individ-niveau helt tilbage til 1787
-- **Indirekte:** Vi har en sprogmodel, der forstår noget *substantielt/semantisk* om beskæftigelser (nemmere end at lære det udenad)
-- **Analogi:** Meget offentlig data indeholder fritekst-felter. Man kan gøre lignende for at systematisere det.
-]
-
----
 # Data examples
 ```{r echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -138,7 +130,7 @@ library(tidyverse)
 # Danish:
 # tmp = readxl::read_excel("CopenhagenBurials_05_manual_check.xlsx", skip = 1)
 suppressWarnings({
-  tmp = read_csv("../../Data/Validation_data/DK_census_val.csv", col_types = "c")
+  tmp = read_csv("../../histocc/Data/TOYDATA.csv", col_types = "c")
 })
 rownames(tmp) = NULL
 
@@ -146,8 +138,7 @@ set.seed(20)
 tmp = tmp %>%
   distinct() %>% 
   select(occ1) %>%
-  filter(nchar(occ1) > 30) %>% 
-  sample_n(500) %>% 
+  filter(nchar(occ1) > 25) %>% 
   rename(`Raw entry` = occ1)
 
 DT::datatable(
@@ -157,6 +148,10 @@ DT::datatable(
 
 
 ```
+
+.small123[
+*Example data from Clark, Cummins Curtis (2022)*
+]
 
 ---
 # HISCO codes
@@ -193,31 +188,73 @@ https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
 ]
 
 ---
-### Open questions:
+
+
+.pull-left[
+## Open questions
+- Historical developments in living standards
 - The role of technology and change of technology
 - The dynamics of income inequality 
 - Social mobility 
 - Returns to education
 
 
-### Barriers:
-
-.pull-left-narrow[
-**Type A:**
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="300px"}
-knitr::include_graphics("Figures/TypeA.png")
-```
-
+## Two broad barriers to research
+- We need data
+  + A: We need to to take data from archives
+  + B: ...And turn it into something useful for analysis
 ]
 
 
 .pull-right[
+**Type A:**  
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="300px"}
+knitr::include_graphics("Figures/TypeA.png")
+```
+
 .red[**Type B:**]
 ```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px"}
 knitr::include_graphics("Figures/TypeB.webp")
 ```
 ]
 
+---
+## Thanks to data contributors
+.pull-left-wide[
+.tiny123[
+| file                        | Observations | Percent | Language | Source                                                    |
+|-----------------------------|--------------|---------|----------|-----------------------------------------------------------|
+| DK_census_[x].csv           | 5,391,656    | 29.794% | da       | Clausen (2015); The Danish National Archives              |
+| EN_marr_cert_[x].csv        | 4,046,203    | 22.359% | en       | Clark, Cummins, Curtis (2022)                             |
+| EN_uk_ipums_[x].csv         | 3,026,859    | 16.726% | en       | MPC (2020); Office of National Statistics                 |
+| SE_swedpop_[x].csv          | 1,793,557    | 9.911%  | se       | SwedPop (2022)                                            |
+| JIW_database_[x].csv        | 966,793      | 5.343%  | nl       | De Moor & van Weeren (2021)                               |
+| EN_ca_ipums_[x].csv         | 818,657      | 4.524%  | unk      | MPC (2020); Statistics Canada                             |
+| CA_bcn_[x].csv              | 644,484      | 3.561%  | ca       | Pujades-Mora & Valls (2017)                               |
+| HISCO_website_[x].csv       | 392,248      | 2.168%  | mult     | HISCO website                                             |
+| HSN_database_[x].csv        | 184,937      | 1.022%  | nl       | Mandemakers et al (2020)                                  |
+| NO_ipums_[x].csv            | 147,255      | 0.814%  | no       | MPC (2020)                                                |
+| FR_desc_[x].csv             | 142,778      | 0.789%  | fr       | historyofwork.iisg.nl                                     |
+| EN_us_ipums_[x].csv         | 139,595      | 0.771%  | en       | MPC (2020); Bureau of the Census                          |
+| EN_ship_data_[x].csv        | 103,023      | 0.569%  | en       | Schneider & Gao (2019)                                    |
+| EN_parish_[x].csv           | 73,806       | 0.408%  | en       | de Pleijt, Nuvolari, Weisdorf (2020)                      |
+| DK_cedar_[x].csv            | 46,563       | 0.257%  | da       | Ford (2023)                                               |
+| SE_cedar_[x].csv            | 45,581       | 0.252%  | se       | Ford (2023)                                               |
+| DK_orsted_[x].csv           | 36,608       | 0.202%  | da       | Ford (2023)                                               |
+| EN_oclack_[x].csv           | 24,530       | 0.136%  | en       | O-clack                                                   |
+| EN_loc_[x].csv              | 23,179       | 0.128%  | en       | Mooney (2016)                                             |
+| IS_ipums_[x].csv            | 20,459       | 0.113%  | is       | MPC (2020)                                                |
+| SE_chalmers_[x].csv         | 14,426       | 0.08%   | se       | Ford (2023)                                               |
+| DE_ipums_[x].csv            | 8,482        | 0.047%  | de       | MPC (2020); Statistics Netherlands                        |
+| IT_fm_[x].csv               | 4,525        | 0.025%  | it       | Fornasin & Marzona (2016)                                 |
+
+]
+]
+
+.pull-right-narrow[
+- A lot of researchers have solved the task of turning strings into HISCO codes
+- We simply make their work generalizable
+]
 
 
 ---
@@ -257,38 +294,6 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 - Finetuned to predict HISCO codes
 - **Really fast**
 
----
-## Thanks to data contributors
-.pull-left-wide[
-.tiny123[
-| file                        | Observations | Percent | Language | Source                                                    |
-|-----------------------------|--------------|---------|----------|-----------------------------------------------------------|
-| DK_census_[x].csv           | 5,391,656    | 29.794% | da       | Clausen (2015); The Danish National Archives              |
-| EN_marr_cert_[x].csv        | 4,046,203    | 22.359% | en       | Clark, Cummins, Curtis (2022)                             |
-| EN_uk_ipums_[x].csv         | 3,026,859    | 16.726% | en       | MPC (2020); Office of National Statistics                 |
-| SE_swedpop_[x].csv          | 1,793,557    | 9.911%  | se       | SwedPop (2022)                                            |
-| JIW_database_[x].csv        | 966,793      | 5.343%  | nl       | De Moor & van Weeren (2021)                               |
-| EN_ca_ipums_[x].csv         | 818,657      | 4.524%  | unk      | MPC (2020); Statistics Canada                             |
-| CA_bcn_[x].csv              | 644,484      | 3.561%  | ca       | Pujades-Mora & Valls (2017)                               |
-| HISCO_website_[x].csv       | 392,248      | 2.168%  | mult     | HISCO website                                             |
-| HSN_database_[x].csv        | 184,937      | 1.022%  | nl       | Mandemakers et al (2020)                                  |
-| NO_ipums_[x].csv            | 147,255      | 0.814%  | no       | MPC (2020)                                                |
-| FR_desc_[x].csv             | 142,778      | 0.789%  | fr       | historyofwork.iisg.nl                                     |
-| EN_us_ipums_[x].csv         | 139,595      | 0.771%  | en       | MPC (2020); Bureau of the Census                          |
-| EN_ship_data_[x].csv        | 103,023      | 0.569%  | en       | Schneider & Gao (2019)                                    |
-| EN_parish_[x].csv           | 73,806       | 0.408%  | en       | de Pleijt, Nuvolari, Weisdorf (2020)                      |
-| DK_cedar_[x].csv            | 46,563       | 0.257%  | da       | Ford (2023)                                               |
-| SE_cedar_[x].csv            | 45,581       | 0.252%  | se       | Ford (2023)                                               |
-| DK_orsted_[x].csv           | 36,608       | 0.202%  | da       | Ford (2023)                                               |
-| EN_oclack_[x].csv           | 24,530       | 0.136%  | en       | O-clack                                                   |
-| EN_loc_[x].csv              | 23,179       | 0.128%  | en       | Mooney (2016)                                             |
-| IS_ipums_[x].csv            | 20,459       | 0.113%  | is       | MPC (2020)                                                |
-| SE_chalmers_[x].csv         | 14,426       | 0.08%   | se       | Ford (2023)                                               |
-| DE_ipums_[x].csv            | 8,482        | 0.047%  | de       | MPC (2020); Statistics Netherlands                        |
-| IT_fm_[x].csv               | 4,525        | 0.025%  | it       | Fornasin & Marzona (2016)                                 |
-
-]
-]
 
 
 
@@ -298,6 +303,35 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 
 
 .red[christian-vs@sam.sdu.dk]
+]
+
+---
+# How to train a generalizable solution?
+.pull-left[
+### Two principal solutions:
+1. Learn every title character by character
+2. Learn the concept of a specific occupation (like a human)
+
+.red[
+- We try to push it towards the second type of solution
+]
+
+]
+
+.pull-right[
+### How?
+- Random string augmentations:
+  + "he is a farmer" $\rightarrow$ "ht s a frmer"
+  
+- Dropout:
+  + We disable 10% of neural pathways randomly during training
+  
+- We make synthetic combinations
+  + "he is a fisher" + "carpenter" $\rightarrow$ "he is a fisher **and** carpenter"
+  
+- It does not know the language in 25% of cases
+  
+- Training data, validation data, test data and out-of-distribution data
 ]
 
 
@@ -497,6 +531,10 @@ See more details in the paper
 
 **Summary:** Description goes in, probabilities comes out
 
+
+
+
+
 ---
 # Application 1: Copenhagen Burial Records 
 *Data from CPH burial records - 95% accuracy*
@@ -668,6 +706,42 @@ $$
 
 ]
 
+---
+# What we are working on
+
+.pull-left[
+### Three main chalenges for the current model
+1. Weaker performance in some languages
+2. Predicts full code rather than digits
+3. Rare cases of weird predictions in otherwise obvious cases $^1$
+4. Slow finetuning into other systems than HISCO
+
+.footnote[
+.small123[
+$^1$: We always reccomend checking 200 observations manually. This is still much quicker than having to find HISCO codes for 20000 observations manually. 
+]
+]
+
+]
+
+.pull-right[
+### Development
+- New training data
+- Digit-based seq2seq architecture (predict one digit at a time)
+- More string augmentation:
+  + Adversarial training examples: Changing descriptions only slightly to make the model make wrong guesses
+  + Double translation 
+  + Random strings should always be '-1'
+- Testing 'finetunability' to OCC1950, OCCICEM, PSTI, ISCO68 
+- Two user end options: *'fast'* or *'good'*
+]
+
+---
+class: middle
+# Demonstration
+- Everything is open source.
+- You can use our method with basic Python-skills
+- Most functionalities demonstrated here: [colab](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb)
 
 ---
 class: middle
