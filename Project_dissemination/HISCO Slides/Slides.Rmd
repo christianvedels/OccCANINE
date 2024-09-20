@@ -92,7 +92,7 @@ xaringanExtra::use_progress_bar(color = "#808080", location = "top")
 ## *Automatic Occupational Standardization with OccCANINE*
 ]
 
-#### Christian Møller-Dahl, Torben Johansen, Christian Vedel
+#### Christian Møller Dahl, Torben Johansen, Christian Vedel
 #### University of Southern Denmark, HEDG
 
 **Twitter: @ChristianVedel,**  
@@ -254,6 +254,8 @@ knitr::include_graphics("Figures/TypeB.webp")
 .pull-right-narrow[
 - A lot of researchers have solved the task of turning strings into HISCO codes
 - We simply make their work generalizable
+
+- We've received data from seven additional sources since the initial release
 ]
 
 
@@ -733,7 +735,7 @@ $^1$: We always reccomend checking 200 observations manually. This is still much
   + Double translation 
   + Random strings should always be '-1'
 - Testing 'finetunability' to OCC1950, OCCICEM, PSTI, ISCO68 
-- Two user end options: *'fast'* or *'good'*
+- Two user end options: *'fast'* or *'advanced'*
 ]
 
 ---
