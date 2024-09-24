@@ -400,9 +400,9 @@ class OccCANINE:
             batch_time.update(time.time() - end)
                 
             if batch_idx % 1 == 0 and verbose:
-                print(f'Finished prediction for batch {batch_idx} of {total_batches}')
-                print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
-                print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
+                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
             
             end = time.time()
             
@@ -470,9 +470,9 @@ class OccCANINE:
             batch_time.update(time.time() - end)
             
             if batch_idx % 1 == 0 and verbose:
-                print(f'Finished prediction for batch {batch_idx} of {total_batches}')
-                print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
-                print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
+                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
             
             end = time.time()
 
@@ -527,7 +527,6 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
             
-            print(f"Based on chosen 'behavior' ({behavior}) 'prediction_type' ({prediction_type}) was automatically set to '{prediction_type}'")
         
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
@@ -632,8 +631,7 @@ class OccCANINE:
 
         return occ1
     
-    @staticmethod
-    def _end_message(start, end, inputs):
+    def _end_message(self, start, end, inputs):
         dif_time = end - start
         m, s = divmod(dif_time, 60)
         h, m = divmod(m, 60)
@@ -653,6 +651,14 @@ class OccCANINE:
 
         print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
         print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
+
+        print("")
+        print("If the time saved is valuable for you, please cite our paper:")
+        self.citation()
+    
+    def citation():
+        print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
+        print("URL: https://arxiv.org/abs/2402.13604")
     
     def _format(self, out, out_type, what, inputs, lang, threshold, k_pred):
         """ 
