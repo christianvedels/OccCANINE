@@ -527,7 +527,7 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
             
-            print(f"Based on chosen 'behavior' ({behavior}) 'prediction_type' was automatically set to '{prediction_type}'")
+            print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
         
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
@@ -643,8 +643,8 @@ class OccCANINE:
         except AttributeError:
             # Fallback if occ1 does not have a .shape attribute, use len() instead
             nobs = len(inputs)
-
-        print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
+            
+        print(f"\nProduced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
         saved_time = nobs*10 - dif_time
         m, s = divmod(saved_time, 60)
@@ -657,7 +657,7 @@ class OccCANINE:
         print("If the time saved is valuable for you, please cite our paper:")
         self.citation()
     
-    def citation():
+    def citation(self):
         print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
         print("URL: https://arxiv.org/abs/2402.13604")
     
