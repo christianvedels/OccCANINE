@@ -527,6 +527,7 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
             
+            print(f"Based on chosen 'behavior' ({behavior}) 'prediction_type' was automatically set to '{prediction_type}'")
         
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
@@ -701,15 +702,14 @@ class OccCANINE:
                 res = pd.DataFrame(res, columns=column_names)
                 
                 # Vectorized operation to mask predictions below the threshold
-                for j in range(1, k_pred+1):
+                for j in range(1, k_pred + 1):
                     prob_column = f"prob_{j}"
                     mask = res[prob_column] <= threshold
                     res.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
-            
+
                 # First, ensure "hisco_1" is of type string to avoid mixing data types
                 res["hisco_1"] = res["hisco_1"].astype(str)
-                res["hisco_1"].fillna("-1", inplace=True)
-                
+
                 res.insert(0, 'occ1', inputs)
             
             else:
@@ -717,7 +717,14 @@ class OccCANINE:
                 
                 
         elif out_type == "greedy":
-            res = out # TODO: Turn into same format as above. 
+            if what == "probs":
+                raise ValueError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
+
+            elif what == "pred":
+                res = out
+
+            else:
+                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
        
         
        
