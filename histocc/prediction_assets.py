@@ -169,10 +169,19 @@ class OccCANINE:
 
     def _load_model(self, hf, force_download, baseline):
         
-        # TODO: Implement loading form hugging face. Inserting original code below:
-        # if hf:
-            # model = CANINEOccupationClassifier_hub.from_pretrained(f"christianvedel/{self.name}", force_download=force_download).to(self.device)
-            # model.to(self.device)
+        # Load model from Hugging Face (only works for the old model))
+        if hf:
+            # Validate model name
+            if self.name != "OccCANINE":
+                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE' model.")
+
+            model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/OccCANINE", force_download=force_download).to(self.device)
+            model.to(self.device)
+
+            # Determine model type
+            model_type = "flat" # TODO: Make this more dynamic
+
+            return model, model_type
         
         # Load state
         model_path = f'{self.name}'
