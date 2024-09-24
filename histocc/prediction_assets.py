@@ -125,6 +125,14 @@ class OccCANINE:
         - Exception: If 'hf' is False and a local model 'name' is not provided.
         """
 
+        # Check if model name is provided when not using Hugging Face
+        if name == "OccCANINE" and not hf:
+            raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
+
+        # Warn that only the old model is available through Hugging Face
+        if hf:
+            print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
+
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
         if verbose:
@@ -138,7 +146,7 @@ class OccCANINE:
         self.verbose = verbose
 
         # Get tokenizer
-        self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256")
+        self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
         # Get key
         self.key, self.key_desc = self._load_keys()
