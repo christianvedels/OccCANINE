@@ -46,6 +46,7 @@ from histocc.utils.decoder import (
     flat_decode_mixer,
     greedy_decode, 
     mixer_greedy_decode,
+    decode_specific_code_seq2seq
     )
 
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
@@ -456,6 +457,93 @@ class OccCANINE:
                 device = self.device,
                 max_len = data_loader.dataset.formatter.max_seq_len,
                 start_symbol = BOS_IDX,
+                )
+            outputs_s2s = outputs[0].cpu().numpy()
+            probs_s2s = outputs[1].cpu().numpy()
+            
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+            
+            # Store predictions
+            preds_s2s_raw.append(outputs_s2s)
+            probs_s2s_raw.append(probs_s2s)
+
+            batch_time.update(time.time() - end)
+            
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
+                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
+            
+            end = time.time()
+
+        preds_s2s_raw = np.concatenate(preds_s2s_raw)
+        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        
+        preds_s2s = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            preds_s2s_raw,
+        ))
+
+        preds = pd.DataFrame({
+            'input': inputs,
+            'pred_s2s': preds_s2s,
+            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+        })
+        
+        out_type = 'greedy'
+        
+        return preds, out_type, inputs
+    
+    @torch.no_grad
+    def _predict_full(self, data_loader):
+        model = self.model.eval()
+
+        inputs = []
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+                        
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+        
+        # List of codes to try turned into suitable format
+        # NEXT STEP: CONVERT TO TOKENS USING self.formatter
+        # Delete formatter from decoder. 
+        codes_list_clean = list(self.key.values())
+        codes_list = [str(i) for i in codes_list_clean]
+        codes_list = [[j for j in i] for i in codes_list]
+        
+        
+                
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = mixer_greedy_decode
+        elif self.model_type == "seq2seq":
+            decoder = decode_specific_code_seq2seq
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
+        
+        # Setup
+        verbose = self.verbose
+        total_batches = len(data_loader)
+        code = codes_list[0] # Tmp to try things out before wrapping in outer loop
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+            
+            batch_time_data.update(time.time() - end)
+            
+            outputs = decoder(
+                model = model,
+                descr = input_ids,
+                input_attention_mask = attention_mask,
+                device = self.device,
+                code = code,
+                start_symbol = BOS_IDX,
+                formatter = self.formatter
                 )
             outputs_s2s = outputs[0].cpu().numpy()
             probs_s2s = outputs[1].cpu().numpy()
