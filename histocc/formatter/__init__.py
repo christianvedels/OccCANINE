@@ -4,4 +4,12 @@ from .hisco import (
     MAP_IDX_HISCO,
     BlockyHISCOFormatter,
     blocky5,
+    hisco_blocky5,
     )
+from .occ1950 import (
+    MAP_OCC1950_IDX,
+    MAP_IDX_OCC1950,
+    BlockyOCC1950Formatter,
+    occ1950_blocky1,
+    occ1950_blocky2,
+)

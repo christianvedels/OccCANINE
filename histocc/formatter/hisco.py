@@ -5,6 +5,7 @@ Formatter for seq2seq-based HISCO systems
 
 
 import math
+import warnings
 
 from functools import partial
 from typing import Callable
@@ -311,7 +312,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
 
         Parameters
         ----------
-        raw_input : str | pd.DataFrame | pd.DataFrame
+        raw_input : str | pd.DataFrame | pd.Series
             Either a string of HISCO codes, separated by `self.sep_value`, or a 1-row
             pd.DataFrame with columns `['code1', 'code2', ..., f'code{self.max_num_codes}]`,
             each an integer present as a key in `self.lookup_hisco`, or a pd.Series corresponding
@@ -379,7 +380,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
 
 
 # TODO consider implementing register decorator
-def blocky5() -> BlockyHISCOFormatter: # pylint: disable=C0116
+def hisco_blocky5() -> BlockyHISCOFormatter: # pylint: disable=C0116
     formatter = BlockyHISCOFormatter(
         max_num_codes=5,
         map_char_idx=MAP_HISCO_IDX,
@@ -388,3 +389,9 @@ def blocky5() -> BlockyHISCOFormatter: # pylint: disable=C0116
     )
 
     return formatter
+
+
+def blocky5() -> BlockyHISCOFormatter: # pylint: disable=C0116
+    warnings.warn(DeprecationWarning('`blocky5` is being deprecated in favor of `hisco_blocky5`'))
+
+    return hisco_blocky5()
