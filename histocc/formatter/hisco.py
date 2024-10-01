@@ -226,6 +226,8 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         into two parts, those being `'12345` and `'-1'`.
 
     '''
+    code_len: int = 5
+
     # Pre-initialization declaration to show guaranteed attribute existence
     format_seq: Callable
     clean_seq: Callable

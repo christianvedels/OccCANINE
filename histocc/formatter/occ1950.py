@@ -135,6 +135,8 @@ class BlockyOCC1950Formatter:
         into two parts, those being `'123` and `'456'`.
 
     '''
+    code_len: int = CODE_LEN
+
     # Pre-initialization declaration to show guaranteed attribute existence
     format_seq: Callable
     clean_seq: Callable
@@ -208,7 +210,6 @@ class BlockyOCC1950Formatter:
 
     @property
     def max_seq_len(self) -> int: # pylint: disable=C0116
-        # Max. seq. len.: {self.max_num_codes} * CODE_LEN + 2, since BOS and EOS token.
         return self._max_seq_len
 
     @property
