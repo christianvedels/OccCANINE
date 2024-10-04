@@ -69,7 +69,6 @@ def evaluate(
         model: nn.Module,
         data_loader: torch.utils.data.DataLoader,
         device: torch.device,
-        # out_dir: str,
         fn_out: str,
         linear_topk: int = 5,
 ):
@@ -199,7 +198,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = Seq2SeqMixerOccCANINE(
-        model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+        model_domain='Multilingual_CANINE',
         num_classes=formatter.num_classes,
         num_classes_flat=1919, # TODO make arg or infer from formatter
     ).to(device)
