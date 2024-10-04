@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 from .datasets import DATASETS
 from .model_assets import load_tokenizer, update_tokenizer
 from .attacker import AttackerClass
-from .formatter import BlockyHISCOFormatter
+from .formatter import BlockyHISCOFormatter, BlockyOCC1950Formatter
 
 
 # Returns training data path
@@ -477,11 +477,16 @@ class OCCDataset(Dataset):
 
 
 class OccDatasetV2(Dataset):
+    map_type_target_cols_default = {
+        'hisco': ['code1', 'code2', 'code3', 'code4', 'code5'],
+        'occ1950': ['OCC1950_1', 'OCC1950_2'],
+    }
+
     def __init__(
             self,
             fname_data: str,
             fname_index: str,
-            formatter: BlockyHISCOFormatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             training: bool = True,
@@ -593,17 +598,21 @@ class OccDatasetV2InMem(OccDatasetV2):
             self,
             fname_data: str,
             fname_index: str,
-            formatter: BlockyHISCOFormatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             training: bool = True,
             alt_prob: float = 0.3,
             n_trans: int = 3,
             unk_lang_prob: float = 0.25,
+            target_cols: str | list[str] = 'hisco',
     ):
+        if isinstance(target_cols, str):
+            target_cols = self.map_type_target_cols_default[target_cols]
+
         self.frame = pd.read_csv(
             fname_data,
-            usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+            usecols=['occ1', 'lang', *target_cols],
         )
 
         super().__init__(
@@ -636,18 +645,22 @@ class OccDatasetV2InMemMultipleFiles(OccDatasetV2):
     def __init__(
             self,
             fnames_data: list[str],
-            formatter: BlockyHISCOFormatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             training: bool = True,
             alt_prob: float = 0.3,
             n_trans: int = 3,
             unk_lang_prob: float = 0.25,
+            target_cols: str | list[str] = 'hisco',
     ):
+        if isinstance(target_cols, str):
+            target_cols = self.map_type_target_cols_default[target_cols]
+
         frames = [
             pd.read_csv(
                 f,
-                usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+                usecols=['occ1', 'lang', *target_cols],
                 dtype={'lang': str},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
