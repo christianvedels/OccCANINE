@@ -789,6 +789,96 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         }
 
         return batch_data
+    
+class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torben how this works
+    """
+    Dataloader which takes 'inputs' a list of occupational strings instead of loading files. 
+    """
+    def __init__(
+            self,
+            inputs: list[str],
+            lang: str,
+            fname_index: str,
+            formatter: BlockyHISCOFormatter,
+            tokenizer: CanineTokenizer,
+            max_input_len: int,
+            training: bool = True,
+            alt_prob: float = 0.3,
+            n_trans: int = 3,
+            unk_lang_prob: float = 0.25,
+            data: pd.DataFrame | None = None,
+    ):
+        self.inputs = inputs
+        self.formatter = formatter
+        self.tokenizer = tokenizer
+        self.max_input_len = max_input_len
+
+        self.training = training
+        self.unk_lang_prob = unk_lang_prob
+        self.attacker = AttackerClass(
+            alt_prob=alt_prob,
+            n_trans=n_trans,
+            df=data,
+        )
+                
+        # Handle singular lang
+        if isinstance(lang, str):
+            lang = [lang for i in inputs]
+        self.lang = lang
+
+        self.colnames = ['occ1', 'lang']
+        self.map_item_byte_index = self._setup_mapping(fname_index)
+
+    def _get_record(self, item: int) -> dict:
+        occ_descr = self.inputs[item]
+        lang = self.lang[item]
+        return {'occ1': occ_descr, 'lang': lang}
+
+    def _setup_mapping(self, fname_index: str) -> dict[int, int]:
+        ''' We avoid using any mapping when loading dataset into memory,
+        hence overwrite with ghost method
+        '''
+        return {}
+
+    def __len__(self) -> int:
+        return len(self.inputs)
+
+    def __getitem__(self, item: int) -> dict[str, str | Tensor]:
+        record = self._get_record(item)
+
+        occ_descr: str = record['occ1']
+        lang: str = record['lang']
+        # target = self.formatter.transform_label(record)
+        
+        # Ensure list
+        if isinstance(occ_descr, list):
+            if not len(occ_descr)==1:
+                raise ValueError(f"In self.__getitem__: 'occ_descr' had length {len(occ_descr)}")
+            occ_descr = occ_descr[0]
+
+        # Augment occupational description and language and
+        # return '<LANG>[SEP]<OCCUPATIONAL DESCRIPTION>'
+        input_seq = self._prepare_input(occ_descr, lang)
+
+        # Encode input sequence
+        encoded_input_seq = self.tokenizer.encode_plus(
+            input_seq,
+            add_special_tokens=True,
+            padding='max_length',
+            max_length=self.max_input_len,
+            return_token_type_ids=False,
+            return_attention_mask=True,
+            return_tensors='pt',
+            truncation=True
+        )
+
+        batch_data = {
+            'occ1': input_seq,  # Legacy name...
+            'input_ids': encoded_input_seq['input_ids'].flatten(),
+            'attention_mask': encoded_input_seq['attention_mask'].flatten()
+        }
+
+        return batch_data
 
 
 def datasets(
