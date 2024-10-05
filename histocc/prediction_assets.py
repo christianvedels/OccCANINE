@@ -46,7 +46,7 @@ from histocc.utils.decoder import (
     flat_decode_mixer,
     greedy_decode, 
     mixer_greedy_decode,
-    full_search_decoder_seq2seq
+    full_search_decoder_seq2seq_optimized
     )
 
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
@@ -439,7 +439,8 @@ class OccCANINE:
             batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
             results.append(batch_predicted_probs)
             
-        
+        results = np.concatenate(results)
+
         out_type = 'probs'
         
         return results, out_type, inputs
@@ -549,7 +550,8 @@ class OccCANINE:
         if self.model_type == "mix":
             decoder = full_search_decoder_mix
         elif self.model_type == "seq2seq":
-            decoder = full_search_decoder_seq2seq
+            # decoder = full_search_decoder_seq2seq
+            decoder = full_search_decoder_seq2seq_optimized
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
         
@@ -792,12 +794,11 @@ class OccCANINE:
                                 
             elif what == "pred":
                 res = []
-                for probs in out:
-                    for row in probs:
-                        topk_indices = np.argsort(row)[-k_pred:][::-1]
-                        row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
-                        row = [item for sublist in row for item in sublist] # Flatten list
-                        res.append(row)
+                for row in out:
+                    topk_indices = np.argsort(row)[-k_pred:][::-1]
+                    row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
+                    row = [item for sublist in row for item in sublist] # Flatten list
+                    res.append(row)
                                                 
                 column_names = []
                 for i in range(1, k_pred+1):
