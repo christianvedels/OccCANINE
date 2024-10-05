@@ -150,44 +150,44 @@ def greedy_decode_for_training(
 
     return output_seq
 
-def decode_specific_code_seq2seq(
+
+def full_search_decoder_seq2seq(
         model: Seq2SeqOccCANINE,
         descr: Tensor,
         input_attention_mask: Tensor,
         device: torch.device,
-        code: list[int],
+        codes_list: list[list[int]],
         start_symbol: int,
         formatter: BlockyHISCOFormatter
-        ) -> float:
+        ) -> dict:
     memory = model.encode(descr, input_attention_mask)
     batch_size = descr.size(0)
 
-    # Initialize sequence by placing BoS symbol.
-    seq = torch.ones(batch_size, 1).fill_(start_symbol).type(torch.long).to(device)
-    prob_seq = torch.ones(batch_size, 1).fill_(1.0).type(torch.long).to(device)
+    results = torch.empty((batch_size, len(codes_list)), dtype=torch.float, device=device)
 
-    for i in range(len(code)):
-        target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
+    for idx, code in enumerate(codes_list):
+        code_len = len(code)
+        seq = torch.ones(batch_size, 1).fill_(start_symbol).type(torch.long).to(device)
+        prob_seq = torch.ones(batch_size, 1).fill_(1.0).type(torch.float).to(device)
 
-        out = model.decode(
-            memory=memory,
-            target=seq,
-            target_mask=target_mask,
-            target_padding_mask=None,
-        )[:, -1:, :]
+        for i in range(code_len):
+            target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
+            out = model.decode(
+                memory=memory,
+                target=seq,
+                target_mask=target_mask,
+                target_padding_mask=None,
+            )[:, -1:, :]
+
+            which_output = torch.ones(batch_size, 1).fill_(code[i]).type(torch.long).to(device)
+            next_prob = torch.gather(nn.functional.softmax(out, dim=2), 2, which_output.unsqueeze(2)).squeeze(2)
+
+            prob_seq = prob_seq * next_prob
+
+            if i < len(code) - 1:
+                seq = torch.cat([seq, which_output], dim=1)
         
-        next_token = torch.argmax(out, dim=2).detach()
-        next_prob = torch.max(nn.functional.softmax(out, dim=2), dim=2)[0].detach()
+        code_seq_probs = prob_seq[:, -1]
+        results[:, idx] = code_seq_probs # Fill col-wise. Corresponds to output of 'flat'. 
 
-        # Extend sequence by adding prediction of next token.
-        seq = torch.cat([seq, next_token], dim=1)
-        prob_seq = torch.cat([prob_seq, next_prob], dim=1)
-
-        if i < len(code) - 1:
-            # Set the next token in the sequence to the desired code value
-            seq[:, -1] = code[i + 1]
-
-    # Find the probability of the specific code sequence
-    code_seq_prob = prob_seq[0, -1].item()
-
-    return code_seq_prob
+    return results
