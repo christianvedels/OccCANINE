@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Sep  3 11:49:33 2024
 
-@author: christian-vs
-"""
+# THIS IS A TEST FILE FOR THE OCCCANINE WRAPPER
+# WILL EVENTUALLY BE HEAVILY MODIFIED
 
 from histocc.prediction_assets import OccCANINE
 import pandas as pd
