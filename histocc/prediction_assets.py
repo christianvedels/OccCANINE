@@ -872,6 +872,9 @@ class OccCANINE:
                 # Multiply these columns row-wise
                 res['conf'] = out[prob_cols].prod(axis=1)
 
+                # Add input
+                res.insert(0, 'occ1', out.input)
+
                 return res
 
             else:
