@@ -826,7 +826,53 @@ class OccCANINE:
                 raise ValueError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
 
             elif what == "pred":
-                res = out
+                sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
+                max_elements = max(len(item) if isinstance(item, list) else 1 for item in sepperate_preds)
+
+                # Create an empty list to store the processed data
+                processed_data = []
+
+                # Process the data
+                for item in sepperate_preds:
+                    if isinstance(item, list):
+                        # If the item is a list, unpack its elements and pad with NaN if necessary
+                        processed_data.append(item + [np.nan] * (max_elements - len(item)))
+                    else:
+                        # If the item is not a list, append it with NaN for the remaining columns
+                        processed_data.append([item] + [np.nan] * (max_elements - 1))
+                
+                # Invert key
+                inv_key = dict(map(reversed, self.key.items()))
+
+                res = []
+                # Insert description
+                for item in processed_data:
+                    codes = []
+                    for sub_item in item:
+                        # Map to code
+                        if np.isnan(float(sub_item)):
+                            codes.append(0)
+                        else:
+                            codes.append(inv_key[int(sub_item)])
+                    
+                    row = [[self.key[i], self.key_desc[i]] for i in codes]
+                    row = [item for sublist in row for item in sublist] # Flatten list
+                    res.append(row)
+                
+                column_names = []
+                for i in range(1, max_elements+1):column_names.extend([f'hisco_{i}', f'desc_{i}'])
+
+
+                # Create the DataFrame
+                res = pd.DataFrame(res, columns=column_names)
+                
+                # Identify columns starting with 'prob_s2s_'
+                prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
+
+                # Multiply these columns row-wise
+                res['conf'] = out[prob_cols].prod(axis=1)
+
+                return res
 
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
@@ -835,7 +881,16 @@ class OccCANINE:
        
         return res
                
-    
+    def _split_str_s2s(self, pred, symbol = "&"):
+        """
+        Splits predicted str if necessary
+        """
+        if symbol in pred:
+            pred = pred.split(symbol)
+
+        return pred
+
+
     def _encode(self, occ1, lang, concat_in):
         """
         Encodes occupational strings into a format suitable for model input.
