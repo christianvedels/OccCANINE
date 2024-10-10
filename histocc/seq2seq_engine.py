@@ -157,7 +157,11 @@ def evaluate(
         losses.update(loss.item(), outputs.size(0))
 
         seq_acc, token_acc = order_invariant_accuracy(
-            outputs, targets[:, 1:], PAD_IDX, 5, 5,
+            output=outputs,
+            target=targets[:, 1:],
+            pad_idx=PAD_IDX,
+            nb_blocks=loss_fn.nb_blocks,
+            block_size=loss_fn.block_size,
         )
         seq_accs.update(seq_acc.item(), outputs.size(0))
         token_accs.update(token_acc.item(), outputs.size(0))
