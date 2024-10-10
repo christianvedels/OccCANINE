@@ -30,8 +30,10 @@ from histocc import (
 )
 from histocc.seq2seq_engine import train
 from histocc.formatter import (
-    blocky5,
+    hisco_blocky5,
+    occ1950_blocky2,
     BlockyHISCOFormatter,
+    BlockyOCC1950Formatter,
     PAD_IDX,
 )
 from histocc.utils import wandb_init
@@ -45,6 +47,11 @@ except ImportError:
 
 # TODO torch.cudnn.benchmark
 
+MAP_FORMATTER = {
+    'hisco': hisco_blocky5,
+    'occ1950': occ1950_blocky2,
+}
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
@@ -55,11 +62,13 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument('--train-data', type=str, default=None, nargs='+')
     parser.add_argument('--val-data', type=str, default=None, nargs='+')
+    parser.add_argument('--target-col-naming', type=str, default='hisco')
 
     # Logging parameters
     parser.add_argument('--log-interval', type=int, default=100, help='Number of steps between reporting training stats')
     parser.add_argument('--eval-interval', type=int, default=1000, help='Number of steps between calculating and logging validation performance')
     parser.add_argument('--log-wandb', action='store_true', default=False, help='Whether to log validation performance using W&B')
+    parser.add_argument('--wandb-project-name', type=str, default='histco-v2')
 
     # Data parameters
     parser.add_argument('--num-epochs', type=int, default=50)
@@ -73,6 +82,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--dropout', type=float, default=0.0, help='Classifier dropout rate. Does not affect encoder.')
     parser.add_argument('--max-len', type=int, default=128, help='Max. number of characters for input')
     parser.add_argument('--decoder-dim-feedforward', type=int, default=None, help='Defaults to endoder hidden dim if not specified.')
+    parser.add_argument('--formatter', type=str, default='hisco', choices=MAP_FORMATTER.keys(), help='Target-side tokenization')
 
     # Augmentation
     parser.add_argument('--num-transformations', type=int, default=3)
@@ -91,7 +101,7 @@ def parse_args() -> argparse.Namespace:
 
 def setup_datasets(
         args: argparse.Namespace,
-        formatter: BlockyHISCOFormatter,
+        formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
         tokenizer: CanineTokenizer,
 ) -> tuple[OccDatasetV2InMemMultipleFiles, OccDatasetV2InMemMultipleFiles]:
     dataset_train = OccDatasetV2InMemMultipleFiles(
@@ -103,6 +113,7 @@ def setup_datasets(
         alt_prob=args.augmentation_prob,
         n_trans=args.num_transformations,
         unk_lang_prob=args.unk_lang_prob,
+        target_cols=args.target_col_naming,
     )
 
     dataset_val = OccDatasetV2InMemMultipleFiles(
@@ -111,6 +122,7 @@ def setup_datasets(
         tokenizer=tokenizer,
         max_input_len=args.max_len,
         training=False,
+        target_cols=args.target_col_naming,
     )
 
     return dataset_train, dataset_val
@@ -151,6 +163,10 @@ def load_states(
     states = torch.load(initial_checkpoint)
     model.load_state_dict(states['model'])
 
+    # TODO also allow for only encoder load
+    # encoder_state_dict = {k[len("encoder."):]: v for k, v in states['model'].items() if k.startswith("encoder.")}
+    # model.encoder.load_state_dict(encoder_state_dict)
+
     return 0
 
 
@@ -167,7 +183,7 @@ def main():
         )
 
     # Target-side tokenization
-    formatter = blocky5()
+    formatter = MAP_FORMATTER[args.formatter]()
 
     # Input-side tokenization
     tokenizer = load_tokenizer(
@@ -201,7 +217,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model = Seq2SeqOccCANINE(
-        model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+        model_domain='Multilingual_CANINE',
         num_classes=formatter.num_classes,
         dropout_rate=args.dropout,
         decoder_dim_feedforward=args.decoder_dim_feedforward,
@@ -217,8 +233,8 @@ def main():
 
     loss_fn = BlockOrderInvariantLoss(
         pad_idx=PAD_IDX,
-        nb_blocks=5,
-        block_size=5,
+        nb_blocks=formatter.max_num_codes,
+        block_size=formatter.code_len,
     ).to(device)
 
     current_step = load_states(
