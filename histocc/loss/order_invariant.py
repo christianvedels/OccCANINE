@@ -295,7 +295,7 @@ class BlockOrderInvariantLoss(nn.Module):
         )
 
         # Block-wise push towards padding
-        padding_loss = padding_loss.view(yhat.size(0), self.block_size, self.nb_blocks).mean(dim=2)
+        padding_loss = padding_loss.view(yhat.size(0), self.nb_blocks, self.block_size).mean(dim=2)
 
         # Only count as loss if no target block, otherwise set to zero
         # to not push towards padding where predictions should occur
