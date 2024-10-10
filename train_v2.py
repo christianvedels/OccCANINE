@@ -59,6 +59,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--save-dir', type=str, default=None)
     parser.add_argument('--save-interval', type=int, default=5000, help='Number of steps between saving model')
     parser.add_argument('--initial-checkpoint', type=str, default=None, help='Model weights to use for initialization. Discarded if resume state exists at --save-dir')
+    parser.add_argument('--only-encoder', action='store_true', default=False, help='Only attempt to load encoder part of --initial-checkpoint')
 
     parser.add_argument('--train-data', type=str, default=None, nargs='+')
     parser.add_argument('--val-data', type=str, default=None, nargs='+')
@@ -134,9 +135,10 @@ def load_states(
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler.LRScheduler,
         initial_checkpoint: str | None = None,
+        only_encoder: bool = False,
 ) -> int:
     if 'last.bin' in os.listdir(save_dir):
-        print(f'Model states exist at {save_dir}. Resuming from last.bin')
+        print(f'Model states exist at {save_dir}. Resuming from "last.bin". Ignoring --initial-checkpoint')
 
         states = torch.load(os.path.join(save_dir, 'last.bin'))
 
@@ -152,7 +154,7 @@ def load_states(
         return 0
 
     if initial_checkpoint.lower() == 'occ-canine-v1':
-        print('Initializing encoder from HF (christianvedel/OccCANINE)')
+        print('Initializing encoder from HF "v1" model (christianvedel/OccCANINE)')
         encoder = CANINEOccupationClassifier_hub.from_pretrained("christianvedel/OccCANINE")
         model.encoder.load_state_dict(encoder.basemodel.state_dict())
         # TODO check encoder is properly garbage collected
@@ -161,11 +163,13 @@ def load_states(
 
     print(f'Initializing model from {initial_checkpoint}')
     states = torch.load(initial_checkpoint)
-    model.load_state_dict(states['model'])
 
-    # TODO also allow for only encoder load
-    # encoder_state_dict = {k[len("encoder."):]: v for k, v in states['model'].items() if k.startswith("encoder.")}
-    # model.encoder.load_state_dict(encoder_state_dict)
+    if only_encoder:
+        print('Only loading encoder of --initial-checkpoint')
+        encoder_state_dict = {k[len("encoder."):]: v for k, v in states['model'].items() if k.startswith("encoder.")}
+        model.encoder.load_state_dict(encoder_state_dict)
+    else:
+        model.load_state_dict(states['model'])
 
     return 0
 
@@ -243,6 +247,7 @@ def main():
         optimizer=optimizer,
         scheduler=scheduler,
         initial_checkpoint=args.initial_checkpoint,
+        only_encoder=args.only_encoder,
     )
 
     # Save arguments
