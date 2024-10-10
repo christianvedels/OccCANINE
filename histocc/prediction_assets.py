@@ -843,7 +843,7 @@ class OccCANINE:
                 
                 # Invert key
                 inv_key = dict(map(reversed, self.key.items()))
-
+                
                 res = []
                 # Insert description
                 for item in processed_data:
@@ -853,9 +853,13 @@ class OccCANINE:
                         if np.isnan(float(sub_item)):
                             codes.append(0)
                         else:
-                            codes.append(inv_key[int(sub_item)])
+                            if int(sub_item) in inv_key:
+                                codes.append(inv_key[int(sub_item)])
+                            else:
+                                # Handle this case
+                                codes.append(f'u{sub_item}') # Add 'u' to ensure being able to pick it up in cleaning below
                     
-                    row = [[self.key[i], self.key_desc[i]] for i in codes]
+                    row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
                     row = [item for sublist in row for item in sublist] # Flatten list
                     res.append(row)
                 
