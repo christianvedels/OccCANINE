@@ -5,7 +5,7 @@ import torch
 from torch import Tensor
 
 from histocc import OrderInvariantSeq2SeqCrossEntropy, BlockOrderInvariantLoss
-from histocc.formatter import PAD_IDX, BOS_IDX, EOS_IDX, blocky5
+from histocc.formatter import PAD_IDX, BOS_IDX, EOS_IDX, hisco_blocky5
 
 
 def _gen_perfect_pred(target: Tensor, vocab_size: int, strength: int | float = 1000) -> Tensor:
@@ -71,7 +71,7 @@ class TestOrderInvariantSeq2SeqCrossEntropy(unittest.TestCase):
         ) * PAD_IDX
 
     def setUp(self):
-        self.formatter = blocky5()
+        self.formatter = hisco_blocky5()
         self.loss = OrderInvariantSeq2SeqCrossEntropy(
             pad_idx=PAD_IDX,
             nb_blocks=self.formatter.max_num_codes,
@@ -199,7 +199,7 @@ class TestBlockOrderInvariantLoss(unittest.TestCase):
         ) * PAD_IDX
 
     def setUp(self):
-        self.formatter = blocky5()
+        self.formatter = hisco_blocky5()
         self.loss = BlockOrderInvariantLoss(
             pad_idx=PAD_IDX,
             nb_blocks=self.formatter.max_num_codes,
