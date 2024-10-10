@@ -11,34 +11,19 @@ SET VAL_DATA_2=Z:/faellesmappe/tsdj/hisco/data/Validation_data2\CA_bcn_val2.csv 
 
 ## Baseline
 
-Initialize encoder using `OccCANINE-V1`, warmup for 3000 steps, no decoder dropout
-```
-SET CUDA_VISIBLE_DEVICES=1
-python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/baseline --train-data %TRAIN_DATA% --val-data %VAL_DATA% --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1
-```
-
-## Dropout
-
-Baseline, but with 10% decoder dropout
-```
-SET CUDA_VISIBLE_DEVICES=2
-python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/dropout --train-data %TRAIN_DATA% --val-data %VAL_DATA% --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --dropout 0.1
-```
-
-## CANINE initialization
-
-Baseline, but initializing encoder from CANINE rather than OccCANINE
-```
-SET CUDA_VISIBLE_DEVICES=3
-python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/canine-init --train-data %TRAIN_DATA% --val-data %VAL_DATA% --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000
-```
-
-## CANINE initialization, dropout
-
-Baseline, but initializing encoder from CANINE rather than OccCANINE and using 10% decoder dropout
+Initialize encoder using `OccCANINE-V1`, warmup for 3000 steps, no decoder dropout, 50% weight to both components
 ```
 SET CUDA_VISIBLE_DEVICES=0
-python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/canine-init-dropout --train-data %TRAIN_DATA% --val-data %VAL_DATA% --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --dropout 0.1
+python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-mixer/baseline --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --seq2seq-weight 0.5 --train-data %TRAIN_DATA% --val-data %VAL_DATA%
+```
+
+## Weighted
+
+Baseline, but with 90% weight to linear loss components.
+The purpose of this is to partially balance with respect to magnitudes of individual loss components, where the linear components is much smaller in magnitude.
+```
+SET CUDA_VISIBLE_DEVICES=2
+python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-mixer/s2s-weight=0.1 --log-interval 50 --eval-interval 15000 --save-interval 5000 --log-wandb --warmup-steps 3000 --initial-checkpoint occ-canine-v1 --seq2seq-weight 0.1 --train-data %TRAIN_DATA% --val-data %VAL_DATA%
 ```
 
 # Evaluation
@@ -46,17 +31,17 @@ python train_v2.py --save-dir Z:/faellesmappe/tsdj/hisco/v2/canine-init-dropout 
 ## Baseline
 
 ```
-SET CUDA_VISIBLE_DEVICES=1
-python eval_s2s.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/baseline/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/baseline/val-1-s2s-baseline-s=1600000.csv
+SET CUDA_VISIBLE_DEVICES=0
+python eval_mixer.py --val-data %VAL_DATA% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\val-1-mixer-s2s=50-s=1590000.csv
 
-python eval_s2s.py --val-data %VAL_DATA_2% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/baseline/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/baseline/val-2-s2s-baseline-s=1600000.csv
+python eval_mixer.py --val-data %VAL_DATA_2% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\baseline\val-2-mixer-s2s=50-s=1590000.csv
 ```
 
-## CANINE initialization
+# Weighted
 
 ```
-SET CUDA_VISIBLE_DEVICES=3
-python eval_s2s.py --val-data %VAL_DATA% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/canine-init/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/canine-init/val-1-s2s-canine-init-s=1595000.csv
+SET CUDA_VISIBLE_DEVICES=2
+python eval_mixer.py --val-data %VAL_DATA% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\val-1-mixer-s2s=10-s=1605000.csv
 
-python eval_s2s.py --val-data %VAL_DATA_2% --checkpoint Z:/faellesmappe/tsdj/hisco/v2/canine-init/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2/canine-init/val-2-s2s-canine-init-s=1595000.csv
+python eval_mixer.py --val-data %VAL_DATA_2% --checkpoint Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\last.bin --fn-out Z:\faellesmappe\tsdj\hisco\v2-mixer\s2s-weight=0.1\val-2-mixer-s2s=10-s=1605000.csv
 ```

@@ -10,7 +10,7 @@ Paper: [https://arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
 
 Huggingface: [Christianvel/OccCANINE](https://huggingface.co/Christianvedel/OccCANINE)
 
-Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/main/Project_dissemination/HISCO%20Slides/Slides.html)
+Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/refs/heads/dev/Project_dissemination/HISCO%20Slides/Slides.html)
 
 How to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
 

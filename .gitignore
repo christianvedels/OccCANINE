@@ -9,6 +9,15 @@ Data/Tmp_data/
 Data/Application_data/
 Data/Tmp_train/
 Data/Adversarial_data/
+Data/Test_data_other/
+Data/Training_data_other/
+Data/Validation_data1_other/
+Data/Validation_data2_other/
+Data/eval-results/
+Data/models/
+Data/backup/
+Data/Data_backup/
+
 
 
 # Other stuff
@@ -173,3 +182,11 @@ histocc/Data/Tmp_finetune/
 
 # Helper scripts not for sharing
 /helper_scripts/
+
+# .vs
+.vs/
+
+Data/Data_backup/Test_data/CA_bcn_test.csv
+.vs/
+Data/Training_data_other.rar
+Data/desktop.ini
