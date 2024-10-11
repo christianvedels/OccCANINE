@@ -180,7 +180,7 @@ def main():
     if args.log_wandb:
         wandb_init(
             output_dir=args.save_dir,
-            project='histco-v2',
+            project=args.wandb_project_name,
             name=os.path.basename(args.save_dir),
             resume='auto',
             config=args,
