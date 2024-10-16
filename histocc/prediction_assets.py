@@ -849,15 +849,19 @@ class OccCANINE:
                 for item in processed_data:
                     codes = []
                     for sub_item in item:
-                        # Map to code
-                        if np.isnan(float(sub_item)):
-                            codes.append(0)
-                        else:
-                            if int(sub_item) in inv_key:
-                                codes.append(inv_key[int(sub_item)])
+                        try:
+                            float_val = float(sub_item)
+                            if np.isnan(float_val):
+                                codes.append(0)
                             else:
-                                # Handle this case
-                                codes.append(f'u{sub_item}') # Add 'u' to ensure being able to pick it up in cleaning below
+                                int_val = int(float_val)
+                                if int_val in inv_key:
+                                    codes.append(inv_key[int_val])
+                                else:
+                                    codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                        except (ValueError, TypeError):
+                            # Handle the case where sub_item cannot be cast to float
+                            codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
                     
                     row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
                     row = [item for sublist in row for item in sublist] # Flatten list
