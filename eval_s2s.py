@@ -5,9 +5,7 @@ import torch
 
 from torch import nn
 from torch.utils.data import DataLoader
-from transformers import (
-    CanineTokenizer,
-)
+from transformers import CanineTokenizer
 
 import numpy as np
 import pandas as pd
@@ -18,13 +16,15 @@ from histocc import (
     Seq2SeqOccCANINE,
 )
 from histocc.formatter import (
-    blocky5,
     BlockyHISCOFormatter,
+    BlockyOCC1950Formatter,
     BOS_IDX,
 )
 from histocc.utils import Averager
 
 from histocc.utils.decoder import greedy_decode
+
+from train_v2 import MAP_FORMATTER
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--val-data', type=str, default=None, nargs='+')
     parser.add_argument('--checkpoint', type=str, help='File name of model state')
     parser.add_argument('--fn-out', type=str)
+    parser.add_argument('--target-col-naming', type=str, default='hisco')
 
     # Data parameters
     parser.add_argument('--batch-size', type=int, default=2048)
@@ -42,6 +43,7 @@ def parse_args() -> argparse.Namespace:
 
     # Model parameters
     parser.add_argument('--max-len', type=int, default=128, help='Max. number of characters for input')
+    parser.add_argument('--formatter', type=str, default='hisco', choices=MAP_FORMATTER.keys(), help='Target-side tokenization')
 
     args = parser.parse_args()
 
@@ -50,7 +52,7 @@ def parse_args() -> argparse.Namespace:
 
 def setup_dataset(
         args: argparse.Namespace,
-        formatter: BlockyHISCOFormatter,
+        formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
         tokenizer: CanineTokenizer,
 ) -> OccDatasetV2InMemMultipleFiles:
     dataset_val = OccDatasetV2InMemMultipleFiles(
@@ -59,6 +61,7 @@ def setup_dataset(
         tokenizer=tokenizer,
         max_input_len=args.max_len,
         training=False,
+        target_cols=args.target_col_naming,
     )
 
     return dataset_val
@@ -69,7 +72,6 @@ def evaluate(
         model: nn.Module,
         data_loader: torch.utils.data.DataLoader,
         device: torch.device,
-        # out_dir: str,
         fn_out: str,
 ):
     model = model.eval()
@@ -151,7 +153,7 @@ def main():
     args = parse_args()
 
     # Target-side tokenization
-    formatter = blocky5()
+    formatter = MAP_FORMATTER[args.formatter]()
 
     # Input-side tokenization
     tokenizer = load_tokenizer(

@@ -697,7 +697,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
     def __init__(
             self,
             fnames_data: list[str],
-            formatter: BlockyHISCOFormatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             num_classes_flat: int,
@@ -705,11 +705,15 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             alt_prob: float = 0.3,
             n_trans: int = 3,
             unk_lang_prob: float = 0.25,
+            target_cols: str | list[str] = 'hisco',
     ):
+        if isinstance(target_cols, str):
+            target_cols = self.map_type_target_cols_default[target_cols]
+
         frames = [
             pd.read_csv(
                 f,
-                usecols=['occ1', 'lang', 'code1', 'code2', 'code3', 'code4', 'code5'],
+                usecols=['occ1', 'lang', *target_cols],
                 dtype={'lang': str},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
@@ -729,6 +733,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             data=self.frame[['occ1']],
         )
 
+        self.target_cols = target_cols
         self.num_classes_flat = num_classes_flat
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
@@ -743,13 +748,16 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
     def _get_target_linear(self, record: pd.Series) -> np.ndarray:
         target = np.zeros(self.num_classes_flat)
 
-        for i in range(1, self.formatter.max_num_codes + 1):
-            code = record[f'code{i}']
+        for target_col in self.target_cols:
+            code = record[target_col]
 
-            if math.isnan(code):
+            if code == ' ': # Some OCC1950 labels coded as space rather than NaN
                 break
 
-            target[int(code)] = 1 # f'code{i}' column may have type float -> cast
+            if isinstance(code, float) and math.isnan(code):
+                break
+
+            target[int(code)] = 1 # column may have type str or float -> cast
 
         return target
 
@@ -789,10 +797,10 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         }
 
         return batch_data
-    
+
 class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torben how this works
     """
-    Dataloader which takes 'inputs' a list of occupational strings instead of loading files. 
+    Dataloader which takes 'inputs' a list of occupational strings instead of loading files.
     """
     def __init__(
             self,
@@ -820,7 +828,7 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torb
             n_trans=n_trans,
             df=data,
         )
-                
+
         # Handle singular lang
         if isinstance(lang, str):
             lang = [lang for i in inputs]
@@ -849,7 +857,7 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torb
         occ_descr: str = record['occ1']
         lang: str = record['lang']
         # target = self.formatter.transform_label(record)
-        
+
         # Ensure list
         if isinstance(occ_descr, list):
             if not len(occ_descr)==1:

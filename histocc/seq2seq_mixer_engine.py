@@ -180,13 +180,17 @@ def evaluate(
             )
         loss_linear = loss_fn.loss_fn_linear(out_linear, targets_linear)
         loss_seq2seq = loss_fn.loss_fn_seq2seq(out_seq2seq, targets_seq2seq)
-        
+
         losses.update(loss.item(), out_seq2seq.size(0))
         losses_linear.update(loss_linear.item(), out_seq2seq.size(0))
         losses_seq2seq.update(loss_seq2seq.item(), out_seq2seq.size(0))
 
         seq_acc, token_acc = order_invariant_accuracy(
-            out_seq2seq, targets_seq2seq[:, 1:], PAD_IDX, 5, 5,
+            output=out_seq2seq,
+            target=targets_seq2seq[:, 1:],
+            pad_idx=PAD_IDX,
+            nb_blocks=loss_fn.loss_fn_seq2seq.nb_blocks,
+            block_size=loss_fn.loss_fn_seq2seq.block_size,
         )
         seq_accs.update(seq_acc.item(), out_seq2seq.size(0))
         token_accs.update(token_acc.item(), out_seq2seq.size(0))
