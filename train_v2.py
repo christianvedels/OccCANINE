@@ -165,7 +165,7 @@ def load_states(
     states = torch.load(initial_checkpoint)
 
     if only_encoder:
-        print('Only loading encoder of --initial-checkpoint')
+        print('Only loading encoder from --initial-checkpoint')
         encoder_state_dict = {k[len("encoder."):]: v for k, v in states['model'].items() if k.startswith("encoder.")}
         model.encoder.load_state_dict(encoder_state_dict)
     else:
