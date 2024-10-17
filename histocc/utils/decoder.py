@@ -5,6 +5,7 @@ from torch import nn, Tensor
 from .masking import generate_square_subsequent_mask
 from ..model_assets import Seq2SeqOccCANINE, Seq2SeqMixerOccCANINE, CANINEOccupationClassifier
 from ..formatter.hisco import BlockyHISCOFormatter
+from .trie import TrieNode, build_trie # For full search
 
 
 def greedy_decode(
@@ -150,44 +151,59 @@ def greedy_decode_for_training(
 
     return output_seq
 
-def decode_specific_code_seq2seq(
+def full_search_decoder_seq2seq_optimized(
         model: Seq2SeqOccCANINE,
-        descr: Tensor,
-        input_attention_mask: Tensor,
+        descr: torch.Tensor,
+        input_attention_mask: torch.Tensor,
         device: torch.device,
-        code: list[int],
+        codes_list: list[list[int]],
         start_symbol: int,
         formatter: BlockyHISCOFormatter
-        ) -> float:
+        ) -> dict:
+    
     memory = model.encode(descr, input_attention_mask)
     batch_size = descr.size(0)
 
-    # Initialize sequence by placing BoS symbol.
+    # Step 1: Build Trie
+    trie = build_trie(codes_list)
+    
+    # Step 2: Initialize results
+    results = torch.empty((batch_size, len(codes_list)), dtype=torch.float, device=device)
+    code_indices = {tuple(code): idx for idx, code in enumerate(codes_list)}
+
+    # Step 3: Initialize sequences
     seq = torch.ones(batch_size, 1).fill_(start_symbol).type(torch.long).to(device)
-    prob_seq = torch.ones(batch_size, 1).fill_(1.0).type(torch.long).to(device)
+    prob_seq = torch.ones(batch_size, 1).fill_(1.0).type(torch.float).to(device)
 
-    for i in range(len(code)):
-        target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
+    # Step 4: Decode using Trie
+    stack = [(trie, seq, prob_seq)]
 
-        out = model.decode(
-            memory=memory,
-            target=seq,
-            target_mask=target_mask,
-            target_padding_mask=None,
-        )[:, -1:, :]
+    # n_model_calls = 0
+
+    while stack:
+        node, seq, prob_seq = stack.pop()
         
-        next_token = torch.argmax(out, dim=2).detach()
-        next_prob = torch.max(nn.functional.softmax(out, dim=2), dim=2)[0].detach()
+        if node.codes:
+            for code in node.codes:
+                code_seq_probs = prob_seq[:, -1]
+                results[:, code_indices[tuple(code)]] = code_seq_probs
+        
+        for number, child_node in node.children.items():
+            which_output = torch.ones(batch_size, 1).fill_(number).type(torch.long).to(device)
+            target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
+            out = model.decode(
+                memory=memory,
+                target=seq,
+                target_mask=target_mask,
+                target_padding_mask=None,
+            )[:, -1:, :]
+            # n_model_calls += 1
 
-        # Extend sequence by adding prediction of next token.
-        seq = torch.cat([seq, next_token], dim=1)
-        prob_seq = torch.cat([prob_seq, next_prob], dim=1)
-
-        if i < len(code) - 1:
-            # Set the next token in the sequence to the desired code value
-            seq[:, -1] = code[i + 1]
-
-    # Find the probability of the specific code sequence
-    code_seq_prob = prob_seq[0, -1].item()
-
-    return code_seq_prob
+            next_prob = torch.gather(torch.nn.functional.softmax(out, dim=2), 2, which_output.unsqueeze(2)).squeeze(2)
+            new_prob_seq = prob_seq * next_prob
+            new_seq = torch.cat([seq, which_output], dim=1)
+            stack.append((child_node, new_seq, new_prob_seq))
+    
+    # print(n_model_calls) # 4073 is equal to trie.count_nodes(): Compared to len(codes_list)*5 = 9595
+    
+    return results

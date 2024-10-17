@@ -36,7 +36,7 @@ from .dataloader import (
     )
 
 from histocc.formatter import (
-    blocky5,
+    hisco_blocky5,
     BOS_IDX,
 )
 
@@ -46,7 +46,7 @@ from histocc.utils.decoder import (
     flat_decode_mixer,
     greedy_decode, 
     mixer_greedy_decode,
-    decode_specific_code_seq2seq
+    full_search_decoder_seq2seq_optimized
     )
 
 from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
@@ -109,7 +109,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 
 
 class OccCANINE:
-    def __init__(self, name = "OccCANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
+    def __init__(self, name = "OccCANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False, system = "HISCO"):
         """
         Initializes the OccCANINE model with specified configurations.
 
@@ -121,6 +121,7 @@ class OccCANINE:
         - baseline (bool): If True, loads a baseline (untrained) version of CANINE. Useful for comparison studies.
         - hf (bool): If True, attempts to load the model from Hugging Face's model repository. If False, loads a local model specified by the 'name' parameter.
         - force_download (bool): If True, forces a re-download of the model from the Hugging Face's model repository even if it is already cached locally.
+        - system (str): Which encoding system is it? For now this only works for "HISCO"
 
         Raises:
         - Exception: If 'hf' is False and a local model 'name' is not provided.
@@ -149,12 +150,22 @@ class OccCANINE:
         # Get tokenizer
         self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
-        # Get key
-        self.key, self.key_desc = self._load_keys()
+        if system == "HISCO":  # TODO: Handle other model specs
+            # Get key
+            self.key, self.key_desc = self._load_keys()
+                
+            # Formatter
+            self.formatter = hisco_blocky5()
+
+            # Length of codes
+            self.code_len = 5
         
-        # Formatter
-        self.formatter = blocky5() # TODO: Handle other model specs
-        
+            # List of codes formatted to fit with the output from seq2seq/mix model
+            self.codes_list = self._list_of_formatted_codes()             
+        else:
+            raise NotImplementedError(f"system '{system}' is not implemented")
+
+
         # Model and model type
         self.model, self.model_type = self._load_model(hf, force_download, baseline)        
         
@@ -175,6 +186,20 @@ class OccCANINE:
         key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
 
         return key, key_desc
+
+    def _list_of_formatted_codes(self):
+        """
+        Returns a list of formatted HISCO codes. According to the seq2seq formatter
+        """
+
+        # Formatted list of codes
+        codes_list = list(self.key.values())
+        codes_list = list(self.key.values())
+        codes_list = [str(i) for i in codes_list]
+        codes_list = [i.zfill(5) if len(i) == 4 else i for i in codes_list] # FIXME: Does this work for other systems?
+        codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
+
+        return codes_list
 
     def _load_model(self, hf, force_download, baseline):
         
@@ -294,6 +319,9 @@ class OccCANINE:
         'full' evaluates all possible digit combinations through the seq2seq decoder and returns a probability of each of all the possible HISCO codes.
         Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases. 
 
+        More about the 'full' prediction type in self._predict_full
+        
+
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
@@ -411,7 +439,8 @@ class OccCANINE:
             batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
             results.append(batch_predicted_probs)
             
-        
+        results = np.concatenate(results)
+
         out_type = 'probs'
         
         return results, out_type, inputs
@@ -497,6 +526,15 @@ class OccCANINE:
     
     @torch.no_grad
     def _predict_full(self, data_loader):
+        """
+        This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq 
+        decoder. As such this in the order of 330 times slower than the typical the greedy decoder. But with
+        the benefit that a probability of each code is returned.
+
+        This rather larger increase in eval time is because the method requires, that we run all of the 1910 
+        HISCO codes through something akin to the greedy decoder. We achieve some speedup by only running the 
+        decoder on 5 digits. 
+        """
         model = self.model.eval()
 
         inputs = []
@@ -507,28 +545,20 @@ class OccCANINE:
         # Need to initialize first "end time", as this is
         # calculated at bottom of batch loop
         end = time.time()
-        
-        # List of codes to try turned into suitable format
-        # NEXT STEP: CONVERT TO TOKENS USING self.formatter
-        # Delete formatter from decoder. 
-        codes_list_clean = list(self.key.values())
-        codes_list = [str(i) for i in codes_list_clean]
-        codes_list = [[j for j in i] for i in codes_list]
-        
-        
                 
         # Decoder based on model type
         if self.model_type == "mix":
-            decoder = mixer_greedy_decode
+            decoder = full_search_decoder_mix
         elif self.model_type == "seq2seq":
-            decoder = decode_specific_code_seq2seq
+            # decoder = full_search_decoder_seq2seq
+            decoder = full_search_decoder_seq2seq_optimized
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
         
         # Setup
         verbose = self.verbose
         total_batches = len(data_loader)
-        code = codes_list[0] # Tmp to try things out before wrapping in outer loop
+        results = []
 
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
@@ -536,24 +566,24 @@ class OccCANINE:
             
             batch_time_data.update(time.time() - end)
             
-            outputs = decoder(
+            output = decoder(
                 model = model,
                 descr = input_ids,
                 input_attention_mask = attention_mask,
                 device = self.device,
-                code = code,
+                codes_list = self.codes_list,
                 start_symbol = BOS_IDX,
                 formatter = self.formatter
                 )
-            outputs_s2s = outputs[0].cpu().numpy()
-            probs_s2s = outputs[1].cpu().numpy()
+            
             
             # Store input in its original string format
             inputs.extend(batch['occ1'])
             
             # Store predictions
-            preds_s2s_raw.append(outputs_s2s)
-            probs_s2s_raw.append(probs_s2s)
+            output_np = output.cpu().numpy()
+            results.append(output_np)
+
 
             batch_time.update(time.time() - end)
             
@@ -564,23 +594,11 @@ class OccCANINE:
             
             end = time.time()
 
-        preds_s2s_raw = np.concatenate(preds_s2s_raw)
-        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        results = np.concatenate(results)
         
-        preds_s2s = list(map(
-            data_loader.dataset.formatter.clean_pred,
-            preds_s2s_raw,
-        ))
-
-        preds = pd.DataFrame({
-            'input': inputs,
-            'pred_s2s': preds_s2s,
-            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
-        })
+        out_type = 'probs'
         
-        out_type = 'greedy'
-        
-        return preds, out_type, inputs
+        return results, out_type, inputs
             
     def _validate_and_update_prediction_parameters(self, behavior, prediction_type):
         """
@@ -776,12 +794,11 @@ class OccCANINE:
                                 
             elif what == "pred":
                 res = []
-                for probs in out:
-                    for row in probs:
-                        topk_indices = np.argsort(row)[-k_pred:][::-1]
-                        row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
-                        row = [item for sublist in row for item in sublist] # Flatten list
-                        res.append(row)
+                for row in out:
+                    topk_indices = np.argsort(row)[-k_pred:][::-1]
+                    row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
+                    row = [item for sublist in row for item in sublist] # Flatten list
+                    res.append(row)
                                                 
                 column_names = []
                 for i in range(1, k_pred+1):
@@ -809,7 +826,64 @@ class OccCANINE:
                 raise ValueError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
 
             elif what == "pred":
-                res = out
+                sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
+                max_elements = max(len(item) if isinstance(item, list) else 1 for item in sepperate_preds)
+
+                # Create an empty list to store the processed data
+                processed_data = []
+
+                # Process the data
+                for item in sepperate_preds:
+                    if isinstance(item, list):
+                        # If the item is a list, unpack its elements and pad with NaN if necessary
+                        processed_data.append(item + [np.nan] * (max_elements - len(item)))
+                    else:
+                        # If the item is not a list, append it with NaN for the remaining columns
+                        processed_data.append([item] + [np.nan] * (max_elements - 1))
+                
+                # Invert key
+                inv_key = dict(map(reversed, self.key.items()))
+                
+                res = []
+                # Insert description
+                for item in processed_data:
+                    codes = []
+                    for sub_item in item:
+                        try:
+                            float_val = float(sub_item)
+                            if np.isnan(float_val):
+                                codes.append(0)
+                            else:
+                                int_val = int(float_val)
+                                if int_val in inv_key:
+                                    codes.append(inv_key[int_val])
+                                else:
+                                    codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                        except (ValueError, TypeError):
+                            # Handle the case where sub_item cannot be cast to float
+                            codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                    
+                    row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
+                    row = [item for sublist in row for item in sublist] # Flatten list
+                    res.append(row)
+                
+                column_names = []
+                for i in range(1, max_elements+1):column_names.extend([f'hisco_{i}', f'desc_{i}'])
+
+
+                # Create the DataFrame
+                res = pd.DataFrame(res, columns=column_names)
+                
+                # Identify columns starting with 'prob_s2s_'
+                prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
+
+                # Multiply these columns row-wise
+                res['conf'] = out[prob_cols].prod(axis=1)
+
+                # Add input
+                res.insert(0, 'occ1', out.input)
+
+                return res
 
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
@@ -818,7 +892,16 @@ class OccCANINE:
        
         return res
                
-    
+    def _split_str_s2s(self, pred, symbol = "&"):
+        """
+        Splits predicted str if necessary
+        """
+        if symbol in pred:
+            pred = pred.split(symbol)
+
+        return pred
+
+
     def _encode(self, occ1, lang, concat_in):
         """
         Encodes occupational strings into a format suitable for model input.
