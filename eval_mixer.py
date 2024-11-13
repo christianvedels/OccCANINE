@@ -18,13 +18,15 @@ from histocc import (
     Seq2SeqMixerOccCANINE,
 )
 from histocc.formatter import (
-    blocky5,
     BlockyHISCOFormatter,
+    BlockyOCC1950Formatter,
     BOS_IDX,
 )
 from histocc.utils import Averager
 
 from histocc.utils.decoder import mixer_greedy_decode
+
+from train_mixer import MAP_FORMATTER, MAP_NB_CLASSES
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--val-data', type=str, default=None, nargs='+')
     parser.add_argument('--checkpoint', type=str, help='File name of model state')
     parser.add_argument('--fn-out', type=str)
+    parser.add_argument('--target-col-naming', type=str, default='hisco')
 
     # Data parameters
     parser.add_argument('--batch-size', type=int, default=2048)
@@ -42,6 +45,7 @@ def parse_args() -> argparse.Namespace:
 
     # Model parameters
     parser.add_argument('--max-len', type=int, default=128, help='Max. number of characters for input')
+    parser.add_argument('--formatter', type=str, default='hisco', choices=MAP_FORMATTER.keys(), help='Target-side tokenization')
 
     args = parser.parse_args()
 
@@ -50,7 +54,7 @@ def parse_args() -> argparse.Namespace:
 
 def setup_dataset(
         args: argparse.Namespace,
-        formatter: BlockyHISCOFormatter,
+        formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
         tokenizer: CanineTokenizer,
 ) -> OccDatasetV2InMemMultipleFiles:
     dataset_val = OccDatasetV2InMemMultipleFiles(
@@ -59,6 +63,7 @@ def setup_dataset(
         tokenizer=tokenizer,
         max_input_len=args.max_len,
         training=False,
+        target_cols=args.target_col_naming,
     )
 
     return dataset_val
@@ -146,10 +151,15 @@ def evaluate(
         data_loader.dataset.formatter.clean_pred,
         preds_s2s_raw,
     ))
-    preds_linear = np.array([
-        [data_loader.dataset.formatter.lookup_hisco[x] for x in y]
-        for y in preds_linear_raw
-        ])
+
+    if isinstance(data_loader.dataset.formatter, BlockyHISCOFormatter):
+        preds_linear = np.array([
+            [data_loader.dataset.formatter.lookup_hisco[x] for x in y]
+            for y in preds_linear_raw
+            ])
+    else:
+        preds_linear = preds_linear_raw
+
     labels = list(map(
         data_loader.dataset.formatter.clean_pred,
         labels_raw,
@@ -171,7 +181,8 @@ def main():
     args = parse_args()
 
     # Target-side tokenization
-    formatter = blocky5()
+    formatter = MAP_FORMATTER[args.formatter]()
+    num_classes_flat = MAP_NB_CLASSES[args.formatter]
 
     # Input-side tokenization
     tokenizer = load_tokenizer(
@@ -200,7 +211,7 @@ def main():
     model = Seq2SeqMixerOccCANINE(
         model_domain='Multilingual_CANINE',
         num_classes=formatter.num_classes,
-        num_classes_flat=1919, # TODO make arg or infer from formatter
+        num_classes_flat=num_classes_flat,
     ).to(device)
 
     model.load_state_dict(torch.load(args.checkpoint)['model'])
