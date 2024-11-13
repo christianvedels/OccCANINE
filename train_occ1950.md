@@ -41,3 +41,16 @@ python train_mixer.py --save-dir Z:/faellesmappe/tsdj/hisco/v2-OCC1950/occ-canin
 ```
 python eval_s2s.py --checkpoint Z:/faellesmappe/tsdj/hisco/v2-OCC1950/canine-init/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2-OCC1950/canine-init/val-1-s2s-canine-init-s=10000.csv --formatter occ1950 --target-col-naming occ1950 --val-data Z:/faellesmappe/tsdj/hisco/data/Validation_data1_other/EN_OCC1950_IPUMS_US_val1.csv
 ```
+
+
+## Mixer with OccCANINE-seq2seq (baseline) initialization
+
+```
+SET CUDA_VISIBLE_DEVICES=3
+python eval_mixer.py --checkpoint Z:/faellesmappe/tsdj/hisco/v2-OCC1950/occ-canine-init-mixer/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2-OCC1950/occ-canine-init-mixer/val-1-mixer-s2s=585000.csv.csv --formatter occ1950 --target-col-naming occ1950 --val-data Z:/faellesmappe/tsdj/hisco/data/Validation_data1_other/EN_OCC1950_IPUMS_US_val1.csv
+```
+
+```
+SET CUDA_VISIBLE_DEVICES=2
+python eval_mixer.py --checkpoint Z:/faellesmappe/tsdj/hisco/v2-OCC1950/occ-canine-init-mixer/last.bin --fn-out Z:/faellesmappe/tsdj/hisco/v2-OCC1950/occ-canine-init-mixer/val-2-mixer-s2s=585000.csv.csv --formatter occ1950 --target-col-naming occ1950 --val-data Z:/faellesmappe/tsdj/hisco/data/Validation_data2_other/EN_OCC1950_IPUMS_US_val2.csv
+```
