@@ -8,6 +8,7 @@ Loads trained version of the models
 
 import os
 import time
+import warnings
 
 from typing import Dict, Tuple, Literal
 
@@ -64,6 +65,7 @@ from .attacker import AttackerClass
 PredType = Literal['flat', 'greedy', 'full']
 SystemType = Literal['HISCO']
 BehaviorType = Literal['good', 'fast']
+ModelType = Literal['flat', 'seq2seq', 'mix']
 
 def load_keys() -> pd.DataFrame:
     ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
@@ -128,6 +130,9 @@ class OccCANINE:
             hf: bool = True,
             force_download: bool = False,
             system: SystemType = "HISCO",
+            # args primarily for testing purposes -- want to instantiate without loading
+            model_type: ModelType | None = None,
+            skip_load: bool = False,
     ):
         """
         Initializes the OccCANINE model with specified configurations.
@@ -147,7 +152,7 @@ class OccCANINE:
         """
 
         # Check if model name is provided when not using Hugging Face
-        if name == "OccCANINE" and not hf:
+        if name in ('CANINE', "OccCANINE") and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
         # Warn that only the old model is available through Hugging Face
@@ -156,11 +161,9 @@ class OccCANINE:
 
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
+
         if verbose:
             print(f"Using device: {self.device}")
-
-        if name == "CANINE" and not hf:
-            raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
         self.name = name
         self.batch_size = batch_size
@@ -169,7 +172,7 @@ class OccCANINE:
         # Get tokenizer
         self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
-        if system == "HISCO":  # TODO: Handle other model specs
+        if system == "HISCO": # TODO: Handle other model specs
             # Get key
             self.key, self.key_desc = self._load_keys()
 
@@ -185,7 +188,17 @@ class OccCANINE:
             raise NotImplementedError(f"system '{system}' is not implemented. Supported systems: {SystemType}")
 
         # Model and model type
-        self.model, self.model_type = self._load_model(hf, force_download, baseline)
+        if skip_load:
+            if model_type is None:
+                raise ValueError('Must specify `model_type` if not loading weights')
+
+            self.model_type = model_type
+            self.model = self._initialize_model(model_type=model_type)
+        else:
+            if model_type is not None:
+                warnings.warn('specifiel model_type, but discarding argument as model leading specified; model_type will be inferred')
+
+            self.model, self.model_type = self._load_model(hf, force_download, baseline)
 
         # Prediction type
         self.prediction_type = None # Will be changed in any prediction
@@ -219,8 +232,44 @@ class OccCANINE:
 
         return codes_list
 
-    def _load_model(self, hf, force_download, baseline):
+    def _initialize_model(
+            self,
+            model_type: ModelType,
+            state_dict = None,
+            ) -> nn.Module:
+        if model_type == 'flat':
+            model = CANINEOccupationClassifier(
+                model_domain="Multilingual_CANINE",
+                n_classes = len(self.key), dropout_rate=0
+                )
 
+        elif model_type == 'seq2seq':
+            model = Seq2SeqOccCANINE(
+                model_domain='Multilingual_CANINE',
+                num_classes=self.formatter.num_classes,
+            )
+
+        elif model_type == 'mix':
+            model = Seq2SeqMixerOccCANINE(
+                model_domain='Multilingual_CANINE',
+                num_classes=self.formatter.num_classes,
+                num_classes_flat = len(self.key),
+            )
+        else:
+            raise ValueError(f"Undefined 'model_type' {model_type} requested")
+
+        # Load params to model if not baseline:
+        if state_dict is not None:
+            if model_type == 'flat':
+                model.load_state_dict(state_dict)
+            else:
+                model.load_state_dict(state_dict['model'])
+
+        model.to(self.device)
+
+        return model
+
+    def _load_model(self, hf, force_download, baseline):
         # Load model from Hugging Face (only works for the old model))
         if hf:
             # Validate model name
@@ -243,35 +292,7 @@ class OccCANINE:
         model_type = self._derive_model_type(loaded_state)
 
         # Load depending on model type
-        if model_type == 'flat':
-            model = CANINEOccupationClassifier(
-                model_domain="Multilingual_CANINE",
-                n_classes = len(self.key), dropout_rate=0
-                )
-
-        elif model_type == 'seq2seq':
-            model = Seq2SeqOccCANINE(
-                model_domain='Multilingual_CANINE',
-                num_classes=self.formatter.num_classes,
-            )
-
-        elif model_type == 'mix':
-            model = Seq2SeqMixerOccCANINE(
-                model_domain='Multilingual_CANINE',
-                num_classes=self.formatter.num_classes,
-                num_classes_flat = len(self.key),
-            )
-        else:
-            raise NotImplementedError("Somehow an undefined 'model_type' was used")
-
-        # Load params to model if not baseline:
-        if not baseline:
-            if model_type == 'flat':
-                model.load_state_dict(loaded_state)
-            else:
-                model.load_state_dict(loaded_state['model'])
-
-        model.to(self.device)
+        model = self._initialize_model(model_type=model_type)
 
         return model, model_type
 
@@ -292,7 +313,6 @@ class OccCANINE:
                 raise NotImplementedError(error_message)
         elif len(loaded_state) == 4:
             # NEW CASE
-            _ = 1
             model_dict_keys = loaded_state['model'].keys()
 
             if 'linear_decoder.bias' in model_dict_keys:
@@ -1156,7 +1176,6 @@ class OccCANINE:
             batch_size: int,
             model_domain: str = "Multilingual_CANINE",
             alt_prob: float = 0.2,
-            insert_words: bool = True,
             testval_fraction: float = 0.1,
             new_labels: bool = True,
             verbose: bool = False,
