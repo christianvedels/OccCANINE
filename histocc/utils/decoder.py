@@ -92,11 +92,11 @@ def flat_decode_flat_model(
     """
     Minimal decoder to handle everything as decoders in same module.
     Flat decoder for decoding based on 'flat' model (v1 of OccCANINE).
-    
+
     """
-    
+
     logits = model.forward(descr, input_attention_mask)
-    
+
     return logits
 
 def flat_decode_mixer(
@@ -105,14 +105,14 @@ def flat_decode_mixer(
         input_attention_mask: Tensor,
         ):
     """
-    Minimal decoder used for fast 'flat' decoding of mixed output models. 
-    
+    Minimal decoder used for fast 'flat' decoding of mixed output models.
+
     """
     _, pooled_memory = model.encode(descr, input_attention_mask)
 
     # Linear output
     logits = model.linear_decoder(pooled_memory)
-            
+
     return logits
 
 
@@ -158,15 +158,14 @@ def full_search_decoder_seq2seq_optimized(
         device: torch.device,
         codes_list: list[list[int]],
         start_symbol: int,
-        formatter: BlockyHISCOFormatter
         ) -> dict:
-    
+
     memory = model.encode(descr, input_attention_mask)
     batch_size = descr.size(0)
 
     # Step 1: Build Trie
     trie = build_trie(codes_list)
-    
+
     # Step 2: Initialize results
     results = torch.empty((batch_size, len(codes_list)), dtype=torch.float, device=device)
     code_indices = {tuple(code): idx for idx, code in enumerate(codes_list)}
@@ -182,12 +181,12 @@ def full_search_decoder_seq2seq_optimized(
 
     while stack:
         node, seq, prob_seq = stack.pop()
-        
+
         if node.codes:
             for code in node.codes:
                 code_seq_probs = prob_seq[:, -1]
                 results[:, code_indices[tuple(code)]] = code_seq_probs
-        
+
         for number, child_node in node.children.items():
             which_output = torch.ones(batch_size, 1).fill_(number).type(torch.long).to(device)
             target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
@@ -203,7 +202,7 @@ def full_search_decoder_seq2seq_optimized(
             new_prob_seq = prob_seq * next_prob
             new_seq = torch.cat([seq, which_output], dim=1)
             stack.append((child_node, new_seq, new_prob_seq))
-    
+
     # print(n_model_calls) # 4073 is equal to trie.count_nodes(): Compared to len(codes_list)*5 = 9595
-    
+
     return results

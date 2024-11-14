@@ -9,7 +9,7 @@ Loads trained version of the models
 import os
 import time
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Literal
 
 import torch
 
@@ -24,8 +24,8 @@ import pandas as pd
 
 from .datasets import DATASETS
 from .model_assets import (
-    CANINEOccupationClassifier, 
-    CANINEOccupationClassifier_hub, 
+    CANINEOccupationClassifier,
+    CANINEOccupationClassifier_hub,
     Seq2SeqOccCANINE,
     Seq2SeqMixerOccCANINE,
     load_tokenizer
@@ -35,32 +35,41 @@ from .dataloader import (
     OccDatasetV2FromAlreadyLoadedInputs
     )
 
-from histocc.formatter import (
+from .formatter import (
     hisco_blocky5,
     BOS_IDX,
 )
 
-from histocc.utils import Averager
-from histocc.utils.decoder import (
+from .utils import Averager
+from .utils.decoder import (
     flat_decode_flat_model,
     flat_decode_mixer,
-    greedy_decode, 
+    greedy_decode,
     mixer_greedy_decode,
     full_search_decoder_seq2seq_optimized
     )
 
-from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
+from .dataloader import (
+    concat_string_canine,
+    OCCDataset,
+    labels_to_bin,
+    train_test_val,
+    save_tmp,
+    create_data_loader,
+)
 from .trainer import trainer_loop_simple, eval_model
 from .attacker import AttackerClass
 
 
+PredType = Literal['flat', 'greedy', 'full']
+SystemType = Literal['HISCO']
+BehaviorType = Literal['good', 'fast']
+
 def load_keys() -> pd.DataFrame:
-    fn_keys = files('histocc').joinpath('Data/Key.csv')
+    ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
+    '''
+    return DATASETS['keys']()
 
-    with fn_keys.open() as file:
-        keys = pd.read_csv(file, skiprows=[1])
-
-    return keys
 
 # Get_adapted_tokenizer
 def get_adapated_tokenizer(name: str):
@@ -109,7 +118,17 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 
 
 class OccCANINE:
-    def __init__(self, name = "OccCANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False, system = "HISCO"):
+    def __init__(
+            self,
+            name = "OccCANINE",
+            device: torch.device | None = None,
+            batch_size: int = 256,
+            verbose: bool = False,
+            baseline: bool = False,
+            hf: bool = True,
+            force_download: bool = False,
+            system: SystemType = "HISCO",
+    ):
         """
         Initializes the OccCANINE model with specified configurations.
 
@@ -153,28 +172,27 @@ class OccCANINE:
         if system == "HISCO":  # TODO: Handle other model specs
             # Get key
             self.key, self.key_desc = self._load_keys()
-                
+
             # Formatter
             self.formatter = hisco_blocky5()
 
             # Length of codes
             self.code_len = 5
-        
-            # List of codes formatted to fit with the output from seq2seq/mix model
-            self.codes_list = self._list_of_formatted_codes()             
-        else:
-            raise NotImplementedError(f"system '{system}' is not implemented")
 
+            # List of codes formatted to fit with the output from seq2seq/mix model
+            self.codes_list = self._list_of_formatted_codes()
+        else:
+            raise NotImplementedError(f"system '{system}' is not implemented. Supported systems: {SystemType}")
 
         # Model and model type
-        self.model, self.model_type = self._load_model(hf, force_download, baseline)        
-        
+        self.model, self.model_type = self._load_model(hf, force_download, baseline)
+
         # Prediction type
         self.prediction_type = None # Will be changed in any prediction
-        
+
         # Promise for later initialization
         self.finetune_key = None
-        
+
         # Max seq len: Maybe don't make this an arg? Changig it to something longer would require retraining?
         self.max_seq_len = 128
 
@@ -202,68 +220,68 @@ class OccCANINE:
         return codes_list
 
     def _load_model(self, hf, force_download, baseline):
-        
+
         # Load model from Hugging Face (only works for the old model))
         if hf:
             # Validate model name
             if self.name != "OccCANINE":
                 raise ValueError("Hugging Face loading is only supported for the 'OccCANINE' model.")
 
-            model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/OccCANINE", force_download=force_download).to(self.device)
+            model = CANINEOccupationClassifier_hub.from_pretrained("Christianvedel/OccCANINE", force_download=force_download).to(self.device)
             model.to(self.device)
 
             # Determine model type
             model_type = "flat" # TODO: Make this more dynamic
 
             return model, model_type
-        
+
         # Load state
         model_path = f'{self.name}'
         loaded_state = torch.load(model_path, map_location=self.device)
-        
+
         # Determine model type
         model_type = self._derive_model_type(loaded_state)
-        
+
         # Load depending on model type
         if model_type == 'flat':
             model = CANINEOccupationClassifier(
-                model_domain="Multilingual_CANINE", 
+                model_domain="Multilingual_CANINE",
                 n_classes = len(self.key), dropout_rate=0
                 )
-                
+
         elif model_type == 'seq2seq':
             model = Seq2SeqOccCANINE(
-                model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+                model_domain='Multilingual_CANINE',
                 num_classes=self.formatter.num_classes,
             )
-            
+
         elif model_type == 'mix':
             model = Seq2SeqMixerOccCANINE(
-                model_domain='Multilingual_CANINE', # TODO make arg, discuss with Vedel
+                model_domain='Multilingual_CANINE',
                 num_classes=self.formatter.num_classes,
-                num_classes_flat = len(self.key), # TODO make arg or infer from formatter
+                num_classes_flat = len(self.key),
             )
         else:
             raise NotImplementedError("Somehow an undefined 'model_type' was used")
-        
+
         # Load params to model if not baseline:
         if not baseline:
             if model_type == 'flat':
                 model.load_state_dict(loaded_state)
-            else: 
+            else:
                 model.load_state_dict(loaded_state['model'])
-                        
+
         model.to(self.device)
-        
+
         return model, model_type
-        
+
     def _derive_model_type(self, loaded_state):
         """
         Derives the model type 'flat', 'seq2seq' or 'mix' based on model arch
         """
-        
+
         error_message = "Model type could not be automatically identified"
-        
+
         # Determine model type
         if len(loaded_state) > 100: # If very long it is probably the old
             # OLD CASE:
@@ -276,20 +294,32 @@ class OccCANINE:
             # NEW CASE
             _ = 1
             model_dict_keys = loaded_state['model'].keys()
-            
+
             if 'linear_decoder.bias' in model_dict_keys:
                 model_type = 'mix'
-            elif 'decoder.head.weight' in model_dict_keys: 
+            elif 'decoder.head.weight' in model_dict_keys:
                 model_type = 'seq2seq'
             else:
                 raise NotImplementedError(error_message)
         else:
             raise NotImplementedError(error_message)
-        
-        
+
+
         return model_type
-            
-    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True, behavior = "good", prediction_type = None, k_pred = 5):
+
+    def predict(
+            self,
+            occ1: str | list[str],
+            lang: str = "unk",
+            what: str = "pred",
+            threshold: float = 0.22,
+            concat_in: bool = False,
+            get_dict: bool = False,
+            get_df: bool = True,
+            behavior: BehaviorType = "good",
+            prediction_type: PredType | None = None,
+            k_pred: int = 5,
+    ):
         """
         Makes predictions on a batch of occupational strings.
 
@@ -304,37 +334,37 @@ class OccCANINE:
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
         - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
         - k_pred (int): Maximum number of predicted occupational codes to keep
-        
+
         **Details.**
-        *behvaior* 
+        *behvaior*
         When 'fast' is chosen, the prediction will be based on a simple 'flat' decoder with one output neuron per possible class.
-        When 'good' is chosen, the prediction will be based on a seq2seq transformer decoder. 
-        The 'good' option is in the order of 5-10 times slower than the 'fast' option but performance is worse. 
+        When 'good' is chosen, the prediction will be based on a seq2seq transformer decoder.
+        The 'good' option is in the order of 5-10 times slower than the 'fast' option but performance is worse.
         Se the paper for more details https://arxiv.org/abs/2402.13604
-        
+
         *prediciton_type*
         The output from the CANINE transformer model needs to be turned into predictions. This option allows you to pick how you want this to happen.
         'flat' is the simplest. This takes the pooled output and feeds it into a single layer of output neurons with one output for each HISCO code.
         'greedy' runs the seq2seq transformer decoder in a greedy fashion. I.e. picking the most likely digit at each step.
         'full' evaluates all possible digit combinations through the seq2seq decoder and returns a probability of each of all the possible HISCO codes.
-        Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases. 
+        Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases.
 
         More about the 'full' prediction type in self._predict_full
-        
+
 
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
         # Validate prediction arguments' compatability
         prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
-        
+
         # Handle list vs str
         if isinstance(occ1, str):
             occ1 = [occ1]
-        
+
         # Clean string
         occ1 = self._prep_str(occ1)
-        
+
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
             inputs = occ1,
@@ -345,36 +375,38 @@ class OccCANINE:
             max_input_len=128,
             training=False,
         )
-        
+
         data_loader = DataLoader(
             dataset,
             batch_size=self.batch_size,
             shuffle=False
             )
-                
+
         # Timing
         start = time.time()
-        
+
         # Run prediction type
         if prediction_type == 'flat':
             out, out_type, inputs = self._predict_flat(data_loader)
-        if prediction_type == 'greedy': 
+        elif prediction_type == 'greedy':
             out, out_type, inputs = self._predict_greedy(data_loader)
-        if prediction_type == 'full':
+        elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
-            
+        else:
+            raise ValueError(f'Unsupported prediction type {prediction_type}, must be one of {PredType}')
+
         # Return format
         result = self._format(out, out_type, what, inputs, lang, threshold, k_pred)
-        
-        
+
         # Time keeping
         end = time.time()
+
         if self.verbose:
             self._end_message(start, end, occ1)
-        
+
         # Return
         return result
-        
+
     def _predict_flat(self, data_loader): # TODO: Make sure it also works for model_type="mix"
         """
         Makes predictions on a batch of occupational strings.
@@ -386,20 +418,20 @@ class OccCANINE:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
         model = self.model.eval()
-        
+
         # Setup
         verbose = self.verbose
         results = []
         inputs = []
         total_batches = len(data_loader)
-        
+
         batch_time = Averager()
         batch_time_data = Averager()
-        
+
         # Need to initialize first "end time", as this is
         # calculated at bottom of batch loop
         end = time.time()
-        
+
         # Decoder based on model type
         if self.model_type == "mix":
             decoder = flat_decode_mixer
@@ -409,11 +441,9 @@ class OccCANINE:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the flat prediciton")
 
         for batch_idx, batch in enumerate(data_loader, start=1):
-
-            input_str = batch['occ1']
             input_ids = batch["input_ids"].to(self.device)
             attention_mask = batch["attention_mask"].to(self.device)
-            
+
             batch_time_data.update(time.time() - end)
 
             with torch.no_grad():
@@ -422,29 +452,27 @@ class OccCANINE:
                     descr = input_ids,
                     input_attention_mask = attention_mask
                     )
-             
+
             # Store input in its original string format
-            inputs.extend(batch['occ1'])    
-            
+            inputs.extend(batch['occ1'])
+
             batch_time.update(time.time() - end)
-                
+
             if batch_idx % 1 == 0 and verbose:
                 print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
-                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
-                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
-            
+
             end = time.time()
-            
+
             batch_logits = output
             batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
             results.append(batch_predicted_probs)
-            
+
         results = np.concatenate(results)
 
         out_type = 'probs'
-        
+
         return results, out_type, inputs
-        
+
     @torch.no_grad
     def _predict_greedy(self, data_loader):
         model = self.model.eval()
@@ -456,11 +484,11 @@ class OccCANINE:
 
         batch_time = Averager()
         batch_time_data = Averager()
-                        
+
         # Need to initialize first "end time", as this is
         # calculated at bottom of batch loop
         end = time.time()
-        
+
         # Decoder based on model type
         if self.model_type == "mix":
             decoder = mixer_greedy_decode
@@ -468,7 +496,7 @@ class OccCANINE:
             decoder = greedy_decode
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
-        
+
         # Setup
         verbose = self.verbose
         total_batches = len(data_loader)
@@ -476,9 +504,9 @@ class OccCANINE:
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
             attention_mask = batch["attention_mask"].to(self.device)
-            
+
             batch_time_data.update(time.time() - end)
-            
+
             outputs = decoder(
                 model = model,
                 descr = input_ids,
@@ -489,26 +517,24 @@ class OccCANINE:
                 )
             outputs_s2s = outputs[0].cpu().numpy()
             probs_s2s = outputs[1].cpu().numpy()
-            
+
             # Store input in its original string format
             inputs.extend(batch['occ1'])
-            
+
             # Store predictions
             preds_s2s_raw.append(outputs_s2s)
             probs_s2s_raw.append(probs_s2s)
 
             batch_time.update(time.time() - end)
-            
+
             if batch_idx % 1 == 0 and verbose:
                 print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
-                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
-                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
-            
+
             end = time.time()
 
         preds_s2s_raw = np.concatenate(preds_s2s_raw)
         probs_s2s_raw = np.concatenate(probs_s2s_raw)
-        
+
         preds_s2s = list(map(
             data_loader.dataset.formatter.clean_pred,
             preds_s2s_raw,
@@ -519,21 +545,21 @@ class OccCANINE:
             'pred_s2s': preds_s2s,
             **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
         })
-        
+
         out_type = 'greedy'
-        
+
         return preds, out_type, inputs
-    
+
     @torch.no_grad
     def _predict_full(self, data_loader):
         """
-        This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq 
+        This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq
         decoder. As such this in the order of 330 times slower than the typical the greedy decoder. But with
         the benefit that a probability of each code is returned.
 
-        This rather larger increase in eval time is because the method requires, that we run all of the 1910 
-        HISCO codes through something akin to the greedy decoder. We achieve some speedup by only running the 
-        decoder on 5 digits. 
+        This rather larger increase in eval time is because the method requires, that we run all of the 1910
+        HISCO codes through something akin to the greedy decoder. We achieve some speedup by only running the
+        decoder on 5 digits.
         """
         model = self.model.eval()
 
@@ -541,20 +567,19 @@ class OccCANINE:
 
         batch_time = Averager()
         batch_time_data = Averager()
-                        
+
         # Need to initialize first "end time", as this is
         # calculated at bottom of batch loop
         end = time.time()
-                
+
         # Decoder based on model type
         if self.model_type == "mix":
-            decoder = full_search_decoder_mix
+            raise NotImplementedError('full-distribution prediction not supported for mixer models yet')
         elif self.model_type == "seq2seq":
-            # decoder = full_search_decoder_seq2seq
             decoder = full_search_decoder_seq2seq_optimized
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
-        
+
         # Setup
         verbose = self.verbose
         total_batches = len(data_loader)
@@ -563,9 +588,9 @@ class OccCANINE:
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
             attention_mask = batch["attention_mask"].to(self.device)
-            
+
             batch_time_data.update(time.time() - end)
-            
+
             output = decoder(
                 model = model,
                 descr = input_ids,
@@ -573,34 +598,31 @@ class OccCANINE:
                 device = self.device,
                 codes_list = self.codes_list,
                 start_symbol = BOS_IDX,
-                formatter = self.formatter
                 )
-            
-            
+
+
             # Store input in its original string format
             inputs.extend(batch['occ1'])
-            
+
             # Store predictions
             output_np = output.cpu().numpy()
             results.append(output_np)
 
 
             batch_time.update(time.time() - end)
-            
+
             if batch_idx % 1 == 0 and verbose:
                 print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
-                # print(f'Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}).')
-                # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
-            
+
             end = time.time()
 
         results = np.concatenate(results)
-        
+
         out_type = 'probs'
-        
+
         return results, out_type, inputs
-            
-    def _validate_and_update_prediction_parameters(self, behavior, prediction_type):
+
+    def _validate_and_update_prediction_parameters(self, behavior, prediction_type: PredType | None):
         """
         Wraps all the validation and updating of 'behavior' and 'prediction_type'
         and makes sure that they are compatible with 'self.model_type'
@@ -612,52 +634,54 @@ class OccCANINE:
         Returns:
         - Possibly updated 'prediction_type'
         """
-        
+
         # Validate 'behavior'
         test = behavior in ['good', 'fast']
         if not test:
             raise NotImplementedError(f"behavior: '{behavior}' is not implemented")
-            
+
         # Validate 'behavior'
         test = self._behavior_compatible(behavior)
+
         if not test:
             raise NotImplementedError(f"behavior: '{behavior}' is not implemented for the loaded model, which has model type: '{self.model_type}'. Please specify different model in initialization or change 'behavior'.")
-            
+
         # Set 'prediction_type' based on 'behavior'
         # If 'prediction_type' is not None then that prediction type overwrites
         if prediction_type is not None:
-            _ = 1 # Change nothing
+            pass # Change nothing
         else:
             if behavior == "fast":
                 prediction_type = "flat"
             if behavior == "good":
                 prediction_type = "greedy"
-            
+
             print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
-        
+
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
         if not test:
             raise NotImplementedError(f"prediction_type: '{prediction_type}' is not implemented")
-            
+
         # Validate prediction type is compatible with model type
         test = self._prediction_type_compatible(prediction_type)
+
         if not test:
             raise NotImplementedError(f"There is not implemented solution for handling: prediction_type: '{prediction_type}' togehter with model_type: '{self.model_type}'")
+
         self.prediction_type = prediction_type
-        
+
         return prediction_type
-        
-            
-    def _prediction_type_compatible(self, prediction_type):
+
+    def _prediction_type_compatible(self, prediction_type: PredType):
         """
         Makes sure that the chosen combination of prediction type and model type
         are compatible
 
         Parameters:
         - prediction_type (str): Prediction type: 'flat', 'greedy', 'full'
-        
-        """        
+
+        """
         if self.model_type == "mix":
             res = True # Then all prediction types are possible
         elif self.model_type == "seq2seq":
@@ -674,13 +698,13 @@ class OccCANINE:
             raise NotImplementedError(
                 """
                 This should not be possible. You did something weird to end up here.
-                An invalid 'prediction_type' was used but somehow passed the first 
-                check. 
+                An invalid 'prediction_type' was used but somehow passed the first
+                check.
                 """
                 )
-        
+
         return res
-    
+
     def _behavior_compatible(self, behavior):
         """
         Makes sure that the chosen combination of prediction type and model type
@@ -688,17 +712,17 @@ class OccCANINE:
 
         Parameters:
         - behavior (str): Behavior type: 'good' or 'fast'
-        
+
         """
         if not behavior in ['good', 'fast']:
             raise NotImplementedError(
                 """
                 This should not be possible. You did something weird to end up here.
-                An invalid 'behavior' was used but somehow passed the first 
-                check. 
+                An invalid 'behavior' was used but somehow passed the first
+                check.
                 """
                 )
-        
+
         if self.model_type == "mix":
             res = True # Then all prediction types are possible
         elif self.model_type == "seq2seq":
@@ -715,13 +739,13 @@ class OccCANINE:
             raise NotImplementedError(
                 """
                 This should not be possible. You did something weird to end up here.
-                An invalid 'behavior' was used but somehow passed the first 
-                check. 
+                An invalid 'behavior' was used but somehow passed the first
+                check.
                 """
                 )
-        
+
         return res
-    
+
     def _prep_str(self, occ1):
         """
         Prepares occupational strings into a format suitable for model input.
@@ -737,7 +761,7 @@ class OccCANINE:
         occ1 = [unidecode(occ) for occ in occ1]
 
         return occ1
-    
+
     def _end_message(self, start, end, inputs):
         dif_time = end - start
         m, s = divmod(dif_time, 60)
@@ -749,10 +773,10 @@ class OccCANINE:
         except AttributeError:
             # Fallback if occ1 does not have a .shape attribute, use len() instead
             nobs = len(inputs)
-            
+
         print(f"\nProduced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
-        saved_time = nobs*10 - dif_time
+        saved_time = nobs * 10 - dif_time
         m, s = divmod(saved_time, 60)
         h, m = divmod(m, 60)
 
@@ -762,13 +786,22 @@ class OccCANINE:
         print("")
         print("If the time saved is valuable for you, please cite our paper:")
         self.citation()
-    
+
     def citation(self):
         print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
         print("URL: https://arxiv.org/abs/2402.13604")
-    
-    def _format(self, out, out_type, what, inputs, lang, threshold, k_pred):
-        """ 
+
+    def _format(
+            self,
+            out,
+            out_type: str,
+            what: str,
+            inputs,
+            lang: str,
+            threshold: float,
+            k_pred: int,
+    ):
+        """
         Formats preditions based on out, out_type and 'what'
 
         Parameters:
@@ -781,17 +814,17 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter.
         """
-        
+
         if out_type == "probs":
-            
+
             if what == "probs":
                 # Unnest
                 res = np.vstack(out)
-                
+
                 # Validate shape
                 assert res.shape[0] == len(inputs), "N rows in inputs should equal N rows in output"
                 assert res.shape[1] == len(self.key), "N cols should equal number of entries in self.key"
-                                
+
             elif what == "pred":
                 res = []
                 for row in out:
@@ -799,13 +832,13 @@ class OccCANINE:
                     row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
                     row = [item for sublist in row for item in sublist] # Flatten list
                     res.append(row)
-                                                
+
                 column_names = []
                 for i in range(1, k_pred+1):
                     column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
-                               
+
                 res = pd.DataFrame(res, columns=column_names)
-                
+
                 # Vectorized operation to mask predictions below the threshold
                 for j in range(1, k_pred + 1):
                     prob_column = f"prob_{j}"
@@ -816,11 +849,11 @@ class OccCANINE:
                 res["hisco_1"] = res["hisco_1"].astype(str)
 
                 res.insert(0, 'occ1', inputs)
-            
+
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
-                
-                
+
+
         elif out_type == "greedy":
             if what == "probs":
                 raise ValueError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
@@ -840,10 +873,10 @@ class OccCANINE:
                     else:
                         # If the item is not a list, append it with NaN for the remaining columns
                         processed_data.append([item] + [np.nan] * (max_elements - 1))
-                
+
                 # Invert key
                 inv_key = dict(map(reversed, self.key.items()))
-                
+
                 res = []
                 # Insert description
                 for item in processed_data:
@@ -862,18 +895,18 @@ class OccCANINE:
                         except (ValueError, TypeError):
                             # Handle the case where sub_item cannot be cast to float
                             codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
-                    
+
                     row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
                     row = [item for sublist in row for item in sublist] # Flatten list
                     res.append(row)
-                
+
                 column_names = []
                 for i in range(1, max_elements+1):column_names.extend([f'hisco_{i}', f'desc_{i}'])
 
 
                 # Create the DataFrame
                 res = pd.DataFrame(res, columns=column_names)
-                
+
                 # Identify columns starting with 'prob_s2s_'
                 prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
 
@@ -887,12 +920,10 @@ class OccCANINE:
 
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
-       
-        
-       
+
         return res
-               
-    def _split_str_s2s(self, pred, symbol = "&"):
+
+    def _split_str_s2s(self, pred: str, symbol: str = "&"):
         """
         Splits predicted str if necessary
         """
@@ -901,8 +932,7 @@ class OccCANINE:
 
         return pred
 
-
-    def _encode(self, occ1, lang, concat_in):
+    def _encode(self, occ1: list[str], lang: str | list[str], concat_in: bool):
         """
         Encodes occupational strings into a format suitable for model input.
 
@@ -931,8 +961,17 @@ class OccCANINE:
             inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
 
         return inputs
-        
-    def predict_old(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
+
+    def predict_old(
+            self,
+            occ1,
+            lang: str = "unk",
+            what: str = "pred",
+            threshold: float = 0.22,
+            concat_in: bool = False,
+            get_dict: bool = False,
+            get_df: bool = True,
+    ):
         """
         Makes predictions on a batch of occupational strings.
 
@@ -948,11 +987,11 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
-        
+
         # Handle list vs str
         if isinstance(occ1, str):
             occ1 = [occ1]
-        
+
         # Setup
         inputs = self._encode(occ1, lang, concat_in)
         batch_size = self.batch_size
@@ -967,7 +1006,7 @@ class OccCANINE:
         if get_dict:
             get_df = False
 
-        if get_df and what=="pred":
+        if get_df and what == "pred":
             what0 = what
             what = 5 # This is the easiest way of handling this
 
@@ -1031,20 +1070,20 @@ class OccCANINE:
         if isinstance(what, (int, float)):
             if not get_dict:
                 results = top_n_to_df(results, what)
-            
+
         if isinstance(what, (int, float)) and what0 == "pred":
             print("\nPrediction done. Cleaning results.")
-        
+
             # Vectorized operation to mask predictions below the threshold
             for j in range(1, what + 1):
                 prob_column = f"prob_{j}"
                 mask = results[prob_column] <= threshold
                 results.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
-        
+
             # First, ensure "hisco_1" is of type string to avoid mixing data types
             results["hisco_1"] = results["hisco_1"].astype(str)
             results["hisco_1"].fillna("-1", inplace=True)
-            
+
             results.insert(0, 'inputs', inputs)
 
         end = time.time()
@@ -1072,7 +1111,7 @@ class OccCANINE:
 
         return results
 
-    def forward_base(self, occ1, lang = "unk", concat_in = False):
+    def forward_base(self, occ1, lang: str = "unk", concat_in: bool = False):
         """
         This method prints returns the forward pass of the underlying transformer model
 
@@ -1110,7 +1149,18 @@ class OccCANINE:
         print("\n")
         return results
 
-    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1, new_labels = True, verbose = False):
+    def _process_data(
+            self,
+            data_df: pd.DataFrame,
+            label_cols: list[str],
+            batch_size: int,
+            model_domain: str = "Multilingual_CANINE",
+            alt_prob: float = 0.2,
+            insert_words: bool = True,
+            testval_fraction: float = 0.1,
+            new_labels: bool = True,
+            verbose: bool = False,
+    ):
         """
         Processes the input data for training or validation.
 
@@ -1231,9 +1281,9 @@ class OccCANINE:
         n_classes = len(key)
 
         # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
+        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
 
         # Data loaders
         data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
@@ -1248,8 +1298,18 @@ class OccCANINE:
             'tokenizer': self.tokenizer
         }
 
-
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False, save_model = True, save_path = '../OccCANINE/Finetuned/'):
+    def _train_model(
+            self,
+            processed_data,
+            model_name: str,
+            epochs: int,
+            only_train_final_layer: bool,
+            verbose: bool = True,
+            verbose_extra: bool = False,
+            new_labels: bool = False,
+            save_model: bool = True,
+            save_path: str = '../OccCANINE/Finetuned/',
+    ):
         """
         Trains the model with the provided processed data.
 
@@ -1380,19 +1440,18 @@ class OccCANINE:
 
     def finetune(
             self,
-            data_df,
-            label_cols,
-            batch_size="Default",
-            epochs=3,
-            attack=True,
+            data_df: pd.DataFrame,
+            label_cols: list[str],
+            batch_size: int | str = "Default",
+            epochs: int = 3,
             save_name = "finetuneCANINE",
-            only_train_final_layer = False,
-            verbose = True,
-            verbose_extra = False,
-            test_fraction = 0.1,
-            new_labels = False,
-            save_model = True,
-            save_path = "Finetuned/"
+            only_train_final_layer: bool = False,
+            verbose: bool = True,
+            verbose_extra: bool = False,
+            test_fraction: float = 0.1,
+            new_labels: bool = False,
+            save_model: bool = True,
+            save_path: str = "Finetuned/"
             ):
         """
         Fine-tunes the model on the provided dataset.
@@ -1412,8 +1471,6 @@ class OccCANINE:
             Batch size for training. If "Default", the class-specified batch size is used. Defaults to "Default".
         epochs : int, optional
             Number of epochs for training. Defaults to 3.
-        attack : bool, optional
-            Indicates whether data augmentation should be used in training. Defaults to True.
         save_name : str, optional
             The name under which the trained model is to be saved. Defaults to "finetuneCANINE".
         only_train_final_layer : bool, optional
