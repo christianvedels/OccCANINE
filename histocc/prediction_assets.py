@@ -876,7 +876,7 @@ class OccCANINE:
 
         elif out_type == "greedy":
             if what == "probs":
-                raise ValueError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
+                raise NotImplementedError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
 
             elif what == "pred":
                 sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
