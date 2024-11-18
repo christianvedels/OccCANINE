@@ -148,10 +148,10 @@ class TestWrapperSeq2SeqOccCANINE(unittest.TestCase):
                 what='pred',
             )
         except NotImplementedError as err:
-            warnings.warn(f'WARNING: mixer full pred not supported yet: {err}')
+            warnings.warn(f'WARNING: mixer full pred not supported yet. Underlying error: {err}')
 
-    # Varying prediction_type -- what == pred
-    def test_seq2seq_greedy_prob(self): # TODO perhaps disable, or just leave as signal of "yet-to-do"
+    # Varying prediction_type -- what == prob
+    def test_seq2seq_greedy_prob(self):
         try:
             self._test_predict(
                 wrapper=self.wrapper_s2s,
@@ -161,7 +161,49 @@ class TestWrapperSeq2SeqOccCANINE(unittest.TestCase):
                 what='probs',
             )
         except NotImplementedError as err:
-            warnings.warn(f'WARNING: seq2seq greedy probs not supported yet: {err}')
+            warnings.warn(f'WARNING: seq2seq greedy probs not supported yet. Underlying error: {err}')
+
+    def test_seq2seq_full_prob(self):
+        self._test_predict(
+            wrapper=self.wrapper_s2s,
+            inputs=self.sample_inputs,
+            behavior='good',
+            prediction_type='full',
+            what='probs',
+        )
+
+    def test_mixer_greedy_prob(self):
+        try:
+            self._test_predict(
+                wrapper=self.wrapper_mixer,
+                inputs=self.sample_inputs,
+                behavior='good',
+                prediction_type='greedy',
+                what='probs',
+            )
+        except NotImplementedError as err:
+            warnings.warn(f'WARNING: mixer greedy probs not supported yet. Underlying error: {err}')
+
+    def test_mixer_full_prob(self):
+        try:
+            self._test_predict(
+                wrapper=self.wrapper_mixer,
+                inputs=self.sample_inputs,
+                behavior='good',
+                prediction_type='full',
+                what='probs',
+            )
+        except NotImplementedError as err:
+            warnings.warn(f'WARNING: mixer full pred not supported yet. Underlying error: {err}')
+
+    def test_mixer_flat_prob(self):
+        self._test_predict(
+            wrapper=self.wrapper_mixer,
+            inputs=self.sample_inputs,
+            behavior='good',
+            prediction_type='flat',
+            what='probs',
+        )
 
     # TODO probs but for other prediction_type, wrapper, behavior
 
