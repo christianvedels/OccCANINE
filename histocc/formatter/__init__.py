@@ -13,3 +13,7 @@ from .occ1950 import (
     occ1950_blocky1,
     occ1950_blocky2,
 )
+from .finetune import (
+    BlockyFormatter,
+    construct_finetune_formatter,
+)
