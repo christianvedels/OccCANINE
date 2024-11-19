@@ -148,7 +148,7 @@ class BlockyFormatter:
             map_idx_char: dict[int, str],
             sep_value: str = '',
     ):
-        self.target_cols = target_cols,
+        self.target_cols = target_cols
         self.max_num_codes = len(target_cols)
         self.block_size = block_size
 
