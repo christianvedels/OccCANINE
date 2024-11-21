@@ -17,9 +17,18 @@ import pandas as pd
 from .constants import PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
 
 
-def build_mapping(chars: list[int]) -> tuple[dict[str, int], dict[int, str]]:
+def build_mapping(chars: list[int | str]) -> tuple[dict[str, int], dict[int, str]]:
+    chars = [str(x) for x in chars]
+
+    if not len(chars) == len(set(chars)):
+        raise ValueError(f'Duplicate values in character-set: {chars}')
+
+    for char in chars:
+        if len(char) > 1:
+            raise ValueError(f'Multi-character value in character-set: {chars}')
+
     map_char_idx = {
-        str(x): x + SEP_IDX + (1 - min(chars)) for x in chars
+        str(x): i + SEP_IDX + 1 for i, x in enumerate(chars)
     }
     map_idx_char = {val: key for key, val in map_char_idx.items()}
 
@@ -29,11 +38,15 @@ def build_mapping(chars: list[int]) -> tuple[dict[str, int], dict[int, str]]:
 def format_code(
         raw_code: str,
         mapping: dict[str, int],
+        block_size: int,
         ) -> list[int]:
     label = []
 
     for char in raw_code:
         label.append(mapping[char])
+
+    padding = block_size - len(label)
+    label.extend([PAD_IDX] * padding)
 
     return label
 
@@ -67,7 +80,7 @@ def format_code_seq_blocky(
     label = [BOS_IDX]
 
     for code in seq:
-        label.extend(format_code(code, mapping))
+        label.extend(format_code(code, mapping, block_size))
 
     # Now pad till `max_num_codes` achieved
     padding = (max_num_codes - len(seq)) * block_size
@@ -111,29 +124,31 @@ def clean_code_seq_blocky( # pylint: disable=C0116
 
 class BlockyFormatter:
     '''
-    Formatter class to map OCC1950 codes into format suitable for seq2seq model.
-    Always codes an OCC1950 code as 3 integers, as its purpose is to code it in a
-    way where each OCC1950 code occupies same number of elements, hence the 'blocky'
-    part of the class' name.
+    General-purpose formatter class to map a wide array of occupational code
+    formats into a format suiteable for seq2seq models. Codes each code as
+    `block_size` integers, as its purpose is to code it in a way where each
+    code occupies same number of elements, hence the 'blocky' part of the class'
+    name.
 
     Parameters
     ----------
-    max_num_codes : int
-        Maximum number of OCC1950 codes for input. To ensure fixed length of
-        coded version, the output of `self.transform_label` always has length
-        `max_num_codes * CODE_LEN + 2`, where `+ 2` arises due to BOS and EOS
-        tokens.
+    target_cols : list[str]
+        List of column names containing labels. May contain multiple strings
+        since multiple occupational codes may be present. The length of this
+        list determines the maximum number of codes, and even if fewer codes
+        are present, padding is used to ensure a consisten encoding length.
+    block_size : int
+        The size of each code, i.e., the number of characters is maximally
+        takes up. Each code shorter is padded to ensure uniform length.
     map_char_idx : dict[str, int]
-        Lookup to map from a character of a OCC1950 code to its corresponding
-        integer when coded for a seq2seq model. This includes the 10 different
-        characters (0, 1, ..., 9) as well as certain special tokens such as
-        BOS and EOS tokens.
+        Lookup to map from a character of a code to its corresponding integer
+        when coded for a seq2seq model.
     map_idx_char : dict[int, str]
         The reverse mapping of `map_char_idx`
     sep_value : str
         Character (or string, in principle) used to denote separation of multiple
-        OCC1950 codes in input. If `'&'`, then an input `'123&456'` will be split
-        into two parts, those being `'123` and `'456'`.
+        codes in input. If `'&'`, then an input `'123&456'` will be split into two
+        parts, those being `'123` and `'456'`.
 
     '''
     # Pre-initialization declaration to show guaranteed attribute existence
@@ -204,11 +219,6 @@ class BlockyFormatter:
 
             code = str(code)
 
-            if len(code) < self.block_size:
-                # Mistakenly stripped leading zero(s) due to int coding
-                # FIXME this is not true for systems that may not have leading zeros, incl. HISCO special chars. Maybe ignore
-                code = '0' * (self.block_size - len(code)) + code
-
             sanitized.append(code)
 
         sanitized = self.sep_value.join(sanitized)
@@ -249,8 +259,8 @@ class BlockyFormatter:
         Examples
         -------
         When parameterized `self.max_num_codes = 2`, `map_char_idx = occ1950.MAP_OCC1950_IDX`,
-        and `self.sep_value = '&'` and provided with an input `'123&456'`, returns
-        an np.ndarray
+        `block_size = 2`, and `self.sep_value = '&'` and provided with an input `'123&456'`,
+        returns an np.ndarray
             array([
               float(BOS_IDX),  6.,  7.,  8.,  9., 10., 11., float(EOS_IDX),
               ])
@@ -270,10 +280,10 @@ class BlockyFormatter:
 def construct_finetune_formatter(
         block_size: int,
         target_cols: list[str],
-        chars: list[int] | None = None,
+        chars: list[int | str] | None = None,
 ) -> BlockyFormatter:
     if chars is None:
-        chars = list(range(-3, 10))
+        chars = list(range(0, 10)) + ['-']
 
     map_char_idx, map_idx_char = build_mapping(chars)
 
