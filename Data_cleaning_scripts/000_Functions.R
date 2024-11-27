@@ -186,7 +186,13 @@ Keep_only_relevant = function(x, other_to_keep = NA){
 
 # ==== write_csv0 ====
 # write_csv, but with a message
-write_csv0 = function(x, fname){
+write_csv0 = function(x, fname, only_save_none_empty = FALSE){
+  if(only_save_none_empty){
+    if(NROW(x) == 0){
+      warning("No data. Did not save", fname)
+      return(0)
+    }
+  }
   cat("\nSaving", fname, "with", NROW(x)/1000,"thousands rows")
   write_csv(x, fname)
 }
@@ -287,13 +293,13 @@ Save_train_val_test = function(x, Name, language = NA, dir = "standard"){
     )
   
   x_test %>% 
-    write_csv0(fname_test)
+    write_csv0(fname_test, only_save_none_empty = TRUE)
   x_val1 %>% 
-    write_csv0(fname_val1)
+    write_csv0(fname_val1, only_save_none_empty = TRUE)
   x_val2 %>% 
-    write_csv0(fname_val2)
+    write_csv0(fname_val2, only_save_none_empty = TRUE)
   x_train %>% 
-    write_csv0(fname_train)
+    write_csv0(fname_train, only_save_none_empty = TRUE)
 }
 
 
