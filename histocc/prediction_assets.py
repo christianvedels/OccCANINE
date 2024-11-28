@@ -47,7 +47,8 @@ from .utils.decoder import (
     flat_decode_mixer,
     greedy_decode,
     mixer_greedy_decode,
-    full_search_decoder_seq2seq_optimized
+    full_search_decoder_seq2seq_optimized,
+    full_search_decoder_mixer_optimized
     )
 
 from .dataloader import (
@@ -594,7 +595,7 @@ class OccCANINE:
 
         # Decoder based on model type
         if self.model_type == "mix":
-            raise NotImplementedError('full-distribution prediction not supported for mixer models yet')
+            decoder = full_search_decoder_mixer_optimized
         elif self.model_type == "seq2seq":
             decoder = full_search_decoder_seq2seq_optimized
         else:
