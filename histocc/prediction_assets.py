@@ -293,7 +293,7 @@ class OccCANINE:
         model_type = self._derive_model_type(loaded_state)
 
         # Load depending on model type
-        model = self._initialize_model(model_type=model_type)
+        model = self._initialize_model(model_type=model_type, state_dict=loaded_state)
 
         return model, model_type
 

@@ -151,6 +151,7 @@ def greedy_decode_for_training(
 
     return output_seq
 
+
 def full_search_decoder_seq2seq_optimized(
         model: Seq2SeqOccCANINE,
         descr: torch.Tensor,
@@ -205,6 +206,7 @@ def full_search_decoder_seq2seq_optimized(
 
     return results
 
+
 def full_search_decoder_mixer_optimized(
         model: Seq2SeqMixerOccCANINE,
         descr: torch.Tensor,
@@ -213,7 +215,6 @@ def full_search_decoder_mixer_optimized(
         codes_list: list[list[int]],
         start_symbol: int,
         ) -> dict:
-
     memory = model.encode(descr, input_attention_mask)
     
     # Ensure memory is a tensor
