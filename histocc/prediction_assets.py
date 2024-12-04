@@ -29,6 +29,8 @@ from .model_assets import (
     CANINEOccupationClassifier_hub,
     Seq2SeqOccCANINE,
     Seq2SeqMixerOccCANINE,
+    Seq2SeqMixerOccCANINE_hub, 
+    Seq2SeqOccCANINE_hub,
     load_tokenizer
     )
 
@@ -156,9 +158,9 @@ class OccCANINE:
         if name in ('CANINE', "OccCANINE") and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
-        # Warn that only the old model is available through Hugging Face
-        if hf:
-            print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
+        # # Warn that only the old model is available through Hugging Face
+        # if hf:
+        #     print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
 
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
@@ -274,14 +276,24 @@ class OccCANINE:
         # Load model from Hugging Face (only works for the old model))
         if hf:
             # Validate model name
-            if self.name != "OccCANINE":
-                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE' model.")
+            if self.name not in ["OccCANINE", "OccCANINE_s2s_mix", "OccCANINE_s2s"]:
+                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
 
-            model = CANINEOccupationClassifier_hub.from_pretrained("Christianvedel/OccCANINE", force_download=force_download).to(self.device)
-            model.to(self.device)
+            # Load model based on name
+            if self.name == "OccCANINE":
+                model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "flat"
 
-            # Determine model type
-            model_type = "flat" # TODO: Make this more dynamic
+            if self.name == "OccCANINE_s2s_mix":
+                model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "mix"
+
+            if self.name == "OccCANINE_s2s":
+                model = Seq2SeqOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "seq2seq"    
 
             return model, model_type
 
