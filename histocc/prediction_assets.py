@@ -494,7 +494,7 @@ class OccCANINE:
 
         return results, out_type, inputs
 
-    @torch.no_grad
+    @torch.no_grad()
     def _predict_greedy(self, data_loader):
         model = self.model.eval()
 
@@ -571,7 +571,7 @@ class OccCANINE:
 
         return preds, out_type, inputs
 
-    @torch.no_grad
+    @torch.no_grad()
     def _predict_full(self, data_loader):
         """
         This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq
