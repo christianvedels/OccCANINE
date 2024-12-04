@@ -58,11 +58,11 @@ def main():
         "model_type": "canine"
     }
 
-    # # In training PyTorchModelHubMixin was missing
-    # model = CANINEOccupationClassifier_hub(config)
+    # In training PyTorchModelHubMixin was missing
+    model = CANINEOccupationClassifier_hub(config)
 
-    # loaded_state = torch.load(args.fn_in)
-    # model.save_pretrained(args.fn_out, config=config)
+    loaded_state = torch.load(args.fn_in)
+    model.save_pretrained(args.fn_out, config=config)
 
     # Repeat for Seq2SeqMixerOccCANINE_hub
     config["model_type"] = "seq2seq_mixer"
@@ -85,7 +85,7 @@ def main():
     model = Seq2SeqOccCANINE_hub(config)
 
     loaded_state = torch.load(args.fn_in_s2s)
-    model.load_state_dict(loaded_state)
+    model.load_state_dict(loaded_state['model'])
 
     model.save_pretrained(args.fn_out_s2s, config=config)
 
@@ -103,40 +103,6 @@ def main():
             "christianvedel/OccCANINE",
             force_download=True,
             )
-
-    # Repeat for Seq2SeqMixerOccCANINE_hub
-    config["model_type"] = "seq2seq_mixer"
-    config["num_classes"] = [len(key)]  # Assuming num_classes is a list of class counts
-    config["num_classes_flat"] = len(key)  # Assuming num_classes_flat is the total number of classes
-    model = Seq2SeqMixerOccCANINE_hub(config)
-
-    loaded_state = torch.load(args.fn_in)
-    model.load_state_dict(loaded_state)
-
-    model.save_pretrained(args.fn_out, config=config)
-
-    if args.test:
-        model = Seq2SeqMixerOccCANINE_hub.from_pretrained(
-            "christianvedel/Seq2SeqMixerOccCANINE",
-            force_download=True,
-            )
-
-    # Repeat for Seq2SeqOccCANINE_hub
-    config["model_type"] = "seq2seq"
-    config["num_classes"] = [len(key)]  # Assuming num_classes is a list of class counts
-    model = Seq2SeqOccCANINE_hub(config)
-
-    loaded_state = torch.load(args.fn_in)
-    model.load_state_dict(loaded_state)
-
-    model.save_pretrained(args.fn_out, config=config)
-
-    if args.test:
-        model = Seq2SeqOccCANINE_hub.from_pretrained(
-            "christianvedel/Seq2SeqOccCANINE",
-            force_download=True,
-            )
-
 
 if __name__ == '__main__':
     main()
