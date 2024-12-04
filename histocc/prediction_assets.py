@@ -69,6 +69,7 @@ PredType = Literal['flat', 'greedy', 'full']
 SystemType = Literal['HISCO']
 BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
+ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
 
 def load_keys() -> pd.DataFrame:
     ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
@@ -125,7 +126,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 class OccCANINE:
     def __init__(
             self,
-            name = "OccCANINE",
+            name: ModelName = "OccCANINE_s2s_mix",
             device: torch.device | None = None,
             batch_size: int = 256,
             verbose: bool = False,
@@ -141,7 +142,7 @@ class OccCANINE:
         Initializes the OccCANINE model with specified configurations.
 
         Parameters:
-        - name (str): Name of the model to load. Defaults to "CANINE". For local models, specify the model name as it appears in 'Model'.
+        - name (str): Name of the model to load. Defaults to "OccCANINE_s2s_mix". For local models, specify the model name as it appears in 'Model'.
         - device (str or None): The computing device (CPU or CUDA) on which the model will run. If None, the device is auto-detected.
         - batch_size (int): The number of examples to process in each batch. This affects memory usage and processing speed.
         - verbose (bool): If True, progress updates and diagnostic information will be printed during model operations.
