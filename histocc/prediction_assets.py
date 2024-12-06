@@ -29,6 +29,8 @@ from .model_assets import (
     CANINEOccupationClassifier_hub,
     Seq2SeqOccCANINE,
     Seq2SeqMixerOccCANINE,
+    Seq2SeqMixerOccCANINE_hub, 
+    Seq2SeqOccCANINE_hub,
     load_tokenizer
     )
 
@@ -47,7 +49,8 @@ from .utils.decoder import (
     flat_decode_mixer,
     greedy_decode,
     mixer_greedy_decode,
-    full_search_decoder_seq2seq_optimized
+    full_search_decoder_seq2seq_optimized,
+    full_search_decoder_mixer_optimized
     )
 
 from .dataloader import (
@@ -66,6 +69,7 @@ PredType = Literal['flat', 'greedy', 'full']
 SystemType = Literal['HISCO']
 BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
+ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
 
 def load_keys() -> pd.DataFrame:
     ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
@@ -122,7 +126,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 class OccCANINE:
     def __init__(
             self,
-            name = "OccCANINE",
+            name: ModelName = "OccCANINE_s2s_mix",
             device: torch.device | None = None,
             batch_size: int = 256,
             verbose: bool = False,
@@ -138,7 +142,7 @@ class OccCANINE:
         Initializes the OccCANINE model with specified configurations.
 
         Parameters:
-        - name (str): Name of the model to load. Defaults to "CANINE". For local models, specify the model name as it appears in 'Model'.
+        - name (str): Name of the model to load. Defaults to "OccCANINE_s2s_mix". For local models, specify the model name as it appears in 'Model'.
         - device (str or None): The computing device (CPU or CUDA) on which the model will run. If None, the device is auto-detected.
         - batch_size (int): The number of examples to process in each batch. This affects memory usage and processing speed.
         - verbose (bool): If True, progress updates and diagnostic information will be printed during model operations.
@@ -155,9 +159,9 @@ class OccCANINE:
         if name in ('CANINE', "OccCANINE") and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
-        # Warn that only the old model is available through Hugging Face
-        if hf:
-            print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
+        # # Warn that only the old model is available through Hugging Face
+        # if hf:
+        #     print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
 
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
@@ -273,14 +277,24 @@ class OccCANINE:
         # Load model from Hugging Face (only works for the old model))
         if hf:
             # Validate model name
-            if self.name != "OccCANINE":
-                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE' model.")
+            if self.name not in ["OccCANINE", "OccCANINE_s2s_mix", "OccCANINE_s2s"]:
+                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
 
-            model = CANINEOccupationClassifier_hub.from_pretrained("Christianvedel/OccCANINE", force_download=force_download).to(self.device)
-            model.to(self.device)
+            # Load model based on name
+            if self.name == "OccCANINE":
+                model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "flat"
 
-            # Determine model type
-            model_type = "flat" # TODO: Make this more dynamic
+            if self.name == "OccCANINE_s2s_mix":
+                model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "mix"
+
+            if self.name == "OccCANINE_s2s":
+                model = Seq2SeqOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "seq2seq"    
 
             return model, model_type
 
@@ -292,7 +306,7 @@ class OccCANINE:
         model_type = self._derive_model_type(loaded_state)
 
         # Load depending on model type
-        model = self._initialize_model(model_type=model_type)
+        model = self._initialize_model(model_type=model_type, state_dict=loaded_state)
 
         return model, model_type
 
@@ -493,7 +507,7 @@ class OccCANINE:
 
         return results, out_type, inputs
 
-    @torch.no_grad
+    @torch.no_grad()
     def _predict_greedy(self, data_loader):
         model = self.model.eval()
 
@@ -570,7 +584,7 @@ class OccCANINE:
 
         return preds, out_type, inputs
 
-    @torch.no_grad
+    @torch.no_grad()
     def _predict_full(self, data_loader):
         """
         This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq
@@ -594,7 +608,7 @@ class OccCANINE:
 
         # Decoder based on model type
         if self.model_type == "mix":
-            raise NotImplementedError('full-distribution prediction not supported for mixer models yet')
+            decoder = full_search_decoder_mixer_optimized
         elif self.model_type == "seq2seq":
             decoder = full_search_decoder_seq2seq_optimized
         else:
@@ -982,192 +996,7 @@ class OccCANINE:
 
         return inputs
 
-    def predict_old(
-            self,
-            occ1,
-            lang: str = "unk",
-            what: str = "pred",
-            threshold: float = 0.22,
-            concat_in: bool = False,
-            get_dict: bool = False,
-            get_df: bool = True,
-    ):
-        """
-        Makes predictions on a batch of occupational strings.
 
-        Parameters:
-        - occ1 (list or str): A list of occupational strings to predict.
-        - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
-        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
-        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
-        - concat_in (bool, optional): Specifies if the input is already concatenated in the format [occupation][SEP][language]. Defaults to False.
-        - get_dict (bool, optional): If True and 'what' is an integer, returns a list of dictionaries with predictions instead of a DataFrame. Defaults to False.
-        - get_df (bool, optional): If True and 'what' equals "pred", returns predictions in a DataFrame format. Defaults to True.
-
-        Returns:
-        - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
-        """
-
-        # Handle list vs str
-        if isinstance(occ1, str):
-            occ1 = [occ1]
-
-        # Setup
-        inputs = self._encode(occ1, lang, concat_in)
-        batch_size = self.batch_size
-        verbose = self.verbose
-        results = []
-        total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
-
-        # Timing
-        start = time.time()
-
-        # Fix get dict conditionally
-        if get_dict:
-            get_df = False
-
-        if get_df and what == "pred":
-            what0 = what
-            what = 5 # This is the easiest way of handling this
-
-        for batch_num, i in enumerate(range(0, len(inputs), batch_size), 1):
-
-            batch_inputs = inputs[i:i + batch_size]
-
-            # Tokenize the batch of inputs
-            batch_tokenized = self.tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
-
-            batch_input_ids = batch_tokenized['input_ids'].to(self.device)
-            batch_attention_mask = batch_tokenized['attention_mask'].to(self.device)
-
-            with torch.no_grad():
-                output = self.model(batch_input_ids, batch_attention_mask)
-
-            # === Housekeeping ====
-            if batch_num % 1 == 0 and verbose:
-                print(f"\rProcessed batch {batch_num} out of {total_batches} batches", end = "")
-
-            # === Return what to return ====
-            # breakpoint()
-            batch_logits = output
-            if what == "logits":
-                results.append(batch_logits)
-            elif what == "probs":
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                results.append(batch_predicted_probs)
-            elif what == "pred":
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    labels = [[self.key[i], prob, self.key_desc[i]] for i, prob in enumerate(probs) if prob > threshold]
-                    results.append(labels)
-            elif isinstance(what, (int, float)):
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    # Get the indices of the top 5 predictions
-                    top5_indices = np.argsort(probs)[-what:][::-1]
-
-                    # Create a list of tuples containing label and probability for the top 5 predictions
-                    labels = [(self.key[i], probs[i], self.key_desc[i]) for i in top5_indices]
-                    results.append(labels)
-            elif what == "bin":
-                # Return binary matrix with cols equal to codes
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    bin_out = [1 if prob > threshold else 0 for prob in probs]
-                    results.append(bin_out)
-            elif what == "tokens":
-                results.append(batch_input_ids)
-            else:
-                raise ValueError("'what' incorrectly specified")
-
-        # Clean results
-        if what == "bin":
-            results = np.array(results)
-
-        if what == "probs":
-            results = np.concatenate(results, axis=0)
-
-        if isinstance(what, (int, float)):
-            if not get_dict:
-                results = top_n_to_df(results, what)
-
-        if isinstance(what, (int, float)) and what0 == "pred":
-            print("\nPrediction done. Cleaning results.")
-
-            # Vectorized operation to mask predictions below the threshold
-            for j in range(1, what + 1):
-                prob_column = f"prob_{j}"
-                mask = results[prob_column] <= threshold
-                results.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
-
-            # First, ensure "hisco_1" is of type string to avoid mixing data types
-            results["hisco_1"] = results["hisco_1"].astype(str)
-            results["hisco_1"].fillna("-1", inplace=True)
-
-            results.insert(0, 'inputs', inputs)
-
-        end = time.time()
-
-        if verbose:
-            dif_time = end - start
-            m, s = divmod(dif_time, 60)
-            h, m = divmod(m, 60)
-
-            try:
-                # Assuming occ1 is a DataFrame
-                nobs = occ1.shape[0]
-            except AttributeError:
-                # Fallback if occ1 does not have a .shape attribute, use len() instead
-                nobs = len(occ1)
-
-            print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
-
-            saved_time = nobs*10 - dif_time
-            m, s = divmod(saved_time, 60)
-            h, m = divmod(m, 60)
-
-            print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
-            print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
-
-        return results
-
-    def forward_base(self, occ1, lang: str = "unk", concat_in: bool = False):
-        """
-        This method prints returns the forward pass of the underlying transformer model
-
-        occ1:           List of occupational strings
-        lang:           Language (defaults to unknown)
-        concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
-        """
-        inputs = self._encode(occ1, lang, concat_in)
-        batch_size = self.batch_size
-        verbose = self.verbose
-        results = []
-        total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
-
-        for batch_num, i in enumerate(range(0, len(inputs), batch_size), 1):
-
-            batch_inputs = inputs[i:i + batch_size]
-
-            # Tokenize the batch of inputs
-            batch_tokenized = self.tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
-
-            batch_input_ids = batch_tokenized['input_ids'].to(self.device)
-            batch_attention_mask = batch_tokenized['attention_mask'].to(self.device)
-
-            with torch.no_grad():
-                res_i = self.model.basemodel(batch_input_ids, batch_attention_mask)
-
-            results.append(res_i["pooler_output"])
-
-            # === Housekeeping ====
-            if batch_num % 1 == 0 and verbose:
-                print(f"\rProcessed batch {batch_num} out of {total_batches} batches", end = "")
-
-        results = torch.cat(results, axis=0).cpu().detach().numpy()
-
-        print("\n")
-        return results
 
     def _process_data(
             self,
