@@ -29,7 +29,7 @@ from .model_assets import (
     CANINEOccupationClassifier_hub,
     Seq2SeqOccCANINE,
     Seq2SeqMixerOccCANINE,
-    Seq2SeqMixerOccCANINE_hub, 
+    Seq2SeqMixerOccCANINE_hub,
     Seq2SeqOccCANINE_hub,
     load_tokenizer
     )
@@ -156,7 +156,7 @@ class OccCANINE:
         """
 
         # Check if model name is provided when not using Hugging Face
-        if name in ModelName and not hf and not skip_load:
+        if name in ModelName.__args__ and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
         # Detect device
@@ -281,16 +281,16 @@ class OccCANINE:
                 model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
                 model_type = "flat"
-
-            if self.name == "OccCANINE_s2s_mix":
+            elif self.name == "OccCANINE_s2s_mix":
                 model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
                 model_type = "mix"
-
-            if self.name == "OccCANINE_s2s":
+            elif self.name == "OccCANINE_s2s":
                 model = Seq2SeqOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
-                model_type = "seq2seq"    
+                model_type = "seq2seq"
+            else:
+                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
 
             return model, model_type
 
