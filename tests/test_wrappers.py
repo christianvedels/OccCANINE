@@ -15,6 +15,7 @@ class TestWrapperOccCANINE(unittest.TestCase):
         'force_download': False,
     }
     sample_inputs = ['he is a farmer', 'he is a fisherman']
+    sample_outputs = [61110, 64100]
     nodes_to_block = [UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX]
 
     map_model_type_supported_settings = {
@@ -63,7 +64,7 @@ class TestWrapperOccCANINE(unittest.TestCase):
 
         return model_wrapper
 
-    def _run_wrapper_tests(self, wrapper: OccCANINE):
+    def _run_wrapper_tests(self, wrapper: OccCANINE, check_pred: bool = False):
         # Supported settings
         supported_settings = self.map_model_type_supported_settings[wrapper.model_type]
 
@@ -72,6 +73,13 @@ class TestWrapperOccCANINE(unittest.TestCase):
             with self.subTest(msg='No arguments prediction'):
                 pred = wrapper.predict(self.sample_inputs)
                 self.assertEqual(len(pred), len(self.sample_inputs))
+
+            if check_pred:
+                with self.subTest(msg='No arguments prediction, verifying results'):
+                    self.assertListEqual(
+                        list(pred['hisco_1'].astype(float).astype(int)),
+                        self.sample_outputs,
+                    )
 
         for prediction_type in supported_settings['pred_type']:
             for behavior in supported_settings['behavior_type']:
@@ -85,10 +93,18 @@ class TestWrapperOccCANINE(unittest.TestCase):
                         )
                     self.assertEqual(len(pred), len(self.sample_inputs))
 
-                    # Test probability if prediction type is not greedy
-                    if prediction_type == 'greedy':
-                        continue
+                if check_pred:
+                    with self.subTest(msg=f'prediction_type={prediction_type}, verifying results'):
+                        self.assertListEqual(
+                            list(pred['hisco_1'].astype(float).astype(int)),
+                            self.sample_outputs,
+                        )
 
+                # Test probability if prediction type is not greedy
+                if prediction_type == 'greedy':
+                    continue
+
+                with self.subTest(prediction_type=prediction_type):
                     pred = wrapper.predict(
                         self.sample_inputs,
                         prediction_type=prediction_type,
@@ -96,6 +112,9 @@ class TestWrapperOccCANINE(unittest.TestCase):
                         what='probs',
                         )
                     self.assertEqual(len(pred), len(self.sample_inputs))
+
+    def _run_performance_test(self, wrapper: OccCANINE):
+        pass
 
     def test_wrappers(self):
         # Run tests for untrained seq2seq wrapper
@@ -114,12 +133,12 @@ class TestWrapperOccCANINE(unittest.TestCase):
         self._run_wrapper_tests(wrapper_mixer)
         del wrapper_mixer
 
-        # Run tests for pretrained models
+        # Run tests for pretrained models; here, we also check if predictions
+        # match the labels associated with our sample inputs
         for model_name in ModelName.__args__:
-            with self.subTest(model_name=model_name):
-                wrapper_pretrained = self._initialize_model(name=model_name)
-                self._run_wrapper_tests(wrapper_pretrained)
-                del wrapper_pretrained
+            wrapper_pretrained = self._initialize_model(name=model_name)
+            self._run_wrapper_tests(wrapper_pretrained, check_pred=True)
+            del wrapper_pretrained
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):

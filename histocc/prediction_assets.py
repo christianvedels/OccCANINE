@@ -166,13 +166,14 @@ class OccCANINE:
             print(f"Using device: {self.device}")
 
         self.name = name
+        self.system = system
         self.batch_size = batch_size
         self.verbose = verbose
 
         # Get tokenizer
         self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
-        if system == "HISCO": # TODO: Handle other model specs
+        if self.system == "HISCO": # TODO: Handle other model specs
             # Get key
             self.key, self.key_desc = self._load_keys()
 
@@ -185,7 +186,7 @@ class OccCANINE:
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
         else:
-            raise NotImplementedError(f"system '{system}' is not implemented. Supported systems: {SystemType}")
+            raise NotImplementedError(f"system '{self.system}' is not implemented. Supported systems: {SystemType}")
 
         # Model and model type
         if skip_load:
@@ -208,6 +209,17 @@ class OccCANINE:
 
         # Max seq len: Maybe don't make this an arg? Changig it to something longer would require retraining?
         self.max_seq_len = 128
+
+    def __repr__(self):
+        return (
+            f"OccCANINE("
+            f"name='{self.name}', "
+            f"device='{self.device}', "
+            f"batch_size={self.batch_size}, "
+            f"verbose={self.verbose}, "
+            f"system='{self.system}', "
+            f"model_type='{self.model_type}')"
+        )
 
     def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
         # Load and return both the key and key with descriptions
