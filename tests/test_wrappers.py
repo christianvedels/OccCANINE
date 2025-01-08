@@ -24,7 +24,7 @@ class TestWrapperOccCANINE(unittest.TestCase):
             'behavior_type': ['fast'],
         },
         'seq2seq': {
-            'pred_type': ['greedy'],
+            'pred_type': ['greedy', 'full'],
             'behavior_type': ['good'],
         },
         'mix': {
@@ -112,9 +112,6 @@ class TestWrapperOccCANINE(unittest.TestCase):
                         what='probs',
                         )
                     self.assertEqual(len(pred), len(self.sample_inputs))
-
-    def _run_performance_test(self, wrapper: OccCANINE):
-        pass
 
     def test_wrappers(self):
         # Run tests for untrained seq2seq wrapper
