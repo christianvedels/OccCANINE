@@ -883,7 +883,6 @@ class OccCANINE:
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
-
         elif out_type == "greedy":
             if what == "probs":
                 raise ValueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")

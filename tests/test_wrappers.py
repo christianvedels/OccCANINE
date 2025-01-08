@@ -148,18 +148,6 @@ class TestWrapperSeq2SeqOccCANINE(unittest.TestCase):
         )
 
     # Varying prediction_type -- what == prob
-    def test_seq2seq_greedy_prob(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_s2s,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='greedy',
-                what='probs',
-            )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: seq2seq greedy probs not supported yet. Underlying error: {err}')
-
     def test_seq2seq_full_prob(self):
         self._test_predict(
             wrapper=self.wrapper_s2s,
@@ -168,18 +156,6 @@ class TestWrapperSeq2SeqOccCANINE(unittest.TestCase):
             prediction_type='full',
             what='probs',
         )
-
-    def test_mixer_greedy_prob(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_mixer,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='greedy',
-                what='probs',
-            )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: mixer greedy probs not supported yet. Underlying error: {err}')
 
     def test_mixer_full_prob(self):
         self._test_predict(
