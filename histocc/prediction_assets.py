@@ -886,7 +886,7 @@ class OccCANINE:
 
         elif out_type == "greedy":
             if what == "probs":
-                raise valueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")
+                raise ValueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")
 
             elif what == "pred":
                 sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
