@@ -156,12 +156,8 @@ class OccCANINE:
         """
 
         # Check if model name is provided when not using Hugging Face
-        if name in ('CANINE', "OccCANINE") and not hf and not skip_load:
+        if name in ModelName and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
-
-        # # Warn that only the old model is available through Hugging Face
-        # if hf:
-        #     print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
 
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
@@ -890,7 +886,7 @@ class OccCANINE:
 
         elif out_type == "greedy":
             if what == "probs":
-                raise NotImplementedError("Probs not implemented for greedy prediction in 'mix' or 'seq2seq' models. Use 'full' prediction_type instead")
+                raise valueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")
 
             elif what == "pred":
                 sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
