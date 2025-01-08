@@ -225,7 +225,6 @@ class OccCANINE:
 
         # Formatted list of codes
         codes_list = list(self.key.values())
-        codes_list = list(self.key.values())
         codes_list = [str(i) for i in codes_list]
         codes_list = [i.zfill(5) if len(i) == 4 else i for i in codes_list] # FIXME: Does this work for other systems?
         codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
@@ -990,8 +989,6 @@ class OccCANINE:
             inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
 
         return inputs
-
-
 
     def _process_data(
             self,
