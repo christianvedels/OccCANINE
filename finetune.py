@@ -13,7 +13,6 @@ from transformers import (
     CanineTokenizer,
 )
 
-import numpy as np
 import pandas as pd
 
 from histocc import (
@@ -79,6 +78,9 @@ def parse_args():
     parser.add_argument('--initial-checkpoint', type=str, default=None, help='Model weights to use for initialization. Discarded if resume state exists at --save-path')
     parser.add_argument('--only-encoder', action='store_true', default=False, help='Only attempt to load encoder part of --initial-checkpoint')
 
+    # Freezing
+    parser.add_argument('--freeze-encoder', action='store_true', default=False)
+
     # TODO ...
     # parser.add_argument('--decoder-type', type=str, choices=['flat', 'seq2seq', 'mixer'], default='mixer', help='Type of model decoder')
     # parser.add_argument('--freeze-level', type=int, default=FreezeLevel.NO_FREEZE, choices=FreezeLevel)
@@ -139,9 +141,8 @@ def prepare_data(
     data['lang'] = language
 
     for target_col in target_cols:
+        # Some NaN values instead coded as spaces
         data[target_col] = data[target_col].replace(' ', None)
-
-    # TODO replace ' ' with None in *target_cols
 
     # Build code <-> label mapping
     unique_values = pd.unique(data[target_cols].values.ravel())
@@ -263,12 +264,18 @@ def main():
         num_classes_flat=num_classes_flat,
     ).to(device)
 
-    optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+    if args.freeze_encoder:
+        for param in model.encoder.parameters():
+            param.requires_grad = False
+
+        optimizer = AdamW(model.decoder.parameters(), lr=args.learning_rate)
+    else:
+        optimizer = AdamW(model.parameters(), lr=args.learning_rate)
+
     total_steps = len(data_loader_train) * args.num_epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=args.warmup_steps,
-        # num_warmup_steps=min(max(int(0.1 * total_steps), 3000), int(0.5 * total_steps)),
         num_training_steps=total_steps,
     )
 
