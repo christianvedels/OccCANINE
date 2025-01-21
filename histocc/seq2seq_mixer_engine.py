@@ -31,7 +31,7 @@ def train_one_epoch(
         save_dir: str | None = None,
         data_loader_eval: torch.utils.data.DataLoader | None = None,
         log_wandb: bool = False,
-        ) -> tuple[float, float]:
+        ) -> int:
     model = model.train()
 
     last_step = len(data_loader) - 1

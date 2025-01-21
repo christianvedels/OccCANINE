@@ -187,7 +187,6 @@ histocc/Data/Tmp_finetune/
 .vs/
 
 Data/Data_backup/Test_data/CA_bcn_test.csv
-.vs/
 Data/Training_data_other.rar
 Data/desktop.ini
 tmp_product_test.py
