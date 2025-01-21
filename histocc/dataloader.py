@@ -757,11 +757,14 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         for target_col in self.target_cols:
             code = record[target_col]
 
-            if code == ' ': # Some OCC1950 labels coded as space rather than NaN
-                break
+            if isinstance(code, float):
+                # Due to missings/None/NaN, type might be float. In such
+                # cases, we want to either break if NaN or convert back
+                # to integer
+                if math.isnan(code):
+                    break
 
-            if isinstance(code, float) and math.isnan(code):
-                break
+                code = int(code)
 
             if self.map_code_label is not None:
                 target[self.map_code_label[str(code)]] = 1
