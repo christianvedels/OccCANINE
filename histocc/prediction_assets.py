@@ -138,10 +138,8 @@ class OccCANINE:
             model_type: ModelType | None = None,
             skip_load: bool = False,
 
-            # args used for other systems
-            keys_path: str | None = None,
-            code_len: int | None = None,
-            codes_list: list[str] | None = None,
+            # Args used for other systems
+            descriptions: pd.DataFrame | None = None, 
     ):
         """
         Initializes the OccCANINE model with specified configurations.
@@ -155,6 +153,7 @@ class OccCANINE:
         - hf (bool): If True, attempts to load the model from Hugging Face's model repository. If False, loads a local model specified by the 'name' parameter.
         - force_download (bool): If True, forces a re-download of the model from the Hugging Face's model repository even if it is already cached locally.
         - system (str): Which encoding system is it? For now this only works for "HISCO"
+        - descriptions (pd.DataFrame): A DataFrame with two columns: 1) codes in some system 'system_code', and 2) their corresponding descriptions, 'desc'. Only used for none-HISCO predictions.
 
         Raises:
         - Exception: If 'hf' is False and a local model 'name' is not provided.
@@ -191,13 +190,22 @@ class OccCANINE:
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
         else:
+            if hf:
+                raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
             
-            # keys
-            # formatter
-            # code_len
-            # codes_list
+            # Warn of things being infered:
+            warnings.warn("Infering formatter from model since system is not 'HISCO'")
 
-            raise NotImplementedError(f"system '{self.system}' is not implemented. Supported systems: {SystemType}")
+            loaded_state = torch.load(name, weights_only = True) # Load state
+            key = loaded_state['key']
+
+            # Code len as max of keys
+            self.code_len = max([len(i) for i in key.keys()])
+
+            # Load general purpose formatter
+            # self.formatter = 
+
+            # raise NotImplementedError(f"system '{self.system}' is not implemented. Supported systems: {SystemType}")
 
         # Model and model type
         if skip_load:
@@ -356,7 +364,7 @@ class OccCANINE:
                 model_type = 'flat'
             else:
                 raise NotImplementedError(error_message)
-        elif len(loaded_state) == 4:
+        elif len(loaded_state) < 10:
             # NEW CASE
             model_dict_keys = loaded_state['model'].keys()
 
