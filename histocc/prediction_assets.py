@@ -137,6 +137,11 @@ class OccCANINE:
             # args primarily for testing purposes -- want to instantiate without loading
             model_type: ModelType | None = None,
             skip_load: bool = False,
+
+            # args used for other systems
+            keys_path: str | None = None,
+            code_len: int | None = None,
+            codes_list: list[str] | None = None,
     ):
         """
         Initializes the OccCANINE model with specified configurations.
@@ -186,6 +191,12 @@ class OccCANINE:
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
         else:
+            
+            # keys
+            # formatter
+            # code_len
+            # codes_list
+
             raise NotImplementedError(f"system '{self.system}' is not implemented. Supported systems: {SystemType}")
 
         # Model and model type
@@ -197,7 +208,7 @@ class OccCANINE:
             self.model = self._initialize_model(model_type=model_type)
         else:
             if model_type is not None:
-                warnings.warn('specifiel model_type, but discarding argument as model leading specified; model_type will be inferred')
+                warnings.warn('specified model_type, but discarding argument as model leading specified; model_type will be inferred')
 
             self.model, self.model_type = self._load_model(hf, force_download, baseline)
 
@@ -221,12 +232,25 @@ class OccCANINE:
             f"model_type='{self.model_type}')"
         )
 
-    def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
-        # Load and return both the key and key with descriptions
-        key_df = DATASETS['keys']()
+    def _load_keys(self, path: str | None = None) -> Tuple[Dict[float, str], Dict[float, str]]:
+        
+        if path is not None:
+            key_df = pd.read_csv(path)
 
-        key = dict(zip(key_df.code, key_df.hisco))
-        key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
+            # Test if the df contains the right columns
+            if not all([i in key_df.columns for i in ['code', 'system_code', 'desc']]):
+                raise ValueError("The key file does not contain the right columns. It must contain 'code', 'system_code' and 'desc'")
+
+            # Produce the key and key_desc
+            key = dict(zip(key_df.code, key_df.system_code))
+            key_desc = dict(zip(key_df.code, key_df.desc))
+
+        else:
+            # Load and return both the key and key with descriptions
+            key_df = DATASETS['keys']()
+
+            key = dict(zip(key_df.code, key_df.hisco))
+            key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
 
         return key, key_desc
 
