@@ -190,6 +190,17 @@ class Seq2SeqOccCANINE(nn.Module):
         out = self.decode(memory, target, target_mask, target_padding_mask)
 
         return out
+    
+class Seq2SeqOccCANINE_hub(Seq2SeqOccCANINE, PyTorchModelHubMixin):
+    ''' Build the Classifier for HF hub
+    '''
+    def __init__(self, config):
+        super().__init__(
+            model_domain=config["model_domain"],
+            num_classes=config["num_classes"],
+            dropout_rate=config.get("dropout_rate", None),
+            decoder_dim_feedforward=config.get("decoder_dim_feedforward", None),
+        )
 
 
 class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
@@ -259,6 +270,18 @@ class Seq2SeqMixerOccCANINE(Seq2SeqOccCANINE):
         out_linear = self.linear_decoder_drop(out_linear)
 
         return out_seq2seq, out_linear
+
+class Seq2SeqMixerOccCANINE_hub(Seq2SeqMixerOccCANINE, PyTorchModelHubMixin):
+    ''' Build the Classifier for HF hub
+    '''
+    def __init__(self, config):
+        super().__init__(
+            model_domain=config["model_domain"],
+            num_classes=config["num_classes"],
+            num_classes_flat=config["num_classes_flat"],
+            dropout_rate=config.get("dropout_rate", None),
+            decoder_dim_feedforward=config.get("decoder_dim_feedforward", None),
+        )
 
 
 # Load model from checkpoint

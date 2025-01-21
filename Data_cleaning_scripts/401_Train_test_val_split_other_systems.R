@@ -13,7 +13,7 @@ source("Data_cleaning_scripts/000_Functions.R")
 library(foreach)
 
 # ==== Pipeline ====
-pipeline = function(x, name, lang){
+pipeline = function(x, name, lang, samples = FALSE){
   # Check if name already exists
   test = any(grepl(name, list.files("Data/Training_data_other")))
   if(test){
@@ -58,6 +58,43 @@ pipeline = function(x, name, lang){
     Save_train_val_test(name, lang, dir = "other")
   cat("\nSaved:", name, lang)
   
+  # Produce smaller samples (only train)
+  if(samples){
+    options(scipen=999)
+    # Sample sizes
+    samples_sizes = 10^(3:5)
+    
+    # Data prep
+    x_relevant = x %>% filter(split == "Train")
+    
+    x_unique = x_relevant %>% 
+      select(-RowID) %>% 
+      distinct() %>% 
+      mutate(
+        RowID = 1:n()
+      )
+    
+    # Produce samples of N observations
+    set.seed(20)
+    for(s in samples_sizes){
+      x_relevant %>% 
+        slice_sample(n = s) %>% 
+        Save_train_val_test(paste0(name,"_n",s), lang, dir = "other")
+      cat("\nSaved:", name, lang)
+      
+    }
+    
+    # Produce samples with unique strings
+    set.seed(20)
+    for(s in samples_sizes){
+      x_unique %>% 
+        slice_sample(n = s) %>% 
+        Save_train_val_test(paste0(name,"_n_unq",s), lang, dir = "other")
+      cat("\nSaved:", name, lang)
+      
+    }
+  }
+  
   return(name)
 }
 
@@ -66,25 +103,29 @@ lang = "en"
 x = pipeline(
   "Data/Tmp_data/EN_PSTI.Rdata",
   "EN_PSTI_CAMPOP",
-  lang
+  lang,
+  samples = TRUE
 )
 
 x = pipeline(
   "Data/Tmp_data/EN_IPUMS_OCC1950.Rdata",
   "EN_OCC1950_IPUMS_US",
-  lang
+  lang,
+  samples = TRUE
 )
 
 x = pipeline(
   "Data/Tmp_data/EN_IPUMS_UK_OCCICEM.Rdata",
   "EN_OCCICEM_IPUMS_UK",
-  lang
+  lang,
+  samples = TRUE
 )
 
 x = pipeline(
   "Data/Tmp_data/EN_IPUMS_UK_ISCO68.Rdata",
   "EN_ISCO68_IPUMS_UK",
-  lang
+  lang,
+  samples = TRUE
 )
 
 
