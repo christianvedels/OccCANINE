@@ -182,6 +182,22 @@ class TestBlockyFormatter(unittest.TestCase):
             chars=chars,
         )
 
+    def test_toydata(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=5,
+            target_cols=['hisco_1'],
+        )
+        sep_value = formatter.sep_value
+
+        for i in range(len(self.toydata)):
+            transformed = formatter.transform_label(self.toydata.iloc[i])
+            cleaned = formatter.clean_pred(transformed.astype(int))
+
+            expected = self.toydata.iloc[i]['hisco_1']
+            expected = str(expected)
+
+            self.assertEqual(cleaned, expected)
+
 
 class SubtestCountingTestResult(unittest.TextTestResult):
     def __init__(self, *args, **kwargs):
