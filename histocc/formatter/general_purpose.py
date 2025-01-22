@@ -367,15 +367,22 @@ def construct_general_purpose_formatter(
         block_size: int,
         target_cols: list[str],
         chars: list[int | str] | None = None,
-        within_block_sep: str | None = None,
+        use_within_block_sep: bool = False,
 ) -> BlockyFormatter:
+    _sep_token = '&'
+    _within_block_sep_token = ','
+
+    if use_within_block_sep:
+        within_block_sep = _within_block_sep_token
+    else:
+        within_block_sep = None
+
     if chars is None:
         chars = list(range(-999, 1000))
         chars += list(string.ascii_letters)
-        chars += ['æ', 'ø', 'å', 'Æ', 'Ø', 'Å']
         chars += list(string.punctuation)
 
-        chars = [c for c in chars if not c in ('&', within_block_sep)]
+        chars = [c for c in chars if not c in (_sep_token, _within_block_sep_token)]
 
     map_char_idx, map_idx_char = build_multichar_mapping(chars)
 
@@ -384,7 +391,7 @@ def construct_general_purpose_formatter(
         block_size=block_size,
         map_char_idx=map_char_idx,
         map_idx_char=map_idx_char,
-        sep_value='&',
+        sep_value=_sep_token,
         within_block_sep=within_block_sep,
     )
 
