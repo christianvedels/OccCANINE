@@ -50,6 +50,7 @@ class TestBlockyFormatter(unittest.TestCase):
     def run_cycle_consistency_tests(
             self,
             formatter: BlockyFormatter,
+            chars: list[str | int],
             within_block_sep: str = '',
             runs: int = 10_000,
     ):
@@ -61,7 +62,7 @@ class TestBlockyFormatter(unittest.TestCase):
             for _ in range(random.randint(1, formatter.max_num_codes)):
                 num_tokens = random.randint(1, formatter.block_size)
 
-                code = random.sample(sorted(formatter.map_char_idx.keys()), num_tokens) # this selects unique elements, which is not an actual requirement
+                code = random.sample(chars, num_tokens) # this selects unique elements, which is not an actual requirement
                 code = [str(c) for c in code]
                 code_joined = within_block_sep.join(code)
 
@@ -125,11 +126,61 @@ class TestBlockyFormatter(unittest.TestCase):
         # Cycle consistency
         self.run_cycle_consistency_tests(
             formatter=formatter,
+            chars=sorted(formatter.map_char_idx.keys()),
             within_block_sep=within_block_sep,
         )
 
     def test_without_within_block_sep(self):
-        raise NotImplementedError
+        formatter = construct_general_purpose_formatter(
+            block_size=3,
+            target_cols=[0, 0],
+            within_block_sep=None,
+        )
+        sep_value = formatter.sep_value
+
+        # Only want 1-char tokens since no separator
+        chars = [str(x) for x in formatter.map_char_idx.keys() if len(str(x)) == 1]
+
+        # Transform label
+        self._test_transform_label(
+            raw_input=f'123{sep_value}111',
+            expected_output=np.array([
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, 1005, EOS_IDX
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'123{sep_value}11',
+            expected_output=np.array([
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, PAD_IDX, EOS_IDX
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input='123',
+            expected_output=np.array([
+                BOS_IDX, 1005, 1006, 1007, PAD_IDX, PAD_IDX, PAD_IDX, EOS_IDX
+                ]),
+            formatter=formatter,
+        )
+
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([BOS_IDX, 1005, 1006, 1007, PAD_IDX, PAD_IDX, PAD_IDX, EOS_IDX]),
+            expected_cleaned='123',
+            formatter=formatter,
+        )
+        self._test_clean_pred(
+            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2070, PAD_IDX, PAD_IDX, EOS_IDX]),
+            expected_cleaned=f'Abz{sep_value}*',
+            formatter=formatter,
+        )
+
+        # Cycle consistency
+        self.run_cycle_consistency_tests(
+            formatter=formatter,
+            chars=chars,
+        )
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
