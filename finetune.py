@@ -26,6 +26,7 @@ from histocc.seq2seq_mixer_engine import train
 from histocc.formatter import (
     BlockyFormatter,
     construct_finetune_formatter,
+    construct_general_purpose_formatter,
     PAD_IDX,
 )
 from histocc.utils import wandb_init
@@ -51,13 +52,17 @@ def parse_args():
     # File paths, data & model choices
     parser.add_argument('--save-path', type=str, default='./Finetuned/', help='Directory to store fine-tuned model, incl. processed data')
     parser.add_argument('--dataset', type=str, default=None, help='Filename of dataset')
-    parser.add_argument('--input-col', type=str, default=None, help='Column name of column with occupational descriptions')
+    parser.add_argument('--input-col', type=str, default='occ1', help='Column name of column with occupational descriptions')
     parser.add_argument('--target-cols', type=str, nargs='+', default=None, help='List of column names with labels')
+
+    # Language (must specify none or one of below, cannot specify both)
+    parser.add_argument('--language', type=str, default='unk', help='Occupational description language') # TODO maybe default to None, which uses a column if available and otherwise defaults to <unk>
+    parser.add_argument('--language-col', type=str, default=None, help='Optional column name in --dataset with language')
 
     # Data settings
     parser.add_argument('--block-size', type=int, default=5, help='Maximum number of characters in target (e.g., this is 5 for the HISCO system)')
-    parser.add_argument('--language', type=str, default='unk', help='Occupational description language')
     parser.add_argument('--share-val', type=float, default=0.1, help='Share of data set aside for tracking model performance')
+    parser.add_argument('--use-within-block-sep', action='store_true', default=False, help='Whether to use "," as a separator for tokens WITHIN a code. Useful for, e.g., PSTI')
 
     # Logging parameters
     parser.add_argument('--log-interval', type=int, default=100, help='Number of steps between reporting training stats')
@@ -81,13 +86,10 @@ def parse_args():
     # Freezing
     parser.add_argument('--freeze-encoder', action='store_true', default=False)
 
-    # TODO ...
-    # parser.add_argument('--decoder-type', type=str, choices=['flat', 'seq2seq', 'mixer'], default='mixer', help='Type of model decoder')
-    # parser.add_argument('--freeze-level', type=int, default=FreezeLevel.NO_FREEZE, choices=FreezeLevel)
-    # * Option to specify language column?
-    # * Option to specify system? Somewhat stupid to build a "new" system for HISCO codes when it could be specified
-
     args = parser.parse_args()
+
+    if args.language != 'unk' and args.language_col is not None:
+        raise ValueError('Only specify one of --language and --language-col')
 
     if args.log_wandb and not has_wandb:
         raise ImportError('Specified --log-wandb, but wandb is not installed')
@@ -114,13 +116,62 @@ def check_if_data_prepared(save_path: str) -> dict[str, int] | None:
     return mapping
 
 
+def prepare_target_cols(
+        data: pd.DataFrame,
+        formatter: BlockyFormatter,
+        drop_bad_rows: bool = False,
+) -> pd.DataFrame:
+    # All cases of space (' ') are cast to NaN
+    for i, target_col in enumerate(formatter.target_cols):
+        # Some NaN values instead coded as spaces
+        data[target_col] = data[target_col].replace(' ', None)
+
+    # First colummn should not contain any NaN -> use the '?' token instead
+    assert '?' in formatter.map_char_idx
+    data[formatter.target_cols[0]] = data[formatter.target_cols[0]].fillna('?')
+
+    # Send all through formatter and track whether that works
+    passes_formatter: list[bool] = []
+
+    for i in range(len(data)):
+        try:
+            _ = formatter.transform_label(data.iloc[i])
+            passes_formatter.append(True)
+        except: # pylint: disable=W0702
+            passes_formatter.append(False)
+
+    bad_cases = len(passes_formatter) - sum(passes_formatter)
+
+    if bad_cases > 0:
+        if drop_bad_rows:
+            print(f'Dropping {bad_cases} cases of labels not fit for formatter.')
+            data = data[passes_formatter]
+        else:
+            raise ValueError
+
+    # for i, target_col in enumerate(formatter.target_cols):
+    #     assert not data[target_col].str.contains(formatter.sep_value).any()
+
+    #     if formatter.within_block_sep is not None:
+    #         is_good = data[target_col].str.contains(formatter.within_block_sep, na=True)
+
+    #         if (~is_good).any():
+    #             print(f'Dropping {(~is_good).sum()} rows due to bad values in {target_col} (missing separator)')
+    #             data = data[is_good].copy()
+
+    #         assert data[target_col].str.contains(formatter.within_block_sep, na=True).all()
+
+    return data
+
+
 def prepare_data(
         dataset: str,
         input_col: str,
-        target_cols: list[str],
+        formatter: BlockyFormatter,
         save_path: str,
         share_val: float,
         language: str = 'unk',
+        language_col: str | None = None,
 ) -> dict[str, int]:
     if not os.path.isdir(save_path):
         print(f'Creating fine-tuning directory {save_path}')
@@ -136,16 +187,19 @@ def prepare_data(
     data: pd.DataFrame = pd.read_csv(dataset, dtype=str)
 
     # Select columns
-    data = data[[input_col, *target_cols]]
-    data = data.rename(columns={input_col: 'occ1'})
-    data['lang'] = language
+    if language_col is None:
+        data['lang'] = language
+    else:
+        data['lang'] = data[language_col]
 
-    for target_col in target_cols:
-        # Some NaN values instead coded as spaces
-        data[target_col] = data[target_col].replace(' ', None)
+    data = data[[input_col, *formatter.target_cols, 'lang']]
+    data = data.rename(columns={input_col: 'occ1'})
+
+    # Value checks, subsetting, and changing some values
+    data = prepare_target_cols(data, formatter)
 
     # Build code <-> label mapping
-    unique_values = pd.unique(data[target_cols].values.ravel())
+    unique_values = pd.unique(data[formatter.target_cols].values.ravel())
     unique_values = [val for val in unique_values if val is not None]
 
     mapping: dict[str, int] = {
@@ -202,15 +256,29 @@ def main():
     # Arguments
     args = parse_args()
 
+    # Target-side tokenization
+    formatter = construct_general_purpose_formatter(
+        block_size=args.block_size,
+        target_cols=args.target_cols,
+        use_within_block_sep=args.use_within_block_sep,
+    )
+
+    # Input-side tokenization
+    tokenizer = load_tokenizer(
+        model_domain='Multilingual_CANINE',
+    )
+
     # Data prep
     map_code_label = prepare_data(
         dataset=args.dataset,
         input_col=args.input_col,
-        target_cols=args.target_cols,
+        formatter=formatter,
         save_path=args.save_path,
         share_val=args.share_val,
         language=args.language,
+        language_col=args.language_col,
     )
+    num_classes_flat = len(map_code_label)
 
     if args.log_wandb:
         wandb_init(
@@ -220,18 +288,6 @@ def main():
             resume='auto',
             config=args,
         )
-
-    # Target-side tokenization
-    formatter = construct_finetune_formatter(
-        block_size=args.block_size,
-        target_cols=args.target_cols,
-    )
-    num_classes_flat = len(map_code_label)
-
-    # Input-side tokenization
-    tokenizer = load_tokenizer(
-        model_domain='Multilingual_CANINE',
-    )
 
     # Load datasets
     dataset_train, dataset_val = setup_datasets(
@@ -268,7 +324,7 @@ def main():
         for param in model.encoder.parameters():
             param.requires_grad = False
 
-        optimizer = AdamW(model.decoder.parameters(), lr=args.learning_rate)
+        optimizer = AdamW([param for name, param in model.named_parameters() if not name.startswith("encoder.")], lr=args.learning_rate)
     else:
         optimizer = AdamW(model.parameters(), lr=args.learning_rate)
 
