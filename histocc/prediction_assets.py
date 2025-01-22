@@ -41,6 +41,7 @@ from .dataloader import (
 from .formatter import (
     hisco_blocky5,
     BOS_IDX,
+    construct_finetune_formatter
 )
 
 from .utils import Averager
@@ -66,7 +67,7 @@ from .attacker import AttackerClass
 
 
 PredType = Literal['flat', 'greedy', 'full']
-SystemType = Literal['HISCO']
+SystemType = Literal['hisco']
 BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
 ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
@@ -117,7 +118,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
     # Define the column names
     column_names = []
     for i in range(1, top_n+1):
-        column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
+        column_names.extend([f'{self.system}_{i}', f'prob_{i}', f'desc_{i}'])
 
     # Return as DataFrame
     return pd.DataFrame(rows, columns=column_names)
@@ -133,7 +134,7 @@ class OccCANINE:
             baseline: bool = False,
             hf: bool = True,
             force_download: bool = False,
-            system: SystemType = "HISCO",
+            system: SystemType = "hisco",
             # args primarily for testing purposes -- want to instantiate without loading
             model_type: ModelType | None = None,
             skip_load: bool = False,
@@ -177,12 +178,15 @@ class OccCANINE:
         # Get tokenizer
         self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
-        if self.system == "HISCO": # TODO: Handle other model specs
-            # Get key
-            self.key, self.key_desc = self._load_keys()
+        # System
+        self.system = system
 
+        if self.system == "hisco": # TODO: Handle other model specs
             # Formatter
             self.formatter = hisco_blocky5()
+
+            # Get key
+            self.key, self.key_desc = self._load_keys()
 
             # Length of codes
             self.code_len = 5
@@ -196,16 +200,40 @@ class OccCANINE:
             # Warn of things being infered:
             warnings.warn("Infering formatter from model since system is not 'HISCO'")
 
+            # TODO: Move into key loading method
             loaded_state = torch.load(name, weights_only = True) # Load state
-            key = loaded_state['key']
+            key_loaded = loaded_state['key']
+            self.key = {int(v): str(k) for k, v in key_loaded.items()} # Invert key and cast to int / str
+            self.key_desc = {k: "Not provided" for k in self.key.keys()}
+
+            if descriptions is not None:
+                # Test of correct colummns are in descriptions
+                if not all([i in descriptions.columns for i in ['system_code', 'desc']]):
+                    raise ValueError("The descriptions must contain the columns 'system_code' and 'desc'")
+
+                # Desc dict
+                desc_dict = descriptions.set_index('system_code')['desc'].to_dict()
+                desc_dict = {str(k): str(v) for k, v in desc_dict.items()}
+
+                # Join on descriptions
+                self.key_desc = {k: desc_dict.get(self.key.get(k), "Not provided") for k in self.key.keys()} # Produce key_desc
+                
 
             # Code len as max of keys
-            self.code_len = max([len(i) for i in key.keys()])
+            self.code_len = max([len(i) for i in self.key.values()])
 
             # Load general purpose formatter
-            # self.formatter = 
+            if "chars" in loaded_state.keys():
+                self.formatter = construct_finetune_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), chars=loaded_state['chars'])
+            else:
+                self.formatter = construct_finetune_formatter(block_size=self.code_len, target_cols=list("dummy_entry"))
 
-            # raise NotImplementedError(f"system '{self.system}' is not implemented. Supported systems: {SystemType}")
+            # List of codes formatted to fit with the output from seq2seq/mix model
+            self.codes_list = self._list_of_formatted_codes()
+
+        # Sanitize keys (system codes should be of self.code_len + int as keys)
+        self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
+        self.key_desc = {int(k): str(v) for k, v in self.key_desc.items()}
 
         # Model and model type
         if skip_load:
@@ -240,6 +268,9 @@ class OccCANINE:
             f"model_type='{self.model_type}')"
         )
 
+    def __call__(self, occ1: str | list[str], *args, **kwargs):
+        return self.predict(occ1, *args, **kwargs)
+
     def _load_keys(self, path: str | None = None) -> Tuple[Dict[float, str], Dict[float, str]]:
         
         if path is not None:
@@ -260,6 +291,9 @@ class OccCANINE:
             key = dict(zip(key_df.code, key_df.hisco))
             key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
 
+        key = {str(k): str(v) for k, v in key.items()} # Invert key and cast to int / str
+        key_desc = {str(k): str(v) for k, v in key_desc.items()} # Invert key and cast to int / str
+
         return key, key_desc
 
     def _list_of_formatted_codes(self):
@@ -270,7 +304,8 @@ class OccCANINE:
         # Formatted list of codes
         codes_list = list(self.key.values())
         codes_list = [str(i) for i in codes_list]
-        codes_list = [i.zfill(5) if len(i) == 4 else i for i in codes_list] # FIXME: Does this work for other systems?
+        codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]
+        codes_list = [i for i in codes_list if i != " "]
         codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
 
         return codes_list
@@ -339,7 +374,7 @@ class OccCANINE:
 
         # Load state
         model_path = f'{self.name}'
-        loaded_state = torch.load(model_path, map_location=self.device)
+        loaded_state = torch.load(model_path, weights_only = True, map_location=self.device)
 
         # Determine model type
         model_type = self._derive_model_type(loaded_state)
@@ -908,7 +943,7 @@ class OccCANINE:
 
                 column_names = []
                 for i in range(1, k_pred+1):
-                    column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
+                    column_names.extend([f'{self.system}_{i}', f'prob_{i}', f'desc_{i}'])
 
                 res = pd.DataFrame(res, columns=column_names)
 
@@ -916,10 +951,10 @@ class OccCANINE:
                 for j in range(1, k_pred + 1):
                     prob_column = f"prob_{j}"
                     mask = res[prob_column] <= threshold
-                    res.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
+                    res.loc[mask, [f"{self.system}_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
 
                 # First, ensure "hisco_1" is of type string to avoid mixing data types
-                res["hisco_1"] = res["hisco_1"].astype(str)
+                res[f"{self.system}_1"] = res[f"{self.system}_1"].astype(str)
 
                 res.insert(0, 'occ1', inputs)
 
@@ -955,15 +990,10 @@ class OccCANINE:
                     codes = []
                     for sub_item in item:
                         try:
-                            float_val = float(sub_item)
-                            if np.isnan(float_val):
-                                codes.append(0)
+                            if sub_item in inv_key:
+                                codes.append(inv_key[sub_item])
                             else:
-                                int_val = int(float_val)
-                                if int_val in inv_key:
-                                    codes.append(inv_key[int_val])
-                                else:
-                                    codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                                codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
                         except (ValueError, TypeError):
                             # Handle the case where sub_item cannot be cast to float
                             codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
@@ -973,7 +1003,7 @@ class OccCANINE:
                     res.append(row)
 
                 column_names = []
-                for i in range(1, max_elements+1):column_names.extend([f'hisco_{i}', f'desc_{i}'])
+                for i in range(1, max_elements+1):column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
 
 
                 # Create the DataFrame
