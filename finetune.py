@@ -1,8 +1,6 @@
 import argparse
 import os
 
-from enum import Enum
-
 import torch
 import yaml
 
@@ -25,7 +23,6 @@ from histocc import (
 from histocc.seq2seq_mixer_engine import train
 from histocc.formatter import (
     BlockyFormatter,
-    construct_finetune_formatter,
     construct_general_purpose_formatter,
     PAD_IDX,
 )
@@ -41,28 +38,25 @@ except ImportError:
 from train_mixer import load_states
 
 
-class FreezeLevel(Enum):
-    NO_FREEZE = 0
-    FREEZE_ENCODER = 1
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
 
     # File paths, data & model choices
     parser.add_argument('--save-path', type=str, default='./Finetuned/', help='Directory to store fine-tuned model, incl. processed data')
+    parser.add_argument('--save-interval', type=int, default=1000, help='Number of steps between saving model')
     parser.add_argument('--dataset', type=str, default=None, help='Filename of dataset')
     parser.add_argument('--input-col', type=str, default='occ1', help='Column name of column with occupational descriptions')
     parser.add_argument('--target-cols', type=str, nargs='+', default=None, help='List of column names with labels')
 
     # Language (must specify none or one of below, cannot specify both)
-    parser.add_argument('--language', type=str, default='unk', help='Occupational description language') # TODO maybe default to None, which uses a column if available and otherwise defaults to <unk>
+    parser.add_argument('--language', type=str, default='unk', help='Occupational description language')
     parser.add_argument('--language-col', type=str, default=None, help='Optional column name in --dataset with language')
 
     # Data settings
     parser.add_argument('--block-size', type=int, default=5, help='Maximum number of characters in target (e.g., this is 5 for the HISCO system)')
     parser.add_argument('--share-val', type=float, default=0.1, help='Share of data set aside for tracking model performance')
     parser.add_argument('--use-within-block-sep', action='store_true', default=False, help='Whether to use "," as a separator for tokens WITHIN a code. Useful for, e.g., PSTI')
+    parser.add_argument('--drop-bad-labels', action='store_true', default=False, help='Omit all observations where labels not adhere to formatting rules.')
 
     # Logging parameters
     parser.add_argument('--log-interval', type=int, default=100, help='Number of steps between reporting training stats')
@@ -140,6 +134,9 @@ def prepare_target_cols(
         except: # pylint: disable=W0702
             passes_formatter.append(False)
 
+        if (i + 1) % 10_000 == 0:
+            print(f'Scanned {i + 1} of {len(data)} observations.')
+
     bad_cases = len(passes_formatter) - sum(passes_formatter)
 
     if bad_cases > 0:
@@ -147,19 +144,7 @@ def prepare_target_cols(
             print(f'Dropping {bad_cases} cases of labels not fit for formatter.')
             data = data[passes_formatter]
         else:
-            raise ValueError
-
-    # for i, target_col in enumerate(formatter.target_cols):
-    #     assert not data[target_col].str.contains(formatter.sep_value).any()
-
-    #     if formatter.within_block_sep is not None:
-    #         is_good = data[target_col].str.contains(formatter.within_block_sep, na=True)
-
-    #         if (~is_good).any():
-    #             print(f'Dropping {(~is_good).sum()} rows due to bad values in {target_col} (missing separator)')
-    #             data = data[is_good].copy()
-
-    #         assert data[target_col].str.contains(formatter.within_block_sep, na=True).all()
+            raise ValueError(f'{bad_cases} bad cases of labels (of {len(data)}). If you to omit these rows, specify --drop-bad-labels')
 
     return data
 
@@ -172,6 +157,7 @@ def prepare_data(
         share_val: float,
         language: str = 'unk',
         language_col: str | None = None,
+        drop_bad_rows: bool = False,
 ) -> dict[str, int]:
     if not os.path.isdir(save_path):
         print(f'Creating fine-tuning directory {save_path}')
@@ -196,7 +182,7 @@ def prepare_data(
     data = data.rename(columns={input_col: 'occ1'})
 
     # Value checks, subsetting, and changing some values
-    data = prepare_target_cols(data, formatter)
+    data = prepare_target_cols(data, formatter, drop_bad_rows)
 
     # Build code <-> label mapping
     unique_values = pd.unique(data[formatter.target_cols].values.ravel())
@@ -277,6 +263,7 @@ def main():
         share_val=args.share_val,
         language=args.language,
         language_col=args.language_col,
+        drop_bad_rows=args.drop_bad_labels,
     )
     num_classes_flat = len(map_code_label)
 
@@ -380,6 +367,7 @@ def main():
         log_interval=args.log_interval,
         eval_interval=args.eval_interval,
         log_wandb=args.log_wandb,
+        save_interval=args.save_interval
     )
 
 
