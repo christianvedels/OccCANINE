@@ -41,7 +41,7 @@ from .dataloader import (
 from .formatter import (
     hisco_blocky5,
     BOS_IDX,
-    construct_finetune_formatter
+    construct_general_purpose_formatter
 )
 
 from .utils import Averager
@@ -130,7 +130,7 @@ class OccCANINE:
             name: ModelName = "OccCANINE_s2s_mix",
             device: torch.device | None = None,
             batch_size: int = 256,
-            verbose: bool = False,
+            verbose: bool = True,
             baseline: bool = False,
             hf: bool = True,
             force_download: bool = False,
@@ -141,6 +141,7 @@ class OccCANINE:
 
             # Args used for other systems
             descriptions: pd.DataFrame | None = None, 
+            use_within_block_sep: bool = False # Should be True for systems with ',' between digits
     ):
         """
         Initializes the OccCANINE model with specified configurations.
@@ -180,6 +181,7 @@ class OccCANINE:
 
         # System
         self.system = system
+        self.use_within_block_sep = use_within_block_sep 
 
         if self.system == "hisco": # TODO: Handle other model specs
             # Formatter
@@ -197,9 +199,6 @@ class OccCANINE:
             if hf:
                 raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
             
-            # Warn of things being infered:
-            warnings.warn("Infering formatter from model since system is not 'HISCO'")
-
             # TODO: Move into key loading method
             loaded_state = torch.load(name, weights_only = True) # Load state
             key_loaded = loaded_state['key']
@@ -217,23 +216,36 @@ class OccCANINE:
 
                 # Join on descriptions
                 self.key_desc = {k: desc_dict.get(self.key.get(k), "Not provided") for k in self.key.keys()} # Produce key_desc
-                
 
             # Code len as max of keys
-            self.code_len = max([len(i) for i in self.key.values()])
+            key_val_tmp = list(self.key.values())
+            if self.use_within_block_sep:
+                self.code_len = max([len(i.split(",")) for i in key_val_tmp])
+            else:
+                self.code_len = max([len(i) for i in self.key.values()])
 
             # Load general purpose formatter
             if "chars" in loaded_state.keys():
-                self.formatter = construct_finetune_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), chars=loaded_state['chars'])
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), chars=loaded_state['chars'])
             else:
-                self.formatter = construct_finetune_formatter(block_size=self.code_len, target_cols=list("dummy_entry"))
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), use_within_block_sep = use_within_block_sep)
+
+            # Check if use_within_block_sep is set
+            if not use_within_block_sep:
+                if any(["," in i for i in self.key.values()]):
+                    raise ValueError("The key contains ',' in some of the codes. Please set 'use_within_block_sep' to True")
 
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
 
         # Sanitize keys (system codes should be of self.code_len + int as keys)
-        self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
+        if use_within_block_sep:
+            self.key = {int(k): str(v) for k, v in self.key.items()}
+        else:
+            self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
+            
         self.key_desc = {int(k): str(v) for k, v in self.key_desc.items()}
+
 
         # Model and model type
         if skip_load:
@@ -304,16 +316,18 @@ class OccCANINE:
         # Formatted list of codes
         codes_list = list(self.key.values())
         codes_list = [str(i) for i in codes_list]
-        codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]
+        if not self.use_within_block_sep: # This cleaning step inserts erroneous 0 in the codes if use_within_block_sep is True
+            codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]        
         codes_list = [i for i in codes_list if i != " "]
         codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
-
+        
         return codes_list
 
     def _initialize_model(
             self,
             model_type: ModelType,
             state_dict = None,
+            baseline = False
             ) -> nn.Module:
         if model_type == 'flat':
             model = CANINEOccupationClassifier(
@@ -337,6 +351,8 @@ class OccCANINE:
             raise ValueError(f"Undefined 'model_type' {model_type} requested")
 
         # Load params to model if not baseline:
+        if baseline: # Strange but ensures backwards compatibility
+            state_dict = None
         if state_dict is not None:
             if model_type == 'flat':
                 model.load_state_dict(state_dict)
@@ -380,7 +396,7 @@ class OccCANINE:
         model_type = self._derive_model_type(loaded_state)
 
         # Load depending on model type
-        model = self._initialize_model(model_type=model_type, state_dict=loaded_state)
+        model = self._initialize_model(model_type=model_type, state_dict=loaded_state, baseline=baseline)
 
         return model, model_type
 
