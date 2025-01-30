@@ -69,7 +69,7 @@ data1 = data1 %>%
 # Add RowID 
 data1 = data1 %>% 
   ungroup() %>% 
-  mutate(RowID = 1:n())´%>%
+  mutate(RowID = 1:n()) %>%
   mutate(
     lang = "IT"
   )
