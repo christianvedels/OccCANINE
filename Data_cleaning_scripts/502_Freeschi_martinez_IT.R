@@ -69,7 +69,10 @@ data1 = data1 %>%
 # Add RowID 
 data1 = data1 %>% 
   ungroup() %>% 
-  mutate(RowID = 1:n())
+  mutate(RowID = 1:n())´%>%
+  mutate(
+    lang = "IT"
+  )
 
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/IT_italian_titles.csv")
