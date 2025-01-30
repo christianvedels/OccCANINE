@@ -1,6 +1,10 @@
 import math
 import unittest
+
 import torch
+
+import pandas as pd
+
 from histocc import OccCANINE, DATASETS
 from histocc.formatter import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
 from histocc.prediction_assets import ModelName, ModelType, SystemType
@@ -38,16 +42,22 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
             self,
             model_type: ModelType | None = None,
             name: ModelName | None = None,
+            hf: bool = False,
             system: SystemType = 'hisco',
+            descriptions: pd.DataFrame | None = None,
+            use_within_block_sep: bool = False,
             block_nodes: bool = False,
             ):
         params = self.default_params.copy()
+
         params['system'] = system
+        params['descriptions'] = descriptions
+        params['use_within_block_sep'] = use_within_block_sep
+        params['hf'] = hf
 
         if model_type is not None:
             # Arg implies untrained model -> skip any loading
             params['model_type'] = model_type
-            params['hf'] = False
             params['skip_load'] = True
 
         if name is not None:
@@ -82,7 +92,8 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
             if sample_outputs is not None:
                 with self.subTest(msg='No arguments prediction, verifying results'):
                     self.assertListEqual(
-                        list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                        # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                        list(pred[f'{wrapper.system}_1']),
                         sample_outputs,
                     )
 
@@ -101,7 +112,8 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
                 if sample_outputs is not None:
                     with self.subTest(msg=f'prediction_type={prediction_type}, verifying results'):
                         self.assertListEqual(
-                            list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                            # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                            list(pred[f'{wrapper.system}_1']),
                             sample_outputs,
                         )
 
@@ -122,7 +134,7 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
 class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
     model_names = ['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
     sample_inputs = ['he is a farmer', 'he is a fisherman']
-    sample_outputs = [61110, 64100]
+    sample_outputs = ['61110', '64100']
 
     def test_wrappers(self):
         # Run tests for untrained seq2seq wrapper
@@ -148,6 +160,7 @@ class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
         for model_name in self.model_names:
             wrapper_pretrained = self._initialize_model(
                 name=model_name,
+                hf=True,
                 system='hisco',
             )
             self._run_wrapper_tests(
@@ -160,6 +173,34 @@ class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
 
 class TestWrapperGeneralPurposeOccCANINE(AbstractTestWrapperOccCANINE):
     sample_inputs = ['he is a farmer', 'he is a fisherman']
+
+    def setUp(self):
+        super().setUp()
+        self.occ1950_descriptions = pd.read_csv('./Data/OCC1950_definitions.csv')
+
+    def test_wrapper_occ1950(self):
+        wrapper_mixer_occ1950 = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-occ1950-ft-s=30000\last.bin',
+            system='occ1950',
+            descriptions=self.occ1950_descriptions,
+            block_nodes=True,
+            )
+        self._run_wrapper_tests(
+            wrapper_mixer_occ1950,
+            self.sample_inputs,
+            sample_outputs=['100', '910'],
+            )
+        del wrapper_mixer_occ1950
+
+    def test_wrapper_psti(self):
+        wrapper_mixer_psti = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-psti-ft-s=30000\last.bin',
+            system='ptsi',
+            block_nodes=True,
+            use_within_block_sep=True,
+            )
+        self._run_wrapper_tests(wrapper_mixer_psti, self.sample_inputs)
+        del wrapper_mixer_psti
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
