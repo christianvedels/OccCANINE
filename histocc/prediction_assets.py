@@ -67,7 +67,7 @@ from .attacker import AttackerClass
 
 
 PredType = Literal['flat', 'greedy', 'full']
-SystemType = Literal['hisco']
+SystemType = Literal['hisco'] | str
 BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
 ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
@@ -127,7 +127,7 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
 class OccCANINE:
     def __init__(
             self,
-            name: ModelName = "OccCANINE_s2s_mix",
+            name: ModelName | str = "OccCANINE_s2s_mix",
             device: torch.device | None = None,
             batch_size: int = 256,
             verbose: bool = True,
@@ -140,7 +140,7 @@ class OccCANINE:
             skip_load: bool = False,
 
             # Args used for other systems
-            descriptions: pd.DataFrame | None = None, 
+            descriptions: pd.DataFrame | None = None,
             use_within_block_sep: bool = False # Should be True for systems with ',' between digits
     ):
         """
@@ -172,7 +172,6 @@ class OccCANINE:
             print(f"Using device: {self.device}")
 
         self.name = name
-        self.system = system
         self.batch_size = batch_size
         self.verbose = verbose
 
@@ -181,7 +180,7 @@ class OccCANINE:
 
         # System
         self.system = system
-        self.use_within_block_sep = use_within_block_sep 
+        self.use_within_block_sep = use_within_block_sep
 
         if self.system == "hisco": # TODO: Handle other model specs
             # Formatter
@@ -198,7 +197,7 @@ class OccCANINE:
         else:
             if hf:
                 raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
-            
+
             # TODO: Move into key loading method
             loaded_state = torch.load(name, weights_only = True) # Load state
             key_loaded = loaded_state['key']
@@ -243,7 +242,7 @@ class OccCANINE:
             self.key = {int(k): str(v) for k, v in self.key.items()}
         else:
             self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
-            
+
         self.key_desc = {int(k): str(v) for k, v in self.key_desc.items()}
 
 
@@ -277,14 +276,15 @@ class OccCANINE:
             f"batch_size={self.batch_size}, "
             f"verbose={self.verbose}, "
             f"system='{self.system}', "
-            f"model_type='{self.model_type}')"
+            f"model_type='{self.model_type}', "
+            f"formatter='{self.formatter}')"
         )
 
     def __call__(self, occ1: str | list[str], *args, **kwargs):
         return self.predict(occ1, *args, **kwargs)
 
     def _load_keys(self, path: str | None = None) -> Tuple[Dict[float, str], Dict[float, str]]:
-        
+
         if path is not None:
             key_df = pd.read_csv(path)
 
@@ -317,10 +317,10 @@ class OccCANINE:
         codes_list = list(self.key.values())
         codes_list = [str(i) for i in codes_list]
         if not self.use_within_block_sep: # This cleaning step inserts erroneous 0 in the codes if use_within_block_sep is True
-            codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]        
+            codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]
         codes_list = [i for i in codes_list if i != " "]
         codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
-        
+
         return codes_list
 
     def _initialize_model(
