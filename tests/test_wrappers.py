@@ -3,10 +3,10 @@ import unittest
 import torch
 from histocc import OccCANINE, DATASETS
 from histocc.formatter import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
-from histocc.prediction_assets import ModelName, ModelType
+from histocc.prediction_assets import ModelName, ModelType, SystemType
 
 
-class TestWrapperOccCANINE(unittest.TestCase):
+class AbstractTestWrapperOccCANINE(unittest.TestCase):
     default_params = {
         'device': None,
         'batch_size': 8,
@@ -14,8 +14,6 @@ class TestWrapperOccCANINE(unittest.TestCase):
         'baseline': False,
         'force_download': False,
     }
-    sample_inputs = ['he is a farmer', 'he is a fisherman']
-    sample_outputs = [61110, 64100]
     nodes_to_block = [UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX]
 
     map_model_type_supported_settings = {
@@ -40,9 +38,11 @@ class TestWrapperOccCANINE(unittest.TestCase):
             self,
             model_type: ModelType | None = None,
             name: ModelName | None = None,
+            system: SystemType = 'hisco',
             block_nodes: bool = False,
             ):
         params = self.default_params.copy()
+        params['system'] = system
 
         if model_type is not None:
             # Arg implies untrained model -> skip any loading
@@ -64,21 +64,26 @@ class TestWrapperOccCANINE(unittest.TestCase):
 
         return model_wrapper
 
-    def _run_wrapper_tests(self, wrapper: OccCANINE, check_pred: bool = False):
+    def _run_wrapper_tests(
+            self,
+            wrapper: OccCANINE,
+            sample_inputs: list[str],
+            sample_outputs: list[int | str] | None = None,
+            ):
         # Supported settings
         supported_settings = self.map_model_type_supported_settings[wrapper.model_type]
 
         # Test `predict` without args (not supported for `flat` model type)
         if wrapper.model_type != 'flat':
             with self.subTest(msg='No arguments prediction'):
-                pred = wrapper.predict(self.sample_inputs)
-                self.assertEqual(len(pred), len(self.sample_inputs))
+                pred = wrapper.predict(sample_inputs)
+                self.assertEqual(len(pred), len(sample_inputs))
 
-            if check_pred:
+            if sample_outputs is not None:
                 with self.subTest(msg='No arguments prediction, verifying results'):
                     self.assertListEqual(
-                        list(pred['hisco_1'].astype(float).astype(int)),
-                        self.sample_outputs,
+                        list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                        sample_outputs,
                     )
 
         for prediction_type in supported_settings['pred_type']:
@@ -86,18 +91,18 @@ class TestWrapperOccCANINE(unittest.TestCase):
                 with self.subTest(prediction_type=prediction_type):
                     # Test standard prediction
                     pred = wrapper.predict(
-                        self.sample_inputs,
+                        sample_inputs,
                         prediction_type=prediction_type,
                         behavior=behavior,
                         what='pred',
                         )
-                    self.assertEqual(len(pred), len(self.sample_inputs))
+                    self.assertEqual(len(pred), len(sample_inputs))
 
-                if check_pred:
+                if sample_outputs is not None:
                     with self.subTest(msg=f'prediction_type={prediction_type}, verifying results'):
                         self.assertListEqual(
-                            list(pred['hisco_1'].astype(float).astype(int)),
-                            self.sample_outputs,
+                            list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                            sample_outputs,
                         )
 
                 # Test probability if prediction type is not greedy
@@ -106,35 +111,49 @@ class TestWrapperOccCANINE(unittest.TestCase):
 
                 with self.subTest(prediction_type=prediction_type):
                     pred = wrapper.predict(
-                        self.sample_inputs,
+                        sample_inputs,
                         prediction_type=prediction_type,
                         behavior=behavior,
                         what='probs',
                         )
-                    self.assertEqual(len(pred), len(self.sample_inputs))
+                    self.assertEqual(len(pred), len(sample_inputs))
+
+
+class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
+    sample_inputs = ['he is a farmer', 'he is a fisherman']
+    sample_outputs = [61110, 64100]
 
     def test_wrappers(self):
         # Run tests for untrained seq2seq wrapper
         wrapper_s2s = self._initialize_model(
             model_type='seq2seq',
+            system='hisco',
             block_nodes=True,
             )
-        self._run_wrapper_tests(wrapper_s2s)
+        self._run_wrapper_tests(wrapper_s2s, self.sample_inputs)
         del wrapper_s2s
 
         # Run tests for untrained mixer wrapper
         wrapper_mixer = self._initialize_model(
             model_type='mix',
+            system='hisco',
             block_nodes=True,
             )
-        self._run_wrapper_tests(wrapper_mixer)
+        self._run_wrapper_tests(wrapper_mixer, self.sample_inputs)
         del wrapper_mixer
 
         # Run tests for pretrained models; here, we also check if predictions
         # match the labels associated with our sample inputs
         for model_name in ModelName.__args__:
-            wrapper_pretrained = self._initialize_model(name=model_name)
-            self._run_wrapper_tests(wrapper_pretrained, check_pred=True)
+            wrapper_pretrained = self._initialize_model(
+                name=model_name,
+                system='hisco',
+            )
+            self._run_wrapper_tests(
+                wrapper=wrapper_pretrained,
+                sample_inputs=self.sample_inputs,
+                sample_outputs=self.sample_outputs,
+            )
             del wrapper_pretrained
 
 
