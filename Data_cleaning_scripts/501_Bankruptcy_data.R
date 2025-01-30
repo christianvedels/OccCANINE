@@ -45,6 +45,9 @@ data0 = data0 %>%
     hisco_1 = as.numeric(hisco_1)
   ) %>% 
   mutate(
+    was_NA = as.numeric(is.na(hisco_1))
+  ) %>%
+  mutate(
     hisco_1 = ifelse(is.na(hisco_1), -1, hisco_1)
   )
 
