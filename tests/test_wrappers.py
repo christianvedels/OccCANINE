@@ -120,6 +120,7 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
 
 
 class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
+    model_names = ['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
     sample_inputs = ['he is a farmer', 'he is a fisherman']
     sample_outputs = [61110, 64100]
 
@@ -144,7 +145,7 @@ class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
 
         # Run tests for pretrained models; here, we also check if predictions
         # match the labels associated with our sample inputs
-        for model_name in ModelName.__args__:
+        for model_name in self.model_names:
             wrapper_pretrained = self._initialize_model(
                 name=model_name,
                 system='hisco',
@@ -155,6 +156,10 @@ class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
                 sample_outputs=self.sample_outputs,
             )
             del wrapper_pretrained
+
+
+class TestWrapperGeneralPurposeOccCANINE(AbstractTestWrapperOccCANINE):
+    sample_inputs = ['he is a farmer', 'he is a fisherman']
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
