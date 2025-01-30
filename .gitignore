@@ -17,6 +17,7 @@ Data/eval-results/
 Data/models/
 Data/backup/
 Data/Data_backup/
+Data/OOD_data/
 
 
 
@@ -192,3 +193,4 @@ Data/desktop.ini
 tmp_product_test.py
 test_wrapper.py
 test_wrappers.py
+
