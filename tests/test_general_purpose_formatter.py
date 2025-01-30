@@ -277,11 +277,48 @@ class TestBlockyFormatter(unittest.TestCase):
             formatter=formatter,
         )
 
-    # def test_icem_formatter(self):
-    #     raise NotImplementedError
+    def test_icem_formatter(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=3,
+            target_cols=[0, 0, 0],
+        )
+        sep_value = formatter.sep_value
 
-    # def test_hisco_formatter(self):
-    #     raise NotImplementedError
+        # Transform label
+        self._test_transform_label(
+            raw_input='787',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1012, 1011,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'778{sep_value}84{sep_value}?',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1011, 1012,
+                1012, 1008, PAD_IDX,
+                2074, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([
+                BOS_IDX,
+                1010, 1013, 1011,
+                1005, PAD_IDX, PAD_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            expected_cleaned=f'697{sep_value}1',
+            formatter=formatter,
+        )
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
