@@ -187,6 +187,12 @@ def evaluate(
 def main():
     args = parse_args()
 
+    # args.val_data = [r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\data_val.csv']
+    # args.mapping = r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\key.csv'
+    # args.target_cols = ['OCC1950_1', 'OCC1950_2']
+    # args.checkpoint = r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\last.bin'
+    # args.batch_size = 32
+
     # Load mapping
     mapping_df = pd.read_csv(
         args.mapping,
