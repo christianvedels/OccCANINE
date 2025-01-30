@@ -73,11 +73,11 @@ data1 %>%
 
 n1 = NROW(data1)
 data1 = data1 %>% 
-  mutate(not_in_key = hisco_1 %in% key$hisco) %>% 
-  mutate(not_in_key = not_in_key + hisco_2 %in% key$hisco) %>%
-  mutate(not_in_key = not_in_key + hisco_3 %in% key$hisco) %>%
-  mutate(not_in_key = not_in_key + hisco_4 %in% key$hisco) %>%
-  mutate(not_in_key = not_in_key + hisco_5 %in% key$hisco)
+  mutate(not_in_key = !(hisco_1 %in% key$hisco)) %>% 
+  mutate(not_in_key = not_in_key + !(hisco_2 %in% key$hisco)) %>%
+  mutate(not_in_key = not_in_key + !(hisco_3 %in% key$hisco)) %>%
+  mutate(not_in_key = not_in_key + !(hisco_4 %in% key$hisco)) %>%
+  mutate(not_in_key = not_in_key + !(hisco_5 %in% key$hisco))
 
 # Turn into character
 data1 = data1 %>% 
