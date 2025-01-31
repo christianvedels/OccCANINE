@@ -881,6 +881,7 @@ class OccCANINE:
         - list of str: Strings which are cleaned form non standard characters and in lower case
         """
 
+        occ1 = [str(occ) for occ in occ1]
         occ1 = [occ.lower() for occ in occ1]
         occ1 = [unidecode(occ) for occ in occ1]
 
