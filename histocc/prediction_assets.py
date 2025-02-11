@@ -224,10 +224,11 @@ class OccCANINE:
                 self.code_len = max([len(i) for i in self.key.values()])
 
             # Load general purpose formatter
+            dummy_cols = ["dummy_entry"] * 5
             if "chars" in loaded_state.keys():
-                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), chars=loaded_state['chars'])
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=dummy_cols, chars=loaded_state['chars'])
             else:
-                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=list("dummy_entry"), use_within_block_sep = use_within_block_sep)
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=dummy_cols, use_within_block_sep = use_within_block_sep)
 
             # Check if use_within_block_sep is set
             if not use_within_block_sep:
@@ -898,7 +899,7 @@ class OccCANINE:
             # Fallback if occ1 does not have a .shape attribute, use len() instead
             nobs = len(inputs)
 
-        print(f"\nProduced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
+        print(f"\nProduced {self.system} codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
         saved_time = nobs * 10 - dif_time
         m, s = divmod(saved_time, 60)
