@@ -349,7 +349,7 @@ class BlockOrderInvariantLoss(nn.Module):
             target: Tensor, # [BATCH_SIZE, BLOCK_SIZE * NB_BLOCKS]
     ) -> Tensor:
         # Number of target blocks for each observation in batch
-        num_target_blocks = torch.argmax((target == self.pad_idx).long(), dim=1) // self.nb_blocks
+        num_target_blocks = torch.argmax((target == self.pad_idx).long(), dim=1) // self.block_size
 
         # If there are NO padding elements, i.e., number of target
         # blocks equals self.nb_blocks, the above code will wrongly
