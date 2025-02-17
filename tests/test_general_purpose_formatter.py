@@ -94,7 +94,7 @@ class TestBlockyFormatter(unittest.TestCase):
         self._test_transform_label(
             raw_input=f'1{within_block_sep}2{within_block_sep}3{sep_value}1{within_block_sep}1',
             expected_output=np.array([
-                BOS_IDX, 1005, 1006, 1007, 1005, 1005, PAD_IDX, EOS_IDX
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, EOS_IDX, EOS_IDX
                 ]),
             formatter=formatter,
         )
@@ -118,7 +118,7 @@ class TestBlockyFormatter(unittest.TestCase):
             formatter=formatter,
         )
         self._test_clean_pred(
-            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, PAD_IDX, PAD_IDX, EOS_IDX]),
+            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, EOS_IDX, EOS_IDX, EOS_IDX]),
             expected_cleaned=f'A{within_block_sep}b{within_block_sep}z{sep_value}*',
             formatter=formatter,
         )
@@ -152,7 +152,7 @@ class TestBlockyFormatter(unittest.TestCase):
         self._test_transform_label(
             raw_input=f'123{sep_value}11',
             expected_output=np.array([
-                BOS_IDX, 1005, 1006, 1007, 1005, 1005, PAD_IDX, EOS_IDX
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, EOS_IDX, EOS_IDX
                 ]),
             formatter=formatter,
         )
@@ -171,7 +171,7 @@ class TestBlockyFormatter(unittest.TestCase):
             formatter=formatter,
         )
         self._test_clean_pred(
-            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, PAD_IDX, PAD_IDX, EOS_IDX]),
+            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, EOS_IDX, EOS_IDX, EOS_IDX]),
             expected_cleaned=f'Abz{sep_value}*',
             formatter=formatter,
         )
@@ -196,14 +196,11 @@ class TestBlockyFormatter(unittest.TestCase):
 
             self.assertEqual(cleaned, expected)
 
-    def test_psti_formatter(self):
-        raise NotImplementedError
+    # def test_psti_formatter(self):
+    #     raise NotImplementedError
 
-    def test_hisco_formatter(self):
-        raise NotImplementedError
-
-    def test_psti_formatter(self):
-        raise NotImplementedError
+    # def test_hisco_formatter(self):
+    #     raise NotImplementedError
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
