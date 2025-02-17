@@ -25,6 +25,7 @@ from histocc.formatter import (
     BlockyFormatter,
     construct_general_purpose_formatter,
     PAD_IDX,
+    EOS_IDX,
 )
 from histocc.utils import wandb_init
 
@@ -57,6 +58,7 @@ def parse_args():
     parser.add_argument('--share-val', type=float, default=0.1, help='Share of data set aside for tracking model performance')
     parser.add_argument('--use-within-block-sep', action='store_true', default=False, help='Whether to use "," as a separator for tokens WITHIN a code. Useful for, e.g., PSTI')
     parser.add_argument('--drop-bad-labels', action='store_true', default=False, help='Omit all observations where labels not adhere to formatting rules.')
+    parser.add_argument('--allow-codes-shorter-than-block-size', action='store_true', default=False, help='Allow for codes shorter than block size. If not specified, such codes will raise an error, as they may indicate that leading zeroes have accidently been dropped.')
 
     # Logging parameters
     parser.add_argument('--log-interval', type=int, default=100, help='Number of steps between reporting training stats')
@@ -114,6 +116,7 @@ def prepare_target_cols(
         data: pd.DataFrame,
         formatter: BlockyFormatter,
         drop_bad_rows: bool = False,
+        allow_codes_shorter_than_block_size: bool = False,
 ) -> pd.DataFrame:
     # All cases of space (' ') are cast to NaN
     for i, target_col in enumerate(formatter.target_cols):
@@ -127,15 +130,24 @@ def prepare_target_cols(
     # Send all through formatter and track whether that works
     passes_formatter: list[bool] = []
 
+    # Track whether length shorter that block size, as that may indicate
+    # that leading zeros have been dropped. We can do this by tracking
+    # whether there are any EOS_IDX present in formatted code ASIDE from
+    # as its last element
+    len_less_than_block_size: list[int] = []
+
     for i in range(len(data)):
         try:
-            _ = formatter.transform_label(data.iloc[i])
+            formatted = formatter.transform_label(data.iloc[i])
             passes_formatter.append(True)
+
+            if EOS_IDX in formatted[:-1]:
+                len_less_than_block_size.append(i)
         except: # pylint: disable=W0702
             passes_formatter.append(False)
 
         if (i + 1) % 10_000 == 0:
-            print(f'Scanned {i + 1} of {len(data)} observations.')
+            print(f'Scanned {i + 1:,} of {len(data):,} observations.')
 
     bad_cases = len(passes_formatter) - sum(passes_formatter)
 
@@ -145,6 +157,12 @@ def prepare_target_cols(
             data = data[passes_formatter]
         else:
             raise ValueError(f'{bad_cases} bad cases of labels (of {len(data)}). If you to omit these rows, specify --drop-bad-labels')
+
+    if len(len_less_than_block_size) > 0:
+        if allow_codes_shorter_than_block_size:
+            print(f'{len(len_less_than_block_size):,} cases of labels shorter than block size. Assuming such codes are allowed since --allow-codes-shorter-than-block-size was specified.')
+        else:
+            raise ValueError(f'{len(len_less_than_block_size):,} cases of labels shorter than block size, which may indicate that leading zeroes have been dropped by accident. If these cases are exptected, specify --allow-codes-shorter-than-block-size \nExample rows: {data.iloc[len_less_than_block_size].head(10)}')
 
     return data
 
@@ -158,6 +176,7 @@ def prepare_data(
         language: str = 'unk',
         language_col: str | None = None,
         drop_bad_rows: bool = False,
+        allow_codes_shorter_than_block_size: bool = False,
 ) -> dict[str, int]:
     if not os.path.isdir(save_path):
         print(f'Creating fine-tuning directory {save_path}')
@@ -182,7 +201,12 @@ def prepare_data(
     data = data.rename(columns={input_col: 'occ1'})
 
     # Value checks, subsetting, and changing some values
-    data = prepare_target_cols(data, formatter, drop_bad_rows)
+    data = prepare_target_cols(
+        data=data,
+        formatter=formatter,
+        drop_bad_rows=drop_bad_rows,
+        allow_codes_shorter_than_block_size=allow_codes_shorter_than_block_size,
+    )
 
     # Build code <-> label mapping
     unique_values = pd.unique(data[formatter.target_cols].values.ravel())
@@ -264,6 +288,7 @@ def main():
         language=args.language,
         language_col=args.language_col,
         drop_bad_rows=args.drop_bad_labels,
+        allow_codes_shorter_than_block_size=args.allow_codes_shorter_than_block_size,
     )
     num_classes_flat = len(map_code_label)
 
