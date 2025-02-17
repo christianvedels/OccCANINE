@@ -616,6 +616,7 @@ class OccDatasetV2InMem(OccDatasetV2):
 
         self.frame = pd.read_csv(
             fname_data,
+            dtype={'lang': str, **{x: str for x in target_cols}},
             usecols=['occ1', 'lang', *target_cols],
         )
 
@@ -665,7 +666,7 @@ class OccDatasetV2InMemMultipleFiles(OccDatasetV2):
             pd.read_csv(
                 f,
                 usecols=['occ1', 'lang', *target_cols],
-                dtype={'lang': str},
+                dtype={'lang': str, **{x: str for x in target_cols}},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
         ]
@@ -719,7 +720,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             pd.read_csv(
                 f,
                 usecols=['occ1', 'lang', *target_cols],
-                dtype={'lang': str},
+                dtype={'lang': str, **{x: str for x in target_cols}},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
         ]
