@@ -70,7 +70,7 @@ def format_code(
         raise ValueError(f'Code chunk {raw_code} longer than block size ({block_size})')
 
     padding = block_size - len(label)
-    label.extend([PAD_IDX] * padding)
+    label.extend([EOS_IDX] * padding)
 
     return label
 
@@ -83,7 +83,7 @@ def clean_code(
     cleaned = []
 
     for idx in formatted_code:
-        if idx == PAD_IDX:
+        if idx in {PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX}:
             continue
 
         cleaned.append(rev_mapping[idx])
