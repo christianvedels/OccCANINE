@@ -882,6 +882,7 @@ class OccCANINE:
         - list of str: Strings which are cleaned form non standard characters and in lower case
         """
 
+        occ1 = [str(occ) for occ in occ1]
         occ1 = [occ.lower() for occ in occ1]
         occ1 = [unidecode(occ) for occ in occ1]
 
@@ -912,9 +913,22 @@ class OccCANINE:
         print("If the time saved is valuable for you, please cite our paper:")
         self.citation()
 
-    def citation(self):
-        print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
-        print("URL: https://arxiv.org/abs/2402.13604")
+    def citation(self, BibTex = False):
+        if bibtex:
+            print("@article{dahl2024breakinghisco,")
+            print("  title={Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE},")
+            print("  author={Christian Møller Dahl and Torben Johansen and Christian Vedel},")
+            print("  year={2024}")
+            print("  eprint={2402.13604},")
+            print("  archivePrefix={arXiv},")
+            print("  primaryClass={cs.CL},")
+            print("  url={https://arxiv.org/abs/2402.13604},")
+            print("}")
+        else:
+            print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
+            print("URL: https://arxiv.org/abs/2402.13604")
+            print("")
+            print("(You can get a BibTex citation by calling 'mod.citation(BibTex = True)')")
 
     def _format(
             self,
