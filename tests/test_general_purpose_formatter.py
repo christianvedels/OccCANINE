@@ -196,8 +196,129 @@ class TestBlockyFormatter(unittest.TestCase):
 
             self.assertEqual(cleaned, expected)
 
-    # def test_psti_formatter(self):
-    #     raise NotImplementedError
+    def test_psti_formatter(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=8,
+            target_cols=[0, 0],
+            use_within_block_sep=True,
+        )
+        sep_value = formatter.sep_value
+
+        # Transform label
+        self._test_transform_label(
+            raw_input='2,2,2,0,2,6,1,0',
+            expected_output=np.array([
+                BOS_IDX,
+                1006, 1006, 1006, 1004, 1006, 1010, 1005, 1004,
+                PAD_IDX, PAD_IDX, PAD_IDX, PAD_IDX, PAD_IDX, PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'2,2,2,0,2,6,1,0{sep_value}2,2,1,0,17,2,1,0',
+            expected_output=np.array([
+                BOS_IDX,
+                1006, 1006, 1006, 1004, 1006, 1010, 1005, 1004,
+                1006, 1006, 1005, 1004, 1021, 1006, 1005, 1004,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([
+                BOS_IDX,
+                1007, 1010, 1005, 1004, 1005, 1005, 1004, 1004,
+                1007, 1009, 1004, 1004, 1005, 1008, 1004, 1004,
+                EOS_IDX,
+                ]),
+            expected_cleaned=f'3,6,1,0,1,1,0,0{sep_value}3,5,0,0,1,4,0,0',
+            formatter=formatter,
+        )
+
+    def test_isco_formatter(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=3,
+            target_cols=[0, 0],
+        )
+        sep_value = formatter.sep_value
+
+        # Transform label
+        self._test_transform_label(
+            raw_input='999',
+            expected_output=np.array([
+                BOS_IDX,
+                1013, 1013, 1013,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'540{sep_value}711',
+            expected_output=np.array([
+                BOS_IDX,
+                1009, 1008, 1004,
+                1011, 1005, 1005,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([
+                BOS_IDX,
+                1010, 1006, 1008,
+                1005, 1005, PAD_IDX,
+                EOS_IDX,
+                ]),
+            expected_cleaned=f'624{sep_value}11',
+            formatter=formatter,
+        )
+
+    def test_icem_formatter(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=3,
+            target_cols=[0, 0, 0],
+        )
+        sep_value = formatter.sep_value
+
+        # Transform label
+        self._test_transform_label(
+            raw_input='787',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1012, 1011,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'778{sep_value}84{sep_value}?',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1011, 1012,
+                1012, 1008, PAD_IDX,
+                2074, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([
+                BOS_IDX,
+                1010, 1013, 1011,
+                1005, PAD_IDX, PAD_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            expected_cleaned=f'697{sep_value}1',
+            formatter=formatter,
+        )
 
     # def test_hisco_formatter(self):
     #     raise NotImplementedError

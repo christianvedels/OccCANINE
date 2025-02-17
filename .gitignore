@@ -17,6 +17,7 @@ Data/eval-results/
 Data/models/
 Data/backup/
 Data/Data_backup/
+Data/OOD_data/
 
 
 
@@ -191,3 +192,5 @@ Data/Training_data_other.rar
 Data/desktop.ini
 tmp_product_test.py
 test_wrapper.py
+test_wrappers.py
+
