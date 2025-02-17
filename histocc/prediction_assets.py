@@ -914,7 +914,7 @@ class OccCANINE:
         self.citation()
 
     def citation(self, BibTex = False):
-        if bibtex:
+        if BibTex:
             print("@article{dahl2024breakinghisco,")
             print("  title={Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE},")
             print("  author={Christian Møller Dahl and Torben Johansen and Christian Vedel},")
