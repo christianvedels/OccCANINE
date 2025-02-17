@@ -71,3 +71,36 @@ python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-icem
 ```
 
 ```
+
+# Model evaluation
+For select models
+
+## OCC1950, Full sample (18M)
+
+```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\last.bin --target-cols OCC1950_1 OCC1950_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\preds_val.csv
+```
+
+100k val set = 10k obs
+```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-n=100k-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\last.bin --target-cols OCC1950_1 OCC1950_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\preds_val_100k.csv
+```
+
+## PSTI
+
+```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\last.bin --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --block-size 8 --use-within-block-sep --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\preds_val.csv
+```
+
+## ISCO
+
+```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mmixer-isco-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\last.bin --target-cols ISCO68A_1 ISCO68A_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\preds_val.csv
+```
+
+## ICEM
+
+```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\last.bin --target-cols OCCICEM_1 OCCICEM_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\preds_val.csv
+```
+
