@@ -142,7 +142,11 @@ def prepare_target_cols(
             passes_formatter.append(True)
 
             if EOS_IDX in formatted[:-1]:
-                len_less_than_block_size.append(i)
+                if data.iloc[i][formatter.target_cols[0]] == '?' and not EOS_IDX in formatted[(formatter.block_size + 1):-1]:
+                    # OK to have EOS_IDX in FIRST code if due to missing -> '?' cast (see above)
+                    pass
+                else:
+                    len_less_than_block_size.append(i)
         except: # pylint: disable=W0702
             passes_formatter.append(False)
 
