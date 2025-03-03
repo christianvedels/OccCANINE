@@ -31,7 +31,11 @@ import matplotlib.pyplot as plt
 from .datasets import DATASETS
 from .model_assets import load_tokenizer, update_tokenizer
 from .attacker import AttackerClass
-from .formatter import BlockyHISCOFormatter, BlockyOCC1950Formatter
+from .formatter import (
+    BlockyHISCOFormatter,
+    BlockyOCC1950Formatter,
+    BlockyFormatter,
+)
 
 
 # Returns training data path
@@ -486,7 +490,7 @@ class OccDatasetV2(Dataset):
             self,
             fname_data: str,
             fname_index: str,
-            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter | BlockyFormatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             training: bool = True,
@@ -612,6 +616,7 @@ class OccDatasetV2InMem(OccDatasetV2):
 
         self.frame = pd.read_csv(
             fname_data,
+            dtype={'lang': str, **{x: str for x in target_cols}},
             usecols=['occ1', 'lang', *target_cols],
         )
 
@@ -661,7 +666,7 @@ class OccDatasetV2InMemMultipleFiles(OccDatasetV2):
             pd.read_csv(
                 f,
                 usecols=['occ1', 'lang', *target_cols],
-                dtype={'lang': str},
+                dtype={'lang': str, **{x: str for x in target_cols}},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
         ]
@@ -697,7 +702,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
     def __init__(
             self,
             fnames_data: list[str],
-            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
+            formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter | BlockyFormatter,
             tokenizer: CanineTokenizer,
             max_input_len: int,
             num_classes_flat: int,
@@ -706,6 +711,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             n_trans: int = 3,
             unk_lang_prob: float = 0.25,
             target_cols: str | list[str] = 'hisco',
+            map_code_label: dict[str, int] | None = None,
     ):
         if isinstance(target_cols, str):
             target_cols = self.map_type_target_cols_default[target_cols]
@@ -714,7 +720,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             pd.read_csv(
                 f,
                 usecols=['occ1', 'lang', *target_cols],
-                dtype={'lang': str},
+                dtype={'lang': str, **{x: str for x in target_cols}},
                 converters={'occ1': lambda x: x}, # ensure to do not read the str 'nan' as NaN
             ) for f in fnames_data
         ]
@@ -735,6 +741,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
 
         self.target_cols = target_cols
         self.num_classes_flat = num_classes_flat
+        self.map_code_label = map_code_label
 
     def _setup_mapping(self, fname_index: str) -> dict[int, int]:
         ''' We avoid using any mapping when loading dataset into memory,
@@ -751,13 +758,19 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         for target_col in self.target_cols:
             code = record[target_col]
 
-            if code == ' ': # Some OCC1950 labels coded as space rather than NaN
-                break
+            if isinstance(code, float):
+                # Due to missings/None/NaN, type might be float. In such
+                # cases, we want to either break if NaN or convert back
+                # to integer
+                if math.isnan(code):
+                    break
 
-            if isinstance(code, float) and math.isnan(code):
-                break
+                code = int(code)
 
-            target[int(code)] = 1 # column may have type str or float -> cast
+            if self.map_code_label is not None:
+                target[self.map_code_label[str(code)]] = 1
+            else:
+                target[int(code)] = 1 # column may have type str or float -> cast
 
         return target
 
@@ -797,6 +810,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         }
 
         return batch_data
+
 
 class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torben how this works
     """
