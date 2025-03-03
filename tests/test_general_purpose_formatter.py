@@ -270,7 +270,7 @@ class TestBlockyFormatter(unittest.TestCase):
             pred=np.array([
                 BOS_IDX,
                 1010, 1006, 1008,
-                1005, 1005, PAD_IDX,
+                1005, 1005, EOS_IDX,
                 EOS_IDX,
                 ]),
             expected_cleaned=f'624{sep_value}11',
@@ -301,8 +301,8 @@ class TestBlockyFormatter(unittest.TestCase):
             expected_output=np.array([
                 BOS_IDX,
                 1011, 1011, 1012,
-                1012, 1008, PAD_IDX,
-                2074, PAD_IDX, PAD_IDX,
+                1012, 1008, EOS_IDX,
+                2074, EOS_IDX, EOS_IDX,
                 EOS_IDX,
                 ]),
             formatter=formatter,
@@ -312,7 +312,7 @@ class TestBlockyFormatter(unittest.TestCase):
             pred=np.array([
                 BOS_IDX,
                 1010, 1013, 1011,
-                1005, PAD_IDX, PAD_IDX,
+                1005, EOS_IDX, EOS_IDX,
                 PAD_IDX, PAD_IDX, PAD_IDX,
                 EOS_IDX,
                 ]),
