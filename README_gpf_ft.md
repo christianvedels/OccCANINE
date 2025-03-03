@@ -39,8 +39,8 @@ python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-occ1
 ## Full sample (18M)
 
 ```
-set CUDA_VISIBLE_DEVICES=3
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-occ1950-ft --target-cols OCC1950_1 OCC1950_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 16 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCC1950_IPUMS_US_train.csv --batch-size 512 --eval-interval 10000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v2-tests
+set CUDA_VISIBLE_DEVICES=0
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-occ1950-ft --target-cols OCC1950_1 OCC1950_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 16 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCC1950_IPUMS_US_train.csv --batch-size 512 --eval-interval 10000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
 
 # PSTI
@@ -48,23 +48,24 @@ python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-occ1
 ## Full sample (270_000)
 
 ```
-set CUDA_VISIBLE_DEVICES=0
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-psti-ft --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v2-tests
+set CUDA_VISIBLE_DEVICES=1
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
 
 # ISCO
 
+
 ```
-set CUDA_VISIBLE_DEVICES=1
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-isco-ft --target-cols ISCO68A_1 ISCO68A_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 4 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_ISCO68_IPUMS_UK_train.csv --batch-size 512 --eval-interval 50000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v2-tests
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-isco-ft --target-cols ISCO68A_1 ISCO68A_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 4 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_ISCO68_IPUMS_UK_train.csv --batch-size 512 --eval-interval 50000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
 
 # ICEM
 
 ```
-set CUDA_VISIBLE_DEVICES=2
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v2/mixer-icem-ft --target-cols OCCICEM_1 OCCICEM_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 4 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCCICEM_IPUMS_UK_train.csv --batch-size 512 --eval-interval 50000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v2-tests
+set CUDA_VISIBLE_DEVICES=0
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-icem-ft --target-cols OCCICEM_1 OCCICEM_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 4 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCCICEM_IPUMS_UK_train.csv --batch-size 512 --eval-interval 10000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
+
 
 # HISCO
 
@@ -78,29 +79,21 @@ For select models
 ## OCC1950, Full sample (18M)
 
 ```
-python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\last.bin --target-cols OCC1950_1 OCC1950_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\preds_val.csv
-```
-
-100k val set = 10k obs
-```
-python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-n=100k-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\last.bin --target-cols OCC1950_1 OCC1950_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-occ1950-ft\preds_val_100k.csv
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-occ1950-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-occ1950-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-occ1950-ft\last.bin --target-cols OCC1950_1 OCC1950_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-occ1950-ft\preds_val.csv
 ```
 
 ## PSTI
 
-```
-python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\last.bin --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --block-size 8 --use-within-block-sep --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-psti-ft\preds_val.csv
-```
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft\last.bin --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --block-size 8 --use-within-block-sep --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft\preds_val.csv
 
 ## ISCO
 
 ```
-python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mmixer-isco-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\last.bin --target-cols ISCO68A_1 ISCO68A_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-isco-ft\preds_val.csv
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-isco-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-isco-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-isco-ft\last.bin --target-cols ISCO68A_1 ISCO68A_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-isco-ft\preds_val.csv
 ```
 
 ## ICEM
 
 ```
-python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\last.bin --target-cols OCCICEM_1 OCCICEM_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v2\mixer-icem-ft\preds_val.csv
+python eval_gp_mixer.py --val-data Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-icem-ft\data_val.csv --mapping Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-icem-ft\key.csv --checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-icem-ft\last.bin --target-cols OCCICEM_1 OCCICEM_2 --block-size 3 --fn-out Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-icem-ft\preds_val.csv
 ```
-
