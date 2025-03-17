@@ -19,12 +19,13 @@ from histocc.formatter import (
 )
 
 
-NAME = "CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256"
+
+NAME = "flat_occCANINE"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--fn-in', type=str, default=f'./Model/{NAME}.bin')
+    parser.add_argument('--fn-in', type=str, default=f'Data/models/{NAME}.bin')
     parser.add_argument('--fn-in-mixer', type=str, default=f'Data/models/mixer-s2s=10-s=1605000.bin')
     parser.add_argument('--fn-in-s2s', type=str, default=f'Data/models/baseline-s=1600000.bin')
     parser.add_argument('--fn-out', type=str, default='Data/models/OccCANINE_forHF')
@@ -76,7 +77,7 @@ def main():
 
     if args.test:
         model = Seq2SeqMixerOccCANINE_hub.from_pretrained(
-            "christianvedel/Seq2SeqMixerOccCANINE",
+            "Christianvedel/OccCANINE_s2s_mix",
             force_download=True,
             )
 
@@ -91,13 +92,13 @@ def main():
 
     if args.test:
         model = Seq2SeqOccCANINE_hub.from_pretrained(
-            "christianvedel/Seq2SeqOccCANINE",
+            "Christianvedel/OccCANINE_s2s",
             force_download=True,
             )
 
     model.save_pretrained(args.fn_out, config=config)
 
-    # Test
+    # Test old
     if args.test:
         model = CANINEOccupationClassifier_hub.from_pretrained(
             "christianvedel/OccCANINE",

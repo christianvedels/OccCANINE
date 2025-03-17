@@ -1,250 +1,229 @@
 import math
 import unittest
-import warnings
 
 import torch
 
+import pandas as pd
+
 from histocc import OccCANINE, DATASETS
-from histocc.formatter import (
-    UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
-)
+from histocc.formatter import UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
+from histocc.prediction_assets import ModelName, ModelType, SystemType
 
 
-class TestWrapperSeq2SeqOccCANINE(unittest.TestCase):
+class AbstractTestWrapperOccCANINE(unittest.TestCase):
     default_params = {
         'device': None,
         'batch_size': 8,
         'verbose': False,
         'baseline': False,
-        'hf': False,
         'force_download': False,
-        'skip_load': True,
     }
-    sample_inputs = ['he is a farmer', 'he is a fisherman']
+    nodes_to_block = [UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX]
+
+    map_model_type_supported_settings = {
+        'flat': {
+            'pred_type': ['flat'],
+            'behavior_type': ['fast'],
+        },
+        'seq2seq': {
+            'pred_type': ['greedy', 'full'],
+            'behavior_type': ['good'],
+        },
+        'mix': {
+            'pred_type': ['flat', 'greedy', 'full'],
+            'behavior_type': ['fast', 'good'],
+        },
+    }
 
     def setUp(self):
         self.toydata = DATASETS['toydata']()
 
-        self.wrapper_s2s = OccCANINE(
-            model_type='seq2seq',
-            **self.default_params,
-            )
-        self.wrapper_mixer = OccCANINE(
-            model_type='mix',
-            **self.default_params,
-            )
-        # TODO expand beyond HISCO formatter
+    def _initialize_model(
+            self,
+            model_type: ModelType | None = None,
+            name: ModelName | None = None,
+            hf: bool = False,
+            system: SystemType = 'hisco',
+            descriptions: pd.DataFrame | None = None,
+            use_within_block_sep: bool = False,
+            block_nodes: bool = False,
+            ):
+        params = self.default_params.copy()
 
-        self.wrappers = [
-            self.wrapper_s2s,
-            self.wrapper_mixer,
-        ]
+        params['system'] = system
+        params['descriptions'] = descriptions
+        params['use_within_block_sep'] = use_within_block_sep
+        params['hf'] = hf
 
-        # Current issue that models are initialized with one
-        # additional output node than is supported by our
-        # formatter. This may lead to predictions that cannot
-        # be handled by our formatter. Therefore, make sure these
-        # predictions are never produced
-        # Further, formatter does not gracefully handle all special
-        # tokens; also block those from predictions
-        # These issues occur as we do not use a pre-trained model;
-        # the trained models handle this by never producing such
-        # predictions
-        nodes_to_block = [
-            self.wrapper_s2s.model.decoder.head.out_features - 1,
-            UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX, SEP_IDX
-        ]
+        if model_type is not None:
+            # Arg implies untrained model -> skip any loading
+            params['model_type'] = model_type
+            params['skip_load'] = True
 
-        with torch.no_grad():
-            for wrapper in self.wrappers:
-                for val in nodes_to_block:
-                    wrapper.model.decoder.head.bias[val] = - math.inf
+        if name is not None:
+            params['name'] = name
 
-    def test_seq2seq_predict_no_args(self):
-        pred = self.wrapper_s2s.predict(
-            self.sample_inputs,
-            )
+        model_wrapper = OccCANINE(**params)
 
-        self.assertEqual(len(pred), len(self.sample_inputs))
+        # Optionally block specific nodes
+        if block_nodes:
+            with torch.no_grad():
+                bias = model_wrapper.model.decoder.head.bias
+                for val in self.nodes_to_block + [model_wrapper.model.decoder.head.out_features - 1]:
+                    bias[val] = -math.inf
 
-    def test_mixer_predict_no_args(self):
-        pred = self.wrapper_mixer.predict(
-            self.sample_inputs,
-            )
+        return model_wrapper
 
-        self.assertEqual(len(pred), len(self.sample_inputs))
-
-    def _test_predict(
+    def _run_wrapper_tests(
             self,
             wrapper: OccCANINE,
-            inputs: list[str],
-            behavior: str,
-            prediction_type: str | None,
-            what: str,
-    ):
-        out = wrapper.predict(
-            inputs,
-            behavior=behavior,
-            prediction_type=prediction_type,
-            what=what,
+            sample_inputs: list[str],
+            sample_outputs: list[int | str] | None = None,
+            ):
+        # Supported settings
+        supported_settings = self.map_model_type_supported_settings[wrapper.model_type]
+
+        # Test `predict` without args (not supported for `flat` model type)
+        if wrapper.model_type != 'flat':
+            with self.subTest(msg='No arguments prediction'):
+                pred = wrapper.predict(sample_inputs)
+                self.assertEqual(len(pred), len(sample_inputs))
+
+            if sample_outputs is not None:
+                with self.subTest(msg='No arguments prediction, verifying results'):
+                    self.assertListEqual(
+                        # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                        list(pred[f'{wrapper.system}_1']),
+                        sample_outputs,
+                    )
+
+        for prediction_type in supported_settings['pred_type']:
+            for behavior in supported_settings['behavior_type']:
+                with self.subTest(prediction_type=prediction_type):
+                    # Test standard prediction
+                    pred = wrapper.predict(
+                        sample_inputs,
+                        prediction_type=prediction_type,
+                        behavior=behavior,
+                        what='pred',
+                        )
+                    self.assertEqual(len(pred), len(sample_inputs))
+
+                if sample_outputs is not None:
+                    with self.subTest(msg=f'prediction_type={prediction_type}, verifying results'):
+                        self.assertListEqual(
+                            # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
+                            list(pred[f'{wrapper.system}_1']),
+                            sample_outputs,
+                        )
+
+                # Test probability if prediction type is not greedy
+                if prediction_type == 'greedy':
+                    continue
+
+                with self.subTest(prediction_type=prediction_type):
+                    pred = wrapper.predict(
+                        sample_inputs,
+                        prediction_type=prediction_type,
+                        behavior=behavior,
+                        what='probs',
+                        )
+                    self.assertEqual(len(pred), len(sample_inputs))
+
+
+class TestWrapperHISCOOccCANINE(AbstractTestWrapperOccCANINE):
+    model_names = ['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
+    sample_inputs = ['he is a farmer', 'he is a fisherman']
+    sample_outputs = ['61110', '64100']
+
+    def test_wrappers(self):
+        # Run tests for untrained seq2seq wrapper
+        wrapper_s2s = self._initialize_model(
+            model_type='seq2seq',
+            system='hisco',
+            block_nodes=True,
             )
+        self._run_wrapper_tests(wrapper_s2s, self.sample_inputs)
+        del wrapper_s2s
 
-        self.assertEqual(len(out), len(inputs))
-
-    # Varying prediction_type -- what == pred
-
-    # def test_seq2seq_flat_pred(self):
-    #     self._test_predict(
-    #         wrapper=self.wrapper_s2s,
-    #         inputs=self.sample_inputs,
-    #         behavior='good',
-    #         prediction_type='flat',
-    #         what='pred',
-    #     )
-
-    def test_seq2seq_greedy_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_s2s,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='greedy',
-            what='pred',
-        )
-
-    def test_seq2seq_full_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_s2s,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='full',
-            what='pred',
-        )
-
-    def test_mixer_flat_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_mixer,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='flat',
-            what='pred',
-        )
-
-    def test_mixer_greedy_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_mixer,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='greedy',
-            what='pred',
-        )
-
-    def test_mixer_full_pred(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_mixer,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='full',
-                what='pred',
+        # Run tests for untrained mixer wrapper
+        wrapper_mixer = self._initialize_model(
+            model_type='mix',
+            system='hisco',
+            block_nodes=True,
             )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: mixer full pred not supported yet. Underlying error: {err}')
+        self._run_wrapper_tests(wrapper_mixer, self.sample_inputs)
+        del wrapper_mixer
 
-    # Varying prediction_type -- what == prob
-    def test_seq2seq_greedy_prob(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_s2s,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='greedy',
-                what='probs',
+        # Run tests for pretrained models; here, we also check if predictions
+        # match the labels associated with our sample inputs
+        for model_name in self.model_names:
+            wrapper_pretrained = self._initialize_model(
+                name=model_name,
+                hf=True,
+                system='hisco',
             )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: seq2seq greedy probs not supported yet. Underlying error: {err}')
-
-    def test_seq2seq_full_prob(self):
-        self._test_predict(
-            wrapper=self.wrapper_s2s,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='full',
-            what='probs',
-        )
-
-    def test_mixer_greedy_prob(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_mixer,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='greedy',
-                what='probs',
+            self._run_wrapper_tests(
+                wrapper=wrapper_pretrained,
+                sample_inputs=self.sample_inputs,
+                sample_outputs=self.sample_outputs,
             )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: mixer greedy probs not supported yet. Underlying error: {err}')
+            del wrapper_pretrained
 
-    def test_mixer_full_prob(self):
-        try:
-            self._test_predict(
-                wrapper=self.wrapper_mixer,
-                inputs=self.sample_inputs,
-                behavior='good',
-                prediction_type='full',
-                what='probs',
+
+class TestWrapperGeneralPurposeOccCANINE(AbstractTestWrapperOccCANINE):
+    sample_inputs = ['he is a farmer', 'he is a fisherman']
+
+    def setUp(self):
+        super().setUp()
+        self.occ1950_descriptions = pd.read_csv('./Data/OCC1950_definitions.csv')
+
+    def test_wrapper_occ1950(self):
+        wrapper_mixer_occ1950 = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-occ1950-ft-s=30000\last.bin',
+            system='occ1950',
+            descriptions=self.occ1950_descriptions,
+            block_nodes=True,
             )
-        except NotImplementedError as err:
-            warnings.warn(f'WARNING: mixer full pred not supported yet. Underlying error: {err}')
+        self._run_wrapper_tests(
+            wrapper_mixer_occ1950,
+            self.sample_inputs,
+            sample_outputs=['100', '910'],
+            )
+        del wrapper_mixer_occ1950
 
-    def test_mixer_flat_prob(self):
-        self._test_predict(
-            wrapper=self.wrapper_mixer,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type='flat',
-            what='probs',
-        )
+    def test_wrapper_psti(self):
+        wrapper_mixer_psti = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-psti-ft-s=30000\last.bin',
+            system='ptsi',
+            block_nodes=True,
+            use_within_block_sep=True,
+            )
+        self._run_wrapper_tests(wrapper_mixer_psti, self.sample_inputs)
+        del wrapper_mixer_psti
 
-    # TODO probs but for other prediction_type, wrapper, behavior
 
-    # Varying behavior -- what == pred
+class SubtestCountingTestResult(unittest.TextTestResult):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.subtests_passed = 0
+        self.subtests_run = 0
 
-    # def test_seq2seq_fast_pred(self):
-    #     self._test_predict(
-    #         wrapper=self.wrapper_s2s,
-    #         inputs=self.sample_inputs,
-    #         behavior='fast',
-    #         prediction_type=None,
-    #         what='pred',
-    #     )
+    def addSubTest(self, test, subtest, outcome=None):
+        super().addSubTest(test, subtest, outcome)
+        self.subtests_run += 1
+        if outcome is None:  # Subtest passed
+            self.subtests_passed += 1
 
-    def test_seq2seq_good_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_s2s,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type=None,
-            what='pred',
-        )
+    def stopTestRun(self):
+        super().stopTestRun()
+        self.stream.writeln(f"Subtests passed: {self.subtests_passed} of {self.subtests_run}")
 
-    def test_mixer_fast_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_mixer,
-            inputs=self.sample_inputs,
-            behavior='fast',
-            prediction_type=None,
-            what='pred',
-        )
 
-    def test_mixer_good_pred(self):
-        self._test_predict(
-            wrapper=self.wrapper_mixer,
-            inputs=self.sample_inputs,
-            behavior='good',
-            prediction_type=None,
-            what='pred',
-        )
+class SubtestCountingTestRunner(unittest.TextTestRunner):
+    def _makeResult(self):
+        return SubtestCountingTestResult(self.stream, self.descriptions, self.verbosity)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(testRunner=SubtestCountingTestRunner())

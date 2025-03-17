@@ -59,6 +59,7 @@ def mixer_greedy_decode(
     out_linear = model.linear_decoder(pooled_memory)
     out_linear = model.linear_decoder_drop(out_linear)
     prob_linear_topk, linear_topk = torch.sigmoid(out_linear).topk(linear_topk, axis=1)
+    prob_linear_topk, linear_topk = prob_linear_topk.detach(), linear_topk.detach()
 
     # seq2seq output
     # Initialize sequence by placing BoS symbol.
@@ -83,6 +84,7 @@ def mixer_greedy_decode(
         prob_seq = torch.cat([prob_seq, next_prob], dim=1)
 
     return seq, prob_seq, linear_topk, prob_linear_topk
+
 
 def flat_decode_flat_model(
         model: Seq2SeqMixerOccCANINE,

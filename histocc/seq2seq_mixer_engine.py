@@ -31,7 +31,7 @@ def train_one_epoch(
         save_dir: str | None = None,
         data_loader_eval: torch.utils.data.DataLoader | None = None,
         log_wandb: bool = False,
-        ) -> tuple[float, float]:
+        ) -> int:
     model = model.train()
 
     last_step = len(data_loader) - 1
@@ -103,7 +103,7 @@ def train_one_epoch(
             torch.save(states, os.path.join(save_dir, f'{current_step}.bin'))
             torch.save(states, os.path.join(save_dir, 'last.bin'))
 
-        if (eval_interval is not None and current_step % eval_interval == 0) or current_step == 15001:
+        if eval_interval is not None and current_step % eval_interval == 0:
             print('Starting eval pass')
             eval_loss, eval_loss_linear, eval_loss_seq2seq, eval_seq_acc, eval_token_acc, eval_flat_acc = evaluate(
                 model=model,
