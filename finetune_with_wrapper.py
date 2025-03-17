@@ -38,7 +38,6 @@ def parse_args():
 
     # Model initialization
     parser.add_argument('--initial-checkpoint', type=str, default=None, help='Model weights to use for initialization. Discarded if resume state exists at --save-path')
-    parser.add_argument('--only-encoder', action='store_true', default=False, help='Only attempt to load encoder part of --initial-checkpoint') # FIXME this is currently ignored
 
     # Freezing
     parser.add_argument('--freeze-encoder', action='store_true', default=False)
