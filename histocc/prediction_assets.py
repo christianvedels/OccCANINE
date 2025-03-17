@@ -165,6 +165,11 @@ class OccCANINE:
         if name in ModelName.__args__ and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
+        # # Warn that only the old model is available through Hugging Face
+        # if hf:
+        #     print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
+
+
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
 
@@ -376,6 +381,7 @@ class OccCANINE:
                 model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
                 model_type = "flat"
+
             elif self.name == "OccCANINE_s2s_mix":
                 model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
@@ -386,6 +392,7 @@ class OccCANINE:
                 model_type = "seq2seq"
             else:
                 raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
+
 
             return model, model_type
 
