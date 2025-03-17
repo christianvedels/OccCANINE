@@ -1059,24 +1059,18 @@ class OccCANINE:
             dataset: str | os.PathLike,
             save_path: str | os.PathLike,
             input_col: str,
-
             language: str,
             language_col: str | None,
-
             save_interval: int,
             log_interval: int,
             eval_interval: int,
-
             drop_bad_labels: bool,
             allow_codes_shorter_than_block_size: bool,
-
             share_val: float,
-
             learning_rate: float,
             num_epochs: int,
             warmup_steps: int,
             seq2seq_weight: float,
-
             freeze_encoder: bool,
             ):
 
@@ -1091,7 +1085,6 @@ class OccCANINE:
             language_col=language_col,
             drop_bad_rows=drop_bad_labels,
             allow_codes_shorter_than_block_size=allow_codes_shorter_than_block_size,
-            # TODO optional arg where we cna pass pre-defined keys?
         )
 
         # Load datasets
