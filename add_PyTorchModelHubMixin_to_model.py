@@ -19,6 +19,7 @@ from histocc.formatter import (
 )
 
 
+
 NAME = "flat_occCANINE"
 
 def parse_args() -> argparse.Namespace:
