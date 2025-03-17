@@ -6,8 +6,8 @@ import pandas as pd
 
 from transformers import CanineTokenizer
 
-from histocc import (
-    OccDatasetMixerInMemMultipleFiles,
+from histocc.dataloader import OccDatasetMixerInMemMultipleFiles
+from histocc.model_assets import (
     Seq2SeqMixerOccCANINE,
     CANINEOccupationClassifier_hub,
 )
