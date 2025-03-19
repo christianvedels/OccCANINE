@@ -23,6 +23,10 @@ from unidecode import unidecode
 import numpy as np
 import pandas as pd
 
+from .loss import (
+    BlockOrderInvariantLoss,
+    LossMixer,
+)
 from .datasets import DATASETS
 from .model_assets import (
     CANINEOccupationClassifier,
@@ -33,37 +37,30 @@ from .model_assets import (
     Seq2SeqOccCANINE_hub,
     load_tokenizer
     )
-
 from .dataloader import (
-    OccDatasetV2FromAlreadyLoadedInputs
+    OccDatasetV2FromAlreadyLoadedInputs,
     )
-
 from .formatter import (
     hisco_blocky5,
     BOS_IDX,
-    construct_general_purpose_formatter
+    PAD_IDX,
+    construct_general_purpose_formatter,
 )
-
-from .utils import Averager
+from .utils import (
+    Averager,
+    load_states,
+    prepare_finetuning_data,
+    setup_finetuning_datasets,
+)
 from .utils.decoder import (
     flat_decode_flat_model,
     flat_decode_mixer,
     greedy_decode,
     mixer_greedy_decode,
     full_search_decoder_seq2seq_optimized,
-    full_search_decoder_mixer_optimized
+    full_search_decoder_mixer_optimized,
     )
-
-from .dataloader import (
-    concat_string_canine,
-    OCCDataset,
-    labels_to_bin,
-    train_test_val,
-    save_tmp,
-    create_data_loader,
-)
-from .trainer import trainer_loop_simple, eval_model
-from .attacker import AttackerClass
+from .seq2seq_mixer_engine import train
 
 
 PredType = Literal['flat', 'greedy', 'full']
@@ -138,10 +135,10 @@ class OccCANINE:
             # args primarily for testing purposes -- want to instantiate without loading
             model_type: ModelType | None = None,
             skip_load: bool = False,
-
             # Args used for other systems
             descriptions: pd.DataFrame | None = None,
-            use_within_block_sep: bool = False # Should be True for systems with ',' between digits
+            use_within_block_sep: bool = False, # Should be True for systems with ',' between digits
+            target_cols: list[str] | None = None,
     ):
         """
         Initializes the OccCANINE model with specified configurations.
@@ -204,7 +201,7 @@ class OccCANINE:
                 raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
 
             # TODO: Move into key loading method
-            loaded_state = torch.load(name, weights_only = True) # Load state
+            loaded_state = torch.load(name, weights_only=True) # Load state
             key_loaded = loaded_state['key']
             self.key = {int(v): str(k) for k, v in key_loaded.items()} # Invert key and cast to int / str
             self.key_desc = {k: "Not provided" for k in self.key.keys()}
@@ -229,11 +226,11 @@ class OccCANINE:
                 self.code_len = max([len(i) for i in self.key.values()])
 
             # Load general purpose formatter
-            dummy_cols = ["dummy_entry"] * 5
+            target_cols = target_cols if target_cols is not None else ["dummy_entry"] * 5
             if "chars" in loaded_state.keys():
-                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=dummy_cols, chars=loaded_state['chars'])
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, chars=loaded_state['chars'])
             else:
-                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=dummy_cols, use_within_block_sep = use_within_block_sep)
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, use_within_block_sep=use_within_block_sep)
 
             # Check if use_within_block_sep is set
             if not use_within_block_sep:
@@ -250,7 +247,6 @@ class OccCANINE:
             self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
 
         self.key_desc = {int(k): str(v) for k, v in self.key_desc.items()}
-
 
         # Model and model type
         if skip_load:
@@ -316,7 +312,7 @@ class OccCANINE:
 
     def _list_of_formatted_codes(self):
         """
-        Returns a list of formatted HISCO codes. According to the seq2seq formatter
+        Returns a list of formatted codes. According to the seq2seq formatter
         """
 
         # Formatted list of codes
@@ -460,9 +456,9 @@ class OccCANINE:
         - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
         - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin". Defaults to "pred".
         - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
-        - concat_in (bool, optional): Specifies if the input is already concatenated in the format [occupation][SEP][language]. Defaults to False.
-        - get_dict (bool, optional): If True and 'what' is an integer, returns a list of dictionaries with predictions instead of a DataFrame. Defaults to False.
-        - get_df (bool, optional): If True and 'what' equals "pred", returns predictions in a DataFrame format. Defaults to True.
+        - concat_in (bool, optional): Ignored
+        - get_dict (bool, optional): Ignored
+        - get_df (bool, optional): Ignored
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
         - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
         - k_pred (int): Maximum number of predicted occupational codes to keep
@@ -539,7 +535,7 @@ class OccCANINE:
         # Return
         return result
 
-    def _predict_flat(self, data_loader): # TODO: Make sure it also works for model_type="mix"
+    def _predict_flat(self, data_loader):
         """
         Makes predictions on a batch of occupational strings.
 
@@ -1058,407 +1054,111 @@ class OccCANINE:
 
         return pred
 
-    def _encode(self, occ1: list[str], lang: str | list[str], concat_in: bool):
-        """
-        Encodes occupational strings into a format suitable for model input.
-
-        Parameters:
-        - occ1 (list of str): A list of occupational strings to encode.
-        - lang (str or list of str): The language(s) of the occupational strings. Can be a single language string or a list of language strings.
-        - concat_in (bool): If True, assumes that the input strings are already concatenated in the required format (e.g., occupation[SEP]language). If False, performs concatenation.
-
-        Returns:
-        - list of str: The encoded inputs ready for model processing.
-        """
-
-        if not concat_in: # Because then it is assumed that strings are already clean
-            occ1 = [occ.lower() for occ in occ1]
-            occ1 = [unidecode(occ) for occ in occ1]
-
-        # Handle singular lang
-        if isinstance(lang, str):
-            lang = [lang]
-            lang = [lang[0] for i in occ1]
-
-        # Define input
-        if concat_in:
-            inputs = occ1
-        else:
-            inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
-
-        return inputs
-
-    def _process_data(
-            self,
-            data_df: pd.DataFrame,
-            label_cols: list[str],
-            batch_size: int,
-            model_domain: str = "Multilingual_CANINE",
-            alt_prob: float = 0.2,
-            testval_fraction: float = 0.1,
-            new_labels: bool = True,
-            verbose: bool = False,
-    ):
-        """
-        Processes the input data for training or validation.
-
-        This internal method prepares the data for the model by converting labels to numeric codes, merging with a key DataFrame, handling missing values, tokenizing the text, and creating data loaders for training and validation.
-
-        Parameters
-        ----------
-        data_df : pd.DataFrame
-            The input data containing text and labels.
-        label_cols : list of str
-            The column names in data_df that contain the labels.
-        batch_size : int
-            The size of the batch to be used in data loaders.
-        model_domain : str, optional
-            The domain of the model to be used. Defaults to "Multilingual_CANINE".
-        alt_prob : float, optional
-            The probability of using alternative tokens (data augmentation). Defaults to 0.2.
-        insert_words : bool, optional
-            Whether to insert words as a part of data augmentation. Defaults to True.
-        testval_fraction : float, optional
-            The fraction of data to be used for validation. Defaults to 0.1.
-        new_labels : bool, optional
-            If True, the method generates a new key based on the unique labels in the input data and updates data processing accordingly. Defaults to False.
-        verbose : bool, optional
-            Whether to print out the training progress. Defaults to True.
-
-        Returns
-        -------
-        dict
-            A dictionary containing training and validation data loaders, and the tokenizer.
-        """
-        if new_labels:
-            # Generate a new key based on the unique labels in the label columns
-            unique_labels = pd.unique(data_df[label_cols].values.ravel('K'))
-            key = {label: idx for idx, label in enumerate(unique_labels)}
-            self.key = key
-
-            # Convert the new key dictionary to a DataFrame for joining
-            key_df = pd.DataFrame(list(self.key.items()), columns=['Hisco', 'Code']) # Yes it is not HISCO, but if we just call it that everything runs
-
-            if verbose:
-                print(f"Produced new key for {len(unique_labels)} possible labels")
-        else:
-            # breakpoint()
-            key = self.key
-
-            # # Remove na items
-            # items = list(key.items())
-            # items.pop(0)
-            # key = dict(items)
-
-            # Convert the key dictionary to a DataFrame for joining
-            key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
-            # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
-            key_df['Hisco'] = pd.to_numeric(key_df['Hisco'], errors='coerce')
-            # Ensure the label columns are numeric and have the same type as the key
-            for col in label_cols:
-                data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
-
-            self.finetune_key = key
-
-        # Define expected code column names
-        expected_code_cols = [f'code{i}' for i in range(1, 6)]
-
-        # Drop code1 to code5 from data_df if they exist
-        data_df = data_df.drop(columns=expected_code_cols, errors='ignore')
-
-        # Initialize an empty DataFrame to store the label codes
-        label_codes = pd.DataFrame(index=data_df.index)
-
-        # Iterate over each label column and perform left join with the key
-        for i, col in enumerate(label_cols, start=1):
-            # Perform the left join
-            merged_df = pd.merge(data_df[[col]], key_df, left_on=col, right_on='Hisco', how='left')
-
-            # Assign the 'Code' column from the merged DataFrame to label_codes
-            label_codes[f'code{i}'] = merged_df['Code']
-
-        # Ensure label_codes has columns code1 to code5, filling missing ones with NaN
-        label_codes = label_codes.reindex(columns=expected_code_cols, fill_value=np.nan)
-
-        # Handle missing values by ensuring they are NaN
-        label_codes = label_codes.apply(pd.to_numeric, errors='coerce')
-
-        # Concatenate label_codes with data_df
-        data_df = pd.concat([data_df, label_codes], axis=1)
-
-        try:
-            _ = labels_to_bin(label_codes, max_value = np.max(key_df["Code"]+1))
-        except Exception:
-            raise Exception("Was not able to convert to binary representation")
-
-        # Tokenizer
-        tokenizer = self.tokenizer
-
-        # Define attakcer instance
-        attacker = AttackerClass(data_df)
-
-        # Split data
-        df_train, df_val = train_test_val(data_df, verbose=False, testval_fraction = testval_fraction, test_size = 0)
-
-        # To use later
-        n_obs_train = df_train.shape[0]
-        n_obs_val = df_val.shape[0]
-
-        # Print split sizes
-        print(f"{n_obs_train} observations will be used in training.")
-        print(f"{n_obs_val} observations will be used in validation.")
-
-        # Save tmp files
-        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune") # FIXME avoid hardcoded paths
-
-        # File paths for the index files
-        train_index_path = "Data/Tmp_finetune/Train_index.txt" # FIXME avoid hardcoded paths
-        val_index_path = "Data/Tmp_finetune/Val_index.txt" # FIXME avoid hardcoded paths
-
-        # Calculate number of classes
-        n_classes = len(key)
-
-        # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-
-        # Data loaders
-        data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
-            ds_train, ds_train_attack, ds_val, ds_val, # DS val twice as dummy to make it run
-            batch_size = batch_size
-            )
-
-        return {
-            'data_loader_train': data_loader_train,
-            'data_loader_train_attack': data_loader_train_attack,
-            'data_loader_val': data_loader_val,
-            'tokenizer': self.tokenizer
-        }
-
-    def _train_model(
-            self,
-            processed_data,
-            model_name: str,
-            epochs: int,
-            only_train_final_layer: bool,
-            verbose: bool = True,
-            verbose_extra: bool = False,
-            new_labels: bool = False,
-            save_model: bool = True,
-            save_path: str = '../OccCANINE/Finetuned/',
-    ):
-        """
-        Trains the model with the provided processed data.
-
-        This internal method sets up the optimizer, scheduler, and loss function, and initiates the training loop. It also handles layer freezing for transfer learning, if specified.
-
-        Parameters
-        ----------
-        processed_data : dict
-            The dictionary containing training and validation data loaders, and the tokenizer.
-        model_name : str
-            The name of the model to be used for saving.
-        epochs : int
-            The number of epochs for training.
-        only_train_final_layer : bool
-            Whether to train only the final layer of the model.
-        verbose : bool, optional
-            Whether to print out the training progress. Defaults to True.
-        verbose_extra : bool, optional
-            Whether to print extra details during training. Defaults to False.
-        new_labels : bool, optional
-            Whether new labels should be used. Defaults to false
-        save_model : bool, optional
-            Should the finetuned model be saved? Defaults to false
-
-        Returns
-        -------
-        tuple
-            A tuple containing the training history and the trained model.
-        """
-
-        if new_labels:
-            n_classes = len(self.key)
-            self.model.out = nn.Linear(in_features=self.model.out.in_features, out_features=n_classes)
-
-            # Ensure the model is set to the correct device again
-            self.model = self.model.to(self.device)
-
-        optimizer = AdamW(self.model.parameters(), lr=2*10**-5)
-        total_steps = len(processed_data['data_loader_train']) * epochs
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=0,
-            num_training_steps=total_steps
-        )
-
-        # Set the loss function
-        loss_fn = nn.BCEWithLogitsLoss().to(self.device)
-
-        # Freeze layers
-        if only_train_final_layer:
-            # Freeze all layers initially
-            for param in self.model.parameters():
-                param.requires_grad = False
-
-            # Unfreeze the final layers (self.out in CANINEOccupationClassifier)
-            for param in self.model.out.parameters():
-                param.requires_grad = True
-
-
-        val_acc, val_loss = eval_model(
-            self.model,
-            processed_data['data_loader_val'],
-            loss_fn = loss_fn,
-            device = self.device,
-            )
-
-        print("----------")
-        if verbose:
-            print(f"Intital performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
-
-        history, model = trainer_loop_simple(
-            self.model,
-            epochs = epochs,
-            model_name = model_name,
-            data = processed_data,
-            loss_fn = loss_fn,
-            optimizer = optimizer,
-            device = self.device,
-            scheduler = scheduler,
-            verbose = verbose,
-            verbose_extra  = verbose_extra,
-            attack_switch = True,
-            initial_loss = val_loss,
-            save_model = save_model,
-            save_path = save_path
-            )
-
-        # == Load best model ==
-        # breakpoint()
-        # Load state
-        if save_model:
-            model_path = save_path + model_name+'.bin'
-            if not os.path.isfile(model_path):
-                print("Model did not improve in training. Realoding original model")
-                model_path = self.name+'.bin'
-
-            # Load the model state
-            loaded_state = torch.load(model_path)
-
-            # If-lookup for model
-            config = {
-                "model_domain": "Multilingual_CANINE",
-                "n_classes": len(self.finetune_key),
-                "dropout_rate": 0,
-                "model_type": "canine"
-            }
-
-            model = CANINEOccupationClassifier_hub(config)
-            # breakpoint()
-            model.load_state_dict(loaded_state)
-            model.to(self.device)
-            self.model = model
-
-            print("Loaded best version of model")
-
-        val_acc, val_loss = eval_model(
-            self.model,
-            processed_data['data_loader_val'],
-            loss_fn = loss_fn,
-            device = self.device,
-            )
-
-        print("----------")
-        if verbose:
-            print(f"Final performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
-
-        return history, model
-
     def finetune(
             self,
-            data_df: pd.DataFrame,
-            label_cols: list[str],
-            batch_size: int | str = "Default",
-            epochs: int = 3,
-            save_name = "finetuneCANINE",
-            only_train_final_layer: bool = False,
-            verbose: bool = True,
-            verbose_extra: bool = False,
-            test_fraction: float = 0.1,
-            new_labels: bool = False,
-            save_model: bool = True,
-            save_path: str = "Finetuned/"
+            dataset: str | os.PathLike,
+            save_path: str | os.PathLike,
+            input_col: str,
+            language: str,
+            language_col: str | None,
+            save_interval: int,
+            log_interval: int,
+            eval_interval: int,
+            drop_bad_labels: bool,
+            allow_codes_shorter_than_block_size: bool,
+            share_val: float,
+            learning_rate: float,
+            num_epochs: int,
+            warmup_steps: int,
+            seq2seq_weight: float,
+            freeze_encoder: bool,
             ):
-        """
-        Fine-tunes the model on the provided dataset.
 
-        This method orchestrates the fine-tuning process by processing the data, training the model, and handling the batch size specifications. It also allows for data augmentation and control over verbosity during training.
+        # Data prep
+        prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
+            dataset=dataset,
+            input_col=input_col,
+            formatter=self.formatter,
+            save_path=save_path,
+            share_val=share_val,
+            language=language,
+            language_col=language_col,
+            drop_bad_rows=drop_bad_labels,
+            allow_codes_shorter_than_block_size=allow_codes_shorter_than_block_size,
+        )
 
-        Parameters
-        ----------
-        data_df : pd.DataFrame
-            DataFrame containing the training data. Must include:
-                - 'occ1', the occupational description
-                - columns with labels specified in 'label_cols'
-                - 'lang', a column of the language of each label
-        label_cols : list of str
-            Names of the columns in data_df that contain the labels.
-        batch_size : int or "Default", optional
-            Batch size for training. If "Default", the class-specified batch size is used. Defaults to "Default".
-        epochs : int, optional
-            Number of epochs for training. Defaults to 3.
-        save_name : str, optional
-            The name under which the trained model is to be saved. Defaults to "finetuneCANINE".
-        only_train_final_layer : bool, optional
-            Whether to train only the final layer of the model. Defaults to False.
-        verbose : bool, optional
-            Should updates be printed. Defaults to True
-        verbose_extra : bool, optional
-            Whether to print additional information during training. Defaults to False.
-        test_fraction : float, optional
-            The fraction of the dataset to be used for testing. Defaults to 0.1.
-        new_labels : bool, optional
-            Whether the labels are a new system of labeling. Defaults to False.
-        save_model : bool, optional
-            Whether the finetuned model should be saved.
-        save_path : str, optional
-            Where should the model be saved?
+        # Load datasets
+        dataset_train, dataset_val = setup_finetuning_datasets(
+            target_cols=self.formatter.target_cols,
+            save_path=save_path,
+            formatter=self.formatter,
+            tokenizer=self.tokenizer,
+            num_classes_flat=len(self.key),
+            map_code_label={v: k for k, v in self.key.items()}, # We need the reverse mapping to produce IDXs from codes
+        )
 
-        Returns
-        -------
-        None
-        """
-
-        print("======================================")
-        print("==== Started finetuning procedure ====")
-        print("======================================")
-
-        # Make sure 'Finetuned' dir exist
-        if not os.path.exists(save_path):
-            # Create the directory
-            os.makedirs(save_path)
-
-        # Handle batch_size
-        if batch_size=="Default":
-            batch_size = self.batch_size
-
-        # Load and process the data
-        processed_data = self._process_data(
-            data_df, label_cols, batch_size=batch_size,
-            testval_fraction = test_fraction,
-            new_labels = new_labels,
-            verbose = verbose
+        # Data loaders
+        data_loader_train = DataLoader(
+            dataset_train,
+            batch_size=self.batch_size,
+            shuffle=True,
+            )
+        data_loader_val = DataLoader(
+            dataset_val,
+            batch_size=self.batch_size,
+            shuffle=False,
             )
 
-        # Training the model
-        self._train_model(
-            processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
-            verbose_extra = verbose_extra,
-            new_labels = new_labels,
-            save_model = save_model,
-            save_path = save_path
-            )
+        if freeze_encoder:
+            for param in self.model.encoder.parameters():
+                param.requires_grad = False
 
-        print("Finetuning completed successfully.")
+            optimizer = AdamW([param for name, param in self.model.named_parameters() if not name.startswith("encoder.")], lr=learning_rate)
+        else:
+            optimizer = AdamW(self.model.parameters(), lr=learning_rate)
+
+        total_steps = len(data_loader_train) * num_epochs
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=warmup_steps,
+            num_training_steps=total_steps,
+        )
+
+        # Setup mixed loss
+        loss_fn_seq2seq = BlockOrderInvariantLoss(
+            pad_idx=PAD_IDX,
+            nb_blocks=self.formatter.max_num_codes,
+            block_size=self.formatter.block_size,
+        )
+        loss_fn_linear = torch.nn.BCEWithLogitsLoss()
+        loss_fn = LossMixer(
+            loss_fn_seq2seq=loss_fn_seq2seq,
+            loss_fn_linear=loss_fn_linear,
+            seq2seq_weight=seq2seq_weight,
+        ).to(self.device)
+
+        # Load states
+        current_step = load_states(
+            save_dir=save_path,
+            model=self.model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+        )
+
+        train(
+            model=self.model,
+            data_loaders={
+                'data_loader_train': data_loader_train,
+                'data_loader_val': data_loader_val,
+            },
+            loss_fn=loss_fn,
+            optimizer=optimizer,
+            device=self.device,
+            scheduler=scheduler,
+            save_dir=save_path,
+            total_steps=total_steps,
+            current_step=current_step,
+            log_interval=log_interval,
+            eval_interval=eval_interval,
+            save_interval=save_interval
+        )
