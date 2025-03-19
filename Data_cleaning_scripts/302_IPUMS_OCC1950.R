@@ -83,6 +83,13 @@ data1 = data0 %>%
   ) %>% 
   mutate(RowID = 1:n())
 
+# Pad with zeros
+data1 = data1 %>% 
+  mutate(
+    OCC1950_1 = ifelse(OCC1950_1 == " ", " ", str_pad(OCC1950_1, 3, pad = "0")),
+    OCC1950_2 = ifelse(OCC1950_2 == " ", " ", str_pad(OCC1950_2, 3, pad = "0"))
+  )
+
 # ==== Save ====
 save(data1, file = "Data/Tmp_data/EN_IPUMS_OCC1950.Rdata")
 
