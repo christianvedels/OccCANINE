@@ -12,14 +12,6 @@ library(kableExtra)
 source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-read0 = function(dir){
-  fs = list.files(dir)
-  fs = fs[grepl(".csv", fs)]
-  foreach(f = fs, .combine = "bind_rows") %do% {
-    read_csv(paste0(dir,"/",f), guess_max = 100000) %>% mutate(file = f)
-  }
-}
-
 train = read0("Data/Training_data")
 val1 = read0("Data/Validation_data1")
 val2 = read0("Data/Validation_data2")

@@ -16,4 +16,12 @@ dims = list(
 )
 
 
-
+# ==== read0() ====
+# Read several files without the exact same columns
+read0 = function(dir){
+  fs = list.files(dir)
+  fs = fs[grepl(".csv", fs)]
+  foreach(f = fs, .combine = "bind_rows") %do% {
+    read_csv(paste0(dir,"/",f), guess_max = 100000) %>% mutate(file = f)
+  }
+}
