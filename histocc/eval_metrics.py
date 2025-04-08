@@ -34,7 +34,7 @@ class EvalEngine:
             use_within_block_sep (bool): A flag indicating whether to use within block separation.
         """
         self.pred_col = pred_col
-        
+
         # Extract cols starting with pred_col
         self.y_pred = predicitons.filter(regex=pred_col)
         self.y_true = ground_truth.filter(regex=pred_col)
@@ -83,7 +83,7 @@ class EvalEngine:
             for i in range(len(col_j)):
                 if len(col_j[i]) == (self.block_size-1):
                     col_j[i] = '0' + col_j[i]
-            
+
             # Store updated column
             y.loc[:, j] = col_j
 
@@ -92,8 +92,8 @@ class EvalEngine:
     def _acc(self, y_true, y_pred, digits = None):
         '''
         Calculate the accuracy of **one observation**.
-        The accuracy is determined by averaging the proportion of predictions 
-        that are in the true values and the proportion of true values that are 
+        The accuracy is determined by averaging the proportion of predictions
+        that are in the true values and the proportion of true values that are
         in the predictions, divided by the maximum number of predictions or true values.
         Parameters:
             y_true (list): A list of true values.
@@ -109,6 +109,10 @@ class EvalEngine:
         if digits is not None:
             y_true = [x[:digits] for x in y_true]
             y_pred = [x[:digits] for x in y_pred]
+
+        # Discard duplicates in labels (and pred, though this does not tend to occur)
+        y_true = list(set(y_true))
+        y_pred = list(set(y_pred))
 
         # Count number of y_pred in y_true
         pred_in_true = sum([x in y_true for x in y_pred])
@@ -158,12 +162,12 @@ class EvalEngine:
             # Remove empty strings
             y_true_i = [x for x in y_true_i if x != " "]
             y_pred_i = [x for x in y_pred_i if x != " "]
-            
+
             # Check if any of the true codes are in the predicted codes
             acc = self._acc(y_true_i, y_pred_i, self.digits)
             correct_predictions += acc
             per_obs_accuracy.append(acc)
-        
+
         if return_per_obs:
             return per_obs_accuracy
         else:
@@ -189,6 +193,10 @@ class EvalEngine:
         if digits is not None:
             y_true = [x[:digits] for x in y_true]
             y_pred = [x[:digits] for x in y_pred]
+
+        # Discard duplicates in labels (and pred, though this does not tend to occur)
+        y_true = list(set(y_true))
+        y_pred = list(set(y_pred))
 
         if len(y_pred) == 0:
             return 0
@@ -309,6 +317,10 @@ class EvalEngine:
             y_true = [x[:digits] for x in y_true]
             y_pred = [x[:digits] for x in y_pred]
 
+        # Discard duplicates in labels (and pred, though this does not tend to occur)
+        y_true = list(set(y_true))
+        y_pred = list(set(y_pred))
+
         if len(y_true) == 0:
             return 0
         true_in_pred = sum([1 for true in y_true if true in y_pred])
@@ -317,7 +329,7 @@ class EvalEngine:
     def f1(self, return_per_obs=False):
         """
         Calculate the average F1 score for all observations in the dataset.
-        The method iterates over each observation in `y_true` and `y_pred`, processes the lists to remove NaN values and empty strings, 
+        The method iterates over each observation in `y_true` and `y_pred`, processes the lists to remove NaN values and empty strings,
         and then calculates the F1 score for each observation using the `_f1` method. The average F1 score is then computed and returned.
         Args:
             return_per_obs (bool, optional): If True, returns the F1 score for each observation. Defaults to False.
@@ -376,6 +388,10 @@ class EvalEngine:
         if digits is not None:
             y_true = [x[:digits] for x in y_true]
             y_pred = [x[:digits] for x in y_pred]
+
+        # Discard duplicates in labels (and pred, though this does not tend to occur)
+        y_true = list(set(y_true))
+        y_pred = list(set(y_pred))
 
         # Calculate precision and recall for this observation
         precision = self._prec(y_true, y_pred, self.digits)
