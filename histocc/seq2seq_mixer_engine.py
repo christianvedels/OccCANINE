@@ -99,6 +99,7 @@ def train_one_epoch(
                 'optimizer': optimizer.state_dict(),
                 'scheduler': scheduler.state_dict(),
                 'step': current_step,
+                'key': data_loader.dataset.map_code_label,
             }
             torch.save(states, os.path.join(save_dir, f'{current_step}.bin'))
             torch.save(states, os.path.join(save_dir, 'last.bin'))
