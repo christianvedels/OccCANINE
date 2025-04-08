@@ -36,7 +36,7 @@ clean_f_name = function(x){
     return(x)
 }
 
-# Table for paper
+# === Table: Data by data source ====
 tmp1 = train %>%
     group_by(file) %>%
     summarise(
@@ -108,4 +108,60 @@ tmp1 %>%
     )
 
 
+# === Table: Data by language ====
+tmp1 = train %>%
+    group_by(lang) %>%
+    summarise(
+        train = n()
+    ) %>%
+    ungroup()
 
+tmp2 = val1 %>%
+    group_by(lang) %>%
+    summarise(
+        val1 = n()
+    ) %>%
+    ungroup()
+
+tmp3 = val2 %>%
+    group_by(lang) %>%
+    summarise(
+        val2 = n()
+    ) %>%
+    ungroup()
+
+tmp4 = test %>%
+    group_by(lang) %>%
+    summarise(
+        test = n()
+    ) %>%
+    ungroup()
+
+tmp1 %>% 
+    full_join(tmp2, by = "lang") %>%
+    full_join(tmp3, by = "lang") %>%
+    full_join(tmp4, by = "lang") %>%
+    mutate(
+        Observations = train + val1 + val2 + test
+    ) %>%
+    rename(
+        Language = lang
+    ) %>%
+    select(Language, Observations) %>%
+    mutate(
+        Percent = Observations / sum(Observations)
+    ) %>%
+    arrange(desc(Observations)) %>%
+    mutate(
+        Observations = scales::comma(Observations),
+        Percent = scales::percent(Percent, accuracy = 0.01)
+    ) %>%
+    mutate(
+        Source = " "
+    ) %>%
+    kable(
+        format = "latex",
+        booktabs = TRUE,
+        caption = "Data summary",
+        linesep = ""
+    )

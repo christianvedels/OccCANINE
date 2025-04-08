@@ -17,13 +17,10 @@ np = reticulate::import("numpy")
 # ==== Load data ====
 key = read_csv("histocc/Data/Key.csv")[-1,]
 val1_data = read_csv("Data/eval-results/val1_probs/val1_data.csv", guess_max = 100000)
-probs_flat = np$load("Data/eval-results/val1_probs/probs_flat.npy")
-# probs_mixer = np$load("Data/eval-results/val1_probs/probs_mixer.npy")
 
 # Sample for development
 set.seed(20)
-rows = sample(1:NROW(val1_data), 1000)
-probs_flat = probs_flat[rows,]
+rows = sample(1:NROW(val1_data), 100000)
 val1_data = val1_data[rows,]
 
 # ==== prob to pred ====
@@ -75,7 +72,7 @@ threshold_tuning = function(probs_flat, true_data, output_path = "Project_dissem
     # Tune thresholds
     thresholds = seq(0.01, 0.99, 0.01)
     results = foreach(threshold = thresholds, .combine = "bind_rows") %do% {
-        # cat(threshold, "\n")
+        cat(threshold, "\n")
         get_stats(probs_flat, true_data, threshold) %>% 
             mutate(threshold = threshold) %>% 
             summarise_all(mean)
@@ -87,7 +84,14 @@ threshold_tuning = function(probs_flat, true_data, output_path = "Project_dissem
             filter(value == max(value)) %>% 
             ungroup()
 
-    print(max_res)
+    # Save max_res as a CSV file in a folder called 'Tables'
+    output_csv_path = gsub(".png", "_max_res.csv", output_path)
+    output_csv_path = gsub("Figures", "Tables", output_csv_path)
+    dir.create(dirname(output_csv_path), showWarnings = FALSE, recursive = TRUE)
+    max_res %>% 
+        mutate(value = round(value, 4)) %>% 
+        arrange(metric) %>% 
+        write_csv(output_csv_path)
 
     # ==== Make plot ====
     p1 = results %>% 
@@ -132,6 +136,10 @@ threshold_tuning_by_language = function(val1_data, true_data, probs_flat, output
     for(lang in langs){
         cat(lang, "\n")
         lang_data = val1_data %>% filter(lang == !!lang)
+        if(NROW(lang_data) < 10){
+            cat("Not enough data for language ", lang, "(Obs =", NROW(lang_data), ")\n")
+            next
+        }
         lang_true_data = true_data[lang_data$index]
         lang_probs_flat = probs_flat[lang_data$index,]
         
@@ -140,8 +148,18 @@ threshold_tuning_by_language = function(val1_data, true_data, probs_flat, output
 }
 
 # ==== Run threshold tuning ====
-threshold_tuning(probs_flat, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning.png")
-# threshold_tuning(probs_mixer, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_mixer.png")
+# Flat
+probs_flat = np$load("Data/eval-results/val1_probs/probs_flat.npy")
+probs_flat = probs_flat[rows,]
+threshold_tuning(probs_flat, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png")
+threshold_tuning_by_language(val1_data, true_data, probs_flat, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_flat/")
+rm(probs_flat)
 
-threshold_tuning_by_language(val1_data, true_data, probs_flat, output_dir = "Project_dissemination/Paper_replication_package/Figures/")
-# threshold_tuning_by_language(val1_data, true_data, probs_mixer, output_dir = "Project_dissemination/Paper_replication_package/Figures/")
+# Full
+probs_mixer = np$load("Data/eval-results/val1_probs/probs_mixer.npy")
+probs_mixer = probs_mixer[rows,]
+threshold_tuning(probs_mixer, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_mixer.png")
+threshold_tuning_by_language(val1_data, true_data, probs_mixer, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_mixer/")
+rm(probs_mixer)
+
+
