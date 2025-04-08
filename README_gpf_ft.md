@@ -52,6 +52,10 @@ set CUDA_VISIBLE_DEVICES=1
 python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
 
+```
+python finetune_with_wrapper.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-with-wrapper --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Y:\pc-to-Y\hisco\ft-exp\250303\mixer-psti-ft\last.bin --num-epochs 1050 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels
+```
+
 # ISCO
 
 
