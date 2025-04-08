@@ -17,7 +17,6 @@ from histocc import (
     Seq2SeqMixerOccCANINE,
     BlockOrderInvariantLoss,
     LossMixer,
-    CANINEOccupationClassifier_hub,
 )
 from histocc.seq2seq_mixer_engine import train
 from histocc.formatter import (
@@ -27,7 +26,7 @@ from histocc.formatter import (
     BlockyOCC1950Formatter,
     PAD_IDX,
 )
-from histocc.utils import wandb_init
+from histocc.utils import wandb_init, load_states
 
 try:
     # want to do import to set has_wandb even if not used directly
@@ -126,52 +125,6 @@ def setup_datasets(
     )
 
     return dataset_train, dataset_val
-
-
-def load_states(
-        save_dir: str,
-        model: Seq2SeqMixerOccCANINE,
-        optimizer: torch.optim.Optimizer,
-        scheduler: torch.optim.lr_scheduler.LRScheduler,
-        initial_checkpoint: str | None = None,
-        only_encoder: bool = False,
-) -> int:
-    if 'last.bin' in os.listdir(save_dir):
-        print(f'Model states exist at {save_dir}. Resuming from last.bin')
-
-        states = torch.load(os.path.join(save_dir, 'last.bin'))
-
-        model.load_state_dict(states['model'])
-        optimizer.load_state_dict(states['optimizer'])
-        scheduler.load_state_dict(states['scheduler'])
-
-        current_step = states['step']
-
-        return current_step
-
-    if initial_checkpoint is None:
-        return 0
-
-    if initial_checkpoint.lower() == 'occ-canine-v1':
-        print('Initializing encoder from HF (christianvedel/OccCANINE)')
-        encoder = CANINEOccupationClassifier_hub.from_pretrained("christianvedel/OccCANINE")
-        model.encoder.load_state_dict(encoder.basemodel.state_dict())
-        model.linear_decoder.load_state_dict(encoder.out.state_dict()) # FIXME this leads to an issue when trying to set up model with other number of classes than that of the HISCO system
-        # TODO check encoder is properly garbage collected
-
-        return 0
-
-    print(f'Initializing model from {initial_checkpoint}')
-    states = torch.load(initial_checkpoint)
-
-    if only_encoder:
-        print('Only loading encoder from --initial-checkpoint')
-        encoder_state_dict = {k[len("encoder."):]: v for k, v in states['model'].items() if k.startswith("encoder.")}
-        model.encoder.load_state_dict(encoder_state_dict)
-    else:
-        model.load_state_dict(states['model'])
-
-    return 0
 
 
 def main():

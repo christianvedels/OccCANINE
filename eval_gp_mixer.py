@@ -19,7 +19,7 @@ from histocc import (
 )
 from histocc.formatter import (
     BlockyFormatter,
-    construct_finetune_formatter,
+    construct_general_purpose_formatter,
     BOS_IDX,
 )
 from histocc.utils import Averager
@@ -36,6 +36,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--checkpoint', type=str, help='File name of model state')
     parser.add_argument('--target-cols', type=str, nargs='+', default=None, help='List of column names with labels')
     parser.add_argument('--fn-out', type=str)
+
+    # Data settings
+    parser.add_argument('--block-size', type=int, default=5, help='Maximum number of characters in target (e.g., this is 5 for the HISCO system)')
+    parser.add_argument('--use-within-block-sep', action='store_true', default=False, help='Whether to use "," as a separator for tokens WITHIN a code. Useful for, e.g., PSTI')
 
     # Data parameters
     parser.add_argument('--batch-size', type=int, default=2048)
@@ -187,24 +191,18 @@ def evaluate(
 def main():
     args = parse_args()
 
-    # args.val_data = [r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\data_val.csv']
-    # args.mapping = r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\key.csv'
-    # args.target_cols = ['OCC1950_1', 'OCC1950_2']
-    # args.checkpoint = r'Z:\faellesmappe\tsdj\hisco\ft-tests\occ-canine-init-mixer-ft-formatter\last.bin'
-    # args.batch_size = 32
-
     # Load mapping
     mapping_df = pd.read_csv(
         args.mapping,
         dtype={'system_code': str, 'code': int},
         )
-    block_size = mapping_df['code'].astype(str).transform(len).max()
     map_code_label = dict(mapping_df.values)
 
     # Target-side tokenization
-    formatter = construct_finetune_formatter(
-        block_size=block_size,
+    formatter = construct_general_purpose_formatter(
+        block_size=args.block_size,
         target_cols=args.target_cols,
+        use_within_block_sep=args.use_within_block_sep,
     )
     num_classes_flat = len(map_code_label)
 

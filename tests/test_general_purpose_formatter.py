@@ -94,7 +94,7 @@ class TestBlockyFormatter(unittest.TestCase):
         self._test_transform_label(
             raw_input=f'1{within_block_sep}2{within_block_sep}3{sep_value}1{within_block_sep}1',
             expected_output=np.array([
-                BOS_IDX, 1005, 1006, 1007, 1005, 1005, PAD_IDX, EOS_IDX
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, EOS_IDX, EOS_IDX
                 ]),
             formatter=formatter,
         )
@@ -118,7 +118,7 @@ class TestBlockyFormatter(unittest.TestCase):
             formatter=formatter,
         )
         self._test_clean_pred(
-            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, PAD_IDX, PAD_IDX, EOS_IDX]),
+            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, EOS_IDX, EOS_IDX, EOS_IDX]),
             expected_cleaned=f'A{within_block_sep}b{within_block_sep}z{sep_value}*',
             formatter=formatter,
         )
@@ -152,7 +152,7 @@ class TestBlockyFormatter(unittest.TestCase):
         self._test_transform_label(
             raw_input=f'123{sep_value}11',
             expected_output=np.array([
-                BOS_IDX, 1005, 1006, 1007, 1005, 1005, PAD_IDX, EOS_IDX
+                BOS_IDX, 1005, 1006, 1007, 1005, 1005, EOS_IDX, EOS_IDX
                 ]),
             formatter=formatter,
         )
@@ -171,7 +171,7 @@ class TestBlockyFormatter(unittest.TestCase):
             formatter=formatter,
         )
         self._test_clean_pred(
-            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, PAD_IDX, PAD_IDX, EOS_IDX]),
+            pred=np.array([BOS_IDX, 2030, 2005, 2029, 2064, EOS_IDX, EOS_IDX, EOS_IDX]),
             expected_cleaned=f'Abz{sep_value}*',
             formatter=formatter,
         )
@@ -270,7 +270,7 @@ class TestBlockyFormatter(unittest.TestCase):
             pred=np.array([
                 BOS_IDX,
                 1010, 1006, 1008,
-                1005, 1005, PAD_IDX,
+                1005, 1005, EOS_IDX,
                 EOS_IDX,
                 ]),
             expected_cleaned=f'624{sep_value}11',
@@ -301,8 +301,8 @@ class TestBlockyFormatter(unittest.TestCase):
             expected_output=np.array([
                 BOS_IDX,
                 1011, 1011, 1012,
-                1012, 1008, PAD_IDX,
-                2074, PAD_IDX, PAD_IDX,
+                1012, 1008, EOS_IDX,
+                2074, EOS_IDX, EOS_IDX,
                 EOS_IDX,
                 ]),
             formatter=formatter,
@@ -312,13 +312,59 @@ class TestBlockyFormatter(unittest.TestCase):
             pred=np.array([
                 BOS_IDX,
                 1010, 1013, 1011,
-                1005, PAD_IDX, PAD_IDX,
+                1005, EOS_IDX, EOS_IDX,
                 PAD_IDX, PAD_IDX, PAD_IDX,
                 EOS_IDX,
                 ]),
             expected_cleaned=f'697{sep_value}1',
             formatter=formatter,
         )
+
+    def test_occ1950_formatter(self):
+        formatter = construct_general_purpose_formatter(
+            block_size=3,
+            target_cols=[0, 0, 0],
+        )
+        sep_value = formatter.sep_value
+
+        # Transform label
+        self._test_transform_label(
+            raw_input='787',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1012, 1011,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        self._test_transform_label(
+            raw_input=f'778{sep_value}84{sep_value}?',
+            expected_output=np.array([
+                BOS_IDX,
+                1011, 1011, 1012,
+                1012, 1008, EOS_IDX,
+                2074, EOS_IDX, EOS_IDX,
+                EOS_IDX,
+                ]),
+            formatter=formatter,
+        )
+        # Clean prediction
+        self._test_clean_pred(
+            pred=np.array([
+                BOS_IDX,
+                1010, 1013, 1011,
+                1005, EOS_IDX, EOS_IDX,
+                PAD_IDX, PAD_IDX, PAD_IDX,
+                EOS_IDX,
+                ]),
+            expected_cleaned=f'697{sep_value}1',
+            formatter=formatter,
+        )
+
+    # def test_hisco_formatter(self):
+    #     raise NotImplementedError
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):
