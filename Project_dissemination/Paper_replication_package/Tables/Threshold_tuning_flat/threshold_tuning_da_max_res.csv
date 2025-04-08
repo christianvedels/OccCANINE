@@ -1,0 +1,5 @@
+threshold,metric,value
+0.4,acc,0.9837
+0.27,f1_score,0.9908
+0.4,prec,0.99
+0.01,recall,0.9969
