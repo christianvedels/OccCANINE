@@ -23,6 +23,9 @@ for f in files:
     res["recall"] = eval_engine.recall(return_per_obs = True)
     res["f1"] = eval_engine.f1(return_per_obs = True)
 
+    # Add in rowid
+    res["rowid"] = data_f.RowID
+
     # Print
     print(f"    Acc: {eval_engine.accuracy()}")
     print(f"    Precision: {eval_engine.precision()}")
