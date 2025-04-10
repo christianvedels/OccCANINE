@@ -39,7 +39,10 @@ acc = function(y_true, y_pred, digits = NULL) {
     y_true = substr(y_true, 1, digits)
     y_pred = substr(y_pred, 1, digits)
   }
-  
+
+  unique(y_true) = unique(y_true[!is.na(y_true)])
+  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
+
   pred_in_true = sum(y_pred %in% y_true)
   true_in_pred = sum(y_true %in% y_pred)
   
@@ -57,6 +60,9 @@ prec = function(y_true, y_pred, digits = NULL) {
     y_true = substr(y_true, 1, digits)
     y_pred = substr(y_pred, 1, digits)
   }
+
+  unique(y_true) = unique(y_true[!is.na(y_true)])
+  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
   
   if (length(y_pred) == 0) return(0)
   
@@ -72,6 +78,9 @@ recall = function(y_true, y_pred, digits = NULL) {
     y_true = substr(y_true, 1, digits)
     y_pred = substr(y_pred, 1, digits)
   }
+
+  unique(y_true) = unique(y_true[!is.na(y_true)])
+  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
   
   true_in_pred = sum(y_true %in% y_pred)
   return(true_in_pred / length(y_true))
@@ -85,4 +94,15 @@ f1_score = function(y_true, y_pred, digits = NULL) {
   if (precision + recall_value == 0) return(0)
   
   return(2 * (precision * recall_value) / (precision + recall_value))
+}
+
+# Function to print ETA
+print_eta = function(iter, max_iter, start_time, current_time) {
+    elapsed_time = current_time - start_time
+    time_per_iteration = elapsed_time / iter  # Average time per iteration
+    remaining_iterations = max_iter - iter
+    eta = time_per_iteration * remaining_iterations
+    
+    cat(sprintf("Iteration: %d/%d (Elapsed: %.1f sec, ETA: %.1f sec)   \r", 
+                iter, max_iter, as.numeric(elapsed_time), as.numeric(eta)))
 }
