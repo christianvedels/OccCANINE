@@ -12,11 +12,7 @@ pip install unidecode transformers
 conda install sentencepiece
 ```
 
-Only required if training or finetuning:
-```
-pip install tensorflow_hub
-```
-
+Note: For pytorch installation please make sure cuda version and pytorch corresponds. See: https://pytorch.org/. You can check your local cuda version by running `nvcc --version`
 
 ### Optionally verify PyTorch installation
 ```

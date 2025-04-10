@@ -33,7 +33,6 @@ data1 = data1 %>%
 # Add RowID 
 data1 = data1 %>% 
   ungroup() %>% 
-  mutate(RowID = 1:n()) %>%
   mutate(
     lang = "DA"
   )
@@ -43,8 +42,8 @@ set.seed(20)
 data1 = data1 %>%
     drop_na(occ1) %>%
     sample_n(1000) %>%
-    count(occ1)
-
+    count(occ1) %>% 
+    mutate(RowID = 1:n())
 
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/DA_Copenhagen_Burial_Records.csv")

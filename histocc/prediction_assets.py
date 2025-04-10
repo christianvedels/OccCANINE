@@ -162,10 +162,6 @@ class OccCANINE:
         if name in ModelName.__args__ and not hf and not skip_load:
             raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
-        # # Warn that only the old model is available through Hugging Face
-        # if hf:
-        #     print("Warning: Only the old (flat) model is available through Hugging Face. For the new model, please use a local model.")
-
 
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
