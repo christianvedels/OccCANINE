@@ -45,6 +45,5 @@ data1 = data1 %>%
     count(occ1) %>% 
     mutate(RowID = 1:n())
 
-
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/DA_Copenhagen_Burial_Records.csv")
