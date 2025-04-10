@@ -99,10 +99,17 @@ f1_score = function(y_true, y_pred, digits = NULL) {
 # Function to print ETA
 print_eta = function(iter, max_iter, start_time, current_time) {
     elapsed_time = current_time - start_time
+    elapsed_time_units = paste0(" ", attr(elapsed_time, "units")) 
     time_per_iteration = elapsed_time / iter  # Average time per iteration
     remaining_iterations = max_iter - iter
     eta = time_per_iteration * remaining_iterations
     
-    cat(sprintf("Iteration: %d/%d (Elapsed: %.1f sec, ETA: %.1f sec)   \r", 
-                iter, max_iter, as.numeric(elapsed_time), as.numeric(eta)))
+    # Create string to print
+    the_message = paste0(
+        "Iteration: ", iter, "/", max_iter, 
+        " (Elapsed: ", round(as.numeric(elapsed_time), 1), elapsed_time_units, ", ETA: ", round(as.numeric(eta), 1), elapsed_time_units, ")",
+        "                   \r"
+    )
+
+    cat(the_message)
 }
