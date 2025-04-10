@@ -71,12 +71,18 @@ ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
 
 
 # Define a lookup table mapping languages to thresholds.
-THRESHOLD_LOOKUP = {
+THRESHOLD_LOOKUP = { # TODO: Update with new values
     "unk": 0.22,
-    "en": 0.25,
-    "fr": 0.23,
-    "de": 0.20,
-    # Add additional languages and their corresponding threshold values as needed.
+    "ca": 0.21,
+    "da": 0.11,
+    "de": 0.17,
+    "en": 0.22,
+    "es": 0.20,
+    "fr": 0.21,
+    "gr": 0.45,
+    "is": 0.11,
+    "it": 0.34,
+    "nl": 0.19,
 }
 
 def load_keys() -> pd.DataFrame:
