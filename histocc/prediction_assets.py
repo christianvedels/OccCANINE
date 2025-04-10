@@ -72,6 +72,16 @@ BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
 ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
 
+
+# Define a lookup table mapping languages to thresholds.
+THRESHOLD_LOOKUP = {
+    "unk": 0.22,
+    "en": 0.25,
+    "fr": 0.23,
+    "de": 0.20,
+    # Add additional languages and their corresponding threshold values as needed.
+}
+
 def load_keys() -> pd.DataFrame:
     ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
     '''
@@ -440,7 +450,7 @@ class OccCANINE:
             occ1: str | list[str],
             lang: str = "unk",
             what: str = "pred",
-            threshold: float = 0.22,
+            threshold: float | None = None,
             concat_in: bool = False,
             get_dict: bool = False,
             get_df: bool = True,
@@ -492,6 +502,10 @@ class OccCANINE:
 
         # Clean string
         occ1 = self._prep_str(occ1)
+
+        # Only override the threshold if the user did not specify one.
+        if threshold is None:
+            threshold = THRESHOLD_LOOKUP.get(lang, 0.22)
 
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
