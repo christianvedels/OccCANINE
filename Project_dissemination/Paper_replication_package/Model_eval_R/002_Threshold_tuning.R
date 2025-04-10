@@ -18,10 +18,10 @@ np = reticulate::import("numpy")
 key = read_csv("histocc/Data/Key.csv")[-1,]
 val1_data = read_csv("Data/eval-results/val1_probs/val1_data.csv", guess_max = 100000)
 
-# Sample for development
-set.seed(20)
-rows = sample(1:NROW(val1_data), 100000)
-val1_data = val1_data[rows,]
+# # Sample for development
+# set.seed(20)
+# rows = sample(1:NROW(val1_data), 10000)
+# val1_data = val1_data[rows,]
 
 # ==== prob to pred ====
 prob_to_pred = function(probs, threshold){
@@ -71,15 +71,27 @@ threshold_tuning = function(probs_flat, true_data, output_path = "Project_dissem
     # ===== Overall threshold tuning =====
     # Tune thresholds
     thresholds = seq(0.01, 0.99, 0.01)
-    results = foreach(threshold = thresholds, .combine = "bind_rows") %do% {
-        cat(threshold, "\n")
+    n_thresholds = length(thresholds)
+    
+    start_time = Sys.time()  # Start timer
+    
+    results = foreach(iter = 1:n_thresholds, .combine = "bind_rows") %do% {
+        threshold = thresholds[iter]
+        current_time = Sys.time()
+        
+        # Print ETA
+        print_eta(iter, n_thresholds, start_time, current_time)
+        
         get_stats(probs_flat, true_data, threshold) %>% 
             mutate(threshold = threshold) %>% 
             summarise_all(mean)
     }
 
-    max_res = results %>% 
-            pivot_longer(-threshold, names_to = "metric", values_to = "value") %>%
+    # To long table
+    results = results %>% 
+            pivot_longer(-threshold, names_to = "metric", values_to = "value")
+
+    max_res = results %>%
             group_by(metric) %>% 
             filter(value == max(value)) %>% 
             ungroup()
@@ -88,14 +100,12 @@ threshold_tuning = function(probs_flat, true_data, output_path = "Project_dissem
     output_csv_path = gsub(".png", "_max_res.csv", output_path)
     output_csv_path = gsub("Figures", "Tables", output_csv_path)
     dir.create(dirname(output_csv_path), showWarnings = FALSE, recursive = TRUE)
-    max_res %>% 
-        mutate(value = round(value, 4)) %>% 
+    results %>% 
         arrange(metric) %>% 
         write_csv(output_csv_path)
 
     # ==== Make plot ====
-    p1 = results %>% 
-            pivot_longer(-threshold, names_to = "metric", values_to = "value") %>% 
+    p1 = results %>%
             ggplot(aes(x = threshold, y = value)) +
             geom_point() +
             geom_line() +
@@ -150,14 +160,14 @@ threshold_tuning_by_language = function(val1_data, true_data, probs_flat, output
 # ==== Run threshold tuning ====
 # Flat
 probs_flat = np$load("Data/eval-results/val1_probs/probs_flat.npy")
-probs_flat = probs_flat[rows,]
+# probs_flat = probs_flat[rows,]
 threshold_tuning(probs_flat, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png")
 threshold_tuning_by_language(val1_data, true_data, probs_flat, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_flat/")
 rm(probs_flat)
 
 # Full
 probs_mixer = np$load("Data/eval-results/val1_probs/probs_mixer.npy")
-probs_mixer = probs_mixer[rows,]
+# probs_mixer = probs_mixer[rows,]
 threshold_tuning(probs_mixer, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_mixer.png")
 threshold_tuning_by_language(val1_data, true_data, probs_mixer, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_mixer/")
 rm(probs_mixer)
