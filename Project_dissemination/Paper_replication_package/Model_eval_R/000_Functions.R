@@ -40,8 +40,8 @@ acc = function(y_true, y_pred, digits = NULL) {
     y_pred = substr(y_pred, 1, digits)
   }
 
-  unique(y_true) = unique(y_true[!is.na(y_true)])
-  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
+  y_true = unique(y_true[!is.na(y_true)])
+  y_pred = unique(y_pred[!is.na(y_pred)])
 
   pred_in_true = sum(y_pred %in% y_true)
   true_in_pred = sum(y_true %in% y_pred)
@@ -61,8 +61,8 @@ prec = function(y_true, y_pred, digits = NULL) {
     y_pred = substr(y_pred, 1, digits)
   }
 
-  unique(y_true) = unique(y_true[!is.na(y_true)])
-  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
+  y_true = unique(y_true[!is.na(y_true)])
+  y_pred = unique(y_pred[!is.na(y_pred)])
   
   if (length(y_pred) == 0) return(0)
   
@@ -79,8 +79,8 @@ recall = function(y_true, y_pred, digits = NULL) {
     y_pred = substr(y_pred, 1, digits)
   }
 
-  unique(y_true) = unique(y_true[!is.na(y_true)])
-  unique(y_pred) = unique(y_pred[!is.na(y_pred)])
+  y_true = unique(y_true[!is.na(y_true)])
+  y_pred = unique(y_pred[!is.na(y_pred)])
   
   true_in_pred = sum(y_true %in% y_pred)
   return(true_in_pred / length(y_true))
