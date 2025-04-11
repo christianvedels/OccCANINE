@@ -412,24 +412,29 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
     return sentence
 
 
-def generate_random_strings(num_strings):
+def generate_random_strings(num_strings, no_occ_label = "-1", lang = None):
     """
     Generates random strings and assigns a random valid language.
 
     Parameters:
     num_strings (int): Number of random strings to generate.
+    no_occ_label (str): Label to assign to the generated strings. Default is "-1".
+    lang (str): Language to assign to the generated strings. If None, a random valid language is chosen.
 
     Returns:
     pd.DataFrame: DataFrame containing random strings, label -1, and a random valid language.
     """
     random_strings = [generate_advanced_gibberish() for _ in range(num_strings)]
 
-    valid_languages = [lang for lang in lang_mapping.keys() if lang != 'unk']
-    random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
+    if lang is not None:
+        valid_languages = [lang for lang in lang_mapping.keys() if lang != 'unk']
+        random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
+    else:
+        random_langs = [lang for _ in range(num_strings)]
 
     return pd.DataFrame(
         {'occ1': random_strings,
-         'hisco_1': [-1]*num_strings,
+         'hisco_1': [no_occ_label]*num_strings, # '-1' for HISCO and '4,1,0,0,0,0,0,0' for PST2
          'hisco_2': [' ']*num_strings,
          'hisco_3': [' ']*num_strings,
          'hisco_4': [' ']*num_strings,
