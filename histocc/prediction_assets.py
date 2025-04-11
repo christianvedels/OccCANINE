@@ -83,6 +83,9 @@ THRESHOLD_LOOKUP = { # TODO: Update with new values
     "is": 0.11,
     "it": 0.34,
     "nl": 0.19,
+    "no": 0.14,
+    "pt": 0.25,
+    "se": 0.32
 }
 
 def load_keys() -> pd.DataFrame:
