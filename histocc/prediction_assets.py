@@ -509,8 +509,15 @@ class OccCANINE:
         occ1 = self._prep_str(occ1)
 
         # Only override the threshold if the user did not specify one.
-        if threshold is None:
-            threshold = THRESHOLD_LOOKUP.get(lang, 0.22)
+        if prediction_type in ['flat', 'full']:
+            if threshold is None:
+                # Take unique of lang. If multiple lang throw not implemented error
+                if isinstance(lang, list):
+                    lang = list(set(lang))
+                    if len(lang) > 1:
+                        raise NotImplementedError("Language based thresholds for multiple languages. Insted you can run this sepperately for each language.")
+                    lang = lang[0]
+                threshold = THRESHOLD_LOOKUP.get(lang, 0.22)
 
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
