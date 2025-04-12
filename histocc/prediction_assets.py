@@ -517,7 +517,7 @@ class OccCANINE:
                     if len(lang) > 1:
                         raise NotImplementedError("Language based thresholds for multiple languages. Insted you can run this sepperately for each language.")
                     lang = lang[0]
-                threshold = THRESHOLD_LOOKUP.get(lang, 0.22)
+                threshold = THRESHOLD_LOOKUP.get(lang, 0.22) # TODO: Update default value
 
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
