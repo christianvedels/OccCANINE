@@ -282,13 +282,7 @@ class AdversarialStrings:
 
         res = []
         for _, row in pred0.iterrows():
-            res_i = [
-                row['hisco_1'],
-                row['hisco_2'],
-                row['hisco_3'],
-                row['hisco_4'],
-                row['hisco_5']
-                ]
+            res_i = [row[f'hisco_{i+1}'] for i in range(5) if f'hisco_{i+1}' in row]
             res_i = [self._isnan_to_str(x) for x in res_i]
             res.append(res_i)
 
@@ -323,8 +317,9 @@ class AdversarialStrings:
         # Test 2: Correct initial prediction
 
         labels = [self._isnan_to_str(x) for x in labels]
+        pred0 = [self._isnan_to_str(x) for x in self.pred0[i]]
 
-        test2 = all([x==y for x, y in zip(self.pred0[i], labels)])
+        test2 = all([x==y for x, y in zip(pred0, labels)])
 
         return test1 and test2
 
