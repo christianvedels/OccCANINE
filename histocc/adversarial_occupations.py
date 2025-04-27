@@ -457,65 +457,96 @@ def load_training_data(data_path = "Data/Training_data", toyload=False, verbose 
     Returns:
     tuple: The combined dataframe of training data and a dictionary with lang. counts (if return_lang_counts is True).
     """
-    fnames = os.listdir(data_path)
+    if os.path.isfile(data_path) and data_path.endswith(".csv"):
+        # If the provided path is a single CSV file
+        df = pd.read_csv(data_path)
+        df = df.drop(columns=['RowID'], errors='ignore')
+        df = df.drop_duplicates()
+        df["source"] = os.path.basename(data_path)
 
-    if toyload:
-        fnames = fnames[0:2]+[fnames[5]]
+        # Update language counts if required
+        lang_counts = {}
+        if return_lang_counts:
+            for lang, count in df['lang'].value_counts().items():
+                lang_counts[lang] = count
 
-    if sample_size:
-        share_of_sample = sample_size // len(fnames)
+        # Handle sampling if sample_size is provided
+        if sample_size:
+            actual_n = min(sample_size, df.shape[0])
+            df = df.sample(n=actual_n, replace=False)
 
-    # Initialize an empty dataframe to store the data
-    combined_df = pd.DataFrame()
+        # Ensure all occ1 are strings
+        df["occ1"] = df["occ1"].astype(str)
 
-    lang_counts = {}
+        if return_lang_counts:
+            # Aggregate language counts into proportions
+            total_count = sum(lang_counts.values())
+            lang_counts = {lang: int(sample_size * count / total_count) for lang, count in lang_counts.items()}
+            return df, lang_counts
 
-    # Loop through the file list and read each CSV file into the combined dataframe
-    for file in fnames:
-        if file.endswith(".csv"):  # Make sure the file is a CSV file
-            file_path = os.path.join(data_path, file)
+        return df
 
-            if toyload:
-                df = pd.read_csv(file_path, nrows = 25)
-            else:
-                df = pd.read_csv(file_path)
+    else:
+        # If the provided path is a directory containing CSV files
+        fnames = os.listdir(data_path)
 
-            df = df.drop(columns=['RowID'])
-            df = df.drop_duplicates()
-            df["source"] = file
+        if toyload:
+            fnames = fnames[0:2] + [fnames[5]]
 
-            # Update language counts
-            if return_lang_counts:
-                for lang, count in df['lang'].value_counts().items():
-                    if lang in lang_counts:
-                        lang_counts[lang] += count
-                    else:
-                        lang_counts[lang] = count
+        if sample_size:
+            share_of_sample = sample_size // len(fnames)
 
-            # Handling 'share_of_sample' larger than samples in n
-            actual_n = df.shape[0] if share_of_sample > df.shape[0] else share_of_sample
+        # Initialize an empty dataframe to store the data
+        combined_df = pd.DataFrame()
 
-            df = df.sample(n = actual_n, replace=False)
+        lang_counts = {}
 
-            combined_df = pd.concat([combined_df, df])
+        # Loop through the file list and read each CSV file into the combined dataframe
+        for file in fnames:
+            if file.endswith(".csv"):  # Make sure the file is a CSV file
+                file_path = os.path.join(data_path, file)
 
-            n_df = df.shape[0]
+                if toyload:
+                    df = pd.read_csv(file_path, nrows=25)
+                else:
+                    df = pd.read_csv(file_path)
 
-            if verbose:
-                print(f"\nRead {file} (N = {n_df})")
+                df = df.drop(columns=['RowID'], errors='ignore')
+                df = df.drop_duplicates()
+                df["source"] = file
 
-    df = combined_df
+                # Update language counts
+                if return_lang_counts:
+                    for lang, count in df['lang'].value_counts().items():
+                        if lang in lang_counts:
+                            lang_counts[lang] += count
+                        else:
+                            lang_counts[lang] = count
 
-    # Make sure that all occ1 are strings
-    df["occ1"] = df["occ1"].astype(str)
+                # Handling 'share_of_sample' larger than samples in n
+                actual_n = df.shape[0] if share_of_sample > df.shape[0] else share_of_sample
 
-    if return_lang_counts:
-        # Aggregate language counts into proportions
-        total_count = sum(lang_counts.values())
-        lang_counts = {lang: int(sample_size * count / total_count) for lang, count in lang_counts.items()}
-        return df, lang_counts
+                df = df.sample(n=actual_n, replace=False)
 
-    return df
+                combined_df = pd.concat([combined_df, df])
+
+                n_df = df.shape[0]
+
+                if verbose:
+                    print(f"\nRead {file} (N = {n_df})")
+
+        df = combined_df
+
+        # Make sure that all occ1 are strings
+        df["occ1"] = df["occ1"].astype(str)
+
+        if return_lang_counts:
+            # Aggregate language counts into proportions
+            total_count = sum(lang_counts.values())
+            lang_counts = {lang: int(sample_size * count / total_count) for lang, count in lang_counts.items()}
+            return df, lang_counts
+
+        return df
 
 
 def generate_adversarial_wrapper(
@@ -555,7 +586,7 @@ def generate_adversarial_wrapper(
     attacker = AttackerClass(alt_prob = alt_prob, n_trans=n_trans, df=df)
 
     # Predictor
-    hisco_predictor = OccCANINE(name = "CANINE")
+    hisco_predictor = OccCANINE()
 
     # Class to handle adverarial string finding
     adv_strings = AdversarialStrings(attacker, translator, hisco_predictor, df)
