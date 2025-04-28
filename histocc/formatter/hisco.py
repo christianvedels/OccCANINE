@@ -247,7 +247,8 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
 
         # A sequence has maximum length of 5 (each HISCO code) times number of
         # HISCO codes + 2 due to BOS & EOS tokens
-        self._max_seq_len = self.max_num_codes * 5 + 2
+        self.block_size = 5
+        self._max_seq_len = self.max_num_codes * self.block_size + 2
 
         self.initialize()
 

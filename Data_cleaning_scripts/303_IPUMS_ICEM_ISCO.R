@@ -127,6 +127,27 @@ data1_isco68 = data0 %>%
   ) %>% 
   mutate(RowID = 1:n())
 
+# ==== Pad strings ====
+data1_occicem = data1_occicem %>% 
+  mutate(
+    OCCICEM_1 = ifelse(
+      OCCICEM_1 == " ", " ", str_pad(OCCICEM_1, 3, pad = "0", side = "left")
+    ),
+    OCCICEM_2 = ifelse(
+      OCCICEM_2 == " ", " ", str_pad(OCCICEM_2, 3, pad = "0", side = "left")
+    )
+  )
+
+data1_isco68 = data1_isco68 %>% 
+  mutate(
+    ISCO68A_1 = ifelse(
+      ISCO68A_1 == " ", " ", str_pad(ISCO68A_1, 3, pad = "0", side = "left")
+    ),
+    ISCO68A_2 = ifelse(
+      ISCO68A_2 == " ", " ", str_pad(ISCO68A_2, 3, pad = "0", side = "left")
+    )
+  )
+
 # ==== Save ====
 save(data1_occicem, file = "Data/Tmp_data/EN_IPUMS_UK_OCCICEM.Rdata")
 save(data1_isco68, file = "Data/Tmp_data/EN_IPUMS_UK_ISCO68.Rdata")
