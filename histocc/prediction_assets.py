@@ -780,7 +780,8 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
 
-            print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
+            if self.verbose: 
+                print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
 
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
