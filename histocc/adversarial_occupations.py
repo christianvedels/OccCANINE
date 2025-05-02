@@ -621,6 +621,8 @@ def balance_classes(df, system = 'hisco'):
     
     # N samples as fixed share of df size
     n_samples = df.shape[0] // len(unique_classes)
+    if n_samples < 1:
+        n_samples = 1
 
     # Sample from each class
     balanced_df = pd.DataFrame()
