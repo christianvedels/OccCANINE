@@ -434,7 +434,7 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
     return sentence
 
 
-def generate_random_strings(num_strings, system = 'hisco', no_occ_label = -1, langs = lang_mapping.keys()):
+def generate_random_strings(num_strings, system = 'hisco', no_occ_labels = [-1], langs = lang_mapping.keys()):
     """
     Generates random strings and assigns a random valid language.
 
@@ -449,9 +449,11 @@ def generate_random_strings(num_strings, system = 'hisco', no_occ_label = -1, la
     valid_languages = [lang for lang in langs]
     random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
 
+    no_occ_label = [random.choice(no_occ_labels) for _ in range(num_strings)]
+
     result = pd.DataFrame(
         {'occ1': random_strings,
-         f'{system}_1': [no_occ_label]*num_strings,
+         f'{system}_1': no_occ_label,
          f'{system}_2': [' ']*num_strings,
          f'{system}_3': [' ']*num_strings,
          f'{system}_4': [' ']*num_strings,
@@ -643,7 +645,7 @@ def balance_classes(df, system = 'hisco'):
 
 
 def generate_adversarial_wrapper(
-        data_path, storage_path, hisco_predictor, save_name = "Adv_data",
+        data_path, hisco_predictor, 
         toyload=False, double_translate = True, sample_size = 1000, n_max = 10,
         verbose=True, verbose_extra=False, alt_prob = 1, n_trans=1, class_balance = True
         ):
@@ -652,9 +654,7 @@ def generate_adversarial_wrapper(
 
     Parameters:
     data_path (str): Which folder can the data be found it? The function will load all the .csv files in this destination
-    storage_path (str): Where should the results be stored?
     hisco_predictor (OccCANINE): The OccCANINE model to use for predictions.
-    save_name (str): The name of the file to save the results.
     toyload (bool): If True, loads only a small subset of data for testing.
     double_translate (bool): Should double translation be the primary augmentation? Otherwise it is just attacker.attack()
     sample_size (int): Number of observations to use
@@ -748,18 +748,15 @@ def generate_adversarial_wrapper(
     df = df.drop(columns=['occ1',f'{system}_1', f'{system}_2', f'{system}_3', f'{system}_4', f'{system}_5'])
     results = results.merge(df, on='aug_id', how='left')
 
-    # Save results
-    fname = os.path.join(storage_path, f"{save_name}_double_translate{double_translate}.csv")
-    results.to_csv(fname, index = False)
+    return results
 
 
-def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=True, sample_size = 1000):
+def translated_strings_wrapper(data_path, toyload=False, verbose=True, sample_size = 1000):
     """
     Translates occupation strings in a dataset to multiple languages using a predefined translator.
 
     Parameters:
     data_path (str): Which folder can the data be found it? The function will load all the .csv files in this destination
-    storage_path (str): Where should the results be stored?
     toyload (bool, optional): Determines whether to load a smaller toy dataset or the full dataset. Defaults to True.
     verbose (bool, optional): If True, prints progress updates during the translation process. Defaults to True.
 
@@ -838,29 +835,22 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
     results['original_occ1'] = original_occ1
     results = results.drop(columns='translated_occ')
 
-    # Save results
-    fname = os.path.join(storage_path, "Translated_data.csv")
-    results.to_csv(fname, index = False)
-
-    print("\n\n")
+    return results
 
 
-
-def generate_random_strings_wrapper(storage_path, save_name = "Random_strings", num_strings=1000, system = 'hisco', no_occ_label = -1, langs = lang_mapping.keys()):
+def generate_random_strings_wrapper(num_strings=1000, system = 'hisco', no_occ_labels = [-1], langs = lang_mapping.keys()):
     """
     Wrapper function to generate random strings with the label -1 and save them.
 
     Parameters:
-    storage_path (str): Where should the results be stored?
     num_strings (int, optional): Number of random strings to generate. Defaults to 1000.
-    no_occ_label (int, optional): Label for the generated strings. Defaults to -1.
+    system (str, optional): The system to use for the generated strings. Defaults to 'hisco'.
+    no_occ_labels (list of str or int): Labels for the generated strings. Should be the labels covering 'no occupation'. Can be more than one. Defaults to [-1] (HISCO).
+    langs (list, optional): List of languages to use for the generated strings. Defaults to all available languages.
 
     Returns:
     None
     """
-    random_strings_df = generate_random_strings(num_strings, system = system, no_occ_label = no_occ_label, langs = langs)
+    random_strings_df = generate_random_strings(num_strings, system = system, no_occ_labels = no_occ_labels, langs = langs)
 
-    fname = os.path.join(storage_path, f"{save_name}.csv")
-    random_strings_df.to_csv(fname, index = False)
-
-    print(f"Generated {num_strings} random strings with label -1.")
+    return random_strings_df
