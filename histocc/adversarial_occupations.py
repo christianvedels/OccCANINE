@@ -402,7 +402,7 @@ class AdversarialStrings:
         return occs
 
 
-def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, max_length = 10):
+def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, max_length = 10, punctuation = 0.5):
     """
     Generates a string of random words with specified constraints on the number of words
     and their lengths.
@@ -412,6 +412,7 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
     max_words (int): Maximum number of words in the generated string.
     min_length (int): Minimum length of each word.
     max_length (int): Maximum length of each word.
+    punctuation (float): Probability of including punctuation in the generated string.
 
     Returns:
     str: A string consisting of random words separated by spaces.
@@ -423,7 +424,7 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
     string_set = string.ascii_lowercase
 
     # Flip coin to decide if we want to include use punctuation or not
-    if random.random() < 0.5:
+    if random.random() < punctuation:
         string_set += string.ascii_lowercase + string.ascii_lowercase + string.punctuation + string.digits
 
     words = [''.join(random.choices(string_set, k=x)) for x in word_lengths]
