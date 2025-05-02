@@ -419,14 +419,21 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
     words = random.randint(min_words, max_words)
     word_lengths = [random.randint(min_length, max_length) for _ in range(words)]
 
-    words = [''.join(random.choices(string.ascii_lowercase, k=x)) for x in word_lengths]
+    # Lowercase
+    string_set = string.ascii_lowercase
+
+    # Flip coin to decide if we want to include use punctuation or not
+    if random.random() < 0.5:
+        string_set += string.ascii_uppercase + string.punctuation + string.digits
+
+    words = [''.join(random.choices(string_set, k=x)) for x in word_lengths]
 
     sentence = ' '.join(words)
 
     return sentence
 
 
-def generate_random_strings(num_strings, system = 'hisco'):
+def generate_random_strings(num_strings, system = 'hisco', no_occ_label = -1, langs = lang_mapping.keys()):
     """
     Generates random strings and assigns a random valid language.
 
@@ -438,23 +445,20 @@ def generate_random_strings(num_strings, system = 'hisco'):
     """
     random_strings = [generate_advanced_gibberish() for _ in range(num_strings)]
 
-    valid_languages = [lang for lang in lang_mapping.keys() if lang != 'unk']
+    valid_languages = [lang for lang in langs]
     random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
 
-    return pd.DataFrame(
+    result = pd.DataFrame(
         {'occ1': random_strings,
-         f'{system}_1': [-1]*num_strings,
+         f'{system}_1': [no_occ_label]*num_strings,
          f'{system}_2': [' ']*num_strings,
          f'{system}_3': [' ']*num_strings,
          f'{system}_4': [' ']*num_strings,
          f'{system}_5': [' ']*num_strings,
-         'code1': [2]*num_strings,
-         'code2': ['']*num_strings,
-         'code3': ['']*num_strings,
-         'code4': ['']*num_strings,
-         'code5': ['']*num_strings,
          'lang': random_langs
         })
+
+    return result
 
 
 def load_training_data(data_path = "Data/Training_data", toyload=False, verbose = True, sample_size = None, return_lang_counts = False):
@@ -841,21 +845,21 @@ def translated_strings_wrapper(data_path, storage_path, toyload=False, verbose=T
 
 
 
-def generate_random_strings_wrapper(storage_path, num_strings=1000):
+def generate_random_strings_wrapper(storage_path, save_name = "Random_strings", num_strings=1000, system = 'hisco', no_occ_label = -1, langs = lang_mapping.keys()):
     """
     Wrapper function to generate random strings with the label -1 and save them.
 
     Parameters:
     storage_path (str): Where should the results be stored?
     num_strings (int, optional): Number of random strings to generate. Defaults to 1000.
-    string_length (int, optional): Length of each random string. Defaults to 10.
+    no_occ_label (int, optional): Label for the generated strings. Defaults to -1.
 
     Returns:
     None
     """
-    random_strings_df = generate_random_strings(num_strings)
+    random_strings_df = generate_random_strings(num_strings, system = system, no_occ_label = no_occ_label, langs = langs)
 
-    fname = os.path.join(storage_path, "Random_strings.csv")
+    fname = os.path.join(storage_path, f"{save_name}.csv")
     random_strings_df.to_csv(fname, index = False)
 
     print(f"Generated {num_strings} random strings with label -1.")
