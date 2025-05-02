@@ -517,6 +517,8 @@ def load_training_data(data_path = "Data/Training_data", toyload=False, verbose 
 
         if sample_size:
             share_of_sample = sample_size // len(fnames)
+            if share_of_sample < 1:
+                share_of_sample = 1
 
         # Initialize an empty dataframe to store the data
         combined_df = pd.DataFrame()
