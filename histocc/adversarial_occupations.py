@@ -18,6 +18,7 @@ import random
 import string
 import sys
 import time
+from unidecode import unidecode
 
 import torch
 
@@ -786,6 +787,18 @@ def translated_strings_wrapper(data_path, toyload=False, verbose=True, sample_si
     print(f"\nRead everything (N = {n_df})")
     print()
 
+    # More than one lang
+    only_one_lang = len(lang_counts) == 1
+    if only_one_lang:
+        if verbose:
+            print("Only one language in the dataset.")
+
+        n_each_lang = n_df // len(lang_mapping) # Number of observations to translate into each language
+        if n_each_lang < 1:
+            n_each_lang = 1
+
+        lang_counts = {lang: n_each_lang for lang in lang_mapping.keys()}  # Set all to same share
+
     if verbose:
         print("The following number of translations will be produced*:")
         n_total = sum(lang_counts.values())
@@ -794,14 +807,21 @@ def translated_strings_wrapper(data_path, toyload=False, verbose=True, sample_si
             pct_lang = n_lang / n_total
             print(f" --> {n_lang} will be translated into '{lang}' -- {pct_lang:.2%}")
 
-        print("   *This reflects proportions in the full traning data")
-
+        if only_one_lang:
+            print("   *This is equal proportions of all the available languages")
+        else:
+            print("   *This reflects proportions in the full traning data")
 
     results = pd.DataFrame()
     for lang in lang_counts:
         if lang == 'unk':
             continue
         df_lang = df[df['lang'] != lang]  # Only translate those that are not already in the target language
+
+        if df_lang.shape[0] == 0:
+            if verbose:
+                print(f"--> No observations to translate to '{lang}'")
+            continue
 
         # Sample df_lang to be of size given by lang_proportions
         n_lang = lang_counts[lang]
@@ -815,6 +835,10 @@ def translated_strings_wrapper(data_path, toyload=False, verbose=True, sample_si
 
         # PERFORM TRANSLATION:
         translated_occ = translator.translate(df_lang['occ1'].tolist(), lang_from=df_lang['lang'].tolist()[0], lang_to=lang)
+
+        if lang == 'gr':
+            # Replace greek letters with english letters
+            translated_occ = [unidecode(x) for x in translated_occ]
 
         if verbose:
             print(f"--> Finished translating {n_lang} observations to '{lang}'")
