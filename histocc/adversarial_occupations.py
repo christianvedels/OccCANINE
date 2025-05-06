@@ -695,7 +695,10 @@ def generate_adversarial_wrapper(
     # Print update
     if verbose:
         n_df = df.shape[0]
-        print(f"\nRead everything (N = {n_df})")
+        if class_balance:
+            print(f"\nRead everything (N = {n_df}) after class balancing")
+        else:
+            print(f"\nRead everything (N = {n_df})")
 
     # Init translator
     translator = Translator()
