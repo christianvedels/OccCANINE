@@ -47,17 +47,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--model-system', type=str, default="hisco")
     parser.add_argument('--model-use-within-block-sep', type=bool, default=False)
 
-    # Tmp while developing:
-    # parser.add_argument('--model-path', default="D:/Dropbox/Research_projects/HISCO/OccCANINE/Data/models/mixer-psti-ft/last.bin")
-    # parser.add_argument('--model-local', type=bool, default=True)
-    # parser.add_argument('--model-use-within-block-sep', type=bool, default=True)
-    # parser.add_argument('--model-system', type=str, default="PSTI")
-    # parser.add_argument('--file', type=str, default="Data/Training_data_other/EN_PSTI_CAMPOP_n_unq1000_train.csv")
-    # parser.add_argument('--num-adv-simple', type=int, default=200)
-    # parser.add_argument('--num-adv-double-trans', type=int, default=200)
-    # parser.add_argument('--num-trans', type=int, default=200)
-    # parser.add_argument('--num-rand', type=int, default=200)
-
     parser.add_argument('--class-balance', type=bool, default=True)
 
     parser.add_argument('--methods', type=str, nargs='+', default=['attack', '2xtranslate', 'translate', 'gibberish'],
