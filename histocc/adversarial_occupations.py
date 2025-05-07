@@ -351,7 +351,7 @@ class AdversarialStrings:
 
 
         Returns:
-        tuple: The adversarial text and the number of attempts.
+        list: A list of augmented strings.
         """
         self.lang = lang
         self.lang_to = 'en'
