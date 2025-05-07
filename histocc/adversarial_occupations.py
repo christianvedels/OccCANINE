@@ -426,8 +426,10 @@ def generate_advanced_gibberish(min_words = 1, max_words = 10, min_length = 1, m
 
     # Flip coin to decide if we want to include use punctuation or not
     if random.random() < punctuation:
-        string_set += string.ascii_lowercase + string.ascii_lowercase + string.punctuation + string.digits
+        # Include lowercase letters, punctuation, and digits in the character pool
+        string_set += string.ascii_lowercase + string.punctuation + string.digits
 
+    # Generate words with equal weighting for all character types
     words = [''.join(random.choices(string_set, k=x)) for x in word_lengths]
 
     sentence = ' '.join(words)
