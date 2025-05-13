@@ -443,6 +443,7 @@ class OccCANINE:
             behavior: BehaviorType = "good",
             prediction_type: PredType | None = None,
             k_pred: int = 5,
+            order_invariant_conf: bool = True,
     ):
         """
         Makes predictions on a batch of occupational strings.
@@ -458,6 +459,7 @@ class OccCANINE:
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
         - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
         - k_pred (int): Maximum number of predicted occupational codes to keep
+        - order_invariant_conf (bool): If True an order invariant confidence is computed. This takes a bit longer but - especially for cases with many observations with multiple occupations.
 
         **Details.**
         *behvaior*
@@ -513,7 +515,7 @@ class OccCANINE:
         if prediction_type == 'flat':
             out, out_type, inputs = self._predict_flat(data_loader)
         elif prediction_type == 'greedy':
-            out, out_type, inputs = self._predict_greedy(data_loader)
+            out, out_type, inputs = self._predict_greedy(data_loader, order_invariant_conf=order_invariant_conf)
         elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
         else:
@@ -598,7 +600,7 @@ class OccCANINE:
         return results, out_type, inputs
 
     @torch.no_grad()
-    def _predict_greedy(self, data_loader):
+    def _predict_greedy(self, data_loader, order_invariant_conf):
         model = self.model.eval()
 
         inputs = []
@@ -616,8 +618,10 @@ class OccCANINE:
         # Decoder based on model type
         if self.model_type == "mix":
             decoder = mixer_greedy_decode
+            decoder_full = full_search_decoder_mixer_optimized # Used in order invariant confidence
         elif self.model_type == "seq2seq":
             decoder = greedy_decode
+            decoder_full = full_search_decoder_seq2seq_optimized # Used in order invariant confidence
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
 
@@ -639,6 +643,26 @@ class OccCANINE:
                 max_len = data_loader.dataset.formatter.max_seq_len,
                 start_symbol = BOS_IDX,
                 )
+            
+            # Compute order invariant confidence
+            if order_invariant_conf:
+                # Location of multiple labels
+
+                # Extract input ids and attention mask for cases with multiple labels
+
+                # Generate list of codes 
+                codes_lists = ["61110", "62110"] * len(batch['occ1']) # Placeholder
+
+                for code_list in codes_lists:
+                                output = decoder(
+                                    model = model,
+                                    descr = input_ids,
+                                    input_attention_mask = attention_mask,
+                                    device = self.device,
+                                    codes_list = code_list,
+                                    start_symbol = BOS_IDX,
+                                    )
+
             outputs_s2s = outputs[0].cpu().numpy()
             probs_s2s = outputs[1].cpu().numpy()
 
