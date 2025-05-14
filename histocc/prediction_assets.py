@@ -1069,6 +1069,7 @@ class OccCANINE:
             dataset: str | os.PathLike,
             save_path: str | os.PathLike,
             input_col: str,
+            target_cols: list[str],
             language: str,
             language_col: str | None,
             save_interval: int,
@@ -1083,6 +1084,9 @@ class OccCANINE:
             seq2seq_weight: float,
             freeze_encoder: bool,
             ):
+        
+        # Update formatter
+        self.formatter.target_cols = target_cols
 
         # Data prep
         prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
