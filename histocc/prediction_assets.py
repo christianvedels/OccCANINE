@@ -61,6 +61,7 @@ from .utils.decoder import (
     full_search_decoder_mixer_optimized,
     )
 from .seq2seq_mixer_engine import train
+from itertools import permutations
 
 
 PredType = Literal['flat', 'greedy', 'full']
@@ -647,21 +648,36 @@ class OccCANINE:
             # Compute order invariant confidence
             if order_invariant_conf:
                 # Location of multiple labels
+                outputs_mapped_to_label = list(map(
+                    data_loader.dataset.formatter.clean_pred,
+                    outputs[0].cpu().numpy(),
+                ))
 
                 # Extract input ids and attention mask for cases with multiple labels
-
+                # (output larger than blocksize)
+                multiple_labels = [len(x) > self.formatter.block_size for x in outputs_mapped_to_label]
+                
                 # Generate list of codes 
-                codes_lists = ["61110", "62110"] * len(batch['occ1']) # Placeholder
+                codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
 
-                for code_list in codes_lists:
-                                output = decoder(
-                                    model = model,
-                                    descr = input_ids,
-                                    input_attention_mask = attention_mask,
-                                    device = self.device,
-                                    codes_list = code_list,
-                                    start_symbol = BOS_IDX,
-                                    )
+                for i, multiple in enumerate(multiple_labels):
+                    if multiple:
+                        # Get the list of codes for the current batch
+                        code_list = codes_lists[i]
+
+                        # Run the full search decoder on the current batch
+                        outputs = decoder_full(
+                            model = model,
+                            descr = input_ids,
+                            input_attention_mask = attention_mask,
+                            device = self.device,
+                            codes_list = code_list,
+                            start_symbol = BOS_IDX,
+                            )
+
+                        # Replace outputs
+                        outputs_s2s = outputs[0][i].cpu().numpy()
+                        probs_s2s = outputs[1][i].cpu().numpy()
 
             outputs_s2s = outputs[0].cpu().numpy()
             probs_s2s = outputs[1].cpu().numpy()
@@ -769,6 +785,25 @@ class OccCANINE:
         out_type = 'probs'
 
         return results, out_type, inputs
+    
+    def _output_permutations(self, output):
+        """
+        This function takes an output from the model with multiple labels
+        and returns the permutations of the labels.
+        This is used to compute the order invariant confidence.
+        """
+
+        output = output.split("&")
+        if(len(output) == 1):
+            return [output]
+
+        # Generate all permutations of the output list
+        permutations_list = list(permutations(output))
+
+        # Join each permutation with the '&' symbol
+        return ["&".join(permutation) for permutation in permutations_list]
+
+
 
     def _validate_and_update_prediction_parameters(self, behavior, prediction_type: PredType | None):
         """
