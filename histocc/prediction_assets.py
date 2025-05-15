@@ -517,26 +517,21 @@ class OccCANINE:
         # Clean string
         occ1_clean = self._prep_str(occ1)
 
-        # Deduplication logic
         if deduplicate:
-            # Build tuples of (occ1, lang)
-            pairs = list(zip(occ1_clean, lang_list))
-            # Map from unique pair to list of indices in original input
-            pair_to_indices = {}
-            for idx, pair in enumerate(pairs):
-                if pair not in pair_to_indices:
-                    pair_to_indices[pair] = []
-                pair_to_indices[pair].append(idx) # Maps pairs of lang/occ to index in original input
-            # Unique pairs for prediction
-            unique_pairs = list(pair_to_indices.keys())
-            unique_occ1 = [p[0] for p in unique_pairs]
-            unique_lang = [p[1] for p in unique_pairs]
+            df_in = pd.DataFrame({
+                "occ1": occ1_clean,
+                "lang": lang_list
+            })
+            # Dop duplicates
+            df_unique = df_in.drop_duplicates().reset_index(drop=True)
+            unique_occ1 = df_unique["occ1"].tolist()
+            unique_lang =  df_unique["lang"].tolist()
             if self.verbose:
-                print(f"Deduplicated {len(occ1)} inputs to {len(unique_pairs)} unique pairs.")
+                print(f"Deduplicated {len(occ1)} inputs to {df_unique.shape[0]} unique pairs.")
         else:
+            df_unique = None
             unique_occ1 = occ1_clean
             unique_lang = lang_list
-            pair_to_indices = None  # Not used
 
         # Only override the threshold if the user did not specify one.
         if prediction_type in ['flat', 'full']:
@@ -586,27 +581,59 @@ class OccCANINE:
         if deduplicate:
             # If result is a DataFrame, expand rows
             if isinstance(result, pd.DataFrame):
-                expanded_rows = []
-                for i, pair in enumerate(unique_pairs):
-                    for idx in pair_to_indices[pair]:
-                        expanded_rows.append(result.iloc[i].copy())
-                result = pd.DataFrame(expanded_rows).reset_index(drop=True)
-                # Restore original occ1 order
-                result.insert(0, '_original_idx', range(len(result)))
-                result = result.sort_values('_original_idx').drop(columns=['_original_idx']).reset_index(drop=True)
-            # If result is a numpy array, expand rows
+                # Merge the tiny prediction‐table back onto the big one
+                df_pred = result.copy()
+
+                # Splitting lang and occ1 in occ1
+                df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
+                df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
+
+                # now bring the preds back into the original order
+                result = (
+                    df_in
+                    .merge(
+                        df_pred, 
+                        left_on=["occ1","lang"], 
+                        right_on=["occ1_tmp","lang_tmp"],
+                        how="left",
+                        suffixes=("_tmp", None)
+                    )
+                )
+
+                # Drop the temporary columns
+                result = result.drop(columns=["occ1_tmp", "lang_tmp"])
+                
             elif isinstance(result, np.ndarray):
-                expanded = []
-                for i, pair in enumerate(unique_pairs):
-                    for idx in pair_to_indices[pair]:
-                        expanded.append(result[i])
-                result = np.stack(expanded)
+                # Wrap the array in a DataFrame so we can split the SEP column
+                df_tmp = pd.DataFrame(result)
+                n_preds = df_tmp.shape[1]
+
+                # Split your "lang[SEP]occ1" strings into two helper cols
+                df_tmp[["lang_tmp", "occ1_tmp"]] = (
+                    pd.Series(inputs)
+                    .str
+                    .split(r"\[SEP\]", n=1, expand=True)
+                )
+
+                # Merge back onto the full input DataFrame
+                df_merged = df_in.merge(
+                    df_tmp,
+                    left_on=["occ1", "lang"],
+                    right_on=["occ1_tmp", "lang_tmp"],
+                    how="left",
+                )
+
+                # Extract relevant columns
+                result = df_merged.iloc[:, 2:n_preds+2].values
+                
             else:
                 raise ValueError("Unsupported result type for deduplication. Only DataFrame and numpy array are supported.")
             
             # Test that dimensions are correct
             if result.shape[0] != len(occ1):
                 raise ValueError("This should not happen. The number of rows in the result does not match the number of original inputs.")
+
+
             
 
         # Time keeping
