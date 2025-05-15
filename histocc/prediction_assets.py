@@ -510,7 +510,9 @@ class OccCANINE:
 
         # Only override the threshold if the user did not specify one.
         if prediction_type in ['flat', 'full']:
-            if threshold is None:
+            if what == 'probs':
+                pass
+            elif threshold is None:
                 # Take unique of lang. If multiple lang throw not implemented error
                 if isinstance(lang, list):
                     lang = list(set(lang))
