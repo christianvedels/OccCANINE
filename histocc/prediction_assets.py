@@ -462,13 +462,14 @@ class OccCANINE:
             behavior: BehaviorType = "good",
             prediction_type: PredType | None = None,
             k_pred: int = 5,
+            deduplicate: bool = False,
     ):
         """
         Makes predictions on a batch of occupational strings.
 
         Parameters:
         - occ1 (list or str): A list of occupational strings to predict.
-        - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
+        - lang (str or list, optional): The language(s) of the occupational strings. Defaults to "unk" (unknown).
         - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin". Defaults to "pred".
         - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
         - concat_in (bool, optional): Ignored
@@ -477,15 +478,16 @@ class OccCANINE:
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
         - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
         - k_pred (int): Maximum number of predicted occupational codes to keep
+        - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
 
         **Details.**
-        *behvaior*
+        *behavior*
         When 'fast' is chosen, the prediction will be based on a simple 'flat' decoder with one output neuron per possible class.
         When 'good' is chosen, the prediction will be based on a seq2seq transformer decoder.
         The 'good' option is in the order of 5-10 times slower than the 'fast' option but performance is worse.
-        Se the paper for more details https://arxiv.org/abs/2402.13604
+        See the paper for more details https://arxiv.org/abs/2402.13604
 
-        *prediciton_type*
+        *prediction_type*
         The output from the CANINE transformer model needs to be turned into predictions. This option allows you to pick how you want this to happen.
         'flat' is the simplest. This takes the pooled output and feeds it into a single layer of output neurons with one output for each HISCO code.
         'greedy' runs the seq2seq transformer decoder in a greedy fashion. I.e. picking the most likely digit at each step.
@@ -493,7 +495,6 @@ class OccCANINE:
         Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases.
 
         More about the 'full' prediction type in self._predict_full
-
 
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
@@ -505,8 +506,35 @@ class OccCANINE:
         if isinstance(occ1, str):
             occ1 = [occ1]
 
+        # Handle lang as list or str
+        if isinstance(lang, str):
+            lang_list = [lang] * len(occ1)
+        else:
+            lang_list = list(lang)
+            if len(lang_list) != len(occ1):
+                raise ValueError("If lang is a list, it must have the same length as occ1.")
+
         # Clean string
-        occ1 = self._prep_str(occ1)
+        occ1_clean = self._prep_str(occ1)
+
+        # Deduplication logic
+        if deduplicate:
+            # Build tuples of (occ1, lang)
+            pairs = list(zip(occ1_clean, lang_list))
+            # Map from unique pair to list of indices in original input
+            pair_to_indices = {}
+            for idx, pair in enumerate(pairs):
+                if pair not in pair_to_indices:
+                    pair_to_indices[pair] = []
+                pair_to_indices[pair].append(idx) # Maps pairs of lang/occ to index in original input
+            # Unique pairs for prediction
+            unique_pairs = list(pair_to_indices.keys())
+            unique_occ1 = [p[0] for p in unique_pairs]
+            unique_lang = [p[1] for p in unique_pairs]
+        else:
+            unique_occ1 = occ1_clean
+            unique_lang = lang_list
+            pair_to_indices = None  # Not used
 
         # Only override the threshold if the user did not specify one.
         if prediction_type in ['flat', 'full']:
@@ -514,17 +542,15 @@ class OccCANINE:
                 pass
             elif threshold is None:
                 # Take unique of lang. If multiple lang throw not implemented error
-                if isinstance(lang, list):
-                    lang = list(set(lang))
-                    if len(lang) > 1:
-                        raise NotImplementedError("Language based thresholds for multiple languages. Insted you can run this sepperately for each language.")
-                    lang = lang[0]
-                threshold = THRESHOLD_LOOKUP.get(lang, 0.22) # TODO: Update default value
+                unique_lang_set = set(unique_lang)
+                if len(unique_lang_set) > 1:
+                    raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language.")
+                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.22) # TODO: Update default value
 
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
-            inputs = occ1,
-            lang = lang,
+            inputs = unique_occ1,
+            lang = unique_lang,
             fname_index=1, # Dummy argument
             formatter = self.formatter,
             tokenizer = self.tokenizer,
@@ -552,7 +578,33 @@ class OccCANINE:
             raise ValueError(f'Unsupported prediction type {prediction_type}, must be one of {PredType}')
 
         # Return format
-        result = self._format(out, out_type, what, inputs, lang, threshold, k_pred)
+        result = self._format(out, out_type, what, inputs, unique_lang[0] if unique_lang else "unk", threshold, k_pred)
+
+        # If deduplicate, expand results to match original input order
+        if deduplicate:
+            # If result is a DataFrame, expand rows
+            if isinstance(result, pd.DataFrame):
+                expanded_rows = []
+                for i, pair in enumerate(unique_pairs):
+                    for idx in pair_to_indices[pair]:
+                        expanded_rows.append(result.iloc[i].copy())
+                result = pd.DataFrame(expanded_rows).reset_index(drop=True)
+                # Restore original occ1 order
+                result.insert(0, '_original_idx', range(len(result)))
+                result = result.sort_values('_original_idx').drop(columns=['_original_idx']).reset_index(drop=True)
+            # If result is a numpy array, expand rows
+            elif isinstance(result, np.ndarray):
+                expanded = []
+                for i, pair in enumerate(unique_pairs):
+                    for idx in pair_to_indices[pair]:
+                        expanded.append(result[i])
+                result = np.stack(expanded)
+            else:
+                raise ValueError("Unsupported result type for deduplication. Only DataFrame and numpy array are supported.")
+            
+            # Test that dimensions are correct
+            if result.shape[0] != len(occ1):
+                raise ValueError("This should not happen. The number of rows in the result does not match the number of original inputs.")
 
         # Time keeping
         end = time.time()
