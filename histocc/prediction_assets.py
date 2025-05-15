@@ -75,7 +75,7 @@ THRESHOLD_LOOKUP = { # TODO: Update with new values
     "unk": 0.22,
     "ca": 0.21,
     "da": 0.11,
-    "de": 0.17,
+    "ge": 0.17,
     "en": 0.22,
     "es": 0.20,
     "fr": 0.21,
