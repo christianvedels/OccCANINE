@@ -531,6 +531,8 @@ class OccCANINE:
             unique_pairs = list(pair_to_indices.keys())
             unique_occ1 = [p[0] for p in unique_pairs]
             unique_lang = [p[1] for p in unique_pairs]
+            if self.verbose:
+                print(f"Deduplicated {len(occ1)} inputs to {len(unique_pairs)} unique pairs.")
         else:
             unique_occ1 = occ1_clean
             unique_lang = lang_list
@@ -605,6 +607,7 @@ class OccCANINE:
             # Test that dimensions are correct
             if result.shape[0] != len(occ1):
                 raise ValueError("This should not happen. The number of rows in the result does not match the number of original inputs.")
+            
 
         # Time keeping
         end = time.time()
