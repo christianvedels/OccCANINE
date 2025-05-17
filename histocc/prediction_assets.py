@@ -144,7 +144,7 @@ class OccCANINE:
         Initializes the OccCANINE model with specified configurations.
 
         Parameters:
-        - name (str): Name of the model to load. Defaults to "OccCANINE_s2s_mix". For local models, specify the model name as it appears in 'Model'.
+        - name (str): Name of the model to load. Defaults to "OccCANINE_s2s_mix". For local models, specify the model name as it appears and set 'hf' to False.
         - device (str or None): The computing device (CPU or CUDA) on which the model will run. If None, the device is auto-detected.
         - batch_size (int): The number of examples to process in each batch. This affects memory usage and processing speed.
         - verbose (bool): If True, progress updates and diagnostic information will be printed during model operations.
@@ -780,7 +780,8 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
 
-            print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
+            if self.verbose: 
+                print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
 
         # Validate 'prediction_type'
         test = prediction_type in ['flat', 'greedy', 'full']
@@ -946,6 +947,7 @@ class OccCANINE:
         - out: Model output
         - out_type: What is the output type? "greedy" or "probs"
         - what (str or int, optional): Specifies what to return. Options are "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
+        - inputs (list): The original occupational strings used for prediction.
         - threshold (float): threshold to use (only relevant if out_type == "probs")
         - k_pred (int): Maximum number of predicted occupational codes to keep
 
@@ -988,6 +990,22 @@ class OccCANINE:
 
                 res.insert(0, 'occ1', inputs)
 
+            elif what == "bin":
+                # Unnest
+                res = np.vstack(out)
+
+                # Validate shape
+                assert res.shape[0] == len(inputs), "N rows in inputs should equal N rows in output"
+                assert res.shape[1] == len(self.key), "N cols should equal number of entries in self.key"
+                # Create matrix of zeros
+                res = np.zeros((len(inputs), len(self.key)))
+                for i, row in enumerate(out):
+                    topk_indices = np.argsort(row)[-k_pred:][::-1]
+                    for j in topk_indices:
+                        if row[j] >= threshold:
+                            res[i, j] = 1
+                res = pd.DataFrame(res, columns=[f"{self.system}_{self.key[i]}" for i in range(len(self.key))])
+
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
@@ -995,7 +1013,7 @@ class OccCANINE:
             if what == "probs":
                 raise ValueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")
 
-            elif what == "pred":
+            elif what in ["pred", "bin"]:
                 sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
                 max_elements = max(len(item) if isinstance(item, list) else 1 for item in sepperate_preds)
 
@@ -1014,42 +1032,55 @@ class OccCANINE:
                 # Invert key
                 inv_key = dict(map(reversed, self.key.items()))
 
-                res = []
-                # Insert description
-                for item in processed_data:
-                    codes = []
-                    for sub_item in item:
-                        try:
+                if what == "bin":
+                    # Create a binary matrix
+                    res_bin = np.zeros((len(inputs), len(self.key)))
+                    # Iterate through the processed data and fill the binary matrix
+                    for i, item in enumerate(processed_data):
+                        for sub_item in item:
                             if sub_item in inv_key:
-                                codes.append(inv_key[sub_item])
-                            else:
+                                res_bin[i, inv_key[sub_item]] = 1
+                    
+                    res = res_bin
+                    res = pd.DataFrame(res, columns=[f"{self.system}_{self.key[i]}" for i in range(len(self.key))])
+
+                elif what == "pred":
+
+                    res = []
+                    # Insert description
+                    for item in processed_data:
+                        codes = []
+                        for sub_item in item:
+                            try:
+                                if sub_item in inv_key:
+                                    codes.append(inv_key[sub_item])
+                                else:
+                                    codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                            except (ValueError, TypeError):
+                                # Handle the case where sub_item cannot be cast to float
                                 codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
-                        except (ValueError, TypeError):
-                            # Handle the case where sub_item cannot be cast to float
-                            codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
 
-                    row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
-                    row = [item for sublist in row for item in sublist] # Flatten list
-                    res.append(row)
+                        row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
+                        row = [item for sublist in row for item in sublist] # Flatten list
+                        res.append(row)
 
-                column_names = []
-                for i in range(1, max_elements+1):column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
+                    column_names = []
+                    for i in range(1, max_elements+1):column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
 
+                    # Create the DataFrame
+                    res = pd.DataFrame(res, columns=column_names)
 
-                # Create the DataFrame
-                res = pd.DataFrame(res, columns=column_names)
+                    # Identify columns starting with 'prob_s2s_'
+                    prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
 
-                # Identify columns starting with 'prob_s2s_'
-                prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
+                    # Multiply these columns row-wise
+                    res['conf'] = out[prob_cols].prod(axis=1)
 
-                # Multiply these columns row-wise
-                res['conf'] = out[prob_cols].prod(axis=1)
-
-                # Add input
-                res.insert(0, 'occ1', out.input)
+                    # Add input
+                    res.insert(0, 'occ1', out.input)
 
                 return res
-
+            
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 

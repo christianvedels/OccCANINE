@@ -69,7 +69,7 @@ set.seed(20)
 data2 = data_single_occ %>% 
   Combinations() %>% 
   rename(
-    PSTI_1 = hisco_1,
+    PSTI_1 = hisco_1, # Todo: rename to PST2_1, PST2_2, etc.
     PSTI_2 = hisco_2,
     PSTI_3 = hisco_3,
     PSTI_4 = hisco_4,
