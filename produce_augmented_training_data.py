@@ -79,7 +79,7 @@ def main():
         # Using attacker.attack to generate adv. examples:
         res1 = generate_adversarial_wrapper(
             data_path=data_path,
-            hisco_predictor=model,
+            occupation_classifier=model,
             toyload=args.toyload,
             double_translate=False,
             sample_size=args.num_adv_simple,
@@ -94,7 +94,7 @@ def main():
         # Using double translation to generate adv. examples (takes longer):
         res2 = generate_adversarial_wrapper(
             data_path=data_path,
-            hisco_predictor=model,
+            occupation_classifier=model,
             toyload=args.toyload,
             double_translate=True,
             sample_size=args.num_adv_simple,
