@@ -652,7 +652,7 @@ def balance_classes(df, system = 'hisco'):
 
 
 def generate_adversarial_wrapper(
-        data_path, hisco_predictor, 
+        data_path, occupation_classifier,
         toyload=False, double_translate = True, sample_size = 1000, n_max = 10,
         verbose=True, verbose_extra=False, alt_prob = 1, n_trans=1, class_balance = True
         ):
@@ -661,7 +661,7 @@ def generate_adversarial_wrapper(
 
     Parameters:
     data_path (str): Which folder can the data be found it? The function will load all the .csv files in this destination
-    hisco_predictor (OccCANINE): The OccCANINE model to use for predictions.
+    occupation_classifier (OccCANINE): The OccCANINE model to use for predictions.
     toyload (bool): If True, loads only a small subset of data for testing.
     double_translate (bool): Should double translation be the primary augmentation? Otherwise it is just attacker.attack()
     sample_size (int): Number of observations to use
@@ -680,7 +680,7 @@ def generate_adversarial_wrapper(
     """
 
     # System
-    system = hisco_predictor.system
+    system = occupation_classifier.system
 
     # Load data
     df = load_training_data(data_path = data_path, toyload=toyload, sample_size=sample_size)
@@ -709,7 +709,7 @@ def generate_adversarial_wrapper(
     attacker = AttackerClass(alt_prob = alt_prob, n_trans=n_trans, df=df)
 
     # Class to handle adverarial string finding
-    adv_strings = AdversarialStrings(attacker, translator, hisco_predictor, df)
+    adv_strings = AdversarialStrings(attacker, translator, occupation_classifier, df)
 
     # For ETA print
     start_time = time.time()
