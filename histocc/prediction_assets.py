@@ -307,13 +307,16 @@ class OccCANINE:
 
         return key, key_desc
 
-    def _list_of_formatted_codes(self):
+    def _list_of_formatted_codes(self, codes_list = None):
         """
         Returns a list of formatted codes. According to the seq2seq formatter
         """
+        # Get codes
+        if codes_list is None:
+            codes = self.key.values()
+            codes_list = list(codes)
 
         # Formatted list of codes
-        codes_list = list(self.key.values())
         codes_list = [str(i) for i in codes_list]
         if not self.use_within_block_sep: # This cleaning step inserts erroneous 0 in the codes if use_within_block_sep is True
             codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]
@@ -478,7 +481,6 @@ class OccCANINE:
 
         More about the 'full' prediction type in self._predict_full
 
-
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
@@ -523,7 +525,7 @@ class OccCANINE:
             raise ValueError(f'Unsupported prediction type {prediction_type}, must be one of {PredType}')
 
         # Return format
-        result = self._format(out, out_type, what, inputs, lang, threshold, k_pred)
+        result = self._format(out, out_type, what, inputs, lang, threshold, k_pred, order_invariant_conf)
 
         # Time keeping
         end = time.time()
@@ -608,6 +610,10 @@ class OccCANINE:
 
         preds_s2s_raw = []
         probs_s2s_raw = []
+        if order_invariant_conf:
+            order_inv_probs = []
+        else:
+            order_inv_probs = 1 # Placeholder
 
         batch_time = Averager()
         batch_time_data = Averager()
@@ -645,6 +651,9 @@ class OccCANINE:
                 start_symbol = BOS_IDX,
                 )
             
+            outputs_s2s = outputs[0].cpu().numpy()
+            probs_s2s = outputs[1].cpu().numpy()
+            
             # Compute order invariant confidence
             if order_invariant_conf:
                 # Location of multiple labels
@@ -652,35 +661,38 @@ class OccCANINE:
                     data_loader.dataset.formatter.clean_pred,
                     outputs[0].cpu().numpy(),
                 ))
-
-                # Extract input ids and attention mask for cases with multiple labels
-                # (output larger than blocksize)
-                multiple_labels = [len(x) > self.formatter.block_size for x in outputs_mapped_to_label]
                 
                 # Generate list of codes 
                 codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
 
-                for i, multiple in enumerate(multiple_labels):
-                    if multiple:
-                        # Get the list of codes for the current batch
-                        code_list = codes_lists[i]
+                order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
 
-                        # Run the full search decoder on the current batch
-                        outputs = decoder_full(
+                for i, codes_list in enumerate(codes_lists):
+
+                    len_list = len(codes_list)
+                    if len_list > 1:
+                        # Transform to machine readable representation:
+                        codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
+
+                        # Prepare subset tensors for the i-th sample
+                        input_ids_i = input_ids[i].unsqueeze(0)
+                        attention_mask_i = attention_mask[i].unsqueeze(0)
+
+                        # Run the full search decoder on the current sample
+                        outputs_order_inv = decoder_full(
                             model = model,
-                            descr = input_ids,
-                            input_attention_mask = attention_mask,
+                            descr = input_ids_i,
+                            input_attention_mask = attention_mask_i,
                             device = self.device,
-                            codes_list = code_list,
+                            codes_list = codes_list_encoded,
                             start_symbol = BOS_IDX,
-                            )
+                        )
+                        # Test 
+                        if outputs_order_inv.shape[1] != len_list:
+                            raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
 
-                        # Replace outputs
-                        outputs_s2s = outputs[0][i].cpu().numpy()
-                        probs_s2s = outputs[1][i].cpu().numpy()
-
-            outputs_s2s = outputs[0].cpu().numpy()
-            probs_s2s = outputs[1].cpu().numpy()
+                        # Take sum of the probabilities
+                        order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
 
             # Store input in its original string format
             inputs.extend(batch['occ1'])
@@ -688,6 +700,8 @@ class OccCANINE:
             # Store predictions
             preds_s2s_raw.append(outputs_s2s)
             probs_s2s_raw.append(probs_s2s)
+            if order_invariant_conf:
+                order_inv_probs.append(order_inv_probs_batch)
 
             batch_time.update(time.time() - end)
 
@@ -698,17 +712,28 @@ class OccCANINE:
 
         preds_s2s_raw = np.concatenate(preds_s2s_raw)
         probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        if order_invariant_conf:
+            order_inv_probs = np.concatenate(order_inv_probs)
 
         preds_s2s = list(map(
             data_loader.dataset.formatter.clean_pred,
             preds_s2s_raw,
         ))
 
-        preds = pd.DataFrame({
-            'input': inputs,
-            'pred_s2s': preds_s2s,
-            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
-        })
+        if order_invariant_conf:
+        
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+                'order_inv_conf': order_inv_probs,
+            })
+        else:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+            })
 
         out_type = 'greedy'
 
@@ -998,6 +1023,7 @@ class OccCANINE:
             lang: str,
             threshold: float,
             k_pred: int,
+            order_invariant_conf: bool = True,
     ):
         """
         Formats preditions based on out, out_type and 'what'
@@ -1009,6 +1035,7 @@ class OccCANINE:
         - inputs (list): The original occupational strings used for prediction.
         - threshold (float): threshold to use (only relevant if out_type == "probs")
         - k_pred (int): Maximum number of predicted occupational codes to keep
+        - order_invariant_conf (bool): If True an order invariant confidence is computed. 
 
         Returns:
         - Depends on the 'what' parameter.
@@ -1134,6 +1161,10 @@ class OccCANINE:
 
                     # Multiply these columns row-wise
                     res['conf'] = out[prob_cols].prod(axis=1)
+                    if order_invariant_conf:
+                        # Use order invariant if it is >0
+                        order_inv_conf = out.order_inv_conf.fillna(0)
+                        res['conf'] = np.where(order_inv_conf > 0, order_inv_conf, res['conf'])
 
                     # Add input
                     res.insert(0, 'occ1', out.input)
