@@ -630,7 +630,7 @@ class OccCANINE:
             decoder = greedy_decode
             decoder_full = full_search_decoder_seq2seq_optimized # Used in order invariant confidence
         else:
-            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediction")
 
         # Setup
         verbose = self.verbose
