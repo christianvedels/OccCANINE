@@ -307,7 +307,7 @@ class OccCANINE:
 
         return key, key_desc
 
-    def _list_of_formatted_codes(self, codes_list = None):
+    def _list_of_formatted_codes(self, codes_list: list[str] | None = None):
         """
         Returns a list of formatted codes. According to the seq2seq formatter
         """
