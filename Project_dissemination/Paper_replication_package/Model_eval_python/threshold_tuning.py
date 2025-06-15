@@ -1,5 +1,4 @@
 from histocc import OccCANINE, EvalEngine
-from histocc.prediction_assets import THRESHOLD_LOOKUP
 import pandas as pd
 import numpy as np
 import glob
