@@ -5,10 +5,13 @@
 # Purpose:  Contains all the functions used the paper 
 
 # ==== Colors ====
-blue = "#273a8f"
-green = "#2c5c34"
-red = "#b33d3d"
-orange = "#DE7500"
+colours = list(
+  black = "black",
+  blue = "#273a8f",
+  green = "#2c5c34",
+  red = "#b33d3d",
+  orange = "#DE7500"
+)
 
 dims = list(
   width = 8,
