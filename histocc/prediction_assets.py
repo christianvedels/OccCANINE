@@ -71,21 +71,21 @@ ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
 
 
 # Define a lookup table mapping languages to thresholds.
-THRESHOLD_LOOKUP = { # TODO: Update with new values
-    "unk": 0.22,
-    "ca": 0.21,
-    "da": 0.11,
-    "ge": 0.17,
-    "en": 0.22,
-    "es": 0.20,
+THRESHOLD_LOOKUP = {
+    "unk": 0.31,
+    "ca": 0.3,
+    "da": 0.24,
+    "ge": 0.21,
+    "en": 0.26,
+    "es": 0.3,
     "fr": 0.21,
-    "gr": 0.45,
-    "is": 0.11,
-    "it": 0.34,
-    "nl": 0.19,
-    "no": 0.14,
-    "pt": 0.25,
-    "se": 0.32
+    "gr": 0.19,
+    "is": 0.17,
+    "it": 0.2,
+    "nl": 0.22,
+    "no": 0.34,
+    "pt": 0.27,
+    "se": 0.26
 }
 
 def load_keys() -> pd.DataFrame:
@@ -471,7 +471,7 @@ class OccCANINE:
         - occ1 (list or str): A list of occupational strings to predict.
         - lang (str or list, optional): The language(s) of the occupational strings. Defaults to "unk" (unknown).
         - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin". Defaults to "pred".
-        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
+        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.31. Which is generally optimal for F1.
         - concat_in (bool, optional): Ignored
         - get_dict (bool, optional): Ignored
         - get_df (bool, optional): Ignored
@@ -541,8 +541,8 @@ class OccCANINE:
                 # Take unique of lang. If multiple lang throw not implemented error
                 unique_lang_set = set(unique_lang)
                 if len(unique_lang_set) > 1:
-                    raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language.")
-                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.22) # TODO: Update default value
+                    raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language. Or use `prediction_type='flat'` which does not use thresholds.")
+                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.31) 
 
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
