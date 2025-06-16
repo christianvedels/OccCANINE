@@ -2,7 +2,7 @@ from histocc import OccCANINE, EvalEngine
 import pandas as pd
 import glob
 
-def load_data(n_obs=5000, data_path="Data/Validation_data2/*.csv", lang = None):
+def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -47,10 +47,26 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         deduplicate=True
     )
 
+    preds_unk = mod(
+        df["occ1"].tolist(), 
+        "unk", 
+        threshold=0.31, 
+        prediction_type=prediction_type, 
+        deduplicate=True
+    )
+
     eval_engine = EvalEngine(
         mod, 
         df, 
         preds, 
+        pred_col='hisco_', 
+        digits=digits
+    )
+
+    eval_engine_unk = EvalEngine(
+        mod, 
+        df, 
+        preds_unk, 
         pred_col='hisco_', 
         digits=digits
     )
@@ -64,13 +80,30 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
             "precision": eval_engine.precision(),
             "recall": eval_engine.recall(),
             "n": df.shape[0],
-            "prediction_type": prediction_type
+            "prediction_type": prediction_type,
+            "lang": "known"
         }])
 
-        file = f"Project_dissemination/Paper_replication_package/Data/val2_performance/val2_performance_{prediction_type}_digits_{d}.csv"
+        file = f"Project_dissemination/Paper_replication_package/Data/test_performance/test_performance_{prediction_type}_digits_{d}.csv"
         res.to_csv(file, index=False)
         print(f"Results saved to {file}")
         print(res)
+
+        eval_engine_unk.digits = d
+        res_unk = pd.DataFrame([{
+            "threshold": thr,
+            "accuracy": eval_engine_unk.accuracy(),
+            "f1": eval_engine_unk.f1(),
+            "precision": eval_engine_unk.precision(),
+            "recall": eval_engine_unk.recall(),
+            "n": df.shape[0],
+            "prediction_type": prediction_type,
+            "lang": "unk"
+        }])
+        file_unk = f"Project_dissemination/Paper_replication_package/Data/test_performance/test_performance_{prediction_type}_unk_digits_{d}.csv"
+        res_unk.to_csv(file_unk, index=False)
+        print(f"Results saved to {file_unk}")
+        print(res_unk)
 
 def main():
     """
@@ -80,12 +113,12 @@ def main():
     mod = OccCANINE()
 
     # Load data
-    df = load_data(n_obs=100000, data_path="Data/Validation_data2/*.csv", lang=None)
+    df = load_data(n_obs=100000, data_path="Data/Test_data/*.csv", lang=None)
     
     # Run evaluations for different prediction types
     run_eval(df, mod, prediction_type="flat", thr=0.31, digits=5)
     run_eval(df, mod, prediction_type="greedy", thr=0.31, digits=5)
-    run_eval(df, mod, prediction_type="full", thr=0.31, digits=5)
+    run_eval(df, mod, prediction_type="full", thr=0.25, digits=5)
 
 if __name__ == "__main__":
     main()
