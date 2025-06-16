@@ -2,7 +2,7 @@
 # Created:  2025-06-15
 # Authors:  Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:  Descriptive statistics used in the paper
+# Purpose:  Plots and tables of threshold tuning results for the paper
 
 # ==== Libraries ====
 library(tidyverse)
@@ -167,13 +167,31 @@ foreach(l = unique(bylang_full$lang)) %do% {
 }
 
 # ==== Print tables of best threshholds ====
-overall_flat %>% filter(best)
-overall_full %>% filter(best)
+x1 = overall_flat %>% 
+    filter(best) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "flat") %>%
+    mutate(data = "all_data")
 
-bylang_flat %>% filter(best) %>% 
-    select(lang, type, statistic, threshold, value) %>%
-    filter(type == "With language info.")
+x2 = overall_full %>% filter(best) %>% 
+    filter(best) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "full") %>%
+    mutate(data = "all_data")
 
-bylang_full %>% filter(best) %>%
+x3 = bylang_flat %>% filter(best) %>% 
     select(lang, type, statistic, threshold, value) %>%
-    filter(type == "With language info.")
+    # filter(type == "With language info.") %>%
+    mutate(method = "flat") %>%
+    mutate(data = "by_lang")
+
+x4 = bylang_full %>% filter(best) %>%
+    select(lang, type, statistic, threshold, value) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "full") %>%
+    mutate(data = "by_lang")
+
+x1 %>% bind_rows(x2, x3, x4) %>%
+    select(method, data, type, lang, statistic, threshold, value, n)
+
+
