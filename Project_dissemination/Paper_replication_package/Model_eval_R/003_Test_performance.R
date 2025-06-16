@@ -2,40 +2,68 @@
 # Created:  2025-04-10
 # Authors:  Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:  Test model performance
+# Purpose:  Make pretty tables of test data performance for the paper
 
 # ==== Libraries ====
 library(tidyverse)
 library(foreach)
+library(knitr)
 
 # ==== Load data ====
-fs = list.files("Data/eval-results/hisco", full.names = TRUE)
-all_data = foreach(f = fs, .combine = "bind_rows") %do% {
-    cat(paste0("Reading ", f, "\n"))
-    read_csv(f, guess_max = 100000) %>% 
+list.files = list.files("Project_dissemination/Paper_replication_package/Data/test_performance", full.names = TRUE)
+foreach(f = list.files, .combine = "bind_rows") %do% {
+    read_csv(f, show_col_types = FALSE) %>%
         mutate(file = f) %>%
-        mutate_all(as.character) %>%
-        sample_n(100, replace=TRUE) # Sample for development
-}
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/test_performance/", "", file)) %>%
+        mutate(
+            digits = case_when(
+                grepl("digits_1", file) ~ 1,
+                grepl("digits_2", file) ~ 2,
+                grepl("digits_3", file) ~ 3,
+                grepl("digits_4", file) ~ 4,
+                grepl("digits_5", file) ~ 5
+            )
+        )
+} -> test_performance
 
-all_data %>%
 
-    mutate(
-        unspec_lang = grepl("l=None", file),
-        prediction_type = case_when(
-            grepl("pt=greedy", file) ~ "greedy",
-            grepl("pt=flat", file) ~ "flat",
-            grepl("pt=full", file) ~ "full"
-        ),
-    ) %>% 
-    group_by(prediction_type, unspec_lang, lang) %>%
-    summarise(
-        acc = mean(as.numeric(acc)),
-        precision = mean(as.numeric(precision)),
-        recall = mean(as.numeric(recall)),
-        f1 = mean(as.numeric(f1)),
-        n = n()
+# ==== Data preparation ====
+performance_table = test_performance %>% pivot_longer(
+    cols = c("accuracy", "precision", "recall", "f1"), 
+    names_to = "statistic", 
+    values_to = "value"
+) %>% 
+    select(-file) %>%
+    pivot_wider(
+        names_from = "digits", 
+        values_from = "value"
     ) %>%
-    ggplot(aes(lang, f1, fill = prediction_type)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    facet_wrap(~unspec_lang)
+    select(
+        prediction_type, statistic, 
+        `1`, `2`, `3`, `4`, `5`,
+        n
+    ) %>%
+    arrange(
+        case_when(
+            prediction_type == "greedy" ~ 1,
+            prediction_type == "flat" ~ 2,
+            prediction_type == "full" ~ 3,
+        )
+    ) %>%
+    mutate(
+        # Rename to 'fast' 'good' and 'full'
+        prediction_type = case_when(
+            prediction_type == "greedy" ~ "good",
+            prediction_type == "flat" ~ "fast",
+            prediction_type == "full" ~ "full"
+        ),
+    )
+# Make LaTeX table with knitr::kable
+kable(
+    performance_table,
+    format = "latex",
+    booktabs = TRUE,
+    digits = 3,
+    caption = "Test set performance by prediction type and number of digits"
+)
+
