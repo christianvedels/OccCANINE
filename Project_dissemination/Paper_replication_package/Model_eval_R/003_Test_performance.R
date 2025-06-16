@@ -10,8 +10,9 @@ library(foreach)
 library(knitr)
 
 # ==== Load data ====
-list.files = list.files("Project_dissemination/Paper_replication_package/Data/test_performance", full.names = TRUE)
-foreach(f = list.files, .combine = "bind_rows") %do% {
+files = list.files("Project_dissemination/Paper_replication_package/Data/test_performance", full.names = TRUE)
+files = files[!grepl("Data/test_performance/lang", files)]  # Exclude language folder
+foreach(f = files, .combine = "bind_rows") %do% {
     read_csv(f, show_col_types = FALSE) %>%
         mutate(file = f) %>%
         mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/test_performance/", "", file)) %>%
@@ -39,7 +40,7 @@ performance_table = test_performance %>% pivot_longer(
         values_from = "value"
     ) %>%
     select(
-        prediction_type, statistic, 
+        prediction_type, statistic, lang,
         `1`, `2`, `3`, `4`, `5`,
         n
     ) %>%
@@ -51,6 +52,9 @@ performance_table = test_performance %>% pivot_longer(
         )
     ) %>%
     mutate(
+        lang = ifelse(lang == "known", "With lang. info.", "Without lang. info."),
+    ) %>%
+    mutate(
         # Rename to 'fast' 'good' and 'full'
         prediction_type = case_when(
             prediction_type == "greedy" ~ "good",
@@ -59,11 +63,23 @@ performance_table = test_performance %>% pivot_longer(
         ),
     )
 # Make LaTeX table with knitr::kable
-kable(
-    performance_table,
-    format = "latex",
-    booktabs = TRUE,
-    digits = 3,
-    caption = "Test set performance by prediction type and number of digits"
-)
+performance_table %>%
+    filter(lang == "With lang. info.") %>%
+    select(-lang) %>%
+    kable(
+        format = "latex",
+        booktabs = TRUE,
+        digits = 3,
+        caption = "Test set performance by prediction type and number of digits"
+    )
+
+performance_table %>%
+    filter(lang == "Without lang. info.") %>%
+    select(-lang) %>%
+    kable(
+        format = "latex",
+        booktabs = TRUE,
+        digits = 3,
+        caption = "Test set performance by prediction type and number of digits (without language information)"
+    )
 
