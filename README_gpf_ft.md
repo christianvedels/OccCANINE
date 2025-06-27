@@ -49,21 +49,40 @@ python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-occ1
 
 ```
 set CUDA_VISIBLE_DEVICES=1
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v3
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-v4 --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v4
 ```
+
+We next run Vedel script to generate adversarial data.
+Out aim is to create a dataset combining the real data used above with this adversarial data.
+Doing so directly is not possible, since there's slight formatting issues, so instead we start a "dummy" run with *only* adversarial data, purely to prepare it.
+We can then concatenate this with the data above to create a valid, combined dataset.
+
+```
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-v4-prep-adv-data --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --num-epochs 1 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\pst_adv_merged_results.csv --use-within-block-sep --drop-bad-labels --share-val 0.0001
+```
+
+We now manually concatenate this adversarial training data with our real training data.
+We create a new folder with contents
+1. `key.csv` from our `mixer-psti-ft-v4` run
+1. `data_val.csv` from our `mixer-psti-ft-v4` run, for comparable test results and no data leakage
+1. `data_train.csv` by combining `data_train.csv` from our `mixer-psti-ft-v4` run with `data_train.csv` from our `mixer-psti-ft-v4-prep-adv-data` run
+
+```python
+import pandas as pd
+
+d_real = pd.read_csv(r'Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft-v4\data_train.csv')
+d_adv = pd.read_csv(r'Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft-v4-prep-adv-data\data_train.csv')
+
+m = pd.concat([d_real, d_adv])
+
+m.to_csv(r'Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft-v4-adv-ft\data_train.csv', index=False)
+```
+
+We now start a run from `mixer-psti-ft-v4-adv-ft` which fine-tunes `mixer-psti-ft-v4` on this combined dataset.
 
 ```
 set CUDA_VISIBLE_DEVICES=1
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-v2 --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 1050 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v3
-```
-
-```
-set CUDA_VISIBLE_DEVICES=1
-python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-v3 --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 589 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train_with_adv.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v3
-```
-
-```
-python finetune_with_wrapper.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-with-wrapper --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Y:\pc-to-Y\hisco\ft-exp\250303\mixer-psti-ft\last.bin --num-epochs 1050 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-psti-ft-v4-adv-ft --target-cols PSTI_1 PSTI_2 PSTI_3 PSTI_4 PSTI_5 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-psti-ft-v4\last.bin --num-epochs 113 --block-size 8 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_PSTI_CAMPOP_train.csv --batch-size 512 --save-interval 5000 --use-within-block-sep --drop-bad-labels --log-wandb --wandb-project-name occ-canine-ft-v4
 ```
 
 # ISCO
