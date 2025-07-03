@@ -73,3 +73,9 @@ data1 = data1 %>%
 
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/GE_denazification.csv")
+data1 %>% 
+    filter(ra == "RA1") %>% 
+    write_csv0("Data/OOD_data/GE_denazification_RA1.csv")
+data1 %>% 
+    filter(ra == "RA2") %>%
+    write_csv0("Data/OOD_data/GE_denazification_RA2.csv")
