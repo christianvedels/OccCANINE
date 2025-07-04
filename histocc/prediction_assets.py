@@ -1182,9 +1182,10 @@ class OccCANINE:
             self,
             dataset: str | os.PathLike,
             save_path: str | os.PathLike,
-            input_col: str,
+            input_col: str,  
             language: str,
             language_col: str | None,
+            target_cols: list[str] | None = None,
             save_interval: int = 1000,
             log_interval: int = 100,
             eval_interval: int = 1000,
@@ -1197,6 +1198,14 @@ class OccCANINE:
             seq2seq_weight: float = 0.1,
             freeze_encoder: bool = True,
             ):
+        
+        if target_cols is None:
+            # Check if target_cols attribute exists and is non-empty
+            if hasattr(self.formatter, "target_cols") and self.formatter.target_cols:
+                target_cols = self.formatter.target_cols
+            else:
+                raise ValueError("No target_cols specified and self.formatter.target_cols is empty or missing. Please specify target_cols.")
+        self.formatter.target_cols = target_cols
 
         # Data prep
         prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
