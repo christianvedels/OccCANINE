@@ -36,3 +36,9 @@ ood_performance = foreach(f = files, .combine = "bind_rows") %do% {
             n = n()
         )
 }
+
+ood_performance %>% 
+    pivot_wider(
+        names_from = digits,
+        values_from = value
+    )

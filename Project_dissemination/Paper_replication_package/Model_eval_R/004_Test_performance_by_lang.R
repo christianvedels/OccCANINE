@@ -99,6 +99,50 @@ make_plot = function(data, all_stats = NULL){
   return(p1)
 }
 
+make_plot_lang_info = function(data, all_stats = NULL){
+  
+  lvls = data %>% 
+    filter(stat == "F1 score") %>% 
+    arrange(-value) %>% 
+    pull(lang) %>% 
+    unique()
+
+  
+  p1 = data %>% 
+    mutate(lang = factor(lang, lvls)) %>% 
+    ggplot(aes(lang, value, fill = lang_info)) + 
+    geom_bar(stat = "identity", alpha = 0.8, position = "dodge") +
+    scale_y_continuous(
+      labels = scales::percent,
+      breaks = seq(0,100, by = 0.1)
+    ) + 
+    scale_fill_manual(
+      values = c(colours$red, colours$green),
+      name = "Language info provided"
+    ) +
+    theme_bw() + 
+    facet_wrap(~stat, scales = "free") + 
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5)
+    ) + 
+    labs(
+      y = "Statistic",
+      x = "Language"
+    )
+  
+  if(!is.null(all_stats)){
+    p1 = p1 + 
+      geom_hline(aes(yintercept = value), data = all_stats, lty = 2) + 
+      geom_text(
+        data = all_stats,
+        aes(label = scales::percent(value, 0.1), x = lang, y = value-0.075),
+        inherit.aes = FALSE
+      )
+  }
+  
+  return(p1)
+}
+
 # ==== All stats ====
 plot_data$stat %>% unique()
 
@@ -124,7 +168,7 @@ ggsave(
   height = dims$height
 )
 
-# Flat 5 digits
+# Greedy 5 digits
 p1 = plot_data %>% 
   filter(lang_info) %>% 
   filter(prediction_type == "greedy") %>% 
@@ -138,6 +182,36 @@ ggsave(
   width = dims$width,
   height = dims$height
 )
+
+
+# Greedy 5 digits - without language info
+p1 = plot_data %>% 
+  filter(prediction_type == "greedy") %>% 
+  filter(digits == 5) %>% 
+  make_plot_lang_info() + theme(legend.position = "bottom")
+
+p1
+ggsave(
+  "Project_dissemination/Paper_replication_package/Figures/Performance_by_lang_greedy_lang_info.png",
+  plot = p1,
+  width = dims$width,
+  height = dims$height
+)
+
+plot_data %>% 
+  filter(prediction_type == "greedy") %>% 
+  filter(digits == 5) %>%
+  select(-label, -file) %>%
+  mutate(lang_info = ifelse(lang_info, "yes", "no")) %>%
+  pivot_wider(
+    names_from = "lang_info",
+    values_from = "value",
+    names_prefix = "lang_info_"
+  ) %>%
+  mutate(
+    dif = abs(lang_info_yes - lang_info_no)
+  ) %>%
+  arrange(-dif) %>% select(-threshold, -digits)
 
 
 

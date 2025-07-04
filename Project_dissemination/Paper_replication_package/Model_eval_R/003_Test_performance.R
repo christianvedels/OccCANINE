@@ -83,3 +83,42 @@ performance_table %>%
         caption = "Test set performance by prediction type and number of digits (without language information)"
     )
 
+# Lang info performance boost
+test_performance %>%
+    filter(digits == 5) %>%
+    arrange(
+        case_when(
+            prediction_type == "greedy" ~ 1,
+            prediction_type == "flat" ~ 2,
+            prediction_type == "full" ~ 3
+        )
+    ) %>%
+    select(prediction_type, lang, accuracy, precision, recall, f1, n) %>%
+    pivot_longer(
+        cols = c(accuracy, precision, recall, f1),
+        names_to = "statistic",
+        values_to = "value"
+    ) %>%
+    pivot_wider(
+        names_from = lang,
+        values_from = value
+    ) %>%
+    mutate(dif = known - unk) %>%
+    pivot_longer(
+        c(known, unk, dif),
+        names_to = c("lang"),
+    ) %>%
+    pivot_wider(
+        names_from = statistic,
+        values_from = value
+    ) %>%
+    select(
+        prediction_type,
+        lang, 
+        accuracy, precision, recall, f1, n
+    ) %>%
+    kable(
+        format = "latex",
+        booktabs = TRUE,
+        digits = 3
+    )
