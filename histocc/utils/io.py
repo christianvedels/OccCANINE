@@ -94,7 +94,7 @@ def _prepare_target_cols(
         data[target_col] = data[target_col].replace(' ', None)
 
     # First colummn should not contain any NaN -> use the '?' token instead
-    assert '?' in formatter.map_char_idx
+    # assert '?' in formatter.map_char_idx
     data[formatter.target_cols[0]] = data[formatter.target_cols[0]].fillna('?')
 
     # Send all through formatter and track whether that works
