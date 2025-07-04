@@ -241,7 +241,7 @@ class OccCANINE:
                 self.code_len = max([len(i) for i in self.key.values()])
 
             # Load general purpose formatter
-            target_cols = target_cols if target_cols is not None else ["dummy_entry"] * 5
+            target_cols = target_cols if target_cols is not None else [f"{self.system}_{i}" for i in range(1, 5)]
             if "chars" in loaded_state.keys():
                 self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, chars=loaded_state['chars'])
             else:
@@ -1185,17 +1185,17 @@ class OccCANINE:
             input_col: str,
             language: str,
             language_col: str | None,
-            save_interval: int,
-            log_interval: int,
-            eval_interval: int,
-            drop_bad_labels: bool,
-            allow_codes_shorter_than_block_size: bool,
-            share_val: float,
-            learning_rate: float,
-            num_epochs: int,
-            warmup_steps: int,
-            seq2seq_weight: float,
-            freeze_encoder: bool,
+            save_interval: int = 1000,
+            log_interval: int = 100,
+            eval_interval: int = 1000,
+            drop_bad_labels: bool = True,
+            allow_codes_shorter_than_block_size: bool = True,
+            share_val: float = 0.1,
+            learning_rate: float = 2e-05,
+            num_epochs: int = 5,
+            warmup_steps: int = 500,
+            seq2seq_weight: float = 0.1,
+            freeze_encoder: bool = True,
             ):
 
         # Data prep
