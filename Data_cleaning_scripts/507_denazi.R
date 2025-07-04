@@ -64,11 +64,11 @@ data1 = data1 %>%
 # Length of HISCO codes (leading zeros)
 data1 = data1 %>%
     mutate(
-        hisco_1 = ifelse(is.na(hisco_1) | hisco_1 == "-1", hisco_1, str_pad(hisco_1, 5, pad = "0")),
-        hisco_2 = ifelse(is.na(hisco_2) | hisco_2 == "-1", hisco_2, str_pad(hisco_2, 5, pad = "0")),
-        hisco_3 = ifelse(is.na(hisco_3) | hisco_3 == "-1", hisco_3, str_pad(hisco_3, 5, pad = "0")),
-        hisco_4 = ifelse(is.na(hisco_4) | hisco_4 == "-1", hisco_4, str_pad(hisco_4, 5, pad = "0")),
-        hisco_5 = ifelse(is.na(hisco_5) | hisco_5 == "-1", hisco_5, str_pad(hisco_5, 5, pad = "0"))
+        hisco_1 = ifelse(is.na(hisco_1) | hisco_1 == "-1" | hisco_1 == " ", hisco_1, str_pad(hisco_1, 5, pad = "0")),
+        hisco_2 = ifelse(is.na(hisco_2) | hisco_2 == "-1" | hisco_2 == " ", hisco_2, str_pad(hisco_2, 5, pad = "0")),
+        hisco_3 = ifelse(is.na(hisco_3) | hisco_3 == "-1" | hisco_3 == " ", hisco_3, str_pad(hisco_3, 5, pad = "0")),
+        hisco_4 = ifelse(is.na(hisco_4) | hisco_4 == "-1" | hisco_4 == " ", hisco_4, str_pad(hisco_4, 5, pad = "0")),
+        hisco_5 = ifelse(is.na(hisco_5) | hisco_5 == "-1" | hisco_5 == " ", hisco_5, str_pad(hisco_5, 5, pad = "0"))
     )
 
 # ==== Save ====
