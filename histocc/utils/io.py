@@ -142,7 +142,7 @@ def _prepare_target_cols(
 
 
 def prepare_finetuning_data(
-        dataset: str,
+        dataset: str | pd.DataFrame,
         input_col: str,
         formatter: BlockyFormatter,
         save_path: str,
@@ -163,8 +163,13 @@ def prepare_finetuning_data(
             return mapping
 
     # Load
-    data: pd.DataFrame = pd.read_csv(dataset, dtype=str)
-
+    if isinstance(dataset, str):
+        data: pd.DataFrame = pd.read_csv(dataset, dtype=str)
+    elif isinstance(dataset, pd.DataFrame):
+        data = dataset.copy()
+    else:
+        raise ValueError(f'Expected dataset to be a str or pd.DataFrame, got {type(dataset)}')
+    
     # Select columns
     if language_col is None:
         data['lang'] = language
