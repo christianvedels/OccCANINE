@@ -1207,6 +1207,19 @@ class OccCANINE:
                 raise ValueError("No target_cols specified and self.formatter.target_cols is empty or missing. Please specify target_cols.")
         self.formatter.target_cols = target_cols
 
+        # If code1, ... code5 are missing, in datasets then insert it in the case of HISCO (if its pd.DataFrame)
+        tmp_inverted_key = {v: k for k, v in self.key.items()}
+        if isinstance(dataset, pd.DataFrame):
+            # Check if the dataset has the expected columns
+            for col in self.formatter.target_cols:
+                col_name = col.replace(self.system, "code") 
+
+                # If the column does not exist, create it
+                if col_name not in dataset.columns:
+                    # Use self.key to map self.system codes code
+                    dataset[col_name] = [tmp_inverted_key.get(i) for i in dataset[col]]
+        
+
         # Data prep
         prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
             dataset=dataset,
