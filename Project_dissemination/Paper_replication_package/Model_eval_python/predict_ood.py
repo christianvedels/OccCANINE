@@ -16,7 +16,7 @@ def main():
         print(f'------> Predicting {f}')
         data_f = pd.read_csv(f'Data/OOD_data/{f}')
 
-        res = mod(data_f.occ1.tolist(), lang = f[0:2].lower())
+        res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True)
 
         eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_")
         res[f"acc"] = eval_engine.accuracy(return_per_obs = True)
