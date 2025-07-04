@@ -13,6 +13,13 @@ def main():
     for f in files:
         if f == 'Predictions':
             continue
+        
+        fname = f'Data/OOD_data/Predictions/predictions_{f}'
+
+        if os.path.exists(fname):
+            print(f"Skipping {f} as predictions already exist.")
+            continue
+
         print(f'------> Predicting {f}')
         data_f = pd.read_csv(f'Data/OOD_data/{f}')
 
@@ -49,7 +56,7 @@ def main():
             print(f"    F1 (digits: {digits}): {eval_engine.f1()}")
 
         # Save predictions
-        res.to_csv(f'Data/OOD_data/Predictions/predictions_{f}')
+        res.to_csv(fname)
         
 if __name__ == "__main__":
     main()
