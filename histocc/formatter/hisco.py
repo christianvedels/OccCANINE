@@ -285,7 +285,7 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
                 code = code.item()
             if code is None or (isinstance(code, float) and math.isnan(code)):
                 break
-            hisco = str(self.lookup_hisco[int(code)])
+            hisco = str(self.lookup_hisco[int(float(code))])
 
             if len(hisco) == 4:
                 # Mistakenly stripped leading zero due to int coding
