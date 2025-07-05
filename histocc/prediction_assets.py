@@ -1180,7 +1180,7 @@ class OccCANINE:
 
     def finetune(
             self,
-            dataset: str | os.PathLike,
+            dataset: str | os.PathLike | pd.DataFrame,
             save_path: str | os.PathLike,
             input_col: str,  
             language: str,
@@ -1198,6 +1198,29 @@ class OccCANINE:
             seq2seq_weight: float = 0.1,
             freeze_encoder: bool = True,
             ):
+        
+        """
+        Finetunes the OccCANINE model on a given dataset.
+        Parameters:
+        - dataset (str or pd.DataFrame): Path to the dataset file or a pandas DataFrame containing the data. If pd.DataFrame, make sure all columns are strings.
+        - save_path (str): Path to save the finetuned model and other artifacts.
+        - input_col (str): Name of the column containing the occupational strings.
+        - language (str): Language of the occupational strings.
+        - language_col (str or None): Name of the column containing the language information. If None, no language information is used.
+        - target_cols (list of str or None): List of target columns to predict. If None, it will use the `target_cols` attribute of the self.formatter.
+        - save_interval (int): Interval for saving the model state.
+        - log_interval (int): Interval for logging training progress.
+        - eval_interval (int): Interval for evaluating the model on the validation set.
+        - drop_bad_labels (bool): If True, rows with bad labels will be dropped from the dataset.
+        - allow_codes_shorter_than_block_size (bool): If True, allows codes shorter than the block size.
+        - share_val (float): Proportion of the dataset to use for validation.
+        - learning_rate (float): Learning rate for the optimizer.
+        - num_epochs (int): Number of epochs to train the model.
+        - warmup_steps (int): Number of warmup steps for the learning rate scheduler.
+        - seq2seq_weight (float): Weight for the seq2seq loss in the mixed loss function.
+        - freeze_encoder (bool): If True, freezes the encoder parameters during training. (Only the top layer will be trained)
+
+        """
         
         if target_cols is None:
             # Check if target_cols attribute exists and is non-empty
@@ -1321,3 +1344,5 @@ class OccCANINE:
             eval_interval=eval_interval,
             save_interval=save_interval
         )
+
+        # TODO: We should save the model here - relevant for small sample finetuning, where default save_interval is not met frequently enough
