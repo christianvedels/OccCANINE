@@ -1187,13 +1187,13 @@ class OccCANINE:
             language_col: str | None,
             target_cols: list[str] | None = None,
             save_interval: int = 1000,
-            log_interval: int = 100,
-            eval_interval: int = 1000,
+            log_interval: int = 10,
+            eval_interval: int = 100,
             drop_bad_labels: bool = True,
             allow_codes_shorter_than_block_size: bool = True,
             share_val: float = 0.1,
             learning_rate: float = 2e-05,
-            num_epochs: int = 5,
+            num_epochs: int = 3,
             warmup_steps: int = 500,
             seq2seq_weight: float = 0.1,
             freeze_encoder: bool = True,
@@ -1212,13 +1212,22 @@ class OccCANINE:
         if isinstance(dataset, pd.DataFrame):
             # Check if the dataset has the expected columns
             for col in self.formatter.target_cols:
-                col_name = col.replace(self.system, "code") 
+                col_name = col.replace(f"{self.system}_", "code") 
 
                 # If the column does not exist, create it
                 if col_name not in dataset.columns:
                     # Use self.key to map self.system codes code
                     dataset[col_name] = [tmp_inverted_key.get(i) for i in dataset[col]]
         
+        # If self.system == "hisco" we need 'code' as target cols
+        # TODO: This is a clumsy way to do this, but it works for now
+        if self.system == "hisco":
+            # Check if the dataset has the expected columns
+            new_target_cols = []
+            for col in self.formatter.target_cols:
+                col_name = col.replace(f"{self.system}_", "code")
+                new_target_cols.append(col_name)
+            self.formatter.target_cols = new_target_cols
 
         # Data prep
         prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
@@ -1242,6 +1251,10 @@ class OccCANINE:
             num_classes_flat=len(self.key),
             map_code_label={v: k for k, v in self.key.items()}, # We need the reverse mapping to produce IDXs from codes
         )
+
+        if self.system == "hisco": # Clumsy way to do this, but it works for now
+            dataset_train.map_code_label = None 
+            dataset_val.map_code_label = None
 
         # Data loaders
         data_loader_train = DataLoader(
