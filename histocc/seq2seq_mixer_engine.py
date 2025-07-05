@@ -89,7 +89,7 @@ def train_one_epoch(
         samples_per_sec.update(out_seq2seq.size(0) / elapsed)
 
         if batch_idx % log_interval == 0 or batch_idx == last_step:
-            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}). Train loss: {losses.avg:.2f}')
+            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Batch time (data): {batch_time.avg:.2f} ({batch_time_data.avg:.2f}). Train loss: {losses.avg:.6f}')
             # print(f'Samples/second: {samples_per_sec.avg:.2f}')
             # print(f'Max. memory allocated/reserved: {torch.cuda.max_memory_allocated() / (1024 ** 3):.2f}/{torch.cuda.max_memory_reserved() / (1024 ** 3):.2f} GB')
 
@@ -203,7 +203,7 @@ def evaluate(
         flat_accs.update(acc_flat, preds_linear.size(0))
 
         if batch_idx % log_interval == 0:
-            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Accuracy (seq/token/flat): ({seq_accs.avg:.2f}/{token_accs.avg:.2f}/{flat_accs.avg:.2f}). Validation loss: {losses.avg:.2f}')
+            print(f'Batch {batch_idx + 1} of {len(data_loader)}. Accuracy (seq/token/flat): ({seq_accs.avg:.2f}/{token_accs.avg:.2f}/{flat_accs.avg:.2f}). Validation loss: {losses.avg:.6f}')
 
     return losses.avg, losses_linear.avg, losses_seq2seq.avg, seq_accs.avg, token_accs.avg, flat_accs.avg
 
