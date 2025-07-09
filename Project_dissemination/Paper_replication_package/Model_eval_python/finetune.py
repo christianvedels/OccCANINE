@@ -53,12 +53,12 @@ def main():
             drop_bad_labels=True,
             allow_codes_shorter_than_block_size=True,
             share_val=0.1,
-            num_epochs=3,
+            num_epochs=50,
             warmup_steps=500,
-            freeze_encoder=True,
+            freeze_encoder=False,
             eval_interval=1,
             log_interval=1,
-            save_interval=1
+            save_interval=5
         )
 
     # Load finetuned model
