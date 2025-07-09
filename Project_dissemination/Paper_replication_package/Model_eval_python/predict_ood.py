@@ -34,6 +34,13 @@ def main():
         # Add in rowid
         res["rowid"] = data_f.RowID
 
+        # Check if HISCO codes are present in input data
+        if "hisco_" not in data_f.columns:
+            print(f"Warning: 'hisco_' column not found in {f}. Check results manually.")
+            # Save predictions
+            res.to_csv(fname)
+            continue
+
         # Print
         print(f"    Acc: {eval_engine.accuracy()}")
         print(f"    Precision: {eval_engine.precision()}")
