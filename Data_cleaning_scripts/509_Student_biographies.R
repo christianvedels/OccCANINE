@@ -26,6 +26,12 @@ data1 = data0 %>%
     RowID = row_number()
   )
 
+# Take sample of 1000 rows
+set.seed(20)
+data1 = data1 %>%
+  sample_n(500) %>%
+  drop_na()
+
 
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/NO_student_biographies.csv")
