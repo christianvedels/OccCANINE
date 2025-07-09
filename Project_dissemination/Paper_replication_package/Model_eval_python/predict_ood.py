@@ -37,6 +37,10 @@ def main():
         # Add in rowid
         res["rowid"] = data_f.RowID
 
+        # Check if 'n' in data_f
+        if "n" in data_f.columns:
+            res["n"] = data_f.n
+
         # Check if HISCO codes are present in input data
         if "hisco_" not in data_f.columns:
             print(f"Warning: 'hisco_' column not found in {f}. Check results manually.")
