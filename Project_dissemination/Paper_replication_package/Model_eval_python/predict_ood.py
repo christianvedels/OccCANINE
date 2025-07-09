@@ -13,6 +13,9 @@ def main():
     for f in files:
         if f == 'Predictions':
             continue
+
+        if f == 'Predictions_finetuned':
+            continue
         
         fname = f'Data/OOD_data/Predictions/predictions_{f}'
 
