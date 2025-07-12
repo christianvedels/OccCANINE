@@ -40,10 +40,12 @@ def main():
         # Check if 'n' in data_f
         if "n" in data_f.columns:
             res["n"] = data_f.n
+        else:
+            res["n"] = 1  # Default to 1 if 'n' is not present
 
         # Check if HISCO codes are present in input data
-        if "hisco_" not in data_f.columns:
-            print(f"Warning: 'hisco_' column not found in {f}. Check results manually.")
+        if not any(col.startswith("hisco_") for col in data_f.columns):
+            print(f"Warning: No column starting with 'hisco_' found in {f}. Check results manually.")
             # Save predictions
             res.to_csv(fname)
             continue
