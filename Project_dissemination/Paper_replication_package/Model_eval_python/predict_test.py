@@ -1,6 +1,7 @@
 from histocc import OccCANINE, EvalEngine
 import pandas as pd
 import glob
+import os
 
 def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
     """
@@ -39,10 +40,15 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         # Downsample to 10k because its slow
         df = df.sample(n=10000, random_state=20) if df.shape[0] > 10000 else df
 
+    fname = f"Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_{prediction_type}.csv"
+    if os.path.exists(fname):
+        print(f"Skipping {fname} as predictions already exist.")
+        return
+
     preds = mod(
         df["occ1"].tolist(), 
         df["lang"].tolist(), 
-        threshold=0.31, 
+        threshold=thr, 
         prediction_type=prediction_type, 
         deduplicate=True
     )
@@ -50,7 +56,7 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
     preds_unk = mod(
         df["occ1"].tolist(), 
         "unk", 
-        threshold=0.31, 
+        threshold=thr, 
         prediction_type=prediction_type, 
         deduplicate=True
     )
@@ -70,6 +76,14 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         pred_col='hisco_', 
         digits=digits
     )
+
+    # Individual level metrics
+    preds[f"acc"] = eval_engine.accuracy(return_per_obs = True)
+    preds["precision"] = eval_engine.precision(return_per_obs = True)
+    preds["recall"] = eval_engine.recall(return_per_obs = True)
+    preds["f1"] = eval_engine.f1(return_per_obs = True)
+    preds["rowid"] = df.RowID
+    preds.to_csv(fname, index=False)
     
     for d in range(1, digits + 1):
         eval_engine.digits = d
@@ -117,7 +131,7 @@ def main():
     
     # Run evaluations for different prediction types
     run_eval(df, mod, prediction_type="flat", thr=0.31, digits=5)
-    run_eval(df, mod, prediction_type="greedy", thr=0.31, digits=5)
+    run_eval(df, mod, prediction_type="greedy", digits=5)
     run_eval(df, mod, prediction_type="full", thr=0.25, digits=5)
 
 if __name__ == "__main__":
