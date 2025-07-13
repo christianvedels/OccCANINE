@@ -6,15 +6,14 @@
 
 # ==== Libraries ====
 library(tidyverse)  
-library(Rtsne)      
 library(plotly)     
 source("Data_cleaning_scripts/000_Functions.R")
 
 # ==== Load Data ==== 
 key = read_csv("Data/Key.csv")
 
-embeddings = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test.csv")
-embeddings_null = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test_null.csv")
+tsne_data_2d = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results.csv")
+tsne_data_3d = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results_3d.csv")
 
 # ==== Clean data ====
 clean_data = function(df){
@@ -23,7 +22,7 @@ clean_data = function(df){
             first_digit = substr(hisco_1, 1, 1),
         ) %>%
         mutate(
-            first_digit = ifelse(hisco_1 == "-1", -1, first_digit)
+            first_digit = ifelse(first_digit == "-", -1, first_digit)
         ) %>%
         left_join(key, by = c("hisco_1" = "hisco")) %>%
         distinct()
@@ -31,13 +30,8 @@ clean_data = function(df){
     return(df)
 }
 
-embeddings = embeddings %>% clean_data()
-embeddings_null = embeddings_null %>% clean_data()
-
-# Sample 5000
-set.seed(20)
-embeddings = embeddings %>% sample_n(5000)
-embeddings_null = embeddings_null %>% sample_n(5000)
+tsne_data_2d = tsne_data_2d %>% clean_data()
+tsne_data_3d = tsne_data_3d %>% clean_data()
 
 # ==== Function Definitions ====
 construct_label = function(x){
@@ -47,48 +41,15 @@ construct_label = function(x){
   )
 }
 
-# visualize_embeddings: Function to perform t-SNE and generate plots
-run_tsne = function(embeddings, d = 2){ 
-    # t-SNE Computation
-    set.seed(20)  # for reproducibility
-    tmp = embeddings %>% select(-c(occ1, hisco_1, first_digit, lang, en_hisco_text)) 
-    tsne_results = Rtsne(tmp, dims=d, perplexity=30, theta=0.0, check_duplicates=FALSE, max_iter = 10000)
-    
-    # Merge t-SNE results with labels
-    tsne_data = as.data.frame(tsne_results$Y)
-    tsne_data$first_digit = embeddings$first_digit
-    tsne_data$label = construct_label(embeddings)
-    
-    return(
-        tsne_data
-    )
-}
 
-plot_emb = function(embeddings, name){
-    # Construct fname and check if it exists
-    fname = paste0("Project_dissemination/Paper_replication_package/Figures/tsne/", name, "_tsne_3d.Rdata")
-    if (file.exists(fname)) {
-        message(paste("File", fname, "already exists. Skipping t-SNE computation."))
-        load(fname)
-        return(0)
-    }
-    
-    start_time = Sys.time()
-    tsne_data_2d = embeddings %>%
-        run_tsne()
-    end_time = Sys.time()
-    cat("t-SNE 2D computation took", round(difftime(end_time, start_time, units = "mins"), 2), "minutes.\n")
-
-    start_time = Sys.time()
-    tsne_data_3d = embeddings %>%
-        run_tsne(d = 3)
-    end_time = Sys.time()
-    cat("t-SNE 3D computation took", round(difftime(end_time, start_time, units = "mins"), 2), "minutes.\n")
-    
+plot_emb = function(tsne_data_2d, tsne_data_3d, name){
+    # Ensure the data has the correct structure
+    tsne_data_2d$label = construct_label(tsne_data_2d)
+    tsne_data_3d$label = construct_label(tsne_data_3d)
 
     # 2D Visualization using ggplot2
     p1 = tsne_data_2d %>% 
-        ggplot(aes(x=V1, y=V2, col = first_digit, shape = first_digit)) +
+        ggplot(aes(x=V1, y=V2, col = first_digit)) +
         geom_point(alpha=0.7) +
         labs(
         paste(name, '2D t-SNE Visualization'),
@@ -123,5 +84,4 @@ plot_emb = function(embeddings, name){
 }
 
 # ==== Main Execution ====
-plot_emb(embeddings, "embeddings")
-plot_emb(embeddings_null, "embeddings_null")
+plot_emb(tsne_data_2d, tsne_data_3d, "embeddings")
