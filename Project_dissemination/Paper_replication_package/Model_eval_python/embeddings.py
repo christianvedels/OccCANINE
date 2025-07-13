@@ -38,4 +38,9 @@ def main():
 
     # Get embeddings for the input
     embeddings = mod(df.occ1.tolist(), lang=df.lang.tolist(), what="embeddings", deduplicate=True)
-    _ = 1
+
+    embeddings.insert(0, 'hisco_1', df.hisco_1.tolist())
+        
+    embeddings.to_csv("Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test.csv", index=False)
+
+
