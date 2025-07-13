@@ -32,15 +32,25 @@ def main():
     """
     # Load the model
     mod = OccCANINE()
+    mod_null = OccCANINE(skip_load=True, model_type = "mix")
 
     # Load data
     df = load_data(n_obs=100000, data_path="Data/Test_data/*.csv")
 
     # Get embeddings for the input
-    embeddings = mod(df.occ1.tolist(), lang=df.lang.tolist(), what="embeddings", deduplicate=True)
+    f = "Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test.csv"
+    if not glob.glob(f): # Check if file exists
+        print(f"File {f} does not exist. Generating embeddings.")
+        embeddings = mod(df.occ1.tolist(), lang=df.lang.tolist(), what="embeddings", deduplicate=True)
+        embeddings.insert(0, 'hisco_1', df.hisco_1.tolist())
+        embeddings.to_csv(f, index=False)
 
-    embeddings.insert(0, 'hisco_1', df.hisco_1.tolist())
-        
-    embeddings.to_csv("Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test.csv", index=False)
+    # Get embeddings for null model (not trained)
+    f_null = "Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test_null.csv"
+    if not glob.glob(f_null): # Check if file exists
+        print(f"File {f_null} does not exist. Generating embeddings for null model.")
+        embeddings_null = mod_null(df.occ1.tolist(), lang=df.lang.tolist(), what="embeddings", deduplicate=True)
+        embeddings_null.insert(0, 'hisco_1', df.hisco_1.tolist())
+        embeddings_null.to_csv(f_null, index=False)  
 
 
