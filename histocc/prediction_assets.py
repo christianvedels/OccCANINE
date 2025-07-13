@@ -63,7 +63,7 @@ from .utils.decoder import (
 from .seq2seq_mixer_engine import train
 
 
-PredType = Literal['flat', 'greedy', 'full']
+PredType = Literal['flat', 'greedy', 'full', 'embeddings']
 SystemType = Literal['hisco'] | str
 BehaviorType = Literal['good', 'fast']
 ModelType = Literal['flat', 'seq2seq', 'mix']
@@ -467,13 +467,13 @@ class OccCANINE:
         Parameters:
         - occ1 (list or str): A list of occupational strings to predict.
         - lang (str or list, optional): The language(s) of the occupational strings. Defaults to "unk" (unknown).
-        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin". Defaults to "pred".
+        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", "embeddings". Defaults to "pred".
         - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.31. Which is generally optimal for F1.
         - concat_in (bool, optional): Ignored
         - get_dict (bool, optional): Ignored
         - get_df (bool, optional): Ignored
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
-        - prediction_type (str): Either 'flat', 'greedy', 'full'. Overwrites 'behavior'. See details.
+        - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings'. Overwrites 'behavior'. See details.
         - k_pred (int): Maximum number of predicted occupational codes to keep
         - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
 
@@ -558,6 +558,11 @@ class OccCANINE:
             shuffle=False
             )
 
+        # Handle embeddings as output - this should also modify the prediction_type
+        if what == "embeddings":
+            # Set prediction type to 'flat' for embeddings
+            prediction_type = 'embeddings'
+
         # Timing
         start = time.time()
 
@@ -568,6 +573,8 @@ class OccCANINE:
             out, out_type, inputs = self._predict_greedy(data_loader)
         elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
+        elif prediction_type == 'embeddings':
+            out, out_type, inputs = self._predict_embeddings(data_loader)
         else:
             raise ValueError(f'Unsupported prediction type {prediction_type}, must be one of {PredType}')
 
@@ -854,6 +861,57 @@ class OccCANINE:
         results = np.concatenate(results)
 
         out_type = 'probs'
+
+        return results, out_type, inputs
+    
+    @torch.no_grad()
+    def _predict_embeddings(self, data_loader):
+        """
+        Returns the output from the pooler layer of the model.
+        """
+        model = self.model.eval()
+
+        # Setup
+        verbose = self.verbose
+        results = []
+        inputs = []
+        total_batches = len(data_loader)
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+
+            batch_time_data.update(time.time() - end)
+
+            with torch.no_grad():
+                output = self.model.encode(input_ids, attention_mask)
+
+            # If mixer its a tuple and then it is the second element which is relevant
+            if isinstance(output, tuple):
+                output = output[1]
+
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+
+            batch_time.update(time.time() - end)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+
+            end = time.time()
+
+            results.append(output.cpu().numpy())
+
+        results = np.concatenate(results)
+
+        out_type = 'emb'
 
         return results, out_type, inputs
 
@@ -1161,8 +1219,16 @@ class OccCANINE:
 
                 return res
 
-            else:
-                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
+        elif what == "embeddings":
+            res = out
+            # Make into pandas DataFrame
+            res = pd.DataFrame(res)
+            
+            # Add input
+            res.insert(0, 'occ1', inputs)
+
+        else:
+            raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
         return res
 
