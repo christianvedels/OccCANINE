@@ -34,6 +34,11 @@ clean_data = function(df){
 embeddings = embeddings %>% clean_data()
 embeddings_null = embeddings_null %>% clean_data()
 
+# Sample 5000
+set.seed(20)
+embeddings = embeddings %>% sample_n(5000)
+embeddings_null = embeddings_null %>% sample_n(5000)
+
 # ==== Function Definitions ====
 construct_label = function(x){
   paste0(
@@ -68,11 +73,18 @@ plot_emb = function(embeddings, name){
         return(0)
     }
     
+    start_time = Sys.time()
     tsne_data_2d = embeddings %>%
         run_tsne()
+    end_time = Sys.time()
+    cat("t-SNE 2D computation took", round(difftime(end_time, start_time, units = "mins"), 2), "minutes.\n")
 
+    start_time = Sys.time()
     tsne_data_3d = embeddings %>%
         run_tsne(d = 3)
+    end_time = Sys.time()
+    cat("t-SNE 3D computation took", round(difftime(end_time, start_time, units = "mins"), 2), "minutes.\n")
+    
 
     # 2D Visualization using ggplot2
     p1 = tsne_data_2d %>% 
