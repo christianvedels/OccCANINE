@@ -40,7 +40,7 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         # Downsample to 10k because its slow
         df = df.sample(n=10000, random_state=20) if df.shape[0] > 10000 else df
 
-    fname = f"Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_{prediction_type}.csv"
+    fname = f"Project_dissemination/Paper_replication_package/Data/big_files/obs_test_performance_{prediction_type}.csv"
     if os.path.exists(fname):
         print(f"Skipping {fname} as predictions already exist.")
         return
