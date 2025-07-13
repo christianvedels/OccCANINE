@@ -139,6 +139,7 @@ frequency_versus_performance = function(long_data, name) {
     # fnames 
     fname1 = paste0("Project_dissemination/Paper_replication_package/Tables/", name, "_performance_by_frequency_desc_stats.txt")
     fname2 = paste0("Project_dissemination/Paper_replication_package/Figures/", name, "_performance_by_frequency.png")
+    fname2_pdf = paste0("Project_dissemination/Paper_replication_package/Figures/", name, "_performance_by_frequency.pdf")
 
     # Print sum summary stats
     # N HISCO codes above / below 
@@ -156,6 +157,14 @@ frequency_versus_performance = function(long_data, name) {
     # Save the plot
     ggsave(
         fname2, 
+        plot = p1, 
+        height = dims$height, 
+        width = dims$width, 
+        dpi = 600
+    )
+
+    ggsave(
+        fname2_pdf, 
         plot = p1, 
         height = dims$height, 
         width = dims$width, 
@@ -182,6 +191,8 @@ performance_by_ses = function(long_data, name) {
 
     fname = paste0("Project_dissemination/Paper_replication_package/Figures/", name, "_performance_by_ses.png")
     ggsave(fname, plot = p1, height = dims$height, width = dims$width, dpi = 600)
+    fname_pdf = paste0("Project_dissemination/Paper_replication_package/Figures/", name, "_performance_by_ses.pdf")
+    ggsave(fname_pdf, plot = p1, height = dims$height, width = dims$width, dpi = 600)
 
     # Regressions to test ses_value ~ model performance
     regdata = ses_data %>%
@@ -274,7 +285,7 @@ performance_by_ses = function(long_data, name) {
 frequency_versus_performance(long_flat, "flat")
 frequency_versus_performance(long_greedy, "greedy")
 
-ses_flat = performance_by_ses(flat, "flat")
-ses_greedy = performance_by_ses(greedy, "greedy")
+ses_flat = performance_by_ses(long_flat, "flat")
+ses_greedy = performance_by_ses(long_greedy, "greedy")
 
 
