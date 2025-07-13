@@ -202,3 +202,4 @@ misc.py
 Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_flat.csv
 Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_full.csv
 Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_greedy.csv
+/Project_dissemination/Paper_replication_package/Data/big_files
