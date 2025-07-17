@@ -1,0 +1,34 @@
+[1] "Best thresholds overall (full):"
+
+\begin{tabular}{llrrr}
+\toprule
+statistic & Lang. info. & threshold & value & n\\
+\midrule
+accuracy & Yes & 0.32 & 0.887 & 10000\\
+accuracy & No & 0.30 & 0.885 & 10000\\
+f1 & Yes & 0.25 & 0.913 & 10000\\
+f1 & No & 0.24 & 0.912 & 10000\\
+precision & Yes & 0.47 & 0.962 & 10000\\
+\addlinespace
+precision & No & 0.32 & 0.959 & 10000\\
+recall & Yes & 0.01 & 0.906 & 10000\\
+recall & No & 0.01 & 0.906 & 10000\\
+\bottomrule
+\end{tabular}
+[1] "Best thresholds overall (flat):"
+
+\begin{tabular}{llrrr}
+\toprule
+statistic & Lang. info. & threshold & value & n\\
+\midrule
+accuracy & Yes & 0.38 & 0.965 & 100000\\
+accuracy & No & 0.33 & 0.961 & 100000\\
+f1 & Yes & 0.31 & 0.968 & 100000\\
+f1 & No & 0.29 & 0.965 & 100000\\
+precision & Yes & 0.38 & 0.966 & 100000\\
+\addlinespace
+precision & No & 0.47 & 0.963 & 100000\\
+recall & Yes & 0.01 & 0.990 & 100000\\
+recall & No & 0.01 & 0.990 & 100000\\
+\bottomrule
+\end{tabular}

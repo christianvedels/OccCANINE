@@ -200,7 +200,38 @@ foreach(l = unique(bylang_full$lang)) %do% {
   )
 }
 
-# ==== Print tables of best threshholds ====
+# ==== Print tables of best thresholds overall ====
+sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning_overall.txt", append = FALSE)
+
+print("Best thresholds overall (full):")
+overall_full %>% 
+    filter(best) %>%
+    select(statistic, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic) %>%
+    knitr::kable(, 
+      digits = 3, 
+      format = "latex",
+      booktabs = TRUE) %>% 
+    print()
+
+print("Best thresholds overall (flat):")
+overall_flat %>% 
+    filter(best) %>%
+    select(statistic, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic) %>%
+    knitr::kable(, 
+      digits = 3, 
+      format = "latex",
+      booktabs = TRUE) %>% 
+    print()
+
+sink()
+
+# ==== Print tables of best threshholds by lang ====
 x1 = overall_flat %>% 
     filter(best) %>%
     # filter(type == "With language info.") %>%
