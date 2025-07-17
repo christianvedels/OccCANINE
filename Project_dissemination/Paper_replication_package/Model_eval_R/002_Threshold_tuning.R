@@ -201,33 +201,31 @@ foreach(l = unique(bylang_full$lang)) %do% {
 }
 
 # ==== Print tables of best thresholds overall ====
+tmp1 = overall_full %>% 
+    filter(best) %>%
+    mutate(method = "full") %>%
+    select(statistic, method, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic)
+
+tmp2 = overall_flat %>% 
+    filter(best) %>%
+    mutate(method = "flat") %>%
+    select(statistic, method, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic)
+
+tmp = bind_rows(tmp1, tmp2) %>%
+    select(method, statistic, `Lang. info.`, threshold, value) %>%
+    arrange(statistic, method, `Lang. info.`) 
+
 sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning_overall.txt", append = FALSE)
+print(tmp)
 
-print("Best thresholds overall (full):")
-overall_full %>% 
-    filter(best) %>%
-    select(statistic, type, threshold, value, n) %>%
-    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
-    rename(`Lang. info.` = type) %>%
-    arrange(statistic) %>%
-    knitr::kable(, 
-      digits = 3, 
-      format = "latex",
-      booktabs = TRUE) %>% 
-    print()
-
-print("Best thresholds overall (flat):")
-overall_flat %>% 
-    filter(best) %>%
-    select(statistic, type, threshold, value, n) %>%
-    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
-    rename(`Lang. info.` = type) %>%
-    arrange(statistic) %>%
-    knitr::kable(, 
-      digits = 3, 
-      format = "latex",
-      booktabs = TRUE) %>% 
-    print()
+cat("\nNumber of observations full:\n", tmp1$n %>% unique(), "\n")
+cat("\nNumber of observations flat:\n", tmp2$n %>% unique(), "\n")
 
 sink()
 
