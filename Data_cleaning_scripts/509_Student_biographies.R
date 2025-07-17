@@ -18,13 +18,15 @@ data0 = read_excel(
 # ==== Cleaning data0 ====
 data1 = data0 %>%
   rename(
-    occ1 =  `Arbeid far`
+    occ1 =  `Arbeid far`,
+    person_nr = `Person (nr.)`,
   ) %>%
-  select(occ1) %>%
+  select(occ1, person_nr) %>%
   drop_na() %>%
   mutate(
-    RowID = row_number()
-  )
+    RowID = person_nr,
+  ) %>% 
+  select(RowID, occ1)
 
 # Take sample of 1000 rows
 set.seed(20)
