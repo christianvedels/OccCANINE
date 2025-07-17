@@ -121,15 +121,33 @@ n_obs_full = overall_full$n %>% unique()
 p1 = threshold_tuning_plot(overall_flat, observation = n_obs_flat)
 p2 = threshold_tuning_plot(overall_full, observation = n_obs_full)
 
-ggsave("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png", 
-       p1, 
-       width = dims$width, 
-       height = dims$height)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png", 
+    p1, 
+    width = dims$width, 
+    height = dims$height,
+    dpi = 600
+)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.pdf", 
+    p1, 
+    width = dims$width, 
+    height = dims$height,
+    dpi = 600
+)
 
-ggsave("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.png", 
-       p2, 
-       width = dims$width, 
-       height = dims$height)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.png", 
+    p2, 
+    width = dims$width, 
+    height = dims$height
+)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.pdf", 
+    p2, 
+    width = dims$width, 
+    height = dims$height
+)
 
 # ==== Plot by language ====
 foreach(l = unique(bylang_flat$lang)) %do% {
@@ -143,10 +161,18 @@ foreach(l = unique(bylang_flat$lang)) %do% {
 
   p = threshold_tuning_plot(data, observation = n_l)
   
-  ggsave(paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".png"), 
-         p, 
-         width = dims$width, 
-         height = dims$height)
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".png"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".pdf"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
 }
 
 foreach(l = unique(bylang_full$lang)) %do% {
@@ -160,10 +186,18 @@ foreach(l = unique(bylang_full$lang)) %do% {
 
   p = threshold_tuning_plot(data, observation = n_l)
   
-  ggsave(paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".png"), 
-         p, 
-         width = dims$width, 
-         height = dims$height)
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".png"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".pdf"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
 }
 
 # ==== Print tables of best threshholds ====
@@ -180,18 +214,39 @@ x2 = overall_full %>% filter(best) %>%
     mutate(data = "all_data")
 
 x3 = bylang_flat %>% filter(best) %>% 
-    select(lang, type, statistic, threshold, value) %>%
     # filter(type == "With language info.") %>%
     mutate(method = "flat") %>%
     mutate(data = "by_lang")
 
 x4 = bylang_full %>% filter(best) %>%
-    select(lang, type, statistic, threshold, value) %>%
     # filter(type == "With language info.") %>%
     mutate(method = "full") %>%
     mutate(data = "by_lang")
 
-x1 %>% bind_rows(x2, x3, x4) %>%
-    select(method, data, type, lang, statistic, threshold, value, n)
+res = x1 %>% bind_rows(x2, x3, x4) %>%
+    select(method, data, type, lang, statistic, threshold, value, n) %>%
+    drop_na(lang, n) %>%
+    arrange(data, method, type, lang, statistic)
+
+# If several, pick the first
+res1 = res %>%
+    group_by(method, data, type, lang, statistic) %>%
+    slice(1) %>%
+    ungroup() %>%
+    filter(type == "With language info.") %>%
+    select(-type)
+
+# Print to Tables/threshold_tuning.txt
+sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning.txt", append = FALSE)
+
+res1 %>%
+    knitr::kable(, 
+      digits = 3, 
+      format = "latex",
+      booktabs = TRUE) %>% print()
+
+sink()
+
+
 
 

@@ -60,7 +60,7 @@ def load_data(n_obs=5000, data_path="Data/Validation_data1/*.csv", lang = None):
     if lang:
         df = df[df["lang"] == lang]
 
-    df = df.sample(n=n_obs, random_state=10) if n_obs < df.shape[0] else df
+    df = df.sample(n=n_obs, random_state=20) if n_obs < df.shape[0] else df
     df = df.reset_index(drop=True)
     return df
 
@@ -102,21 +102,21 @@ def wrapper(prediction_type="flat", n_obs=100):
     # Load data
     df = load_data(n_obs=n_obs, data_path="Data/Validation_data1/*.csv")
 
-    # # Get probs
-    # probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
-    # probs_lang = get_probs(df, mod, prediction_type=prediction_type)
+    # Get probs
+    probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
+    probs_lang = get_probs(df, mod, prediction_type=prediction_type)
 
-    # # Perform test across thresholds
-    # results_df_unk = apply_test_across_thr(df, probs_unk, mod)
-    # results_df_lang = apply_test_across_thr(df, probs_lang, mod)
+    # Perform test across thresholds
+    results_df_unk = apply_test_across_thr(df, probs_unk, mod)
+    results_df_lang = apply_test_across_thr(df, probs_lang, mod)
 
-    # # Add n as column
-    # results_df_unk["n"] = df.shape[0]
-    # results_df_lang["n"] = df.shape[0]
+    # Add n as column
+    results_df_unk["n"] = df.shape[0]
+    results_df_lang["n"] = df.shape[0]
     
-    # # Save results
-    # results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
-    # results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
+    # Save results
+    results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
+    results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
 
     # Compute for each lang
     unique_langs = df["lang"].unique()
