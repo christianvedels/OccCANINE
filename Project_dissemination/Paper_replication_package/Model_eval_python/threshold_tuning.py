@@ -2,6 +2,7 @@ from histocc import OccCANINE, EvalEngine
 import pandas as pd
 import numpy as np
 import glob
+import os
 
 def perform_test(df, thr, probs, mod, digits = None, verbose = False):
     """
@@ -44,7 +45,7 @@ def perform_test(df, thr, probs, mod, digits = None, verbose = False):
 
     return res
 
-def load_data(n_obs=5000, data_path="Data/Validation_data1/*.csv", lang = None):
+def load_data(n_obs=5000, data_path="Project_dissemination/Paper_replication_package/Data/Raw_data/Validation_data1/*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -96,11 +97,17 @@ def apply_test_across_thr(df, probs, mod):
 
 
 def wrapper(prediction_type="flat", n_obs=100):
+    # Define result fname and test if it exists
+    result_fname = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv"
+    if os.path.exists(result_fname):
+        print(f"Results for {prediction_type} already exist. Skipping...")
+        return 0
+
     # Load model
     mod = OccCANINE(name='OccCANINE_s2s_mix', verbose = True)
 
     # Load data
-    df = load_data(n_obs=n_obs, data_path="Data/Validation_data1/*.csv")
+    df = load_data(n_obs=n_obs)
 
     # Get probs
     probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
@@ -115,15 +122,15 @@ def wrapper(prediction_type="flat", n_obs=100):
     results_df_lang["n"] = df.shape[0]
     
     # Save results
-    results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
-    results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
+    results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
+    results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
 
     # Compute for each lang
     unique_langs = df["lang"].unique()
     for lang in unique_langs:
         print(f"Performing test for {lang}")
 
-        df = load_data(n_obs=n_obs, data_path="Data/Validation_data1/*.csv", lang=lang)
+        df = load_data(n_obs=n_obs, data_path="Project_dissemination/Paper_replication_package/Data/Raw_data/Validation_data1/*.csv", lang=lang)
         print(f"Loaded data for {lang}; NROWS: {df.shape[0]}")
 
         # Get probs
@@ -139,16 +146,26 @@ def wrapper(prediction_type="flat", n_obs=100):
         results_df_lang["n"] = df.shape[0]
 
         # Save results
-        results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langknown_{lang}.csv", index=False)
-        results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langunk_{lang}.csv", index=False)
+        if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang"):
+            os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang")
+        fname1 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langknown_{lang}.csv"
+        fname2 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langunk_{lang}.csv"
+        results_df_lang.to_csv(fname1, index=False)
+        results_df_unk.to_csv(fname2, index=False)
 
         print(f"Finished test for {lang}")
 
 
-def main():
+def main(toyrun=False):
     # Run the main function
-    wrapper(prediction_type="flat", n_obs=100000)
-    wrapper(prediction_type="full", n_obs=10000)
+    if toyrun:
+        # Run a toy example
+        wrapper(prediction_type="flat", n_obs=1000)
+        wrapper(prediction_type="full", n_obs=100)
+    else:
+        # Run the full example
+        wrapper(prediction_type="flat", n_obs=100000)
+        wrapper(prediction_type="full", n_obs=10000)
 
 if __name__ == "__main__":
     main()
