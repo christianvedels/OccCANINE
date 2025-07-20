@@ -2,8 +2,9 @@ from histocc import OccCANINE, EvalEngine
 import pandas as pd
 import glob
 import os
+import json
 
-def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
+def load_data(n_obs=5000, data_path=r"Project_dissemination\Paper_replication_package\Data\Raw_data\Test_data\*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -23,6 +24,23 @@ def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
     df = df.reset_index(drop=True)
     return df
 
+def load_optimal_thresholds():
+    """
+    Load optimal thresholds for flat and full predictions from a JSON file.
+    
+    Returns:
+        dict: Dictionary with optimal thresholds for each language.
+    """
+    thresholds_path = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/thresholds_by_lang.json"
+    
+    if not os.path.exists(thresholds_path):
+        raise FileNotFoundError(f"Thresholds file not found: {thresholds_path}")
+    
+    with open(thresholds_path, "r") as f:
+        thresholds_by_lang = json.load(f)
+    
+    return thresholds_by_lang
+
 def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
     """
     Run evaluation for a given threshold.
@@ -40,7 +58,9 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         # Downsample to 10k because its slow
         df = df.sample(n=10000, random_state=20) if df.shape[0] > 10000 else df
 
-    fname = f"Project_dissemination/Paper_replication_package/Data/big_files/obs_test_performance_{prediction_type}.csv"
+    # Create dir if it does not exist
+    os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files", exist_ok=True)
+    fname = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/obs_test_performance_{prediction_type}.csv"
     if os.path.exists(fname):
         print(f"Skipping {fname} as predictions already exist.")
         return
@@ -98,7 +118,10 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
             "lang": "known"
         }])
 
-        file = f"Project_dissemination/Paper_replication_package/Data/test_performance/test_performance_{prediction_type}_digits_{d}.csv"
+        # Make directory if it does not exist
+        os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance", exist_ok=True)
+        # Save results to CSV
+        file = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/test_performance_{prediction_type}_digits_{d}.csv"
         res.to_csv(file, index=False)
         print(f"Results saved to {file}")
         print(res)
@@ -114,12 +137,12 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
             "prediction_type": prediction_type,
             "lang": "unk"
         }])
-        file_unk = f"Project_dissemination/Paper_replication_package/Data/test_performance/test_performance_{prediction_type}_unk_digits_{d}.csv"
+        file_unk = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/test_performance_{prediction_type}_unk_digits_{d}.csv"
         res_unk.to_csv(file_unk, index=False)
         print(f"Results saved to {file_unk}")
         print(res_unk)
 
-def main():
+def main(toyrun=False):
     """
     Main function to load data, get predictions, and evaluate the model.
     """
@@ -127,12 +150,18 @@ def main():
     mod = OccCANINE()
 
     # Load data
-    df = load_data(n_obs=100000, data_path="Data/Test_data/*.csv", lang=None)
+    if toyrun:
+        df = load_data(n_obs=1000, lang=None)
+    else:
+        # Load a larger dataset for full evaluation
+        df = load_data(n_obs=100000, lang=None)
+
+    thr = load_optimal_thresholds()
     
     # Run evaluations for different prediction types
-    run_eval(df, mod, prediction_type="flat", thr=0.31, digits=5)
-    run_eval(df, mod, prediction_type="greedy", digits=5)
-    run_eval(df, mod, prediction_type="full", thr=0.25, digits=5)
+    run_eval(df, mod, prediction_type="flat", thr=thr["overall"]["flat"], digits=5)
+    run_eval(df, mod, prediction_type="greedy", thr=99, digits=5)  # Placeholder threshold (not used in greedy)
+    run_eval(df, mod, prediction_type="full", thr=thr["overall"]["full"], digits=5)
 
 if __name__ == "__main__":
     main()
