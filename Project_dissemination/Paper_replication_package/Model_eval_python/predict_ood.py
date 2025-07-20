@@ -17,7 +17,7 @@ def main():
         if f == 'Predictions_finetuned':
             continue
 
-        fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions/predictions_{f}'
+        fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/predictions_{f}'
 
         if os.path.exists(fname):
             print(f"Skipping {f} as predictions already exist.")
