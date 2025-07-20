@@ -1,8 +1,10 @@
 from histocc import OccCANINE, EvalEngine
+from histocc.prediction_assets import THRESHOLD_LOOKUP
 import pandas as pd
 import numpy as np
 import glob
 import os
+import json
 
 def perform_test(df, thr, probs, mod, digits = None, verbose = False):
     """
@@ -126,8 +128,7 @@ def wrapper(prediction_type="flat", n_obs=100):
     results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
 
     # Compute for each lang
-    unique_langs = df["lang"].unique()
-    for lang in unique_langs:
+    for lang in THRESHOLD_LOOKUP.keys():
         print(f"Performing test for {lang}")
 
         df = load_data(n_obs=n_obs, data_path="Project_dissemination/Paper_replication_package/Data/Raw_data/Validation_data1/*.csv", lang=lang)
@@ -155,6 +156,59 @@ def wrapper(prediction_type="flat", n_obs=100):
 
         print(f"Finished test for {lang}")
 
+def optimal_thresholds():
+    """
+    Calculate optimal thresholds for flat and full predictions.
+    Returns:
+        tuple: Optimal thresholds for flat and full predictions.
+    """
+    # Load the results
+    df_flat = pd.read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langknown.csv")
+    df_full = pd.read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langknown.csv")
+    
+    optimal_flat = df_flat.loc[df_flat["f1"].idxmax(), "threshold"]
+    optimal_full = df_full.loc[df_full["f1"].idxmax(), "threshold"]
+
+    print(f"Optimal flat threshold: {optimal_flat}")
+    print(f"Optimal full threshold: {optimal_full}")
+
+    # Dict for storing thresholds by language
+    thresholds_by_lang = {
+        "overall": {
+            "flat": optimal_flat,
+            "full": optimal_full
+        }
+    }
+    # Load results by lang
+    for lang in THRESHOLD_LOOKUP.keys():
+        fname1 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_flat_langknown_{lang}.csv"
+        fname2 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_full_langknown_{lang}.csv"
+        if not os.path.exists(fname1) or not os.path.exists(fname2):
+            print(f"Results for {lang} not found(!!!). Skipping...")
+            continue
+
+        df_flat_lang = pd.read_csv(fname1)
+        df_full_lang = pd.read_csv(fname2)
+
+        optimal_flat_lang = df_flat_lang.loc[df_flat_lang["f1"].idxmax(), "threshold"]
+        optimal_full_lang = df_full_lang.loc[df_full_lang["f1"].idxmax(), "threshold"]
+
+        print(f"Optimal flat threshold for {lang}: {optimal_flat_lang}")
+        print(f"Optimal full threshold for {lang}: {optimal_full_lang}")
+
+        thresholds_by_lang[lang] = {
+            "flat": optimal_flat_lang,
+            "full": optimal_full_lang
+        }
+
+    # Save thresholds to json file
+    thresholds_path = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/thresholds_by_lang.json"
+    if not os.path.exists(os.path.dirname(thresholds_path)):
+        os.makedirs(os.path.dirname(thresholds_path))
+
+    with open(thresholds_path, "w") as f:
+        json.dump(thresholds_by_lang, f)
+
 
 def main(toyrun=False):
     # Run the main function
@@ -166,6 +220,9 @@ def main(toyrun=False):
         # Run the full example
         wrapper(prediction_type="flat", n_obs=100000)
         wrapper(prediction_type="full", n_obs=10000)
+
+    # Optimal thresholds for flat and full
+    optimal_thresholds()
 
 if __name__ == "__main__":
     main()
