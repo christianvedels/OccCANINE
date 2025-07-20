@@ -56,7 +56,8 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
     """
     if prediction_type == "full":
         # Downsample to 10k because its slow
-        df = df.sample(n=10000, random_state=20) if df.shape[0] > 10000 else df
+        df = df.sample(n=int(df.shape[0]*0.1), random_state=20)
+        mod.batch_size = 16  # Set batch size for full predictions (lower to see steps)
 
     # Create dir if it does not exist
     os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files", exist_ok=True)
