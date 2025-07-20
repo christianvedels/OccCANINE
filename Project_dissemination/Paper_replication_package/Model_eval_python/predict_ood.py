@@ -8,7 +8,7 @@ def main():
     mod = OccCANINE()
 
     # list files
-    files = os.listdir('Data/OOD_data')
+    files = os.listdir('Project_dissemination/Paper_replication_package/Data/Raw_data/OOD_data')
 
     for f in files:
         if f == 'Predictions':
@@ -16,15 +16,18 @@ def main():
 
         if f == 'Predictions_finetuned':
             continue
-        
-        fname = f'Data/OOD_data/Predictions/predictions_{f}'
+
+        fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions/predictions_{f}'
 
         if os.path.exists(fname):
             print(f"Skipping {f} as predictions already exist.")
             continue
 
+        # Check if dir exists, if not create it
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+
         print(f'------> Predicting {f}')
-        data_f = pd.read_csv(f'Data/OOD_data/{f}')
+        data_f = pd.read_csv(f'Project_dissemination/Paper_replication_package/Data/Raw_data/OOD_data/{f}')
 
         res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True)
 
