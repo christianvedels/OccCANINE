@@ -5,7 +5,7 @@ import glob
 import json
 import os
 
-def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
+def load_data(n_obs=5000, data_path="Data/Test_data/*.csv"):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -15,17 +15,13 @@ def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
     Returns:
         pd.DataFrame: Sampled DataFrame.
     """
-    csv_files = glob.glob(data_path)
-    df = pd.concat([pd.read_csv(f) for f in csv_files], ignore_index=True)
-
-    if lang:
-        df = df[df["lang"] == lang]
+    df = pd.read_csv(data_path)
 
     df = df.sample(n=n_obs, random_state=20) if n_obs < df.shape[0] else df
     df = df.reset_index(drop=True)
     return df
 
-def run_eval(df, mod, prediction_type, lang, thr=0.31, digits=5):
+def run_eval(df, mod, prediction_type, file, thr=0.31, digits=5):
     """
     Run evaluation for a given threshold.
     
@@ -39,7 +35,7 @@ def run_eval(df, mod, prediction_type, lang, thr=0.31, digits=5):
         pd.DataFrame: DataFrame with evaluation results.
     """
     # Test if file exists
-    dummy_files = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/lang/test_performance_{prediction_type}_digits_5_lang_{lang}.csv"
+    dummy_files = f"Project_dissemination/Paper_replication_package/Data/test_performance/source/test_performance_{prediction_type}_digits_5_file_{file}"
     if os.path.exists(dummy_files):
         print(f"Skipping {dummy_files} as it already exists.")
         return
@@ -56,26 +52,10 @@ def run_eval(df, mod, prediction_type, lang, thr=0.31, digits=5):
         deduplicate=True
     )
 
-    preds_unk = mod(
-        df["occ1"].tolist(), 
-        "unk", 
-        threshold=thr, 
-        prediction_type=prediction_type, 
-        deduplicate=True
-    )
-
     eval_engine = EvalEngine(
         mod, 
         df, 
         preds, 
-        pred_col='hisco_', 
-        digits=digits
-    )
-
-    eval_engine_unk = EvalEngine(
-        mod, 
-        df, 
-        preds_unk, 
         pred_col='hisco_', 
         digits=digits
     )
@@ -90,32 +70,17 @@ def run_eval(df, mod, prediction_type, lang, thr=0.31, digits=5):
             "recall": eval_engine.recall(),
             "n": df.shape[0],
             "prediction_type": prediction_type,
-            "lang": lang
+            "file": file
         }])
 
-        file = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/lang/test_performance_{prediction_type}_digits_{d}_lang_{lang}.csv"
+        output_file = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/source/test_performance_{prediction_type}_digits_{d}_file_{file}"
         # Make dir if missing
-        os.makedirs(os.path.dirname(file), exist_ok=True)
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
         # Save results
-        res.to_csv(file, index=False)
-        print(f"Results saved to {file}")
+        res.to_csv(output_file, index=False)
+        print(f"Results saved to {output_file}")
         print(res)
 
-        eval_engine_unk.digits = d
-        res_unk = pd.DataFrame([{
-            "threshold": thr,
-            "accuracy": eval_engine_unk.accuracy(),
-            "f1": eval_engine_unk.f1(),
-            "precision": eval_engine_unk.precision(),
-            "recall": eval_engine_unk.recall(),
-            "n": df.shape[0],
-            "prediction_type": prediction_type,
-            "lang": lang
-        }])
-        file_unk = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/lang/test_performance_{prediction_type}_unk_digits_{d}_lang_{lang}.csv"
-        res_unk.to_csv(file_unk, index=False)
-        print(f"Results saved to {file_unk}")
-        print(res_unk)
 
 def main(toyrun=False):
     """
@@ -134,28 +99,26 @@ def main(toyrun=False):
         THRESHOLD_LOOKUP = json.load(f)
 
     # Load data
-    unique_langs = list(THRESHOLD_LOOKUP.keys())
-    for lang in unique_langs:
-        if lang in ['overall']:
-            continue # Skip overall as it is not a language
+    files = glob.glob("Data/Test_data/*.csv")
+    for f in files:
 
-        print(f"Performing test for {lang}")
+        print(f"Performing test for {f}")
         
         if toyrun:
-            df = load_data(n_obs=100, data_path="Data/Test_data/*.csv", lang=lang)
+            df = load_data(n_obs=100, data_path=f)
         else:
             # Load full data for production run
-            df = load_data(n_obs=1000000000000000, data_path="Data/Test_data/*.csv", lang=lang)
+            df = load_data(n_obs=1000000000000, data_path=f)
         
+        # Get file without path
+        file = os.path.basename(f)
+
         # Run evaluations for different prediction types
-        run_eval(df, mod, prediction_type="flat", lang=lang, thr=THRESHOLD_LOOKUP.get(lang).get("flat"))
-        run_eval(df, mod, prediction_type="greedy", lang=lang, thr=99) # Placeholder threshold (not used in greedy)
-        if not toyrun: # Only run full for production
-            run_eval(df, mod, prediction_type="full", lang=lang, thr=THRESHOLD_LOOKUP.get(lang).get("full"))
-        print(f"Completed evaluations for {lang}")
+        run_eval(df, mod, "greedy", file=file, digits=5)
 
 if __name__ == "__main__":
     main()
+
 
 
 

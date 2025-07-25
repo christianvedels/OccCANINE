@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.93,0.9333333333333335,0.93,0.94,100,greedy,GE_occupations1939_test.csv
