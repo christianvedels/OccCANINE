@@ -43,14 +43,19 @@ def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer
 
     return 0
 
-def main():
+def main(toyrun=False):
     """
     Main function to load data, get predictions, and evaluate the model.
     """
+    if toyrun:
+        n_obs = 100
+    else:
+        n_obs = 10000000000
+
     # ICEM
     test_performance(
-        file="Project_dissemination/Paper_replication_package/Data/occicem_performance.csv",
-        n_obs=2000,
+        file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/occicem_performance.csv",
+        n_obs=n_obs,
         mod_path="Data/models/mixer-icem-ft/last.bin",
         data_path="Data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
@@ -58,8 +63,8 @@ def main():
     
     # ISCO68
     test_performance(
-        file="Project_dissemination/Paper_replication_package/Data/isco68_performance.csv",
-        n_obs=2000,
+        file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/isco68_performance.csv",
+        n_obs=n_obs,
         mod_path="Data/models/mixer-isco-ft/last.bin",
         data_path="Data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
@@ -67,8 +72,8 @@ def main():
 
     # OCC1950
     test_performance(
-        file="Project_dissemination/Paper_replication_package/Data/occ1950_performance.csv",
-        n_obs=2000,
+        file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/occ1950_performance.csv",
+        n_obs=n_obs,
         mod_path="Data/models/mixer-occ1950-ft/last.bin",
         data_path="Data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
