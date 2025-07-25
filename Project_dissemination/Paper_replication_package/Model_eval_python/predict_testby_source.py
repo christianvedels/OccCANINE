@@ -35,7 +35,7 @@ def run_eval(df, mod, prediction_type, file, thr=0.31, digits=5):
         pd.DataFrame: DataFrame with evaluation results.
     """
     # Test if file exists
-    dummy_files = f"Project_dissemination/Paper_replication_package/Data/test_performance/source/test_performance_{prediction_type}_digits_5_file_{file}"
+    dummy_files = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/source/test_performance_{prediction_type}_digits_{5}_file_{file}"
     if os.path.exists(dummy_files):
         print(f"Skipping {dummy_files} as it already exists.")
         return
@@ -88,15 +88,6 @@ def main(toyrun=False):
     """
     # Load the model
     mod = OccCANINE()
-
-    # Read the threshold lookup
-    if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thresholds_by_lang.json"):
-        raise FileNotFoundError(
-            "Threshold lookup file not found. Please run threshold tuning first."
-        )
-    
-    with open("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thresholds_by_lang.json", "r") as f:
-        THRESHOLD_LOOKUP = json.load(f)
 
     # Load data
     files = glob.glob("Data/Test_data/*.csv")
