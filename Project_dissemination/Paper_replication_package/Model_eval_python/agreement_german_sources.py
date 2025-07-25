@@ -6,8 +6,8 @@ import os
 
 def main():
     mod = OccCANINE()
-    
-    fname = f'Data/OOD_data/Predictions/predictions_agreement_german_sources.csv'
+
+    fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/predictions_agreement_german_sources.csv'
 
     if os.path.exists(fname):
         print(f"Skipping {fname} as predictions already exist.")
