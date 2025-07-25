@@ -650,10 +650,10 @@ class OccCANINE:
                 max_len = data_loader.dataset.formatter.max_seq_len,
                 start_symbol = BOS_IDX,
                 )
-            
+
             outputs_s2s = outputs[0].cpu().numpy()
             probs_s2s = outputs[1].cpu().numpy()
-            
+
             # Compute order invariant confidence
             if order_invariant_conf:
                 # Location of multiple labels
@@ -661,8 +661,8 @@ class OccCANINE:
                     data_loader.dataset.formatter.clean_pred,
                     outputs[0].cpu().numpy(),
                 ))
-                
-                # Generate list of codes 
+
+                # Generate list of codes
                 codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
 
                 order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
@@ -687,7 +687,7 @@ class OccCANINE:
                             codes_list = codes_list_encoded,
                             start_symbol = BOS_IDX,
                         )
-                        # Test 
+                        # Test
                         if outputs_order_inv.shape[1] != len_list:
                             raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
 
@@ -721,7 +721,7 @@ class OccCANINE:
         ))
 
         if order_invariant_conf:
-        
+
             preds = pd.DataFrame({
                 'input': inputs,
                 'pred_s2s': preds_s2s,
@@ -810,7 +810,7 @@ class OccCANINE:
         out_type = 'probs'
 
         return results, out_type, inputs
-    
+
     def _output_permutations(self, output):
         """
         This function takes an output from the model with multiple labels
@@ -864,7 +864,7 @@ class OccCANINE:
             if behavior == "good":
                 prediction_type = "greedy"
 
-            if self.verbose: 
+            if self.verbose:
                 print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
 
         # Validate 'prediction_type'
@@ -1035,7 +1035,7 @@ class OccCANINE:
         - inputs (list): The original occupational strings used for prediction.
         - threshold (float): threshold to use (only relevant if out_type == "probs")
         - k_pred (int): Maximum number of predicted occupational codes to keep
-        - order_invariant_conf (bool): If True an order invariant confidence is computed. 
+        - order_invariant_conf (bool): If True an order invariant confidence is computed.
 
         Returns:
         - Depends on the 'what' parameter.
@@ -1126,7 +1126,7 @@ class OccCANINE:
                         for sub_item in item:
                             if sub_item in inv_key:
                                 res_bin[i, inv_key[sub_item]] = 1
-                    
+
                     res = res_bin
                     res = pd.DataFrame(res, columns=[f"{self.system}_{self.key[i]}" for i in range(len(self.key))])
 
@@ -1170,7 +1170,7 @@ class OccCANINE:
                     res.insert(0, 'occ1', out.input)
 
                 return res
-            
+
             else:
                 raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
