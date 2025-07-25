@@ -155,7 +155,7 @@ def main(toyrun=False):
         df = load_data(n_obs=1000, lang=None)
     else:
         # Load a larger dataset for full evaluation
-        df = load_data(n_obs=100000, lang=None)
+        df = load_data(n_obs=1000000000000000, lang=None)
 
     thr = load_optimal_thresholds()
     
