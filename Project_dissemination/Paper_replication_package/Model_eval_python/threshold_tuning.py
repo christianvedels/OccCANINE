@@ -124,6 +124,8 @@ def wrapper(prediction_type="flat", n_obs=100):
     results_df_lang["n"] = df.shape[0]
     
     # Save results
+    if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data"):
+        os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data")
     results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
     results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
 
