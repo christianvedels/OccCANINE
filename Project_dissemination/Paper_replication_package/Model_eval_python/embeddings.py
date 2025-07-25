@@ -55,7 +55,7 @@ def tsne(embeddings, d=2):
     
     return tsne_data
 
-def main():
+def main(toyrun=True):
     """
     Main function to test the OccCANINE model with embeddings.
     This is a simple test to ensure the model can handle embeddings.
@@ -64,10 +64,14 @@ def main():
     mod = OccCANINE()
 
     # Load data
-    df = load_data(n_obs=10000, data_path="Data/Test_data/*.csv")
+    if toyrun:
+        df = load_data(n_obs=10000, data_path="Data/Test_data/*.csv")
+    else:
+        # Load full data for production run
+        df = load_data(n_obs=100000, data_path="Data/Test_data/*.csv")
 
     # Get embeddings for the input
-    f = "Project_dissemination/Paper_replication_package/Data/big_files/embeddings_test.csv"
+    f = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/embeddings_test.csv"
     if not glob.glob(f): # Check if file exists
         print(f"File {f} does not exist. Generating embeddings.")
         embeddings = mod(df.occ1.tolist(), lang=df.lang.tolist(), what="embeddings", deduplicate=True)
@@ -75,12 +79,12 @@ def main():
         embeddings.to_csv(f, index=False)
     
     # Get t-SNE results
-    if not glob.glob("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results.csv"):
+    if not glob.glob("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/tsne_results.csv"):
         print("Generating t-SNE results.")
         embeddings = pd.read_csv(f)
         tsne_data = tsne(embeddings, d=2)
-        tsne_data.to_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results.csv", index=False)
+        tsne_data.to_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/tsne_results.csv", index=False)
         tsne_data_3d = tsne(embeddings, d=3)
-        tsne_data_3d.to_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results_3d.csv", index=False)
-    
+        tsne_data_3d.to_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/tsne_results_3d.csv", index=False)
+
 
