@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,file
-0.31,0.9,0.9,0.9,0.9,100,greedy,DK_cedar_test.csv

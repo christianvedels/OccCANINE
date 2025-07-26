@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,file
-0.31,0.965,0.9666666666666667,0.965,0.97,100,greedy,EN_patentee_test.csv

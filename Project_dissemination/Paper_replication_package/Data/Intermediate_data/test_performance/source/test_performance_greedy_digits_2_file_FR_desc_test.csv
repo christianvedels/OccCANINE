@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,file
-0.31,0.945,0.9483333333333335,0.95,0.95,100,greedy,FR_desc_test.csv
