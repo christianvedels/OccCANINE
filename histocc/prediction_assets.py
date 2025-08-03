@@ -541,6 +541,10 @@ class OccCANINE:
                     raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language. Or use `prediction_type='flat'` which does not use thresholds.")
                 threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.31) 
 
+        # Logits not available for seq2seq or mix models or full
+        if what == "logits" and prediction_type in ['seq2seq', 'mix', 'full']:
+            raise ValueError("Logits are not available for seq2seq or mix models or full prediction type. Use 'probs' or 'pred' instead.")
+
         # Data loader
         dataset = OccDatasetV2FromAlreadyLoadedInputs(
             inputs = unique_occ1,
@@ -568,7 +572,7 @@ class OccCANINE:
 
         # Run prediction type
         if prediction_type == 'flat':
-            out, out_type, inputs = self._predict_flat(data_loader)
+            out, out_type, inputs = self._predict_flat(data_loader, what)
         elif prediction_type == 'greedy':
             out, out_type, inputs = self._predict_greedy(data_loader)
         elif prediction_type == 'full':
@@ -649,7 +653,7 @@ class OccCANINE:
         # Return
         return result
 
-    def _predict_flat(self, data_loader):
+    def _predict_flat(self, data_loader, what = "pred"):
         """
         Makes predictions on a batch of occupational strings.
 
@@ -706,12 +710,19 @@ class OccCANINE:
             end = time.time()
 
             batch_logits = output
+            if what == "logits":
+                results.append(batch_logits.cpu().numpy())
+                continue
+
             batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
             results.append(batch_predicted_probs)
 
         results = np.concatenate(results)
 
-        out_type = 'probs'
+        if what == "logits":
+            out_type = 'logits'
+        elif what == "probs":
+            out_type = 'probs'
 
         return results, out_type, inputs
 
@@ -1226,6 +1237,17 @@ class OccCANINE:
             
             # Add input
             res.insert(0, 'occ1', inputs)
+
+        elif what == "logits":
+            if out_type == "logits":
+                res = out
+                # Make into pandas DataFrame
+                res = pd.DataFrame(res)
+
+                # Add input
+                res.insert(0, 'occ1', inputs)
+            else:
+                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
         else:
             raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
