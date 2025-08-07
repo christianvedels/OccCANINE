@@ -719,10 +719,10 @@ class OccCANINE:
 
         results = np.concatenate(results)
 
+        out_type = 'probs'
+
         if what == "logits":
-            out_type = 'logits'
-        elif what == "probs":
-            out_type = 'probs'
+            out_type = 'logits' # Overwrite out_type if logits are requested            
 
         return results, out_type, inputs
 
