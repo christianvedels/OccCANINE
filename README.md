@@ -14,6 +14,8 @@ Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/Occ
 
 How to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
 
+Ultra-short demo: [YouTube short demo](https://youtu.be/d8dR5-clJeQ)
+
 <details>
   <summary>How to cite (click to expand)</summary>
 
