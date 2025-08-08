@@ -1,0 +1,21 @@
+# A tibble: 241 × 5
+   method statistic `Lang. info.` threshold value
+   <chr>  <chr>     <chr>             <dbl> <dbl>
+ 1 flat   accuracy  No                 0.3  0.958
+ 2 flat   accuracy  No                 0.33 0.958
+ 3 flat   accuracy  Yes                0.33 0.963
+ 4 flat   accuracy  Yes                0.34 0.963
+ 5 full   accuracy  No                 0.48 0.895
+ 6 full   accuracy  No                 0.49 0.895
+ 7 full   accuracy  No                 0.5  0.895
+ 8 full   accuracy  No                 0.51 0.895
+ 9 full   accuracy  No                 0.52 0.895
+10 full   accuracy  Yes                0.27 0.895
+# ℹ 231 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+Number of observations full:
+ 100 
+
+Number of observations flat:
+ 1000 
