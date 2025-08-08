@@ -1,8 +1,0 @@
-# A tibble: 4 × 2
-# Groups:   stat [4]
-  stat          n
-  <chr>     <int>
-1 Accuracy    537
-2 F1 score    537
-3 Precision   537
-4 Recall      537

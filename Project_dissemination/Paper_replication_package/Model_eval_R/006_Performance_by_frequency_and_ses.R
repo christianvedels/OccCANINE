@@ -14,8 +14,8 @@ source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functio
 # Can be produced from the predict_test.py script
 # Data available on request
 
-flat = read_csv("Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_flat.csv")
-greedy = read_csv("Project_dissemination/Paper_replication_package/Data/test_performance/obs_test_performance_greedy.csv")
+flat = read_csv("Project_dissemination/Paper_replication_package/Data/Old_tmp/big_files/obs_test_performance_flat.csv")
+greedy = read_csv("Project_dissemination/Paper_replication_package/Data/Old_tmp/big_files/obs_test_performance_greedy.csv")
 
 # Correction to calculcate approximate equivalent number of training observations
 n_train = 15757685 
@@ -147,7 +147,7 @@ frequency_versus_performance = function(long_data, name) {
 
     sink(fname1)
 
-    plot_data %>% 
+    long_data %>% 
     group_by(stat) %>% 
     filter(n >= cutoff) %>%
     count() %>% print()
@@ -279,6 +279,25 @@ performance_by_ses = function(long_data, name) {
 
     return(list(plot = p1, etable1 = etab1, etable2 = etab2))
 }
+
+# ==== Frequency vs SES ====
+# This is not a function, but a simple plot
+ses_data = long_flat %>% 
+        mutate(
+            ses_value = hisco_to_ses(as.numeric(hisco_1), ses = "hiscam_u1")
+        )
+
+ses_freq = ses_data %>%
+    ggplot(aes(x = ses_value, y = log(n))) +
+    geom_point() +
+    geom_smooth() +
+    labs(title = "Frequency vs SES",
+         x = "Socio-Economic Status (SES)",
+         y = "Frequency") +
+         theme_bw()
+
+ggsave("tmp.png", plot = ses_freq, height = dims$height, width = dims$width, dpi = 600)
+
 
 
 # ==== Main - run all ====

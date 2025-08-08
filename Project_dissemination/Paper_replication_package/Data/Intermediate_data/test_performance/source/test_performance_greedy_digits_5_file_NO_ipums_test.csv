@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,1.0,1.0,1.0,1.0,100,greedy,NO_ipums_test.csv

@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.98,0.98,0.98,0.98,100,greedy,SE_chalmers_test.csv

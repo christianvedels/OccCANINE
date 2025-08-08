@@ -65,6 +65,10 @@ def load_data(n_obs=5000, data_path="Project_dissemination/Paper_replication_pac
 
     df = df.sample(n=n_obs, random_state=20) if n_obs < df.shape[0] else df
     df = df.reset_index(drop=True)
+
+    # How much
+    print(f"Loaded {df.shape[0]} rows from {data_path} with lang={lang}")
+
     return df
 
 def get_probs(df, mod, prediction_type="flat", lang=None):
@@ -220,7 +224,7 @@ def main(toyrun=False):
         wrapper(prediction_type="full", n_obs=100)
     else:
         # Run the full example
-        wrapper(prediction_type="flat", n_obs=100000)
+        wrapper(prediction_type="flat", n_obs=10000000000000)
         wrapper(prediction_type="full", n_obs=10000)
 
     # Optimal thresholds for flat and full
