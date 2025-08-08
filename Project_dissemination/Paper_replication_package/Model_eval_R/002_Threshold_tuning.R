@@ -10,10 +10,10 @@ library(foreach)
 source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-flat_overall = read_csv("Project_dissemination/Paper_replication_package/Data/threshold_tuning_flat_langknown.csv")
-flat_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/threshold_tuning_flat_langunk.csv")
-full_overall = read_csv("Project_dissemination/Paper_replication_package/Data/threshold_tuning_full_langknown.csv")
-full_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/threshold_tuning_full_langunk.csv")
+flat_overall = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langknown.csv")
+flat_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langunk.csv")
+full_overall = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langknown.csv")
+full_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langunk.csv")
 
 # Load data by language to data.frame
 files = list.files("Project_dissemination/Paper_replication_package/Data/thr_tuning_by_lang", full.names = TRUE)
