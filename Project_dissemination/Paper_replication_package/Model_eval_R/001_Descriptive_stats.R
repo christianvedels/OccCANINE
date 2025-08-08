@@ -24,7 +24,9 @@ data_summary = data.frame(
 )
 print(data_summary)
 
-data_summary %>% mutate(Obs / sum(Obs))
+sink("Project_dissemination/Paper_replication_package/Tables/Data_split_summary.txt")
+data_summary %>% mutate(Pct = Obs / sum(Obs)) %>% print()
+sink()
 
 # Clean f name
 clean_f_name = function(x){
@@ -78,6 +80,8 @@ tmp4 = test %>%
         file = clean_f_name(file)
     )
 
+
+sink("Project_dissemination/Paper_replication_package/Tables/Data_summary.txt")
 tmp1 %>% 
     full_join(tmp2, by = "file") %>%
     full_join(tmp3, by = "file") %>%
@@ -105,8 +109,8 @@ tmp1 %>%
         booktabs = TRUE,
         caption = "Data summary",
         linesep = ""
-    )
-
+    ) %>% print()
+sink()
 
 # === Table: Data by language ====
 tmp1 = train %>%
@@ -137,6 +141,7 @@ tmp4 = test %>%
     ) %>%
     ungroup()
 
+sink("Project_dissemination/Paper_replication_package/Tables/Data_summary_lang.txt")
 tmp1 %>% 
     full_join(tmp2, by = "lang") %>%
     full_join(tmp3, by = "lang") %>%
@@ -164,4 +169,5 @@ tmp1 %>%
         booktabs = TRUE,
         caption = "Data summary",
         linesep = ""
-    )
+    ) %>% print()
+sink()

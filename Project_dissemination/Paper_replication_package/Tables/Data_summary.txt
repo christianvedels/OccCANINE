@@ -1,0 +1,40 @@
+\begin{table}
+
+\caption{Data summary}
+\centering
+\begin{tabular}[t]{lllll}
+\toprule
+Shorthand name & Observations & Language & Percent & Source\\
+\midrule
+DK\_census & 5,391,656 & da & 29.08\% & \\
+EN\_marr\_cert & 4,046,203 & en & 21.82\% & \\
+EN\_uk\_ipums & 3,026,859 & en & 16.32\% & \\
+SE\_swedpop & 1,793,557 & se & 9.67\% & \\
+JIW\_database & 966,793 & nl & 5.21\% & \\
+EN\_ca\_ipums & 818,657 & unk & 4.41\% & \\
+CA\_bcn & 644,484 & ca & 3.48\% & \\
+HISCO\_website & 392,248 & mix & 2.12\% & \\
+SE\_titles & 241,410 & se & 1.30\% & \\
+HSN\_database & 184,937 & nl & 1.00\% & \\
+NO\_ipums & 147,255 & no & 0.79\% & \\
+FR\_desc & 142,778 & fr & 0.77\% & \\
+EN\_us\_ipums & 139,595 & en & 0.75\% & \\
+EN\_ship\_data & 103,023 & en & 0.56\% & \\
+EN\_patentee & 94,671 & en & 0.51\% & \\
+GE\_occupational\_census & 74,168 & ge & 0.40\% & \\
+EN\_parish & 73,806 & en & 0.40\% & \\
+DK\_cedar & 46,563 & da & 0.25\% & \\
+SE\_cedar & 45,581 & se & 0.25\% & \\
+DK\_orsted & 36,608 & da & 0.20\% & \\
+GE\_Selgert\_Gottlich & 29,159 & ge & 0.16\% & \\
+EN\_oclack & 24,530 & en & 0.13\% & \\
+EN\_loc & 23,179 & en & 0.13\% & \\
+IS\_ipums & 20,459 & is & 0.11\% & \\
+SE\_chalmers & 14,426 & se & 0.08\% & \\
+GE\_ipums & 8,482 & ge & 0.05\% & \\
+GE\_occupations1939 & 5,653 & ge & 0.03\% & \\
+IT\_fm & 4,525 & it & 0.02\% & \\
+EN\_PortArthur & 1,655 & en & 0.01\% & \\
+\bottomrule
+\end{tabular}
+\end{table}
