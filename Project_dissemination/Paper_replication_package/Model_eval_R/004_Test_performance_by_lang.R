@@ -12,7 +12,7 @@ source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functio
 
 # ==== Load data ====
 mean0 = function(x) mean(as.numeric(x))
-files = list.files("Project_dissemination/Paper_replication_package/Data/test_performance/lang", full.names = TRUE) %>% sample(replace = FALSE)
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/lang", full.names = TRUE) %>% sample(replace = FALSE)
 start_time = Sys.time()
 foreach(i = seq_along(files), .combine = "bind_rows") %do% {
     
@@ -20,7 +20,7 @@ foreach(i = seq_along(files), .combine = "bind_rows") %do% {
     
     eval_data = read_csv(f, show_col_types = FALSE, guess_max = 1000000, progress = FALSE) %>%
         mutate(file = f) %>%
-        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/test_performance/lang/", "", file)) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/lang/", "", file)) %>%
         ungroup()
     
     return(eval_data)
@@ -144,13 +144,24 @@ make_plot_lang_info = function(data, all_stats = NULL){
 }
 
 # ==== All stats ====
-plot_data$stat %>% unique()
+all_stats = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance_greedy_wlang.csv")
+all_stats = all_stats %>%
+  rename(
+    Accuracy = accuracy,
+    Precision = precision,
+    Recall = recall,
+    `F1 score` = f1
+  ) %>%
+  pivot_longer(
+    cols = c(Accuracy, Precision, Recall, `F1 score`),
+    names_to = "stat",
+    values_to = "value"
+  ) %>% 
+  mutate(
+    lang = "nl" # Choose what visually looks best
+  ) %>% 
+  select(stat, lang, value)
 
-all_stats = data.frame(
-  stat = c("Accuracy", "Precision", "Recall", "F1 score"),
-  value = c(0.960, 0.960, 0.967, 0.963),
-  lang = "nl"
-)
 
 # ==== Make plots ====
 # Flat 5 digits
@@ -198,6 +209,10 @@ ggsave(
   height = dims$height
 )
 
+sink("Project_dissemination/Paper_replication_package/Tables/Performance_by_lang_(boost_from_knowing_lang).txt", append = FALSE)
+cat("\nTest set performance by language and prediction type")
+cat("\n ---> This is just used to check the maximum value of the boost from knowing the language")
+cat("\n ---> (This is the reason it is not a latex table)\n")
 plot_data %>% 
   filter(prediction_type == "greedy") %>% 
   filter(digits == 5) %>%
@@ -211,7 +226,8 @@ plot_data %>%
   mutate(
     dif = abs(lang_info_yes - lang_info_no)
   ) %>%
-  arrange(-dif) %>% select(-threshold, -digits)
+  arrange(-dif) %>% select(-threshold, -digits) %>% print()
+sink()
 
 
 
