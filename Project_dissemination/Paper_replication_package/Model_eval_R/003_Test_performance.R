@@ -10,12 +10,13 @@ library(foreach)
 library(knitr)
 
 # ==== Load data ====
-files = list.files("Project_dissemination/Paper_replication_package/Data/test_performance", full.names = TRUE)
-files = files[!grepl("Data/test_performance/lang", files)]  # Exclude language folder
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance", full.names = TRUE)
+files = files[!grepl("Data/Intermediate_data/test_performance/lang", files)]  # Exclude language folder
+files = files[!grepl("Data/Intermediate_data/test_performance/source", files)]  # Exclude source folder
 foreach(f = files, .combine = "bind_rows") %do% {
     read_csv(f, show_col_types = FALSE) %>%
         mutate(file = f) %>%
-        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/test_performance/", "", file)) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance/", "", file)) %>%
         mutate(
             digits = case_when(
                 grepl("digits_1", file) ~ 1,
@@ -63,29 +64,40 @@ performance_table = test_performance %>% pivot_longer(
         ),
     )
 # Make LaTeX table with knitr::kable
+sink("Project_dissemination/Paper_replication_package/Tables/Test_performance.txt", append = FALSE)
+cat("\nTest set performance by prediction type and number of digits")
+cat("\nTest performance with language information\n")
 performance_table %>%
     filter(lang == "With lang. info.") %>%
+    filter(prediction_type %in% c("good", "fast")) %>%
     select(-lang) %>%
     kable(
         format = "latex",
         booktabs = TRUE,
         digits = 3,
         caption = "Test set performance by prediction type and number of digits"
-    )
+    ) %>% print()
 
+cat("\n")
+cat("Test performance without language information:\n")
 performance_table %>%
     filter(lang == "Without lang. info.") %>%
+    filter(prediction_type %in% c("good", "fast")) %>%
     select(-lang) %>%
     kable(
         format = "latex",
         booktabs = TRUE,
         digits = 3,
         caption = "Test set performance by prediction type and number of digits (without language information)"
-    )
+    ) %>% print()
+sink()
 
 # Lang info performance boost
+sink("Project_dissemination/Paper_replication_package/Tables/Test_performance_lang_info_boost.txt", append = FALSE)
+cat("\nTest set performance boost with language information\n")
 test_performance %>%
     filter(digits == 5) %>%
+    filter(prediction_type %in% c("flat", "greedy")) %>%
     arrange(
         case_when(
             prediction_type == "greedy" ~ 1,
@@ -121,4 +133,5 @@ test_performance %>%
         format = "latex",
         booktabs = TRUE,
         digits = 3
-    )
+    ) %>% print()
+sink()

@@ -1,0 +1,45 @@
+
+Test set performance by prediction type and number of digits
+Test performance with language information
+\begin{table}
+
+\caption{Test set performance by prediction type and number of digits}
+\centering
+\begin{tabular}[t]{llrrrrrr}
+\toprule
+prediction\_type & statistic & 1 & 2 & 3 & 4 & 5 & n\\
+\midrule
+good & accuracy & 0.977 & 0.966 & 0.963 & 0.961 & 0.961 & 1000\\
+good & precision & 0.977 & 0.967 & 0.964 & 0.962 & 0.962 & 1000\\
+good & recall & 0.982 & 0.973 & 0.970 & 0.968 & 0.967 & 1000\\
+good & f1 & 0.978 & 0.968 & 0.965 & 0.963 & 0.963 & 1000\\
+fast & accuracy & 0.975 & 0.964 & 0.962 & 0.958 & 0.959 & 1000\\
+\addlinespace
+fast & precision & 0.976 & 0.964 & 0.963 & 0.959 & 0.959 & 1000\\
+fast & recall & 0.978 & 0.970 & 0.970 & 0.967 & 0.967 & 1000\\
+fast & f1 & 0.976 & 0.966 & 0.965 & 0.961 & 0.962 & 1000\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Test performance without language information:
+\begin{table}
+
+\caption{Test set performance by prediction type and number of digits (without language information)}
+\centering
+\begin{tabular}[t]{llrrrrrr}
+\toprule
+prediction\_type & statistic & 1 & 2 & 3 & 4 & 5 & n\\
+\midrule
+good & accuracy & 0.975 & 0.963 & 0.959 & 0.954 & 0.954 & 1000\\
+good & precision & 0.975 & 0.963 & 0.960 & 0.955 & 0.955 & 1000\\
+good & recall & 0.980 & 0.970 & 0.966 & 0.961 & 0.960 & 1000\\
+good & f1 & 0.976 & 0.965 & 0.961 & 0.956 & 0.956 & 1000\\
+fast & accuracy & 0.977 & 0.963 & 0.960 & 0.955 & 0.955 & 1000\\
+\addlinespace
+fast & precision & 0.977 & 0.964 & 0.961 & 0.955 & 0.955 & 1000\\
+fast & recall & 0.980 & 0.970 & 0.969 & 0.965 & 0.965 & 1000\\
+fast & f1 & 0.978 & 0.965 & 0.963 & 0.958 & 0.958 & 1000\\
+\bottomrule
+\end{tabular}
+\end{table}

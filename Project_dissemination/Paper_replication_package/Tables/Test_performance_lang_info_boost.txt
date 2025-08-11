@@ -1,0 +1,16 @@
+
+Test set performance boost with language information
+
+\begin{tabular}{llrrrrr}
+\toprule
+prediction\_type & lang & accuracy & precision & recall & f1 & n\\
+\midrule
+greedy & known & 0.961 & 0.962 & 0.967 & 0.963 & 1000\\
+greedy & unk & 0.954 & 0.955 & 0.960 & 0.956 & 1000\\
+greedy & dif & 0.007 & 0.007 & 0.007 & 0.007 & 1000\\
+flat & known & 0.959 & 0.959 & 0.967 & 0.962 & 1000\\
+flat & unk & 0.955 & 0.955 & 0.965 & 0.958 & 1000\\
+\addlinespace
+flat & dif & 0.004 & 0.004 & 0.002 & 0.003 & 1000\\
+\bottomrule
+\end{tabular}
