@@ -53,6 +53,12 @@ plot_data = test_performance %>%
   ) %>% 
   mutate(
     label = paste0(scales::percent(value, 0.1))
+  ) %>%
+  mutate(
+    source = gsub("test_performance_greedy_digits_[1-5]_file_", "", file)
+  ) %>%
+  mutate(
+    source = gsub("_test.csv", "", source)
   )
 
 #  ==== Make plot function ====
@@ -60,11 +66,11 @@ make_plot = function(data, all_stats = NULL){
   
   lvls = data %>% 
     filter(stat == "F1 score") %>% 
-    arrange(-value) %>% pull(lang)
+    arrange(-value) %>% pull(source)
   
   p1 = data %>% 
-    mutate(lang = factor(lang, lvls)) %>% 
-    ggplot(aes(lang, value)) + 
+    mutate(source = factor(source, lvls)) %>% 
+    ggplot(aes(source, value)) + 
     geom_bar(stat = "identity", alpha = 0.8, fill = colours$red) +
     scale_y_continuous(
       labels = scales::percent,
@@ -73,17 +79,18 @@ make_plot = function(data, all_stats = NULL){
     theme_bw() + 
     facet_wrap(~stat, scales = "free") + 
     geom_text(
-      y = 0.4,
-      aes(label = label, x = lang),
+      y = 0.55,
+      aes(label = label, x = source),
       col = "grey", 
-      angle = 90
+      angle = 90,
+      size = 2
     ) + 
     theme(
       axis.text.x = element_text(angle = 90, vjust = 0.5)
     ) + 
     labs(
       y = "Statistic",
-      x = "Language"
+      x = "Source"
     )
   
   if(!is.null(all_stats)){
@@ -91,7 +98,7 @@ make_plot = function(data, all_stats = NULL){
       geom_hline(aes(yintercept = value), data = all_stats, lty = 2) + 
       geom_text(
         data = all_stats,
-        aes(label = scales::percent(value, 0.1), x = lang, y = value-0.075),
+        aes(label = scales::percent(value, 0.1), x = source, y = value-0.075),
         inherit.aes = FALSE
       )
   }
@@ -104,13 +111,13 @@ make_plot_lang_info = function(data, all_stats = NULL){
   lvls = data %>% 
     filter(stat == "F1 score") %>% 
     arrange(-value) %>% 
-    pull(lang) %>% 
+    pull(source) %>% 
     unique()
 
   
   p1 = data %>% 
-    mutate(lang = factor(lang, lvls)) %>% 
-    ggplot(aes(lang, value, fill = lang_info)) + 
+    mutate(source = factor(source, lvls)) %>% 
+    ggplot(aes(source, value, fill = lang_info)) + 
     geom_bar(stat = "identity", alpha = 0.8, position = "dodge") +
     scale_y_continuous(
       labels = scales::percent,
@@ -127,7 +134,7 @@ make_plot_lang_info = function(data, all_stats = NULL){
     ) + 
     labs(
       y = "Statistic",
-      x = "Language"
+      x = "Source"
     )
   
   if(!is.null(all_stats)){
@@ -135,7 +142,7 @@ make_plot_lang_info = function(data, all_stats = NULL){
       geom_hline(aes(yintercept = value), data = all_stats, lty = 2) + 
       geom_text(
         data = all_stats,
-        aes(label = scales::percent(value, 0.1), x = lang, y = value-0.075),
+        aes(label = scales::percent(value, 0.1), x = source, y = value-0.075),
         inherit.aes = FALSE
       )
   }
@@ -144,30 +151,25 @@ make_plot_lang_info = function(data, all_stats = NULL){
 }
 
 # ==== All stats ====
-plot_data$stat %>% unique()
-
-all_stats = data.frame(
-  stat = c("Accuracy", "Precision", "Recall", "F1 score"),
-  value = c(0.960, 0.960, 0.967, 0.963),
-  lang = "nl"
-)
+all_stats = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance_greedy_wlang.csv")
+all_stats = all_stats %>%
+  rename(
+    Accuracy = accuracy,
+    Precision = precision,
+    Recall = recall,
+    `F1 score` = f1
+  ) %>%
+  pivot_longer(
+    cols = c(Accuracy, Precision, Recall, `F1 score`),
+    names_to = "stat",
+    values_to = "value"
+  ) %>% 
+  mutate(
+    source = "FR_desc" # Choose what visually looks best
+  ) %>% 
+  select(stat, source, value)
 
 # ==== Make plots ====
-# Flat 5 digits
-p1 = plot_data %>% 
-  filter(lang_info) %>% 
-  filter(prediction_type == "flat") %>% 
-  filter(digits == 5) %>% 
-  make_plot()
-
-p1
-ggsave(
-  "Project_dissemination/Paper_replication_package/Figures/Performance_by_lang_flat.png",
-  plot = p1,
-  width = dims$width,
-  height = dims$height
-)
-
 # Greedy 5 digits
 p1 = plot_data %>% 
   filter(lang_info) %>% 
@@ -177,10 +179,10 @@ p1 = plot_data %>%
 
 p1
 ggsave(
-  "Project_dissemination/Paper_replication_package/Figures/Performance_by_lang_greedy.png",
+  "Project_dissemination/Paper_replication_package/Figures/Performance_by_source_greedy_lang_info.png",
   plot = p1,
   width = dims$width,
-  height = dims$height
+  height = dims$height*1.5
 )
 
 
@@ -192,27 +194,11 @@ p1 = plot_data %>%
 
 p1
 ggsave(
-  "Project_dissemination/Paper_replication_package/Figures/Performance_by_lang_greedy_lang_info.png",
+  "Project_dissemination/Paper_replication_package/Figures/Performance_by_source_greedy_without_lang_info.png",
   plot = p1,
   width = dims$width,
-  height = dims$height
+  height = dims$height*1.5
 )
-
-plot_data %>% 
-  filter(prediction_type == "greedy") %>% 
-  filter(digits == 5) %>%
-  select(-label, -file) %>%
-  mutate(lang_info = ifelse(lang_info, "yes", "no")) %>%
-  pivot_wider(
-    names_from = "lang_info",
-    values_from = "value",
-    names_prefix = "lang_info_"
-  ) %>%
-  mutate(
-    dif = abs(lang_info_yes - lang_info_no)
-  ) %>%
-  arrange(-dif) %>% select(-threshold, -digits)
-
 
 
 
