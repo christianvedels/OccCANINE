@@ -10,7 +10,7 @@ library(foreach)
 library(knitr)
 
 # ==== Load data ====
-files = list.files("Data/OOD_data/Predictions", full.names = TRUE)
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood", full.names = TRUE)
 
 ood_performance = foreach(f = files, .combine = "bind_rows") %do% {
     if(f %in% c(
@@ -27,7 +27,7 @@ ood_performance = foreach(f = files, .combine = "bind_rows") %do% {
     }
         
     res %>%
-        mutate(file = gsub("Data/OOD_data/Predictions/", "", file)) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/", "", file)) %>%
         select(-`...1`, -occ1, -acc, -precision, -recall, -f1) %>%
         pivot_longer(
             cols = acc_1:f1_5,
@@ -53,14 +53,14 @@ res1 = ood_performance %>%
     select(-tmp)
 
 # Manually checked files
-files = list.files("Data/OOD_data/Predictions/Manually_checked", full.names = TRUE, pattern = "\\.csv$")
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/Manually_checked", full.names = TRUE, pattern = "\\.csv$")
 
 ood_performance_manual = foreach(f = files, .combine = "bind_rows") %do% {
     res = read_csv2(f, show_col_types = FALSE) %>%
         mutate(file = f)
         
     res %>%
-        mutate(file = gsub("Data/OOD_data/Predictions/Manually_checked/", "", file)) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/Manually_checked/", "", file)) %>%
         select(Check_substantial, Check_strict, file, n) %>%
         pivot_longer(
             cols = Check_substantial:Check_strict,
@@ -82,7 +82,7 @@ res2 = ood_performance_manual %>%
         names_from = statistic,
         values_from = value
     ) %>%
-    mutate(file = gsub("Data/OOD_data/Predictions/Manually_checked/", "", file))
+    mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/Manually_checked/", "", file))
 
 
 # Latex in two panels printed to Tables/ood_performance.tex
