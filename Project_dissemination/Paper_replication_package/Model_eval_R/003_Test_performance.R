@@ -135,3 +135,12 @@ test_performance %>%
         digits = 3
     ) %>% print()
 sink()
+
+# Save optimal performance
+test_performance %>%
+    filter(digits == 5) %>%
+    filter(prediction_type %in% c("greedy")) %>%
+    filter(lang == "known") %>%
+    write_csv(
+        "Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance_greedy_wlang.csv"
+    )
