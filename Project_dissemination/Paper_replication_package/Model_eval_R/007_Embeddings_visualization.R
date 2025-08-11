@@ -12,8 +12,8 @@ source("Data_cleaning_scripts/000_Functions.R")
 # ==== Load Data ==== 
 key = read_csv("Data/Key.csv")
 
-tsne_data_2d = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results.csv")
-tsne_data_3d = read_csv("Project_dissemination/Paper_replication_package/Data/big_files/tsne_results_3d.csv")
+tsne_data_2d = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/tsne_results.csv")
+tsne_data_3d = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/tsne_results_3d.csv")
 
 # ==== Clean data ====
 clean_data = function(df){
