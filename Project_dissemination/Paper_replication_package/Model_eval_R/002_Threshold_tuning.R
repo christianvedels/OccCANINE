@@ -16,11 +16,11 @@ full_overall = read_csv("Project_dissemination/Paper_replication_package/Data/In
 full_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langunk.csv")
 
 # Load data by language to data.frame
-files = list.files("Project_dissemination/Paper_replication_package/Data/thr_tuning_by_lang", full.names = TRUE)
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang", full.names = TRUE)
 thr_tuning_by_lang = foreach(f = files, .combine = "bind_rows") %do% {
     read_csv(f, show_col_types = FALSE) %>%
         mutate(file = f) %>%
-        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/thr_tuning_by_lang/", "", file)) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/", "", file)) %>%
         mutate(lang = gsub("threshold_tuning_full_", "", file)) %>%
         mutate(lang = gsub("threshold_tuning_flat_", "", lang)) %>%
         mutate(lang = gsub(".csv", "", lang)) %>%
@@ -275,6 +275,7 @@ res1 %>%
       booktabs = TRUE) %>% print()
 
 sink()
+
 
 
 
