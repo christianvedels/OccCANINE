@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,lang
-99,0.975,0.9766666666666667,0.98,0.975,100,greedy,ge

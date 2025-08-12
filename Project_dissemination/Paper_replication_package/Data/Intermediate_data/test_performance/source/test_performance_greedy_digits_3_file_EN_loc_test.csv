@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,file
-0.31,0.925,0.9283333333333332,0.93,0.93,100,greedy,EN_loc_test.csv

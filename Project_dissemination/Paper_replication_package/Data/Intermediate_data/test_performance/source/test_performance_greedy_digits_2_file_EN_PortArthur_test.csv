@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,file
-0.31,0.967032967032967,0.967032967032967,0.967032967032967,0.967032967032967,91,greedy,EN_PortArthur_test.csv

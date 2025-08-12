@@ -1,2 +1,0 @@
-threshold,accuracy,f1,precision,recall,n,prediction_type,lang,file,digits
-99,0.961,0.9631666666666664,0.9615,0.967,1000,greedy,known,test_performance_greedy_digits_5.csv,5
