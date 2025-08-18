@@ -30,10 +30,10 @@ def perform_test(df, thr, probs, mod, digits = None, verbose = False):
     )
 
     eval_engine = EvalEngine(
-        mod, 
-        df, 
-        preds, 
-        pred_col='hisco_', 
+        mod,
+        df,
+        preds,
+        pred_col='hisco_',
         digits = digits
     )
 
@@ -47,7 +47,7 @@ def perform_test(df, thr, probs, mod, digits = None, verbose = False):
 
     return res
 
-def load_data(n_obs=5000, data_path="Project_dissemination/Paper_replication_package/Data/Raw_data/Validation_data1/*.csv", lang = None):
+def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Validation_data1/*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -73,9 +73,9 @@ def load_data(n_obs=5000, data_path="Project_dissemination/Paper_replication_pac
 
 def get_probs(df, mod, prediction_type="flat", lang=None):
     """
-    
+
     """
-    
+
     if lang is None:
         langs = df["lang"].tolist()
     else:
@@ -103,41 +103,48 @@ def apply_test_across_thr(df, probs, mod):
 
 
 def wrapper(prediction_type="flat", n_obs=100):
+    # Load model
+    mod = OccCANINE(name='OccCANINE_s2s_mix', verbose = True, batch_size=2048)
+
     # Define result fname and test if it exists
     result_fname = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv"
-    if os.path.exists(result_fname):
+    if not os.path.exists(result_fname):
         print(f"Results for {prediction_type} already exist. Skipping...")
-        return 0
+        # Load data
+        df = load_data(n_obs=n_obs)
 
-    # Load model
-    mod = OccCANINE(name='OccCANINE_s2s_mix', verbose = True)
+        # Get probs
+        probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
+        probs_lang = get_probs(df, mod, prediction_type=prediction_type)
 
-    # Load data
-    df = load_data(n_obs=n_obs)
+        # Perform test across thresholds
+        results_df_unk = apply_test_across_thr(df, probs_unk, mod)
+        results_df_lang = apply_test_across_thr(df, probs_lang, mod)
 
-    # Get probs
-    probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
-    probs_lang = get_probs(df, mod, prediction_type=prediction_type)
+        # Add n as column
+        results_df_unk["n"] = df.shape[0]
+        results_df_lang["n"] = df.shape[0]
 
-    # Perform test across thresholds
-    results_df_unk = apply_test_across_thr(df, probs_unk, mod)
-    results_df_lang = apply_test_across_thr(df, probs_lang, mod)
-
-    # Add n as column
-    results_df_unk["n"] = df.shape[0]
-    results_df_lang["n"] = df.shape[0]
-    
-    # Save results
-    if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data"):
-        os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data")
-    results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
-    results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
+        # Save results
+        if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data"):
+            os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data")
+        results_df_lang.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langknown.csv", index=False)
+        results_df_unk.to_csv(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_{prediction_type}_langunk.csv", index=False)
+    else:
+        print(f"Results for {prediction_type} already exist. Skipping to by-language testing...")
 
     # Compute for each lang
     for lang in THRESHOLD_LOOKUP.keys():
+        fname1 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langknown_{lang}.csv"
+        fname2 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langunk_{lang}.csv"
+
         print(f"Performing test for {lang}")
 
-        df = load_data(n_obs=n_obs, data_path="Project_dissemination/Paper_replication_package/Data/Raw_data/Validation_data1/*.csv", lang=lang)
+        if os.path.isfile(fname1) and os.path.isfile(fname2):
+            print(f'Results for {lang} already exists, skipping')
+            continue
+
+        df = load_data(n_obs=n_obs, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Validation_data1/*.csv", lang=lang)
         print(f"Loaded data for {lang}; NROWS: {df.shape[0]}")
 
         # Get probs
@@ -155,8 +162,7 @@ def wrapper(prediction_type="flat", n_obs=100):
         # Save results
         if not os.path.exists("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang"):
             os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang")
-        fname1 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langknown_{lang}.csv"
-        fname2 = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/threshold_tuning_{prediction_type}_langunk_{lang}.csv"
+
         results_df_lang.to_csv(fname1, index=False)
         results_df_unk.to_csv(fname2, index=False)
 
@@ -171,7 +177,7 @@ def optimal_thresholds():
     # Load the results
     df_flat = pd.read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langknown.csv")
     df_full = pd.read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langknown.csv")
-    
+
     optimal_flat = df_flat.loc[df_flat["f1"].idxmax(), "threshold"]
     optimal_full = df_full.loc[df_full["f1"].idxmax(), "threshold"]
 

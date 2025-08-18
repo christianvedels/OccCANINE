@@ -7,9 +7,10 @@ from Project_dissemination.Paper_replication_package.Model_eval_python.embedding
 from Project_dissemination.Paper_replication_package.Model_eval_python.other_systems_eval import main as other_systems_eval_main
 from Project_dissemination.Paper_replication_package.Model_eval_python.agreement_german_sources import main as agreement_german_sources_main
 
-if __name__ == "__main__":
 
-    tr = True  # Set to True for toy run, False for full run
+if __name__ == "__main__":
+    tr = False  # Set to True for toy run, False for full run
+
     # Runs all the prerequisite scripts for the paper results
     threshold_tuning_main(toyrun=tr)
     predict_test_main(toyrun=tr)
@@ -19,4 +20,3 @@ if __name__ == "__main__":
     embeddings_main(toyrun=tr)
     other_systems_eval_main(toyrun=tr)
     agreement_german_sources_main()
-
