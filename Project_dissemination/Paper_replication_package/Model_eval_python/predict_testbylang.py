@@ -5,7 +5,7 @@ import glob
 import json
 import os
 
-def load_data(n_obs=5000, data_path="Data/Test_data/*.csv", lang = None):
+def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -142,10 +142,10 @@ def main(toyrun=False):
         print(f"Performing test for {lang}")
         
         if toyrun:
-            df = load_data(n_obs=100, data_path="Data/Test_data/*.csv", lang=lang)
+            df = load_data(n_obs=100, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang=lang)
         else:
             # Load full data for production run
-            df = load_data(n_obs=1000000000000000, data_path="Data/Test_data/*.csv", lang=lang)
+            df = load_data(n_obs=1000000000000000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang=lang)
         
         # Run evaluations for different prediction types
         run_eval(df, mod, prediction_type="flat", lang=lang, thr=THRESHOLD_LOOKUP.get(lang).get("flat"))

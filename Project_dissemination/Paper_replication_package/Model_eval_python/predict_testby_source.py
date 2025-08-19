@@ -5,7 +5,7 @@ import glob
 import json
 import os
 
-def load_data(n_obs=5000, data_path="Data/Test_data/*.csv"):
+def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -90,7 +90,7 @@ def main(toyrun=False):
     mod = OccCANINE()
 
     # Load data
-    files = glob.glob("Data/Test_data/*.csv")
+    files = glob.glob(r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
     for f in files:
 
         print(f"Performing test for {f}")

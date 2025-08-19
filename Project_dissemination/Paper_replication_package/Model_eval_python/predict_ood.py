@@ -8,7 +8,7 @@ def main():
     mod = OccCANINE()
 
     # list files
-    files = os.listdir('Project_dissemination/Paper_replication_package/Data/Raw_data/OOD_data')
+    files = os.listdir(r'Z:\faellesmappe\tsdj\hisco\data/OOD_data')
 
     for f in files:
         if f == 'Predictions':
@@ -27,7 +27,7 @@ def main():
         os.makedirs(os.path.dirname(fname), exist_ok=True)
 
         print(f'------> Predicting {f}')
-        data_f = pd.read_csv(f'Project_dissemination/Paper_replication_package/Data/Raw_data/OOD_data/{f}')
+        data_f = pd.read_csv(f'Z:/faellesmappe/tsdj/hisco/data/OOD_data/{f}')
 
         res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True)
 

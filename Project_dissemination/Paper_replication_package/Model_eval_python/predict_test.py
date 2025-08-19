@@ -4,7 +4,8 @@ import glob
 import os
 import json
 
-def load_data(n_obs=5000, data_path=r"Project_dissemination\Paper_replication_package\Data\Raw_data\Test_data\*.csv", lang = None):
+
+def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data\*.csv", lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -27,24 +28,24 @@ def load_data(n_obs=5000, data_path=r"Project_dissemination\Paper_replication_pa
 def load_optimal_thresholds():
     """
     Load optimal thresholds for flat and full predictions from a JSON file.
-    
+
     Returns:
         dict: Dictionary with optimal thresholds for each language.
     """
     thresholds_path = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/thresholds_by_lang.json"
-    
+
     if not os.path.exists(thresholds_path):
         raise FileNotFoundError(f"Thresholds file not found: {thresholds_path}")
-    
+
     with open(thresholds_path, "r") as f:
         thresholds_by_lang = json.load(f)
-    
+
     return thresholds_by_lang
 
 def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
     """
     Run evaluation for a given threshold.
-    
+
     Args:
         df (pd.DataFrame): DataFrame containing the data.
         mod (OccCANINE): The OccCANINE model instance.
@@ -67,34 +68,34 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         return
 
     preds = mod(
-        df["occ1"].tolist(), 
-        df["lang"].tolist(), 
-        threshold=thr, 
-        prediction_type=prediction_type, 
+        df["occ1"].tolist(),
+        df["lang"].tolist(),
+        threshold=thr,
+        prediction_type=prediction_type,
         deduplicate=True
     )
 
     preds_unk = mod(
-        df["occ1"].tolist(), 
-        "unk", 
-        threshold=thr, 
-        prediction_type=prediction_type, 
+        df["occ1"].tolist(),
+        "unk",
+        threshold=thr,
+        prediction_type=prediction_type,
         deduplicate=True
     )
 
     eval_engine = EvalEngine(
-        mod, 
-        df, 
-        preds, 
-        pred_col='hisco_', 
+        mod,
+        df,
+        preds,
+        pred_col='hisco_',
         digits=digits
     )
 
     eval_engine_unk = EvalEngine(
-        mod, 
-        df, 
-        preds_unk, 
-        pred_col='hisco_', 
+        mod,
+        df,
+        preds_unk,
+        pred_col='hisco_',
         digits=digits
     )
 
@@ -105,7 +106,7 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
     preds["f1"] = eval_engine.f1(return_per_obs = True)
     preds["rowid"] = df.RowID
     preds.to_csv(fname, index=False)
-    
+
     for d in range(1, digits + 1):
         eval_engine.digits = d
         res = pd.DataFrame([{
@@ -158,7 +159,7 @@ def main(toyrun=False):
         df = load_data(n_obs=1000000000000000, lang=None)
 
     thr = load_optimal_thresholds()
-    
+
     # Run evaluations for different prediction types
     run_eval(df, mod, prediction_type="flat", thr=thr["overall"]["flat"], digits=5)
     run_eval(df, mod, prediction_type="greedy", thr=99, digits=5)  # Placeholder threshold (not used in greedy)

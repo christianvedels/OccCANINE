@@ -3,7 +3,7 @@ import pandas as pd
 import glob
 import os
 
-def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer-icem-ft/last.bin", data_path="Data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv", system = "OCCICEM"):
+def test_performance(file = "tmp.csv", n_obs=1000, mod_path = r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3\mixer-icem-ft/last.bin", data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv", system = "OCCICEM"):
     # If file exists do nothing
     if os.path.exists(file):
         print(f"File {file} already exists. Skipping performance test.")
@@ -19,15 +19,15 @@ def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer
 
     # Get predictions
     preds = mod(
-        df["occ1"].tolist(), 
-        df["lang"].tolist(), 
+        df["occ1"].tolist(),
+        df["lang"].tolist(),
         deduplicate=True
     )
 
     eval_engine = EvalEngine(
-        mod, 
-        df, 
-        preds, 
+        mod,
+        df,
+        preds,
         pred_col=f"{system}_"
     )
 
@@ -56,17 +56,17 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/occicem_performance.csv",
         n_obs=n_obs,
-        mod_path="Data/models/mixer-icem-ft/last.bin",
-        data_path="Data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-icem-ft/last.bin",
+        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
-    
+
     # ISCO68
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/isco68_performance.csv",
         n_obs=n_obs,
-        mod_path="Data/models/mixer-isco-ft/last.bin",
-        data_path="Data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-ft/last.bin",
+        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
 
@@ -74,11 +74,11 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/occ1950_performance.csv",
         n_obs=n_obs,
-        mod_path="Data/models/mixer-occ1950-ft/last.bin",
-        data_path="Data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-ft/last.bin",
+        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
-    
+
 
 if __name__ == "__main__":
     main()

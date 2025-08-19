@@ -3,7 +3,7 @@ import pandas as pd
 import glob
 import sklearn
 
-def load_data(n_obs=5000, data_path="Data/Test_data/*.csv"):
+def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -65,10 +65,10 @@ def main(toyrun=True):
 
     # Load data
     if toyrun:
-        df = load_data(n_obs=10000, data_path="Data/Test_data/*.csv")
+        df = load_data(n_obs=10000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
     else:
         # Load full data for production run
-        df = load_data(n_obs=100000, data_path="Data/Test_data/*.csv")
+        df = load_data(n_obs=100000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
 
     # Get embeddings for the input
     f = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/embeddings_test.csv"
