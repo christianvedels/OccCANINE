@@ -1,0 +1,25 @@
+# A tibble: 16 × 5
+   method statistic `Lang. info.` threshold value
+   <chr>  <chr>     <chr>             <dbl> <dbl>
+ 1 flat   accuracy  No                 0.33 0.961
+ 2 flat   accuracy  Yes                0.38 0.965
+ 3 full   accuracy  No                 0.3  0.885
+ 4 full   accuracy  Yes                0.32 0.887
+ 5 flat   f1        No                 0.29 0.965
+ 6 flat   f1        Yes                0.31 0.968
+ 7 full   f1        No                 0.24 0.912
+ 8 full   f1        Yes                0.25 0.913
+ 9 flat   precision No                 0.47 0.963
+10 flat   precision Yes                0.38 0.966
+11 full   precision No                 0.32 0.959
+12 full   precision Yes                0.47 0.962
+13 flat   recall    No                 0.01 0.990
+14 flat   recall    Yes                0.01 0.990
+15 full   recall    No                 0.01 0.906
+16 full   recall    Yes                0.01 0.906
+
+Number of observations full:
+ 10000 
+
+Number of observations flat:
+ 100000 

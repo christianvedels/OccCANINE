@@ -4,48 +4,80 @@ from histocc.eval_metrics import EvalEngine
 import pandas as pd
 import os
 
-mod = OccCANINE()
+def main():
+    mod = OccCANINE()
 
-# list files
-files = os.listdir('Data/OOD_data')
+    # list files
+    files = os.listdir(r'Z:\faellesmappe\tsdj\hisco\data/OOD_data')
 
-for f in files:
-    if f == 'Predictions':
-        continue
-    print(f'------> Predicting {f}')
-    data_f = pd.read_csv(f'Data/OOD_data/{f}')
+    for f in files:
+        if f == 'Predictions':
+            continue
 
-    res = mod(data_f.occ1.tolist(), lang = f[0:2].lower())
+        if f == 'Predictions_finetuned':
+            continue
 
-    eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_")
-    res[f"acc"] = eval_engine.accuracy(return_per_obs = True)
-    res["precision"] = eval_engine.precision(return_per_obs = True)
-    res["recall"] = eval_engine.recall(return_per_obs = True)
-    res["f1"] = eval_engine.f1(return_per_obs = True)
+        fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/predictions_{f}'
 
-    # Add in rowid
-    res["rowid"] = data_f.RowID
+        if os.path.exists(fname):
+            print(f"Skipping {f} as predictions already exist.")
+            continue
 
-    # Print
-    print(f"    Acc: {eval_engine.accuracy()}")
-    print(f"    Precision: {eval_engine.precision()}")
-    print(f"    Recall: {eval_engine.recall()}")
-    print(f"    F1: {eval_engine.f1()}")
+        # Check if dir exists, if not create it
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
 
-    # Eval digit by digit
-    for digits in range(1, 6): 
-        print(f"Digits: {digits}")
-        eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_", digits=digits)
-        res[f"acc_{digits}"] = eval_engine.accuracy(return_per_obs = True)
-        res[f"precision_{digits}"] = eval_engine.precision(return_per_obs = True)
-        res[f"recall_{digits}"] = eval_engine.recall(return_per_obs = True)
-        res[f"f1_{digits}"] = eval_engine.f1(return_per_obs = True)
+        print(f'------> Predicting {f}')
+        data_f = pd.read_csv(f'Z:/faellesmappe/tsdj/hisco/data/OOD_data/{f}')
+
+        res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True)
+
+        eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_")
+        res[f"acc"] = eval_engine.accuracy(return_per_obs = True)
+        res["precision"] = eval_engine.precision(return_per_obs = True)
+        res["recall"] = eval_engine.recall(return_per_obs = True)
+        res["f1"] = eval_engine.f1(return_per_obs = True)
+
+        # Add in rowid
+        # res["rowid"] = data_f.RowID
+        res['rowid'] = data_f.index
+
+        # Check if 'n' in data_f
+        if "n" in data_f.columns:
+            res["n"] = data_f.n
+        else:
+            res["n"] = 1  # Default to 1 if 'n' is not present
+
+        # Check if HISCO codes are present in input data
+        if not any(col.startswith("hisco_") for col in data_f.columns):
+            print(f"Warning: No column starting with 'hisco_' found in {f}. Check results manually.")
+            # Save predictions
+            res.to_csv(fname)
+            continue
 
         # Print
-        print(f"    Acc (digits: {digits}): {eval_engine.accuracy()}")
-        print(f"    Precision (digits: {digits}): {eval_engine.precision()}")
-        print(f"    Recall (digits: {digits}): {eval_engine.recall()}")
-        print(f"    F1 (digits: {digits}): {eval_engine.f1()}")
+        print(f"    Acc: {eval_engine.accuracy()}")
+        print(f"    Precision: {eval_engine.precision()}")
+        print(f"    Recall: {eval_engine.recall()}")
+        print(f"    F1: {eval_engine.f1()}")
 
-    # Save predictions
-    res.to_csv(f'Data/OOD_data/Predictions/predictions_{f}')
+        # Eval digit by digit
+        for digits in range(1, 6):
+            print(f"Digits: {digits}")
+            eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_", digits=digits)
+            res[f"acc_{digits}"] = eval_engine.accuracy(return_per_obs = True)
+            res[f"precision_{digits}"] = eval_engine.precision(return_per_obs = True)
+            res[f"recall_{digits}"] = eval_engine.recall(return_per_obs = True)
+            res[f"f1_{digits}"] = eval_engine.f1(return_per_obs = True)
+
+            # Print
+            print(f"    Acc (digits: {digits}): {eval_engine.accuracy()}")
+            print(f"    Precision (digits: {digits}): {eval_engine.precision()}")
+            print(f"    Recall (digits: {digits}): {eval_engine.recall()}")
+            print(f"    F1 (digits: {digits}): {eval_engine.f1()}")
+
+        # Save predictions
+        res.to_csv(fname)
+
+if __name__ == "__main__":
+    main()
+

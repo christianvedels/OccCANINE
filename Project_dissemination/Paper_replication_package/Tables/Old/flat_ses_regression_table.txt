@@ -1,0 +1,38 @@
+[1] "Panel A: Regression of model performance on SES"
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & Accuracy & F1score  & Precision & Recall\\  
+   Model:               & (1)      & (2)      & (3)       & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   ses\_value           & -0.0007  & -0.0006  & -0.0006   & -0.0005\\   
+                        & (0.0004) & (0.0004) & (0.0004)  & (0.0003)\\   
+   \midrule
+   \emph{Fit statistics}\\
+   Observations         & 809      & 809      & 809       & 809\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Heteroskedasticity-robust standard-errors in parentheses}}\\
+\end{tabular}
+\par\endgroup
+[1] "Panel B: Regression of model performance on SES and log(N)"
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & Accuracy & F1score  & Precision & Recall\\  
+   Model:               & (1)      & (2)      & (3)       & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   ses\_value           & -0.0005  & -0.0004  & -0.0004   & -0.0004\\   
+                        & (0.0004) & (0.0004) & (0.0004)  & (0.0003)\\   
+   log(n)               & 0.0124   & 0.0095   & 0.0111    & 0.0059\\   
+                        & (0.0028) & (0.0026) & (0.0028)  & (0.0025)\\   
+   \midrule
+   \emph{Fit statistics}\\
+   Observations         & 809      & 809      & 809       & 809\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Heteroskedasticity-robust standard-errors in parentheses}}\\
+\end{tabular}
+\par\endgroup

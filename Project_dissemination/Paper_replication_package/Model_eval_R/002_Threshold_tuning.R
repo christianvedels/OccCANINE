@@ -1,165 +1,282 @@
-# Threshold tuning
-# Created:  2025-03-27
+# Descriptive statistics
+# Created:  2025-06-15
 # Authors:  Christian Vedel [christian-vs@sam.sdu.dk],
 #
-# Purpose:  Best threshold for the model
+# Purpose:  Plots and tables of threshold tuning results for the paper
 
 # ==== Libraries ====
 library(tidyverse)
-source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
-library(reticulate)
 library(foreach)
-use_condaenv("hisco_dev")
-
-# Use reticulate to load numpy
-np = reticulate::import("numpy")
+source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-key = read_csv("histocc/Data/Key.csv")[-1,]
-val1_data = read_csv("Data/eval-results/val1_probs/val1_data.csv", guess_max = 100000)
+flat_overall = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langknown.csv")
+flat_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_flat_langunk.csv")
+full_overall = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langknown.csv")
+full_overall_unk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/threshold_tuning_full_langunk.csv")
 
-# Sample for development
-set.seed(20)
-rows = sample(1:NROW(val1_data), 100000)
-val1_data = val1_data[rows,]
-
-# ==== prob to pred ====
-prob_to_pred = function(probs, threshold){
-  probs = probs > threshold
-  probs = apply(probs, 1, 
-                function(x){
-                  res = which(x == TRUE)-1 # Zero indexing
-                  if(length(res) == 0){
-                    return(2) # Code for "-1"
-                  } else {
-                    return(res)
-                  }
-                })
-  return(probs)
+# Load data by language to data.frame
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang", full.names = TRUE)
+thr_tuning_by_lang = foreach(f = files, .combine = "bind_rows") %do% {
+    read_csv(f, show_col_types = FALSE) %>%
+        mutate(file = f) %>%
+        mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/thr_tuning_by_lang/", "", file)) %>%
+        mutate(lang = gsub("threshold_tuning_full_", "", file)) %>%
+        mutate(lang = gsub("threshold_tuning_flat_", "", lang)) %>%
+        mutate(lang = gsub(".csv", "", lang)) %>%
+        mutate(lang = gsub("langunk_", "", lang)) %>%
+        mutate(lang = gsub("langknown_", "", lang)) %>%
+        mutate(
+            type = ifelse(grepl("langunk", file), "Without language info.", "With language info.")
+        )
 }
-# ==== Convert true labels to list form ====
-# Convert code1, code2, code3, code4, code5 into a list
-true_data = val1_data %>% 
-    select(code1, code2, code3, code4, code5) %>% 
-    pmap(function(code1, code2, code3, code4, code5) {
-        c(code1, code2, code3, code4, code5) %>% 
-            na.omit() %>% 
-            as.integer()
-    })
 
+flat_by_lang = thr_tuning_by_lang %>%
+    filter(grepl("flat", file))
 
+full_by_lang = thr_tuning_by_lang %>%
+    filter(grepl("full", file))
 
+# ==== Data preparation ====
+overall_flat = flat_overall %>% 
+    mutate(type = "With language info.") %>%
+    bind_rows(
+        flat_overall_unk %>%
+        mutate(type = "Without language info.")
+    ) %>%
+    pivot_longer(cols = c("accuracy", "precision", "recall", "f1"), 
+               names_to = "statistic", 
+               values_to = "value") %>%
+    group_by(type, statistic) %>%
+    mutate(best = value == max(value)) %>%
+    ungroup()
 
-get_stats = function(probs, true_data, threshold){
-  y_pred = prob_to_pred(probs, threshold)
-  
-  res = foreach(i = 1:length(y_pred), .combine = "bind_rows") %do% {
-    y_true_i = true_data[[i]]
-    y_pred_i = y_pred[[i]]
-    
-    data.frame(
-        acc = acc(y_true_i, y_pred_i),
-        prec = prec(y_true_i, y_pred_i),
-        recall = recall(y_true_i, y_pred_i),
-        f1_score = f1_score(y_true_i, y_pred_i)
+overall_full = full_overall %>% 
+    mutate(type = "With language info.") %>%
+    bind_rows(
+        full_overall_unk %>%
+        mutate(type = "Without language info.")
+    ) %>%
+    pivot_longer(cols = c("accuracy", "precision", "recall", "f1"), 
+               names_to = "statistic", 
+               values_to = "value") %>%
+    group_by(type, statistic) %>%
+    mutate(best = value == max(value)) %>%
+    ungroup()
+
+bylang_flat = flat_by_lang %>%
+    filter(grepl("flat", file)) %>%
+    pivot_longer(cols = c("accuracy", "precision", "recall", "f1"), 
+               names_to = "statistic", 
+               values_to = "value") %>%
+    group_by(lang, type, statistic) %>%
+    mutate(best = value == max(value)) %>%
+    ungroup()
+
+bylang_full = full_by_lang %>%
+    filter(grepl("full", file)) %>%
+    pivot_longer(cols = c("accuracy", "precision", "recall", "f1"), 
+               names_to = "statistic", 
+               values_to = "value") %>%
+    group_by(lang, type, statistic) %>%
+    mutate(best = value == max(value)) %>%
+    ungroup()
+
+# ==== threshold_tuning_plot ====
+options(scipen = 999) # Disable scientific notation
+threshold_tuning_plot = function(data, observation) {
+  p1 = data %>%
+    ggplot(aes(x = threshold, y = value, color = type)) +
+    geom_line() +
+    geom_point() +
+    facet_wrap(~ statistic, scales = "free_y") +
+    theme_bw() +
+    theme(legend.title = element_blank())  + 
+    theme(legend.position = "bottom") +
+    labs(title = NULL, subtitle = NULL) + 
+    scale_color_manual(values = c(colours$red, colours$green)) + 
+    labs(
+        x = "Threshold",
+        col = "",
+        shape = "",
+        y = "Statistic"
+    ) +
+    labs(
+        caption = paste0("N val. obs.: ", observation)
     )
+
+  # Add max
+  p1 = p1 +
+    geom_point(data = subset(data, best), aes(threshold, value), shape = 4, size = 3, col = "black") +  # Highlight max points
+    geom_vline(data = subset(data, best), aes(xintercept = threshold), lty = 2) +
+    geom_hline(data = subset(data, best), aes(yintercept = value), lty = 2)
+  
+  return(p1)
+}
+
+# ==== Plot overall known language ====
+n_obs_flat = overall_flat$n %>% unique()
+n_obs_full = overall_full$n %>% unique()
+
+p1 = threshold_tuning_plot(overall_flat, observation = n_obs_flat)
+p2 = threshold_tuning_plot(overall_full, observation = n_obs_full)
+
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png", 
+    p1, 
+    width = dims$width, 
+    height = dims$height,
+    dpi = 600
+)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.pdf", 
+    p1, 
+    width = dims$width, 
+    height = dims$height,
+    dpi = 600
+)
+
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.png", 
+    p2, 
+    width = dims$width, 
+    height = dims$height
+)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.pdf", 
+    p2, 
+    width = dims$width, 
+    height = dims$height
+)
+
+# ==== Plot by language ====
+foreach(l = unique(bylang_flat$lang)) %do% {
+  data = bylang_flat %>% filter(lang == l)
+  
+  n_l = unique(data$n)
+
+  if(length(n_l) != 1) {
+    warning(paste0("Multiple n values for language ", l, ": ", paste(n_l, collapse = ", ")))
   }
-  return(res)
+
+  p = threshold_tuning_plot(data, observation = n_l)
+  
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".png"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".pdf"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
 }
 
-threshold_tuning = function(probs_flat, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning.png") {
-    # ===== Overall threshold tuning =====
-    # Tune thresholds
-    thresholds = seq(0.01, 0.99, 0.01)
-    results = foreach(threshold = thresholds, .combine = "bind_rows") %do% {
-        cat(threshold, "\n")
-        get_stats(probs_flat, true_data, threshold) %>% 
-            mutate(threshold = threshold) %>% 
-            summarise_all(mean)
-    }
+foreach(l = unique(bylang_full$lang)) %do% {
+  data = bylang_full %>% filter(lang == l)
+  
+  n_l = unique(data$n)
 
-    max_res = results %>% 
-            pivot_longer(-threshold, names_to = "metric", values_to = "value") %>%
-            group_by(metric) %>% 
-            filter(value == max(value)) %>% 
-            ungroup()
+  if(length(n_l) != 1) {
+    warning(paste0("Multiple n values for language ", l, ": ", paste(n_l, collapse = ", ")))
+  }
 
-    # Save max_res as a CSV file in a folder called 'Tables'
-    output_csv_path = gsub(".png", "_max_res.csv", output_path)
-    output_csv_path = gsub("Figures", "Tables", output_csv_path)
-    dir.create(dirname(output_csv_path), showWarnings = FALSE, recursive = TRUE)
-    max_res %>% 
-        mutate(value = round(value, 4)) %>% 
-        arrange(metric) %>% 
-        write_csv(output_csv_path)
-
-    # ==== Make plot ====
-    p1 = results %>% 
-            pivot_longer(-threshold, names_to = "metric", values_to = "value") %>% 
-            ggplot(aes(x = threshold, y = value)) +
-            geom_point() +
-            geom_line() +
-            facet_wrap(~metric, scales = "free") +
-            labs(
-                    title = "Threshold tuning",
-                    x = "Threshold",
-                    y = "Value"
-            ) +
-            theme_bw()
-
-    # Add max points
-    p1 = p1 + 
-            geom_point(data = results %>% 
-                                         filter(f1_score == max(f1_score)) %>% 
-                                         select(threshold, f1_score) %>% 
-                                         mutate(metric = "f1_score"), aes(x = threshold, y = f1_score), color = "red", size = 3) +
-            geom_point(data = results %>% 
-                                         filter(prec == max(prec)) %>% 
-                                         select(threshold, prec) %>% 
-                                         mutate(metric = "prec"), aes(x = threshold, y = prec), color = "blue", size = 3) +
-            geom_point(data = results %>% 
-                                         filter(recall == max(recall)) %>% 
-                                         select(threshold, recall) %>% 
-                                         mutate(metric = "recall"), aes(x = threshold, y = recall), color = "green", size = 3) +
-            geom_point(data = results %>%
-                                             filter(acc == max(acc)) %>% 
-                                             select(threshold, acc) %>% 
-                                             mutate(metric = "acc"), aes(x = threshold, y = acc), color = "purple", size = 3)  
-
-    ggsave(output_path, p1, width = 10, height = 8)
+  p = threshold_tuning_plot(data, observation = n_l)
+  
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".png"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
+  ggsave(
+    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".pdf"), 
+    p, 
+    width = dims$width, 
+    height = dims$height
+  )
 }
 
-threshold_tuning_by_language = function(val1_data, true_data, probs_flat, output_dir = "Project_dissemination/Paper_replication_package/Figures/") {
-    # Foreach language in val1_data
-    langs = unique(val1_data$lang)
-    val1_data$index = 1:NROW(val1_data)
-    for(lang in langs){
-        cat(lang, "\n")
-        lang_data = val1_data %>% filter(lang == !!lang)
-        if(NROW(lang_data) < 10){
-            cat("Not enough data for language ", lang, "(Obs =", NROW(lang_data), ")\n")
-            next
-        }
-        lang_true_data = true_data[lang_data$index]
-        lang_probs_flat = probs_flat[lang_data$index,]
-        
-        threshold_tuning(lang_probs_flat, lang_true_data, output_path = paste0(output_dir, "threshold_tuning_", lang, ".png"))
-    }
-}
+# ==== Print tables of best thresholds overall ====
+tmp1 = overall_full %>% 
+    filter(best) %>%
+    mutate(method = "full") %>%
+    select(statistic, method, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic)
 
-# ==== Run threshold tuning ====
-# Flat
-probs_flat = np$load("Data/eval-results/val1_probs/probs_flat.npy")
-probs_flat = probs_flat[rows,]
-threshold_tuning(probs_flat, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png")
-threshold_tuning_by_language(val1_data, true_data, probs_flat, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_flat/")
-rm(probs_flat)
+tmp2 = overall_flat %>% 
+    filter(best) %>%
+    mutate(method = "flat") %>%
+    select(statistic, method, type, threshold, value, n) %>%
+    mutate(type = ifelse(type == "With language info.", "Yes", "No")) %>%
+    rename(`Lang. info.` = type) %>%
+    arrange(statistic)
 
-# Full
-probs_mixer = np$load("Data/eval-results/val1_probs/probs_mixer.npy")
-probs_mixer = probs_mixer[rows,]
-threshold_tuning(probs_mixer, true_data, output_path = "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_mixer.png")
-threshold_tuning_by_language(val1_data, true_data, probs_mixer, output_dir = "Project_dissemination/Paper_replication_package/Figures/Threshold_tuning_mixer/")
-rm(probs_mixer)
+tmp = bind_rows(tmp1, tmp2) %>%
+    select(method, statistic, `Lang. info.`, threshold, value) %>%
+    arrange(statistic, method, `Lang. info.`) 
+
+sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning_overall.txt", append = FALSE)
+print(tmp)
+
+cat("\nNumber of observations full:\n", tmp1$n %>% unique(), "\n")
+cat("\nNumber of observations flat:\n", tmp2$n %>% unique(), "\n")
+
+sink()
+
+# ==== Print tables of best threshholds by lang ====
+x1 = overall_flat %>% 
+    filter(best) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "flat") %>%
+    mutate(data = "all_data")
+
+x2 = overall_full %>% filter(best) %>% 
+    filter(best) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "full") %>%
+    mutate(data = "all_data")
+
+x3 = bylang_flat %>% filter(best) %>% 
+    # filter(type == "With language info.") %>%
+    mutate(method = "flat") %>%
+    mutate(data = "by_lang")
+
+x4 = bylang_full %>% filter(best) %>%
+    # filter(type == "With language info.") %>%
+    mutate(method = "full") %>%
+    mutate(data = "by_lang")
+
+res = x1 %>% bind_rows(x2, x3, x4) %>%
+    select(method, data, type, lang, statistic, threshold, value, n) %>%
+    drop_na(lang, n) %>%
+    arrange(data, method, type, lang, statistic)
+
+# If several, pick the first
+res1 = res %>%
+    group_by(method, data, type, lang, statistic) %>%
+    slice(1) %>%
+    ungroup() %>%
+    filter(type == "With language info.") %>%
+    select(-type)
+
+# Print to Tables/threshold_tuning.txt
+sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning.txt", append = FALSE)
+
+res1 %>%
+    knitr::kable(, 
+      digits = 3, 
+      format = "latex",
+      booktabs = TRUE) %>% print()
+
+sink()
+
+
+
 
 

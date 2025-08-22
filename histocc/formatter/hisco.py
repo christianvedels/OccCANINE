@@ -280,14 +280,12 @@ class BlockyHISCOFormatter: # TODO consider implementing base formatter class
         sanitized = []
 
         for i in range(1, self.max_num_codes + 1):
-            code = raw_input[f'code{i}'].item()
-
-            if code is None or math.isnan(code):
-                # If hit NaN, assume subsequent values are also NaN
+            code = raw_input[f'code{i}']
+            if hasattr(code, 'item'):
+                code = code.item()
+            if code is None or (isinstance(code, float) and math.isnan(code)):
                 break
-
-            hisco = self.lookup_hisco[code]
-            hisco = str(hisco)
+            hisco = str(self.lookup_hisco[int(float(code))])
 
             if len(hisco) == 4:
                 # Mistakenly stripped leading zero due to int coding

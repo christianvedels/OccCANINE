@@ -93,3 +93,7 @@ data1 = data1 %>%
 
 # ==== Save ====
 data1 %>% write_csv0("Data/OOD_data/EN_Bankruptcy_KornLacroix.csv")
+
+data1 %>% 
+  filter(hisco_1 != "-1") %>%
+  write_csv0("Data/OOD_data/EN_Bankruptcy_KornLacroix_no_-1.csv")

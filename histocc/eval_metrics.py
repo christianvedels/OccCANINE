@@ -83,6 +83,10 @@ class EvalEngine:
             for i in range(len(col_j)):
                 if len(col_j[i]) == (self.block_size-1):
                     col_j[i] = '0' + col_j[i]
+                if len(col_j[i]) == 2:
+                    if col_j[i][0] == '-':
+                        # Should handle e.g. -1, -2, -3, etc. to become -0001, -0002, -0003
+                        col_j[i] = col_j[i][0] + '0' * (self.block_size-2) + col_j[i][1]
 
             # Store updated column
             y.loc[:, j] = col_j

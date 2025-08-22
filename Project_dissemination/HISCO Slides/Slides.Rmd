@@ -178,6 +178,10 @@ class: middle
   + **Output:** HISCO code 61110 (probability=0.989589)
   
 - Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
+
+- .red123[Today:] New and old results
+
+
 ]
 
 .pull-right[
@@ -322,6 +326,7 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 
 .pull-right[
 ### How?
+.small123[
 - Random string augmentations:
   + "he is a farmer" $\rightarrow$ "ht s a frmer"
   
@@ -332,8 +337,11 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
   + "he is a fisher" + "carpenter" $\rightarrow$ "he is a fisher **and** carpenter"
   
 - It does not know the language in 25% of cases
+
+- **New:** We generate adverse examples: Change strings until the model marginally fails *+ gibberish + translated strings*
   
 - Training data, validation data, test data and out-of-distribution data
+]
 ]
 
 
@@ -427,28 +435,49 @@ p2d_wlang %>% layout(autosize = F, width = 500, height = 400)
 ]
 ---
 # Test data performance (1/2)
-| Statistic | Lang. info. | Value | Optimal thr. |
-|-----------|-------------|-------|--------------|
-| Accuracy  | No          | 0.930 | 0.46         |
-| Accuracy  | Yes         | 0.935 | 0.45         |
-| F1 score  | No          | 0.956 | 0.20         |
-| F1 score  | Yes         | 0.960 | 0.22         |
-| Precision | No          | 0.951 | 0.37         |
-| Precision | Yes         | 0.955 | 0.40         |
-| Recall    | No          | 0.986 | 0.01         |
-| Recall    | Yes         | 0.987 | 0.01         |
+| Decoder | Statistic | **Digits** |   |   |   |   |
+|---------|-----------|-----------|---|---|---|---|
+|         |           | 1 | 2 | 3 | 4 | 5 |
+| *good*  | accuracy  | 0.977 | 0.968 | 0.964 | 0.961 | 0.960 |
+|         | precision | 0.978 | 0.968 | 0.964 | 0.961 | 0.960 |
+|         | recall    | 0.982 | 0.974 | 0.971 | 0.967 | 0.967 |
+|         | f1        | 0.979 | 0.970 | 0.966 | 0.963 | 0.963 |
+| *fast*  | accuracy  | 0.979 | 0.971 | 0.967 | 0.964 | 0.964 |
+|         | precision | 0.980 | 0.972 | 0.968 | 0.965 | 0.965 |
+|         | recall    | 0.983 | 0.979 | 0.976 | 0.973 | 0.973 |
+|         | f1        | 0.981 | 0.974 | 0.971 | 0.968 | 0.967 |
+
 
 .footnote[
 .small123[
-*Based on 1 million test observations*
+*Based on 100k million test observations*
 ]
 ]
 
 ---
 # Test data performance (2/2) 
+.panelset[
+  .panel[
+  .panel-name[Version 0.1]
 ```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
 knitr::include_graphics("Figures/Performance_by_language.png")
 ```
+]
+.panel[
+  .panel-name[Version 0.2 - 'flat']
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/Performance_by_lang_flat.png")
+```
+].panel[
+  .panel-name[Version 0.2 - 'greedy']
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/Performance_by_lang_greedy.png")
+```
+]
+]
+
+
+
 
 ---
 # The nature of the mistakes
@@ -534,7 +563,9 @@ See more details in the paper
 **Summary:** Description goes in, probabilities comes out
 
 
-
+---
+# Architecture - updated
+![Arch2](Figures/Architecture2.png)
 
 
 ---
@@ -665,6 +696,7 @@ class: middle
 - We can proxy for income by looking at the average income of each occupation.
 - For now based on 1915 average incomes
 - Extensions possble
+- Seperate paper: Will be presented in WEHC in Lund and IC2S2 in Norrköping this summer
 
 
 **How do we turn 1915 incomes into HISCO-code-level incomes?** $\rightarrow$ ***Also use OccCANINE***
@@ -712,11 +744,12 @@ $$
 # What we are working on
 
 .pull-left[
-### Three main chalenges for the current model
+### Main chalenges for the 'old version'
 1. Weaker performance in some languages
+2. Weaker performance in rarer (higher human status) occupations
 2. Predicts full code rather than digits
 3. Rare cases of weird predictions in otherwise obvious cases $^1$
-4. Slow finetuning into other systems than HISCO
+4. Slow finetuning in some cases
 
 .footnote[
 .small123[
@@ -734,8 +767,8 @@ $^1$: We always reccomend checking 200 observations manually. This is still much
   + Adversarial training examples: Changing descriptions only slightly to make the model make wrong guesses
   + Double translation 
   + Random strings should always be '-1'
-- Testing 'finetunability' to OCC1950, OCCICEM, PSTI, ISCO68 
-- Two user end options: *'fast'* or *'advanced'*
+- Testing 'finetunability' to OCC1950, OCCICEM, PST, ISCO68 
+- Two user end options: *'fast'* or *'good'*
 ]
 
 ---
@@ -753,13 +786,13 @@ class: middle
 - Enables new research 
 - Enables more time on caring about the quality of sources and their nature
 
-- We will further train ***OccCANINE*** during the summer $\rightarrow$ *please share data*
-
+- Updated version released soon
 ]
 
 .pull-right[
 **Feel free to reach out**  
 Twitter: @ChristianVedel  
+BlueSky: @christianvedel.bsky.social  
 christian-vs@sam.sdu.dk  
 
 
