@@ -38,7 +38,8 @@ def main():
         res["f1"] = eval_engine.f1(return_per_obs = True)
 
         # Add in rowid
-        res["rowid"] = data_f.RowID
+        # res["rowid"] = data_f.RowID
+        res['rowid'] = data_f.index
 
         # Check if 'n' in data_f
         if "n" in data_f.columns:
@@ -60,7 +61,7 @@ def main():
         print(f"    F1: {eval_engine.f1()}")
 
         # Eval digit by digit
-        for digits in range(1, 6): 
+        for digits in range(1, 6):
             print(f"Digits: {digits}")
             eval_engine = EvalEngine(mod, ground_truth = data_f, predicitons = res, pred_col = "hisco_", digits=digits)
             res[f"acc_{digits}"] = eval_engine.accuracy(return_per_obs = True)
@@ -76,7 +77,7 @@ def main():
 
         # Save predictions
         res.to_csv(fname)
-        
+
 if __name__ == "__main__":
     main()
 
