@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.881187420674094,0.8813989564236357,0.881187420674094,0.8818220279227189,7091,greedy,EN_us_ipums_test.csv

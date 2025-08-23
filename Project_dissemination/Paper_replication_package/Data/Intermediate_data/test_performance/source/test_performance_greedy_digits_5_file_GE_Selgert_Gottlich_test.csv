@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9331357048748353,0.9336846728151077,0.9344532279314888,0.9334650856389987,1518,greedy,GE_Selgert_Gottlich_test.csv

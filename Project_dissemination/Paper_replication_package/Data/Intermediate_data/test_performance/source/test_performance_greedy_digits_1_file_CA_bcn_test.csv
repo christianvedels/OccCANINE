@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9988201041985902,0.9990295229339059,0.999003984063745,0.9992644805393809,32630,greedy,CA_bcn_test.csv
