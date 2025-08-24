@@ -74,7 +74,7 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/occ1950_performance.csv",
         n_obs=n_obs,
-        mod_path=r"ZY:\pc-to-Y\hisco\ft-models/mixer-occ1950-ft/last.bin",
+        mod_path=r"Y:\pc-to-Y\hisco\ft-models/mixer-occ1950-ft/last.bin",
         data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
