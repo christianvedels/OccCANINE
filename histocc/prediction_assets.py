@@ -190,6 +190,10 @@ class OccCANINE:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
 
+        # Handle list vs str
+        if isinstance(occ1, str):
+            occ1 = [occ1]
+
         # Setup
         inputs = self._encode(occ1, lang, concat_in)
         batch_size = self.batch_size
