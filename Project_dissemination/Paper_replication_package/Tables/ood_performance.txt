@@ -1,0 +1,34 @@
+\begin{table}
+
+\caption{Manually checked OOD data performance}
+\centering
+\begin{tabular}[t]{lrrr}
+\toprule
+file & n & substantial & strict\\
+\midrule
+predictions\_DA\_Copenhagen\_Burial\_Records.csv & 367 & 0.962 & 0.890\\
+predictions\_NO\_Student\_biographies.csv & 500 & 0.950 & 0.874\\
+\bottomrule
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{OOD data performance}
+\centering
+\begin{tabular}[t]{llrrrrrr}
+\toprule
+File & Statistic & n & 1 digit & 2 digits & 3 digits & 4 digits & 5 digits\\
+\midrule
+predictions\_agreement\_german\_sources.csv & acc & 400 & 0.922 & 0.897 & 0.875 & 0.868 & 0.868\\
+predictions\_SE\_strikes.csv & acc & 1449 & 0.914 & 0.893 & 0.856 & 0.795 & 0.793\\
+predictions\_NL\_familiegeld.csv & acc & 200 & 0.875 & 0.785 & 0.560 & 0.535 & 0.520\\
+predictions\_EN\_Bankruptcy\_KornLacroix\_no\_-1.csv & acc & 326400 & 0.843 & 0.566 & 0.493 & 0.443 & 0.440\\
+predictions\_IT\_italian\_titles.csv & acc & 26287 & 0.756 & 0.736 & 0.711 & 0.673 & 0.659\\
+\addlinespace
+predictions\_GE\_denazification\_RA1.csv & acc & 400 & 0.625 & 0.520 & 0.390 & 0.350 & 0.332\\
+predictions\_GE\_denazification.csv & acc & 800 & 0.617 & 0.514 & 0.383 & 0.347 & 0.329\\
+predictions\_GE\_denazification\_RA2.csv & acc & 400 & 0.609 & 0.509 & 0.376 & 0.344 & 0.326\\
+predictions\_EN\_Bankruptcy\_KornLacroix.csv & acc & 581912 & 0.508 & 0.352 & 0.311 & 0.283 & 0.277\\
+\bottomrule
+\end{tabular}
+\end{table}
