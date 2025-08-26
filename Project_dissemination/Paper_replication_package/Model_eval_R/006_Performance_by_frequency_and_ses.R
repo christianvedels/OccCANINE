@@ -14,8 +14,8 @@ source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functio
 # Can be produced from the predict_test.py script
 # Data available on request (to big to upload to GitHub)
 
-flat = read_csv("Project_dissemination/Paper_replication_package/Data/Old_tmp/big_files/obs_test_performance_flat.csv")
-greedy = read_csv("Project_dissemination/Paper_replication_package/Data/Old_tmp/big_files/obs_test_performance_greedy.csv")
+flat = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/obs_test_performance_flat.csv")
+greedy = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/obs_test_performance_greedy.csv")
 
 # Correction to calculcate approximate equivalent number of training observations
 n_train = 15757685 # Number can be obtained from running NROW(read0("Data/Training_data")) on the training data (with local data access)
