@@ -102,7 +102,7 @@ threshold_tuning_plot = function(data, observation) {
         y = "Statistic"
     ) +
     labs(
-        caption = paste0("N val. obs.: ", observation)
+        caption = paste0("N test obs.: ", observation)
     )
 
   # Add max
@@ -156,7 +156,7 @@ foreach(l = unique(bylang_flat$lang)) %do% {
   n_l = unique(data$n)
 
   if(length(n_l) != 1) {
-    warning(paste0("Multiple n values for language ", l, ": ", paste(n_l, collapse = ", ")))
+    stop(paste0("Multiple n values for language ", l, ": ", paste(n_l, collapse = ", ")))
   }
 
   p = threshold_tuning_plot(data, observation = n_l)
