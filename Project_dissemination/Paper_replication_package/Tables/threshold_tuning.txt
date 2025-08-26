@@ -3,139 +3,139 @@
 \toprule
 method & data & lang & statistic & threshold & value & n\\
 \midrule
-flat & by\_lang & ca & accuracy & 0.33 & 0.998 & 1000\\
-flat & by\_lang & ca & f1 & 0.33 & 0.998 & 1000\\
-flat & by\_lang & ca & precision & 0.33 & 0.998 & 1000\\
-flat & by\_lang & ca & recall & 0.01 & 1.000 & 1000\\
-flat & by\_lang & da & accuracy & 0.29 & 0.990 & 1000\\
+flat & by\_lang & ca & accuracy & 0.31 & 0.997 & 32565\\
+flat & by\_lang & ca & f1 & 0.30 & 0.998 & 32565\\
+flat & by\_lang & ca & precision & 0.69 & 0.998 & 32565\\
+flat & by\_lang & ca & recall & 0.01 & 0.999 & 32565\\
+flat & by\_lang & da & accuracy & 0.41 & 0.990 & 274180\\
 \addlinespace
-flat & by\_lang & da & f1 & 0.17 & 0.992 & 1000\\
-flat & by\_lang & da & precision & 0.30 & 0.991 & 1000\\
-flat & by\_lang & da & recall & 0.01 & 0.997 & 1000\\
-flat & by\_lang & en & accuracy & 0.23 & 0.934 & 1000\\
-flat & by\_lang & en & f1 & 0.23 & 0.941 & 1000\\
+flat & by\_lang & da & f1 & 0.29 & 0.991 & 274180\\
+flat & by\_lang & da & precision & 0.52 & 0.991 & 274180\\
+flat & by\_lang & da & recall & 0.01 & 0.997 & 274180\\
+flat & by\_lang & en & accuracy & 0.41 & 0.940 & 377142\\
+flat & by\_lang & en & f1 & 0.26 & 0.945 & 377142\\
 \addlinespace
-flat & by\_lang & en & precision & 0.23 & 0.935 & 1000\\
-flat & by\_lang & en & recall & 0.01 & 0.978 & 1000\\
+flat & by\_lang & en & precision & 0.41 & 0.941 & 377142\\
+flat & by\_lang & en & recall & 0.01 & 0.983 & 377142\\
 flat & by\_lang & es & accuracy & 0.30 & 0.963 & 433\\
 flat & by\_lang & es & f1 & 0.30 & 0.971 & 433\\
 flat & by\_lang & es & precision & 0.75 & 0.977 & 433\\
 \addlinespace
 flat & by\_lang & es & recall & 0.01 & 0.995 & 433\\
-flat & by\_lang & fr & accuracy & 0.25 & 0.913 & 1000\\
-flat & by\_lang & fr & f1 & 0.21 & 0.930 & 1000\\
-flat & by\_lang & fr & precision & 0.80 & 0.947 & 1000\\
-flat & by\_lang & fr & recall & 0.01 & 0.986 & 1000\\
+flat & by\_lang & fr & accuracy & 0.32 & 0.918 & 14401\\
+flat & by\_lang & fr & f1 & 0.21 & 0.932 & 14401\\
+flat & by\_lang & fr & precision & 0.80 & 0.948 & 14401\\
+flat & by\_lang & fr & recall & 0.01 & 0.990 & 14401\\
 \addlinespace
-flat & by\_lang & ge & accuracy & 0.31 & 0.889 & 1000\\
-flat & by\_lang & ge & f1 & 0.18 & 0.908 & 1000\\
-flat & by\_lang & ge & precision & 0.71 & 0.917 & 1000\\
-flat & by\_lang & ge & recall & 0.01 & 0.976 & 1000\\
+flat & by\_lang & ge & accuracy & 0.33 & 0.886 & 6681\\
+flat & by\_lang & ge & f1 & 0.21 & 0.903 & 6681\\
+flat & by\_lang & ge & precision & 0.75 & 0.918 & 6681\\
+flat & by\_lang & ge & recall & 0.01 & 0.974 & 6681\\
 flat & by\_lang & gr & accuracy & 0.19 & 0.952 & 86\\
 \addlinespace
 flat & by\_lang & gr & f1 & 0.19 & 0.965 & 86\\
 flat & by\_lang & gr & precision & 0.69 & 0.967 & 86\\
 flat & by\_lang & gr & recall & 0.01 & 1.000 & 86\\
-flat & by\_lang & is & accuracy & 0.20 & 0.971 & 1000\\
-flat & by\_lang & is & f1 & 0.17 & 0.974 & 1000\\
+flat & by\_lang & is & accuracy & 0.20 & 0.971 & 1054\\
+flat & by\_lang & is & f1 & 0.17 & 0.974 & 1054\\
 \addlinespace
-flat & by\_lang & is & precision & 0.20 & 0.971 & 1000\\
-flat & by\_lang & is & recall & 0.01 & 0.989 & 1000\\
+flat & by\_lang & is & precision & 0.20 & 0.971 & 1054\\
+flat & by\_lang & is & recall & 0.01 & 0.989 & 1054\\
 flat & by\_lang & it & accuracy & 0.32 & 0.998 & 223\\
 flat & by\_lang & it & f1 & 0.32 & 0.999 & 223\\
 flat & by\_lang & it & precision & 0.32 & 1.000 & 223\\
 \addlinespace
 flat & by\_lang & it & recall & 0.01 & 1.000 & 223\\
-flat & by\_lang & nl & accuracy & 0.46 & 0.981 & 1000\\
-flat & by\_lang & nl & f1 & 0.22 & 0.983 & 1000\\
-flat & by\_lang & nl & precision & 0.46 & 0.981 & 1000\\
-flat & by\_lang & nl & recall & 0.01 & 0.994 & 1000\\
+flat & by\_lang & nl & accuracy & 0.24 & 0.978 & 58795\\
+flat & by\_lang & nl & f1 & 0.22 & 0.980 & 58795\\
+flat & by\_lang & nl & precision & 0.34 & 0.979 & 58795\\
+flat & by\_lang & nl & recall & 0.01 & 0.993 & 58795\\
 \addlinespace
-flat & by\_lang & no & accuracy & 0.63 & 0.990 & 1000\\
-flat & by\_lang & no & f1 & 0.63 & 0.990 & 1000\\
-flat & by\_lang & no & precision & 0.63 & 0.991 & 1000\\
-flat & by\_lang & no & recall & 0.01 & 0.994 & 1000\\
-flat & by\_lang & pt & accuracy & 0.27 & 0.993 & 1000\\
+flat & by\_lang & no & accuracy & 0.34 & 0.987 & 7982\\
+flat & by\_lang & no & f1 & 0.34 & 0.988 & 7982\\
+flat & by\_lang & no & precision & 0.63 & 0.988 & 7982\\
+flat & by\_lang & no & recall & 0.01 & 0.996 & 7982\\
+flat & by\_lang & pt & accuracy & 0.27 & 0.993 & 1011\\
 \addlinespace
-flat & by\_lang & pt & f1 & 0.27 & 0.995 & 1000\\
-flat & by\_lang & pt & precision & 0.45 & 0.998 & 1000\\
-flat & by\_lang & pt & recall & 0.01 & 1.000 & 1000\\
-flat & by\_lang & se & accuracy & 0.60 & 0.964 & 1000\\
-flat & by\_lang & se & f1 & 0.16 & 0.968 & 1000\\
+flat & by\_lang & pt & f1 & 0.27 & 0.995 & 1011\\
+flat & by\_lang & pt & precision & 0.45 & 0.998 & 1011\\
+flat & by\_lang & pt & recall & 0.01 & 1.000 & 1011\\
+flat & by\_lang & se & accuracy & 0.35 & 0.969 & 110995\\
+flat & by\_lang & se & f1 & 0.21 & 0.972 & 110995\\
 \addlinespace
-flat & by\_lang & se & precision & 0.60 & 0.967 & 1000\\
-flat & by\_lang & se & recall & 0.01 & 0.981 & 1000\\
-flat & by\_lang & unk & accuracy & 0.46 & 0.977 & 1000\\
-flat & by\_lang & unk & f1 & 0.14 & 0.979 & 1000\\
-flat & by\_lang & unk & precision & 0.46 & 0.977 & 1000\\
+flat & by\_lang & se & precision & 0.52 & 0.972 & 110995\\
+flat & by\_lang & se & recall & 0.01 & 0.986 & 110995\\
+flat & by\_lang & unk & accuracy & 0.39 & 0.985 & 40906\\
+flat & by\_lang & unk & f1 & 0.38 & 0.986 & 40906\\
+flat & by\_lang & unk & precision & 0.39 & 0.985 & 40906\\
 \addlinespace
-flat & by\_lang & unk & recall & 0.01 & 0.995 & 1000\\
-full & by\_lang & ca & accuracy & 0.05 & 0.560 & 100\\
-full & by\_lang & ca & f1 & 0.05 & 0.707 & 100\\
-full & by\_lang & ca & precision & 0.05 & 1.000 & 100\\
-full & by\_lang & ca & recall & 0.01 & 0.560 & 100\\
+flat & by\_lang & unk & recall & 0.01 & 0.998 & 40906\\
+full & by\_lang & ca & accuracy & 0.31 & 0.555 & 10000\\
+full & by\_lang & ca & f1 & 0.31 & 0.703 & 10000\\
+full & by\_lang & ca & precision & 0.31 & 0.998 & 10000\\
+full & by\_lang & ca & recall & 0.01 & 0.556 & 10000\\
 \addlinespace
-full & by\_lang & da & accuracy & 0.02 & 0.935 & 100\\
-full & by\_lang & da & f1 & 0.02 & 0.957 & 100\\
-full & by\_lang & da & precision & 0.20 & 1.000 & 100\\
-full & by\_lang & da & recall & 0.01 & 0.940 & 100\\
-full & by\_lang & en & accuracy & 0.22 & 0.935 & 100\\
+full & by\_lang & da & accuracy & 0.14 & 0.909 & 10000\\
+full & by\_lang & da & f1 & 0.14 & 0.937 & 10000\\
+full & by\_lang & da & precision & 0.38 & 0.989 & 10000\\
+full & by\_lang & da & recall & 0.01 & 0.917 & 10000\\
+full & by\_lang & en & accuracy & 0.43 & 0.927 & 10000\\
 \addlinespace
-full & by\_lang & en & f1 & 0.08 & 0.947 & 100\\
-full & by\_lang & en & precision & 0.22 & 0.940 & 100\\
-full & by\_lang & en & recall & 0.01 & 0.975 & 100\\
-full & by\_lang & es & accuracy & 0.01 & 0.550 & 100\\
-full & by\_lang & es & f1 & 0.11 & 0.693 & 100\\
+full & by\_lang & en & f1 & 0.31 & 0.934 & 10000\\
+full & by\_lang & en & precision & 0.43 & 0.941 & 10000\\
+full & by\_lang & en & recall & 0.01 & 0.965 & 10000\\
+full & by\_lang & es & accuracy & 0.03 & 0.543 & 433\\
+full & by\_lang & es & f1 & 0.03 & 0.686 & 433\\
 \addlinespace
-full & by\_lang & es & precision & 0.11 & 0.980 & 100\\
-full & by\_lang & es & recall & 0.01 & 0.555 & 100\\
-full & by\_lang & fr & accuracy & 0.01 & 0.532 & 100\\
-full & by\_lang & fr & f1 & 0.01 & 0.658 & 100\\
-full & by\_lang & fr & precision & 0.25 & 0.905 & 100\\
+full & by\_lang & es & precision & 0.27 & 0.971 & 433\\
+full & by\_lang & es & recall & 0.01 & 0.550 & 433\\
+full & by\_lang & fr & accuracy & 0.01 & 0.529 & 10000\\
+full & by\_lang & fr & f1 & 0.01 & 0.663 & 10000\\
+full & by\_lang & fr & precision & 0.33 & 0.922 & 10000\\
 \addlinespace
-full & by\_lang & fr & recall & 0.01 & 0.550 & 100\\
-full & by\_lang & ge & accuracy & 0.06 & 0.553 & 100\\
-full & by\_lang & ge & f1 & 0.12 & 0.687 & 100\\
-full & by\_lang & ge & precision & 0.12 & 0.943 & 100\\
-full & by\_lang & ge & recall & 0.01 & 0.575 & 100\\
+full & by\_lang & fr & recall & 0.01 & 0.542 & 10000\\
+full & by\_lang & ge & accuracy & 0.01 & 0.547 & 6681\\
+full & by\_lang & ge & f1 & 0.01 & 0.670 & 6681\\
+full & by\_lang & ge & precision & 0.41 & 0.911 & 6681\\
+full & by\_lang & ge & recall & 0.01 & 0.568 & 6681\\
 \addlinespace
 full & by\_lang & gr & accuracy & 0.05 & 0.547 & 86\\
 full & by\_lang & gr & f1 & 0.08 & 0.690 & 86\\
 full & by\_lang & gr & precision & 0.27 & 0.971 & 86\\
 full & by\_lang & gr & recall & 0.01 & 0.564 & 86\\
-full & by\_lang & is & accuracy & 0.13 & 0.990 & 100\\
+full & by\_lang & is & accuracy & 0.22 & 0.974 & 1054\\
 \addlinespace
-full & by\_lang & is & f1 & 0.13 & 0.993 & 100\\
-full & by\_lang & is & precision & 0.13 & 0.990 & 100\\
-full & by\_lang & is & recall & 0.01 & 1.000 & 100\\
-full & by\_lang & it & accuracy & 0.01 & 0.555 & 100\\
-full & by\_lang & it & f1 & 0.01 & 0.703 & 100\\
+full & by\_lang & is & f1 & 0.22 & 0.976 & 1054\\
+full & by\_lang & is & precision & 0.22 & 0.974 & 1054\\
+full & by\_lang & is & recall & 0.01 & 0.987 & 1054\\
+full & by\_lang & it & accuracy & 0.11 & 0.574 & 223\\
+full & by\_lang & it & f1 & 0.11 & 0.715 & 223\\
 \addlinespace
-full & by\_lang & it & precision & 0.01 & 1.000 & 100\\
-full & by\_lang & it & recall & 0.01 & 0.555 & 100\\
-full & by\_lang & nl & accuracy & 0.05 & 0.803 & 100\\
-full & by\_lang & nl & f1 & 0.05 & 0.865 & 100\\
-full & by\_lang & nl & precision & 0.05 & 0.973 & 100\\
+full & by\_lang & it & precision & 0.11 & 0.998 & 223\\
+full & by\_lang & it & recall & 0.01 & 0.574 & 223\\
+full & by\_lang & nl & accuracy & 0.26 & 0.812 & 10000\\
+full & by\_lang & nl & f1 & 0.11 & 0.870 & 10000\\
+full & by\_lang & nl & precision & 0.26 & 0.982 & 10000\\
 \addlinespace
-full & by\_lang & nl & recall & 0.01 & 0.820 & 100\\
-full & by\_lang & no & accuracy & 0.02 & 0.953 & 100\\
-full & by\_lang & no & f1 & 0.02 & 0.963 & 100\\
-full & by\_lang & no & precision & 0.02 & 0.978 & 100\\
-full & by\_lang & no & recall & 0.01 & 0.960 & 100\\
+full & by\_lang & nl & recall & 0.01 & 0.823 & 10000\\
+full & by\_lang & no & accuracy & 0.41 & 0.960 & 7982\\
+full & by\_lang & no & f1 & 0.18 & 0.970 & 7982\\
+full & by\_lang & no & precision & 0.42 & 0.988 & 7982\\
+full & by\_lang & no & recall & 0.01 & 0.964 & 7982\\
 \addlinespace
-full & by\_lang & pt & accuracy & 0.04 & 0.580 & 100\\
-full & by\_lang & pt & f1 & 0.04 & 0.720 & 100\\
-full & by\_lang & pt & precision & 0.04 & 1.000 & 100\\
-full & by\_lang & pt & recall & 0.01 & 0.580 & 100\\
-full & by\_lang & se & accuracy & 0.04 & 0.830 & 100\\
+full & by\_lang & pt & accuracy & 0.04 & 0.576 & 1011\\
+full & by\_lang & pt & f1 & 0.29 & 0.717 & 1011\\
+full & by\_lang & pt & precision & 0.29 & 1.000 & 1011\\
+full & by\_lang & pt & recall & 0.01 & 0.576 & 1011\\
+full & by\_lang & se & accuracy & 0.17 & 0.848 & 10000\\
 \addlinespace
-full & by\_lang & se & f1 & 0.14 & 0.860 & 100\\
-full & by\_lang & se & precision & 0.14 & 0.915 & 100\\
-full & by\_lang & se & recall & 0.01 & 0.835 & 100\\
-full & by\_lang & unk & accuracy & 0.18 & 0.975 & 100\\
-full & by\_lang & unk & f1 & 0.18 & 0.980 & 100\\
+full & by\_lang & se & f1 & 0.16 & 0.870 & 10000\\
+full & by\_lang & se & precision & 0.26 & 0.912 & 10000\\
+full & by\_lang & se & recall & 0.01 & 0.864 & 10000\\
+full & by\_lang & unk & accuracy & 0.36 & 0.983 & 10000\\
+full & by\_lang & unk & f1 & 0.36 & 0.985 & 10000\\
 \addlinespace
-full & by\_lang & unk & precision & 0.18 & 0.975 & 100\\
-full & by\_lang & unk & recall & 0.01 & 1.000 & 100\\
+full & by\_lang & unk & precision & 0.36 & 0.983 & 10000\\
+full & by\_lang & unk & recall & 0.01 & 0.998 & 10000\\
 \bottomrule
 \end{tabular}
