@@ -48,7 +48,7 @@ overall_flat = flat_overall %>%
                names_to = "statistic", 
                values_to = "value") %>%
     group_by(type, statistic) %>%
-    mutate(best = value == max(value)) %>%
+    mutate(best = row_number() == which.max(value)) %>%
     ungroup()
 
 overall_full = full_overall %>% 
@@ -61,7 +61,7 @@ overall_full = full_overall %>%
                names_to = "statistic", 
                values_to = "value") %>%
     group_by(type, statistic) %>%
-    mutate(best = value == max(value)) %>%
+    mutate(best = row_number() == which.max(value)) %>%
     ungroup()
 
 bylang_flat = flat_by_lang %>%
@@ -70,7 +70,7 @@ bylang_flat = flat_by_lang %>%
                names_to = "statistic", 
                values_to = "value") %>%
     group_by(lang, type, statistic) %>%
-    mutate(best = value == max(value)) %>%
+    mutate(best = row_number() == which.max(value)) %>%
     ungroup()
 
 bylang_full = full_by_lang %>%
@@ -79,7 +79,7 @@ bylang_full = full_by_lang %>%
                names_to = "statistic", 
                values_to = "value") %>%
     group_by(lang, type, statistic) %>%
-    mutate(best = value == max(value)) %>%
+    mutate(best = row_number() == which.max(value)) %>%
     ungroup()
 
 # ==== threshold_tuning_plot ====
