@@ -102,7 +102,7 @@ threshold_tuning_plot = function(data, observation) {
         y = "Statistic"
     ) +
     labs(
-        caption = paste0("N test obs.: ", observation)
+        caption = paste0("N val. obs.: ", observation)
     )
 
   # Add max
