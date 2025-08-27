@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="209.25691mm"
    height="110.25245mm"
    viewBox="0 0 209.25692 110.25246"
    version="1.1"
    id="svg8"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   inkscape:export-filename="C:\Users\chris\Dropbox\PhD\HISCO clean\Project_dissemination\Figures for paper\Architecture_small.png"
-   inkscape:export-xdpi="300"
-   inkscape:export-ydpi="300"
-   sodipodi:docname="Architecture_small.svg">
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   inkscape:export-filename="Architecture_small.png"
+   inkscape:export-xdpi="600"
+   inkscape:export-ydpi="600"
+   sodipodi:docname="Architecture_small.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <rect
@@ -486,17 +486,20 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="356.46046"
-     inkscape:cy="352.64616"
+     inkscape:cx="357.14286"
+     inkscape:cy="352.14286"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="754"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -505,7 +508,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -517,7 +520,7 @@
     <text
        xml:space="preserve"
        id="text835"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';white-space:pre;shape-inside:url(#rect837);fill:#000000;fill-opacity:1;stroke:none;" />
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';white-space:pre;shape-inside:url(#rect837);fill:#000000;fill-opacity:1;stroke:none" />
     <g
        id="g1103"
        transform="translate(3.8050889,58.400391)">
@@ -533,27 +536,36 @@
         <text
            xml:space="preserve"
            id="text843"
-           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845);fill:#000000;fill-opacity:1;stroke:none;"
+           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845);fill:#000000;fill-opacity:1;stroke:none"
            transform="translate(54.494213,-37.617453)"><tspan
              x="-7.9375"
-             y="67.617563"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">&quot;lives of </tspan></tspan><tspan
+             y="67.617563"
+             id="tspan29"><tspan
+               style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+               id="tspan28">&quot;lives of </tspan></tspan><tspan
              x="-7.9375"
-             y="80.978708"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">fishing </tspan></tspan><tspan
+             y="80.978708"
+             id="tspan31"><tspan
+               style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+               id="tspan30">fishing </tspan></tspan><tspan
              x="-7.9375"
-             y="94.339853"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">and </tspan><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">farm </tspan></tspan><tspan
+             y="94.339853"
+             id="tspan34"><tspan
+               style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+               id="tspan32">and </tspan><tspan
+               style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+               id="tspan33">farm </tspan></tspan><tspan
              x="-7.9375"
-             y="107.701"><tspan
-               style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">work&quot;</tspan></tspan></text>
+             y="107.701"
+             id="tspan36"><tspan
+               style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+               id="tspan35">work&quot;</tspan></tspan></text>
       </g>
     </g>
     <text
        xml:space="preserve"
        id="text1027"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1029);fill:#000000;fill-opacity:1;stroke:none;" />
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1029);fill:#000000;fill-opacity:1;stroke:none" />
     <g
        id="g1535"
        transform="translate(-1.668064,-18.9063)">
@@ -568,22 +580,28 @@
       <text
          xml:space="preserve"
          id="text843-5-2-2-3-9-9"
-         style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-8);fill:#000000;fill-opacity:1;stroke:none;"
+         style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-8);fill:#000000;fill-opacity:1;stroke:none"
          transform="translate(223.05626,-7.5477781)"><tspan
            x="-7.9375"
-           y="67.617563"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">HISCO: </tspan></tspan><tspan
+           y="67.617563"
+           id="tspan38"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan37">HISCO: </tspan></tspan><tspan
            x="-7.9375"
-           y="80.978708"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">61110 </tspan></tspan><tspan
+           y="80.978708"
+           id="tspan40"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan39">61110 </tspan></tspan><tspan
            x="-7.9375"
-           y="94.339853"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">(farmer)</tspan></tspan></text>
+           y="94.339853"
+           id="tspan42"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan41">(farmer)</tspan></tspan></text>
     </g>
     <text
        xml:space="preserve"
        id="text843-5-2-2-3-9-0"
-       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-80);fill:#000000;fill-opacity:1;stroke:none;"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-80);fill:#000000;fill-opacity:1;stroke:none"
        transform="rotate(-90,109.9718,-1.1649495)" />
     <g
        id="g1535-0"
@@ -612,15 +630,17 @@
       <text
          xml:space="preserve"
          id="text3405"
-         style="font-style:normal;font-weight:normal;font-size:8.81944px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect3407);fill:#000000;fill-opacity:1;stroke:none;"
+         style="font-style:normal;font-weight:normal;font-size:8.81944px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect3407);fill:#000000;fill-opacity:1;stroke:none"
          transform="translate(161.01801,9.827381)"><tspan
            x="-159.51367"
-           y="4.2578218"><tspan
-             style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:8.81944px;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">OccCANINE:</tspan></tspan></text>
+           y="4.2578218"
+           id="tspan44"><tspan
+             style="font-style:italic;font-weight:500;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
+             id="tspan43">OccCANINE:</tspan></tspan></text>
       <text
          xml:space="preserve"
          id="text3518"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete';white-space:pre;shape-inside:url(#rect3520);fill:#000000;fill-opacity:1;stroke:none;" />
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete';white-space:pre;shape-inside:url(#rect3520);fill:#000000;fill-opacity:1;stroke:none" />
       <ellipse
          style="fill:#000000;fill-opacity:0.521994;stroke:#000000;stroke-width:0.49697699;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-miterlimit:4"
          id="path2883"
@@ -849,17 +869,23 @@
       <text
          xml:space="preserve"
          id="text843-5-2-2-3-9-9-2"
-         style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-8-7);fill:#000000;fill-opacity:1;stroke:none;"
+         style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-0-7-5-1-1-8-7);fill:#000000;fill-opacity:1;stroke:none"
          transform="translate(223.05626,-7.5477781)"><tspan
            x="-7.9375"
-           y="67.617563"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">HISCO: </tspan></tspan><tspan
+           y="67.617563"
+           id="tspan46"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan45">HISCO: </tspan></tspan><tspan
            x="-7.9375"
-           y="80.978708"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">64110 </tspan></tspan><tspan
+           y="80.978708"
+           id="tspan48"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan47">64110 </tspan></tspan><tspan
            x="-7.9375"
-           y="94.339853"><tspan
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'">(fisher)</tspan></tspan></text>
+           y="94.339853"
+           id="tspan50"><tspan
+             style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
+             id="tspan49">(fisher)</tspan></tspan></text>
     </g>
     <g
        id="g1103-4"
@@ -876,15 +902,19 @@
         <text
            xml:space="preserve"
            id="text843-2"
-           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-1);fill:#000000;fill-opacity:1;stroke:none;"
+           style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect845-1);fill:#000000;fill-opacity:1;stroke:none"
            transform="matrix(0.87719138,0,0,0.87719138,-20.968181,-51.048302)"><tspan
              x="-7.9375"
-             y="67.617563"><tspan
-               style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">Language: 
+             y="67.617563"
+             id="tspan52"><tspan
+               style="font-style:italic;font-weight:500;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
+               id="tspan51">Language: 
 </tspan></tspan><tspan
              x="-7.9375"
-             y="80.978708"><tspan
-               style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'">&quot;English&quot;</tspan></tspan></text>
+             y="80.978708"
+             id="tspan54"><tspan
+               style="font-style:italic;font-weight:500;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
+               id="tspan53">&quot;English&quot;</tspan></tspan></text>
       </g>
     </g>
   </g>
