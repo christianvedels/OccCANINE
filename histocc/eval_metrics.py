@@ -167,10 +167,6 @@ class EvalEngine:
             y_true_i = [x for x in y_true_i if x != " "]
             y_pred_i = [x for x in y_pred_i if x != " "]
 
-            # Remove duplicates
-            y_true_i = list(set(y_true_i))
-            y_pred_i = list(set(y_pred_i))
-
             # Check if any of the true codes are in the predicted codes
             acc = self._acc(y_true_i, y_pred_i, self.digits)
             correct_predictions += acc
