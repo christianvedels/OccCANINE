@@ -41,6 +41,16 @@ set CUDA_VISIBLE_DEVICES=0
 python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-icem-ft --target-cols OCCICEM_1 OCCICEM_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 4 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCCICEM_IPUMS_UK_train.csv --batch-size 512 --eval-interval 10000 --save-interval 10000 --log-wandb --wandb-project-name occ-canine-ft-v3
 ```
 
+## Medium sample (10_000)
+
+```
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-icem-n=10k-ft --target-cols OCCICEM_1 OCCICEM_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 5689 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCCICEM_IPUMS_UK_n_unq10000_train.csv --batch-size 512 --log-wandb --wandb-project-name occ-canine-ft-v3
+```
+
+```
+python finetune.py --save-path Z:/faellesmappe/tsdj/hisco/ft-tests-v3/mixer-icem-n=10k-ft-frz-enc --target-cols OCCICEM_1 OCCICEM_2 --warmup-steps 1000 --seq2seq-weight 0.1 --initial-checkpoint Z:\faellesmappe\tsdj\hisco\v2\baseline\last.bin --only-encoder --num-epochs 5689 --block-size 3 --input-col occ1 --language-col lang --dataset Z:\faellesmappe\tsdj\hisco\data\Training_data_other\EN_OCCICEM_IPUMS_UK_n_unq10000_train.csv --batch-size 512 --freeze-encoder --log-wandb --wandb-project-name occ-canine-ft-v3
+```
+
 # HISCO
 
 ```
