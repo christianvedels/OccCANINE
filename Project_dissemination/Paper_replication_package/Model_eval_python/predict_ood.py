@@ -8,7 +8,7 @@ def main():
     mod = OccCANINE()
 
     # list files
-    files = os.listdir(r'Z:\faellesmappe\tsdj\hisco\data/OOD_data')
+    files = os.listdir('Data/OOD_data')
 
     for f in files:
         if f == 'Predictions':
@@ -27,7 +27,7 @@ def main():
         os.makedirs(os.path.dirname(fname), exist_ok=True)
 
         print(f'------> Predicting {f}')
-        data_f = pd.read_csv(f'Z:/faellesmappe/tsdj/hisco/data/OOD_data/{f}')
+        data_f = pd.read_csv(f'Data/OOD_data/{f}')
 
         res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True)
 
@@ -37,9 +37,16 @@ def main():
         res["recall"] = eval_engine.recall(return_per_obs = True)
         res["f1"] = eval_engine.f1(return_per_obs = True)
 
+        # Original HISCO codes
+        res["hisco_1_original"] = data_f.hisco_1
+        res["hisco_2_original"] = data_f.hisco_2
+        res["hisco_3_original"] = data_f.hisco_3
+        res["hisco_4_original"] = data_f.hisco_4
+        res["hisco_5_original"] = data_f.hisco_5
+
         # Add in rowid
-        # res["rowid"] = data_f.RowID
-        res['rowid'] = data_f.index
+        res["rowid"] = data_f.RowID # Standard unique ID type across the entire project
+        # res['rowid'] = data_f.index
 
         # Check if 'n' in data_f
         if "n" in data_f.columns:
