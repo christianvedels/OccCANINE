@@ -272,8 +272,8 @@ performance_by_ses = function(long_data, name) {
     print("Panel A: Regression of model performance on SES")
     print(etab1)
 
-    print("Panel B: Regression of model performance on SES and log(N)")
-    print(etab2)
+    # print("Panel B: Regression of model performance on SES and log(N)")
+    # print(etab2)
 
     sink()
 
