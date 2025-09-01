@@ -17,3 +17,24 @@
    \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
 \end{tabular}
 \par\endgroup
+[1] "Panel B: Regression of model performance on SES and log(N)"
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & Accuracy      & F1score       & Precision     & Recall\\  
+   Model:               & (1)           & (2)           & (3)           & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   ses\_value           & -0.0004       & -0.0004       & -0.0004       & -0.0004\\   
+                        & (0.0003)      & (0.0003)      & (0.0003)      & (0.0003)\\   
+   log(n)               & 0.0045$^{**}$ & 0.0046$^{**}$ & 0.0044$^{**}$ & 0.0049$^{***}$\\   
+                        & (0.0018)      & (0.0018)      & (0.0018)      & (0.0018)\\   
+   \midrule
+   \emph{Fit statistics}\\
+   Observations         & 1,055         & 1,055         & 1,055         & 1,055\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Heteroskedasticity-robust standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
