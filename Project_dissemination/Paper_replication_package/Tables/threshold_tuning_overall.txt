@@ -23,3 +23,21 @@ Number of observations full:
 
 Number of observations flat:
  926454 
+
+Table for paper (only flat):
+
+\begin{tabular}{llrr}
+\toprule
+Metric & Lang. info. & threshold & value\\
+\midrule
+Accuracy & No & 0.47 & 0.961\\
+Accuracy & Yes & 0.39 & 0.965\\
+F1 score & No & 0.28 & 0.965\\
+F1 score & Yes & 0.26 & 0.968\\
+Precision & No & 0.47 & 0.963\\
+\addlinespace
+Precision & Yes & 0.41 & 0.966\\
+Recall & No & 0.01 & 0.989\\
+Recall & Yes & 0.01 & 0.990\\
+\bottomrule
+\end{tabular}

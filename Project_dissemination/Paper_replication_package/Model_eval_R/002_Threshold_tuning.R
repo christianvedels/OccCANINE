@@ -227,6 +227,25 @@ print(tmp)
 cat("\nNumber of observations full:\n", tmp1$n %>% unique(), "\n")
 cat("\nNumber of observations flat:\n", tmp2$n %>% unique(), "\n")
 
+# Table for paper (we dropped full)
+cat("\nTable for paper (only flat):\n")
+tmp %>%
+    filter(method == "flat") %>%
+    select(-method) %>%
+    rename(Metric = statistic) %>%
+    mutate(
+        Metric = case_when(
+            Metric == "accuracy" ~ "Accuracy",
+            Metric == "precision" ~ "Precision",
+            Metric == "recall" ~ "Recall",
+            Metric == "f1" ~ "F1 score"
+        ),
+    ) %>%
+    knitr::kable(, 
+      digits = 3, 
+      format = "latex",
+      booktabs = TRUE) %>% print()
+
 sink()
 
 # ==== Print tables of best threshholds by lang ====
