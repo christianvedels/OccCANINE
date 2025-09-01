@@ -19,16 +19,17 @@ predictions\_NO\_Student\_biographies.csv & 500 & 0.950 & 0.874\\
 \toprule
 File & Statistic & n & 1 digit & 2 digits & 3 digits & 4 digits & 5 digits\\
 \midrule
-predictions\_agreement\_german\_sources.csv & acc & 400 & 0.922 & 0.897 & 0.875 & 0.868 & 0.868\\
-predictions\_SE\_strikes.csv & acc & 1449 & 0.914 & 0.893 & 0.856 & 0.795 & 0.793\\
-predictions\_NL\_familiegeld.csv & acc & 200 & 0.875 & 0.785 & 0.560 & 0.535 & 0.520\\
-predictions\_EN\_Bankruptcy\_KornLacroix\_no\_-1.csv & acc & 326400 & 0.843 & 0.566 & 0.493 & 0.443 & 0.440\\
-predictions\_IT\_italian\_titles.csv & acc & 26287 & 0.756 & 0.736 & 0.711 & 0.673 & 0.659\\
+predictions\_SE\_strikes.csv & acc & 1430 & 0.957 & 0.946 & 0.927 & 0.897 & 0.896\\
+predictions\_NL\_familiegeld.csv & acc & 200 & 0.938 & 0.892 & 0.780 & 0.767 & 0.760\\
+predictions\_EN\_Bankruptcy\_KornLacroix\_no\_-1.csv & acc & 326400 & 0.922 & 0.783 & 0.747 & 0.721 & 0.720\\
+predictions\_IT\_italian\_titles.csv & acc & 26287 & 0.877 & 0.866 & 0.854 & 0.835 & 0.828\\
+predictions\_EN\_dwi\_no\_-1.csv & acc & 101619 & 0.828 & 0.795 & 0.788 & 0.741 & 0.732\\
 \addlinespace
-predictions\_GE\_denazification\_RA1.csv & acc & 400 & 0.625 & 0.520 & 0.390 & 0.350 & 0.332\\
-predictions\_GE\_denazification.csv & acc & 800 & 0.617 & 0.514 & 0.383 & 0.347 & 0.329\\
-predictions\_GE\_denazification\_RA2.csv & acc & 400 & 0.609 & 0.509 & 0.376 & 0.344 & 0.326\\
-predictions\_EN\_Bankruptcy\_KornLacroix.csv & acc & 581912 & 0.508 & 0.352 & 0.311 & 0.283 & 0.277\\
+predictions\_GE\_denazification\_RA1.csv & acc & 400 & 0.789 & 0.734 & 0.669 & 0.648 & 0.640\\
+predictions\_GE\_denazification.csv & acc & 800 & 0.785 & 0.731 & 0.665 & 0.647 & 0.638\\
+predictions\_GE\_denazification\_RA2.csv & acc & 400 & 0.780 & 0.728 & 0.662 & 0.645 & 0.637\\
+predictions\_EN\_Bankruptcy\_KornLacroix.csv & acc & 581912 & 0.754 & 0.676 & 0.656 & 0.641 & 0.638\\
+predictions\_EN\_dwi.csv & acc & 166563 & 0.704 & 0.684 & 0.680 & 0.651 & 0.645\\
 \bottomrule
 \end{tabular}
 \end{table}
