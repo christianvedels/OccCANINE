@@ -12,10 +12,10 @@ library(kableExtra)
 source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-train = read0("Data/Training_data")
-val1 = read0("Data/Validation_data1")
-val2 = read0("Data/Validation_data2")
-test = read0("Data/Test_data")
+train = read0("Data/Training_data_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_train.csv", "EN_OCCICEM_IPUMS_UK_train.csv", "EN_OCC1950_IPUMS_US_train.csv"))
+val1 = read0("Data/Validation_data1_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_val1.csv", "EN_OCCICEM_IPUMS_UK_val1.csv", "EN_OCC1950_IPUMS_US_val1.csv"))
+val2 = read0("Data/Validation_data2_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_val2.csv", "EN_OCCICEM_IPUMS_UK_val2.csv", "EN_OCC1950_IPUMS_US_val2.csv"))
+test = read0("Data/Test_data_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_test.csv", "EN_OCCICEM_IPUMS_UK_test.csv", "EN_OCC1950_IPUMS_US_test.csv"))
 
 # ==== Amount of data ====
 data_summary = data.frame(
@@ -24,7 +24,7 @@ data_summary = data.frame(
 )
 print(data_summary)
 
-sink("Project_dissemination/Paper_replication_package/Tables/Data_split_summary.txt")
+sink("Project_dissemination/Paper_replication_package/Tables/Data_split_summary_other_systems.txt")
 data_summary %>% mutate(Pct = Obs / sum(Obs)) %>% print()
 sink()
 
@@ -43,6 +43,7 @@ tmp1 = train %>%
     group_by(file) %>%
     summarise(
         train = n(),
+        train_unique = length(unique(occ1)),
         Language = ifelse(length(unique(lang))==1, unique(lang), "mix")
     ) %>%
     ungroup() %>%
@@ -53,7 +54,8 @@ tmp1 = train %>%
 tmp2 = val1 %>%
     group_by(file) %>%
     summarise(
-        val1 = n()
+        val1 = n(),
+        val1_unique = length(unique(occ1))
     ) %>%
     ungroup() %>%
     mutate(
@@ -63,7 +65,8 @@ tmp2 = val1 %>%
 tmp3 = val2 %>%
     group_by(file) %>%
     summarise(
-        val2 = n()
+        val2 = n(),
+        val2_unique = length(unique(occ1))
     ) %>%
     ungroup() %>%
     mutate(
@@ -73,7 +76,8 @@ tmp3 = val2 %>%
 tmp4 = test %>%
     group_by(file) %>%
     summarise(
-        test = n()
+        test = n(),
+        test_unique = length(unique(occ1))
     ) %>%
     ungroup() %>%
     mutate(
@@ -81,15 +85,16 @@ tmp4 = test %>%
     )
 
 
-sink("Project_dissemination/Paper_replication_package/Tables/Data_summary.txt")
+sink("Project_dissemination/Paper_replication_package/Tables/Data_summary_other.txt")
 tmp1 %>% 
     full_join(tmp2, by = "file") %>%
     full_join(tmp3, by = "file") %>%
     full_join(tmp4, by = "file") %>%
     mutate(
-        Observations = train + val1 + val2 + test
+        Observations = train + val1 + val2 + test,
+        `Unique strings (training)` = train_unique # Only training unique strings reported
     ) %>%
-    select(file, Observations, Language) %>%
+    select(file, Observations, `Unique strings (training)`, Language) %>%
     mutate(
         Percent = Observations / sum(Observations)
     ) %>%
@@ -112,62 +117,3 @@ tmp1 %>%
     ) %>% print()
 sink()
 
-# === Table: Data by language ====
-tmp1 = train %>%
-    group_by(lang) %>%
-    summarise(
-        train = n()
-    ) %>%
-    ungroup()
-
-tmp2 = val1 %>%
-    group_by(lang) %>%
-    summarise(
-        val1 = n()
-    ) %>%
-    ungroup()
-
-tmp3 = val2 %>%
-    group_by(lang) %>%
-    summarise(
-        val2 = n()
-    ) %>%
-    ungroup()
-
-tmp4 = test %>%
-    group_by(lang) %>%
-    summarise(
-        test = n()
-    ) %>%
-    ungroup()
-
-sink("Project_dissemination/Paper_replication_package/Tables/Data_summary_lang.txt")
-tmp1 %>% 
-    full_join(tmp2, by = "lang") %>%
-    full_join(tmp3, by = "lang") %>%
-    full_join(tmp4, by = "lang") %>%
-    mutate(
-        Observations = train + val1 + val2 + test
-    ) %>%
-    rename(
-        Language = lang
-    ) %>%
-    select(Language, Observations) %>%
-    mutate(
-        Percent = Observations / sum(Observations)
-    ) %>%
-    arrange(desc(Observations)) %>%
-    mutate(
-        Observations = scales::comma(Observations),
-        Percent = scales::percent(Percent, accuracy = 0.01)
-    ) %>%
-    mutate(
-        Source = " "
-    ) %>%
-    kable(
-        format = "latex",
-        booktabs = TRUE,
-        caption = "Data summary",
-        linesep = ""
-    ) %>% print()
-sink()
