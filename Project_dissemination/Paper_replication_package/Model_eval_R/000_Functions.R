@@ -21,12 +21,24 @@ dims = list(
 
 # ==== read0() ====
 # Read several files without the exact same columns
-read0 = function(dir){
+read0 = function(dir, files = NULL, verbose = FALSE) {
   require(foreach)
   require(tidyverse)
   fs = list.files(dir)
   fs = fs[grepl(".csv", fs)]
+
+  # Filter files if specified (fiiles would just be local file names in dir)
+  if (!is.null(files)) {
+    fs = fs[fs %in% files]
+  }
+  start_time = Sys.time()
+  if (verbose) cat("Reading", length(fs), "files from", dir, "\n")
+  if (verbose) cat("Start time:", as.character(start_time), "\n")
   foreach(f = fs, .combine = "bind_rows") %do% {
+    if (verbose){
+      current_time = Sys.time()
+      print_eta(which(fs == f), length(fs), start_time, current_time)
+    }
     read_csv(paste0(dir,"/",f), guess_max = 100000) %>% mutate(file = f)
   }
 }
