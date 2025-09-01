@@ -253,16 +253,14 @@ performance_by_ses = function(long_data, name) {
         mod1_acc, mod1_f1, mod1_prec, mod1_recall,
         drop = "Constant",
         tex = TRUE,
-        fitstat = "n",
-        signif.code=NA
+        fitstat = "n"
     )
 
     etab2 = etable(
         mod2_acc, mod2_f1, mod2_prec, mod2_recall,
         drop = "Constant",
         tex = TRUE,
-        fitstat = "n",
-        signif.code=NA
+        fitstat = "n"
     )
 
     # Save regression tables

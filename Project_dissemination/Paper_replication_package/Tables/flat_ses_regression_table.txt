@@ -3,16 +3,17 @@
 \centering
 \begin{tabular}{lcccc}
    \tabularnewline \midrule \midrule
-   Dependent Variables: & Accuracy & F1score  & Precision & Recall\\  
-   Model:               & (1)      & (2)      & (3)       & (4)\\  
+   Dependent Variables: & Accuracy        & F1score         & Precision       & Recall\\  
+   Model:               & (1)             & (2)             & (3)             & (4)\\  
    \midrule
    \emph{Variables}\\
-   ses\_value           & -0.0011  & -0.0009  & -0.0010   & -0.0007\\   
-                        & (0.0003) & (0.0003) & (0.0003)  & (0.0003)\\   
+   ses\_value           & -0.0011$^{***}$ & -0.0009$^{***}$ & -0.0010$^{***}$ & -0.0007$^{**}$\\   
+                        & (0.0003)        & (0.0003)        & (0.0003)        & (0.0003)\\   
    \midrule
    \emph{Fit statistics}\\
-   Observations         & 1,003    & 1,003    & 1,003     & 1,003\\  
+   Observations         & 1,003           & 1,003           & 1,003           & 1,003\\  
    \midrule \midrule
    \multicolumn{5}{l}{\emph{Heteroskedasticity-robust standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
 \end{tabular}
 \par\endgroup
