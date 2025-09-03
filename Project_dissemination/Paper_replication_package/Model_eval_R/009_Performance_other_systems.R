@@ -12,10 +12,16 @@ library(kableExtra)
 source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-train = read0("Data/Training_data_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_train.csv", "EN_OCCICEM_IPUMS_UK_train.csv", "EN_OCC1950_IPUMS_US_train.csv"))
-val1 = read0("Data/Validation_data1_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_val1.csv", "EN_OCCICEM_IPUMS_UK_val1.csv", "EN_OCC1950_IPUMS_US_val1.csv"))
-val2 = read0("Data/Validation_data2_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_val2.csv", "EN_OCCICEM_IPUMS_UK_val2.csv", "EN_OCC1950_IPUMS_US_val2.csv"))
-test = read0("Data/Test_data_other", verbose = TRUE, files = c("EN_ISCO68_IPUMS_UK_test.csv", "EN_OCCICEM_IPUMS_UK_test.csv", "EN_OCC1950_IPUMS_US_test.csv"))
+tl = FALSE  # Toyload for quick testing
+files_train = c("EN_ISCO68_IPUMS_UK_train.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_train.csv", "EN_OCCICEM_IPUMS_UK_train.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_train.csv", "EN_OCC1950_IPUMS_US_train.csv", "EN_OCC1950_IPUMS_US_n_unq10000_train.csv")
+files_val1 = c("EN_ISCO68_IPUMS_UK_val1.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_val1.csv", "EN_OCCICEM_IPUMS_UK_val1.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_val1.csv", "EN_OCC1950_IPUMS_US_val1.csv", "EN_OCC1950_IPUMS_US_n_unq10000_val1.csv")
+files_val2 = c("EN_ISCO68_IPUMS_UK_val2.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_val2.csv", "EN_OCCICEM_IPUMS_UK_val2.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_val2.csv", "EN_OCC1950_IPUMS_US_val2.csv", "EN_OCC1950_IPUMS_US_n_unq10000_val2.csv")
+files_test = c("EN_ISCO68_IPUMS_UK_test.csv", "EN_OCCICEM_IPUMS_UK_test.csv", "EN_OCC1950_IPUMS_US_test.csv")
+
+train = read0("Data/Training_data_other", verbose = TRUE, files = files_train, toyload = tl)
+val1 = read0("Data/Validation_data1_other", verbose = TRUE, files = files_val1, toyload = tl)
+val2 = read0("Data/Validation_data2_other", verbose = TRUE, files = files_val2, toyload = tl)
+test = read0("Data/Test_data_other", verbose = TRUE, files = files_test, toyload = tl)
 
 # ==== Amount of data ====
 data_summary = data.frame(
