@@ -21,7 +21,7 @@ dims = list(
 
 # ==== read0() ====
 # Read several files without the exact same columns
-read0 = function(dir, files = NULL, verbose = FALSE) {
+read0 = function(dir, files = NULL, verbose = FALSE, toyload = FALSE) {
   require(foreach)
   require(tidyverse)
   fs = list.files(dir)
@@ -39,7 +39,11 @@ read0 = function(dir, files = NULL, verbose = FALSE) {
       current_time = Sys.time()
       print_eta(which(fs == f), length(fs), start_time, current_time)
     }
-    read_csv(paste0(dir,"/",f), guess_max = 100000) %>% mutate(file = f)
+    if(toyload) {
+      read_csv(paste0(dir,"/",f), n_max = 1000, guess_max = 100000) %>% mutate(file = f)
+    } else {
+       read_csv(paste0(dir,"/",f), guess_max = 100000) %>% mutate(file = f)
+    }
   }
 }
 
