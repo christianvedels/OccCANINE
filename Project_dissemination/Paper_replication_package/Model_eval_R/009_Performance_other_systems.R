@@ -12,7 +12,7 @@ library(kableExtra)
 source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
-tl = FALSE  # Toyload for quick testing
+tl = TRUE  # Toyload for quick testing
 files_train = c("EN_ISCO68_IPUMS_UK_train.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_train.csv", "EN_OCCICEM_IPUMS_UK_train.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_train.csv", "EN_OCC1950_IPUMS_US_train.csv", "EN_OCC1950_IPUMS_US_n_unq10000_train.csv")
 files_val1 = c("EN_ISCO68_IPUMS_UK_val1.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_val1.csv", "EN_OCCICEM_IPUMS_UK_val1.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_val1.csv", "EN_OCC1950_IPUMS_US_val1.csv", "EN_OCC1950_IPUMS_US_n_unq10000_val1.csv")
 files_val2 = c("EN_ISCO68_IPUMS_UK_val2.csv", "EN_ISCO68_IPUMS_UK_n_unq10000_val2.csv", "EN_OCCICEM_IPUMS_UK_val2.csv", "EN_OCCICEM_IPUMS_UK_n_unq10000_val2.csv", "EN_OCC1950_IPUMS_US_val2.csv", "EN_OCC1950_IPUMS_US_n_unq10000_val2.csv")
@@ -22,6 +22,163 @@ train = read0("Data/Training_data_other", verbose = TRUE, files = files_train, t
 val1 = read0("Data/Validation_data1_other", verbose = TRUE, files = files_val1, toyload = tl)
 val2 = read0("Data/Validation_data2_other", verbose = TRUE, files = files_val2, toyload = tl)
 test = read0("Data/Test_data_other", verbose = TRUE, files = files_test, toyload = tl)
+
+# Files with test performance
+performance_files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems", pattern = "_performance")
+performance_files = performance_files[grepl(".csv", performance_files)]
+performance = foreach(f = performance_files, .combine = rbind) %do% {
+    df = read.csv(paste0("Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/", f))
+    df$File = f
+    df$System = gsub("_performance.*", "", f)
+    df = df %>%
+        mutate(
+            Training = case_when(
+                grepl("n_unq10000", File) ~ "10k unique strings",
+                grepl("n_unq10000_finetuning", File) ~ "10k unique strings (full finetuning)",
+                TRUE ~ "All data"
+            ),
+        )
+    return(df)
+}
+# ==== Table: performance under training regimes ====
+# Derive per-system train counts from 'train'
+train_counts = train %>%
+  mutate(
+    SystemPretty = case_when(
+      grepl("ISCO68", file, ignore.case = TRUE) ~ "ISCO-68",
+      grepl("OCCICEM", file, ignore.case = TRUE) ~ "OCCICEM",
+      grepl("OCC1950", file, ignore.case = TRUE) ~ "OCC1950",
+      TRUE ~ NA_character_
+    ),
+    RegimeBase = ifelse(grepl("n_unq10000", file, ignore.case = TRUE), "10k", "full")
+  ) %>%
+  filter(!is.na(SystemPretty)) %>%
+  group_by(SystemPretty, RegimeBase) %>%
+  summarize(n_train = dplyr::n(), .groups = "drop")
+
+get_train_n = function(sys, reg) {
+  # Map table's reg to base regime in counts
+  reg_base = if (reg == "full") "full" else "10k"
+  val = train_counts %>% dplyr::filter(SystemPretty == sys, RegimeBase == reg_base) %>% dplyr::pull(n_train)
+  if (length(val) == 0) NA_integer_ else val[1]
+}
+
+# Derive per-system test counts from 'test' (not from 'performance')
+test_counts = test %>%
+  mutate(
+    SystemPretty = case_when(
+      grepl("ISCO68", file, ignore.case = TRUE) ~ "ISCO-68",
+      grepl("OCCICEM", file, ignore.case = TRUE) ~ "OCCICEM",
+      grepl("OCC1950", file, ignore.case = TRUE) ~ "OCC1950",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  filter(!is.na(SystemPretty)) %>%
+  group_by(SystemPretty) %>%
+  summarize(test_n = dplyr::n(), .groups = "drop")
+
+get_test_n = function(sys) {
+  val = test_counts %>% dplyr::filter(SystemPretty == sys) %>% dplyr::pull(test_n)
+  if (length(val) == 0) NA_integer_ else val[1]
+}
+
+# ==== Table: performance under training regimes ====
+perf2 = performance %>%
+  mutate(
+    System = tolower(System),
+    SystemPretty = dplyr::recode(System, "isco68" = "ISCO-68", "occicem" = "OCCICEM", "occ1950" = "OCC1950"),
+    Regime = dplyr::case_when(
+      grepl("_n_unq10000_full_finetuning", File) ~ "10k_full",   # Panel B
+      grepl("_n_unq10000", File) ~ "10k_frozen",                 # Panel C
+      TRUE ~ "full"                                              # Panel A
+    )
+  )
+
+fmt3 = function(x) ifelse(is.na(x), NA, sprintf("%.3f", x))
+co_short = function(x, decimals_m = 1) {
+  if (is.na(x)) return(NA_character_)
+  else scales::comma(x)  # 1,000 style (no 'k')
+}
+
+get_row = function(sys, reg) {
+  r = perf2 %>% dplyr::filter(SystemPretty == sys, Regime == reg) %>% dplyr::slice(1)
+  tr_n = get_train_n(sys, reg)
+  te_n = get_test_n(sys)
+
+  train_obs_str = if (is.na(tr_n)) {
+    if (reg == "full") "15.8m" else "10,000"
+  } else {
+    if (reg == "full") co_short(tr_n) else scales::comma(tr_n)
+  }
+  test_obs_str = if (is.na(te_n)) {
+    "931,000"
+  } else {
+    co_short(te_n)  # will be "1,000" style for thousands
+  }
+
+  if (nrow(r) == 0) {
+    return(data.frame(
+      `Target system` = sys,
+      `Train obs.` = train_obs_str,
+      `Test obs.` = test_obs_str,
+      Accuracy = NA, Precision = NA, Recall = NA, `F1-score` = NA,
+      `Train time` = dplyr::case_when(
+        reg == "full" ~ "$\\sim$20 days",
+        reg == "10k_full" ~ "$\\sim$48 hours",
+        TRUE ~ "$\\sim$20 hours"
+      ),
+      check.names = FALSE
+    ))
+  }
+  data.frame(
+    `Target system` = sys,
+    `Train obs.` = train_obs_str,
+    `Test obs.` = test_obs_str,
+    Accuracy = fmt3(r$accuracy),
+    Precision = fmt3(r$precision),
+    Recall = fmt3(r$recall),
+    `F1-score` = fmt3(r$f1),
+    `Train time` = dplyr::case_when(
+      reg == "full" ~ "$\\sim$20 days",
+      reg == "10k_full" ~ "$\\sim$48 hours",
+      TRUE ~ "$\\sim$20 hours"
+    ),
+    check.names = FALSE
+  )
+}
+
+panelA = dplyr::bind_rows(
+  get_row("ISCO-68", "full"),
+  get_row("OCCICEM", "full"),
+  get_row("OCC1950", "full")
+)
+panelB = dplyr::bind_rows(
+  get_row("ISCO-68", "10k_full"),
+  get_row("OCCICEM", "10k_full"),
+  get_row("OCC1950", "10k_full")
+)
+panelC = dplyr::bind_rows(
+  get_row("ISCO-68", "10k_frozen"),
+  get_row("OCCICEM", "10k_frozen"),
+  get_row("OCC1950", "10k_frozen")
+)
+
+tab = dplyr::bind_rows(panelA, panelB, panelC)
+
+sink("Project_dissemination/Paper_replication_package/Tables/Performance_other_systems.txt")
+tab %>%
+  kable(
+    format = "latex",
+    booktabs = TRUE,
+    escape = FALSE,
+    caption = "Model performance under different training data constraints",
+    align = c("l","l","r","r","r","r","r","l")
+  ) %>%
+  kableExtra::pack_rows("\\textit{Panel A: Full training data (good decoder)}", 1, 3, italic = TRUE) %>%
+  kableExtra::pack_rows("\\textit{Panel B: 10,000 unique strings (good decoder)}", 4, 6, italic = TRUE) %>%
+  kableExtra::pack_rows("\\textit{Panel C: 10,000 unique strings, frozen encoder (good decoder)}", 7, 9, italic = TRUE) %>%
+  print()
+sink()
 
 # ==== Amount of data ====
 data_summary = data.frame(
