@@ -47,7 +47,7 @@ def perform_test(df, thr, probs, mod, digits = None, verbose = False):
 
     return res
 
-def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Validation_data1/*.csv", lang = None):
+def load_data(data_path, n_obs=5000, lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -102,7 +102,7 @@ def apply_test_across_thr(df, probs, mod):
     return results_df
 
 
-def wrapper(prediction_type="flat", n_obs=100):
+def wrapper(data_path, prediction_type="flat", n_obs=100):
     # Load model
     mod = OccCANINE(name='OccCANINE_s2s_mix', verbose = True, batch_size=2048)
 
@@ -111,7 +111,7 @@ def wrapper(prediction_type="flat", n_obs=100):
     if not os.path.exists(result_fname):
         print(f"Results for {prediction_type} already exist. Skipping...")
         # Load data
-        df = load_data(n_obs=n_obs)
+        df = load_data(data_path=data_path, n_obs=n_obs)
 
         # Get probs
         probs_unk = get_probs(df, mod, prediction_type=prediction_type, lang="unk")
@@ -144,7 +144,7 @@ def wrapper(prediction_type="flat", n_obs=100):
             print(f'Results for {lang} already exists, skipping')
             continue
 
-        df = load_data(n_obs=n_obs, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Validation_data1/*.csv", lang=lang)
+        df = load_data(data_path=data_path, n_obs=n_obs, lang=lang)
         print(f"Loaded data for {lang}; NROWS: {df.shape[0]}")
 
         # Get probs
@@ -222,16 +222,16 @@ def optimal_thresholds():
         json.dump(thresholds_by_lang, f)
 
 
-def main(toyrun=False):
+def main(toyrun=False, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Validation_data1\*.csv"):
     # Run the main function
     if toyrun:
         # Run a toy example
-        wrapper(prediction_type="flat", n_obs=1000)
-        wrapper(prediction_type="full", n_obs=100)
+        wrapper(data_path, prediction_type="flat", n_obs=1000)
+        wrapper(data_path, prediction_type="full", n_obs=100)
     else:
         # Run the full example
-        wrapper(prediction_type="flat", n_obs=10000000000000)
-        wrapper(prediction_type="full", n_obs=10000)
+        wrapper(data_path, prediction_type="flat", n_obs=10000000000000)
+        wrapper(data_path, prediction_type="full", n_obs=10000)
 
     # Optimal thresholds for flat and full
     optimal_thresholds()

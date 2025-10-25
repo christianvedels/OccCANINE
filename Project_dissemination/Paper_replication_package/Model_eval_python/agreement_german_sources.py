@@ -4,7 +4,7 @@ from histocc.eval_metrics import EvalEngine
 import pandas as pd
 import os
 
-def main():
+def main(data_path):
     mod = OccCANINE()
 
     fname = f'Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/predictions_agreement_german_sources.csv'
@@ -13,8 +13,8 @@ def main():
         print(f"Skipping {fname} as predictions already exist.")
         return 0
 
-    data_f1 = pd.read_csv(r'Z:\faellesmappe\tsdj\hisco\data/OOD_data/GE_denazification_RA1.csv')
-    res = pd.read_csv(r'Z:\faellesmappe\tsdj\hisco\data/OOD_data/GE_denazification_RA2.csv')
+    data_f1 = pd.read_csv(f"{data_path}/GE_denazification_RA1.csv")
+    res = pd.read_csv(f"{data_path}/GE_denazification_RA2.csv")
 
     eval_engine = EvalEngine(mod, ground_truth = data_f1, predicitons = res, pred_col = "hisco_")
     res[f"acc"] = eval_engine.accuracy(return_per_obs = True)

@@ -4,11 +4,11 @@ from histocc.eval_metrics import EvalEngine
 import pandas as pd
 import os
 
-def main():
+def main(data_path="OOD_data"):
     mod = OccCANINE()
 
     # list files
-    files = os.listdir('Data/OOD_data')
+    files = os.listdir(data_path)
 
     for f in files:
         if f == 'Predictions':

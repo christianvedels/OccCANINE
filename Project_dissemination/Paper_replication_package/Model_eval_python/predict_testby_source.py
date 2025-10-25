@@ -5,7 +5,7 @@ import glob
 import json
 import os
 
-def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
+def load_data(data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", n_obs=5000):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -82,7 +82,7 @@ def run_eval(df, mod, prediction_type, file, thr=0.31, digits=5):
         print(res)
 
 
-def main(toyrun=False):
+def main(toyrun=False, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
     """
     Main function to load data, get predictions, and evaluate the model.
     """
@@ -90,16 +90,16 @@ def main(toyrun=False):
     mod = OccCANINE()
 
     # Load data
-    files = glob.glob(r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
+    files = glob.glob(data_path)
     for f in files:
 
         print(f"Performing test for {f}")
         
         if toyrun:
-            df = load_data(n_obs=100, data_path=f)
+            df = load_data(data_path=f, n_obs=100)
         else:
             # Load full data for production run
-            df = load_data(n_obs=1000000000000, data_path=f)
+            df = load_data(data_path=f, n_obs=1000000000000)
         
         # Get file without path
         file = os.path.basename(f)

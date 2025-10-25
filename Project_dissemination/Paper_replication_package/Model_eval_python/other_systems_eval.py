@@ -56,7 +56,7 @@ def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer
 
     return 0
 
-def main(toyrun=False):
+def main(toyrun=False, mod_path = "Data/models", data_path="Data/Test_data_other"):
     """
     Main function to load data, get predictions, and evaluate the model.
     """
@@ -69,8 +69,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occicem_performance.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco/mixer-icem-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-icem-ft/last.bin",
+        data_path=f"{data_path}/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
 
@@ -78,8 +78,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occicem_performance_n_unq10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-icem-n=10k-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-icem-n=10k-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
 
@@ -87,8 +87,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occicem_performance_n_unq10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-icem-n=10k-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-icem-n=10k-ft/last.bin",
+        data_path=f"{data_path}/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
 
@@ -96,8 +96,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occicem_performance_n_10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-icem-n=10k-r-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-icem-n=10k-r-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
 
@@ -105,8 +105,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occicem_performance_n_10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-icem-n=10k-r-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCCICEM_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-icem-n=10k-r-ft/last.bin",
+        data_path=f"{data_path}/EN_OCCICEM_IPUMS_UK_test.csv",
         system = "OCCICEM"
     )
 
@@ -114,8 +114,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/isco68_performance.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-isco-ft/last.bin",
+        data_path=f"{data_path}/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
 
@@ -123,8 +123,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/isco68_performance_n_unq10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-n=10k-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-isco-n=10k-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
 
@@ -132,8 +132,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/isco68_performance_n_unq10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-n=10k-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-isco-n=10k-ft/last.bin",
+        data_path=f"{data_path}/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
 
@@ -141,16 +141,16 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/isco68_performance_n_10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-n=10k-r-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-isco-n=10k-r-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
     # ISCO68 with 10k (non-unique) training strings (full finetuning)
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/isco68_performance_n_10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-isco-n=10k-r-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_ISCO68_IPUMS_UK_test.csv",
+        mod_path=f"{mod_path}/mixer-isco-n=10k-r-ft/last.bin",
+        data_path=f"{data_path}/EN_ISCO68_IPUMS_UK_test.csv",
         system = "ISCO68A"
     )
 
@@ -158,8 +158,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occ1950_performance.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=f"{mod_path}/mixer-occ1950-ft/last.bin",
+        data_path=f"{data_path}/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
 
@@ -167,8 +167,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occ1950_performance_n_unq10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-n=10k-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=f"{mod_path}/mixer-occ1950-n=10k-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
 
@@ -176,8 +176,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occ1950_performance_n_unq10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-n=10k-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=f"{mod_path}/mixer-occ1950-n=10k-ft/last.bin",
+        data_path=f"{data_path}/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
 
@@ -185,8 +185,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occ1950_performance_n_10000.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-n=10k-r-ft-frz-enc/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=f"{mod_path}/mixer-occ1950-n=10k-r-ft-frz-enc/last.bin",
+        data_path=f"{data_path}/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
 
@@ -194,8 +194,8 @@ def main(toyrun=False):
     test_performance(
         file="Project_dissemination/Paper_replication_package/Data/Intermediate_data/other_systems/occ1950_performance_n_10000_full_finetuning.csv",
         n_obs=n_obs,
-        mod_path=r"Z:\faellesmappe\tsdj\hisco\ft-tests-v3/mixer-occ1950-n=10k-r-ft/last.bin",
-        data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data_other/EN_OCC1950_IPUMS_US_test.csv",
+        mod_path=f"{mod_path}/mixer-occ1950-n=10k-r-ft/last.bin",
+        data_path=f"{data_path}/EN_OCC1950_IPUMS_US_test.csv",
         system = "OCC1950"
     )
 

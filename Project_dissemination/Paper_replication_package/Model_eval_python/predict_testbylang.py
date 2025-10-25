@@ -5,7 +5,7 @@ import glob
 import json
 import os
 
-def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang = None):
+def load_data(data_path, n_obs=5000, lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -117,7 +117,7 @@ def run_eval(df, mod, prediction_type, lang, thr=0.31, digits=5):
         print(f"Results saved to {file_unk}")
         print(res_unk)
 
-def main(toyrun=False):
+def main(toyrun=False, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
     """
     Main function to load data, get predictions, and evaluate the model.
     """
@@ -142,11 +142,11 @@ def main(toyrun=False):
         print(f"Performing test for {lang}")
         
         if toyrun:
-            df = load_data(n_obs=100, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang=lang)
+            df = load_data(data_path=data_path, n_obs=100,  lang=lang)
         else:
             # Load full data for production run
-            df = load_data(n_obs=1000000000000000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", lang=lang)
-        
+            df = load_data(data_path=data_path, n_obs=1000000000000000, lang=lang)
+
         # Run evaluations for different prediction types
         run_eval(df, mod, prediction_type="flat", lang=lang, thr=THRESHOLD_LOOKUP.get(lang).get("flat"))
         run_eval(df, mod, prediction_type="greedy", lang=lang, thr=99) # Placeholder threshold (not used in greedy)

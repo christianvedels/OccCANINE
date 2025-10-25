@@ -5,7 +5,7 @@ import os
 import json
 
 
-def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data\*.csv", lang = None):
+def load_data(data_path, n_obs=5000, lang = None):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -144,19 +144,22 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5):
         print(f"Results saved to {file_unk}")
         print(res_unk)
 
-def main(toyrun=False):
+def main(toyrun=False, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data\*.csv"):
     """
     Main function to load data, get predictions, and evaluate the model.
+    Args:
+        toyrun (bool): Whether to run a toy example with fewer observations.
+        data_path (str): Path to all data files for OccCANINE model.
     """
     # Load the model
     mod = OccCANINE()
 
     # Load data
     if toyrun:
-        df = load_data(n_obs=1000, lang=None)
+        df = load_data(data_path=data_path, n_obs=1000, lang=None)
     else:
         # Load a larger dataset for full evaluation
-        df = load_data(n_obs=1000000000000000, lang=None)
+        df = load_data(data_path=data_path, n_obs=1000000000000000, lang=None)
 
     thr = load_optimal_thresholds()
 

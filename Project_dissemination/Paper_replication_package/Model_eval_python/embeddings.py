@@ -3,7 +3,7 @@ import pandas as pd
 import glob
 import sklearn
 
-def load_data(n_obs=5000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
+def load_data(data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv", n_obs=5000):
     """
     Load data from the given path and sample n_obs rows.
     Args:
@@ -55,7 +55,7 @@ def tsne(embeddings, d=2):
     
     return tsne_data
 
-def main(toyrun=True):
+def main(toyrun=True, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv"):
     """
     Main function to test the OccCANINE model with embeddings.
     This is a simple test to ensure the model can handle embeddings.
@@ -65,10 +65,10 @@ def main(toyrun=True):
 
     # Load data
     if toyrun:
-        df = load_data(n_obs=10000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
+        df = load_data(data_path=data_path, n_obs=10000)
     else:
         # Load full data for production run
-        df = load_data(n_obs=100000, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data/*.csv")
+        df = load_data(data_path=data_path, n_obs=100000)
 
     # Get embeddings for the input
     f = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/embeddings_test.csv"
