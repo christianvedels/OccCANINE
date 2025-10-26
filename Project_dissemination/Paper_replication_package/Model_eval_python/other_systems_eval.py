@@ -9,6 +9,9 @@ def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer
         print(f"File {file} already exists. Skipping performance test.")
         return 0
 
+    # Create directory if it does not exist
+    os.makedirs(os.path.dirname(file), exist_ok=True)
+
     # Load the model
     mod = OccCANINE(mod_path, hf = False, system = system, batch_size=2048)
 
@@ -52,6 +55,7 @@ def test_performance(file = "tmp.csv", n_obs=1000, mod_path = "Data/models/mixer
     # Update file name and place in 'big_files/other_systems' instead
     fname = file.replace("performance", "obs_performance")
     fname = fname.replace("Data/Intermediate_data/other_systems", "Data/Intermediate_data/big_files/other_systems")
+    os.makedirs(os.path.dirname(fname), exist_ok=True)
     preds.to_csv(fname, index=False)
 
     return 0
@@ -61,7 +65,7 @@ def main(toyrun=False, mod_path = "Data/models", data_path="Data/Test_data_other
     Main function to load data, get predictions, and evaluate the model.
     """
     if toyrun:
-        n_obs = 10000
+        n_obs = 1000
     else:
         n_obs = 10000000000
 
