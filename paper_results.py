@@ -8,15 +8,21 @@ from Project_dissemination.Paper_replication_package.Model_eval_python.other_sys
 from Project_dissemination.Paper_replication_package.Model_eval_python.agreement_german_sources import main as agreement_german_sources_main
 
 if __name__ == "__main__":
-    tr = True  # Set to True for toy run, False for full run
+    tr = False  # Set to True for toy run, False for full run
     DATA_PATH = r"Data" # Overall path to all data files for OccCANINE 
 
     # Runs all the prerequisite scripts for the paper results
     threshold_tuning_main(toyrun=tr, data_path=f"{DATA_PATH}/Validation_data1/*.csv")
     predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
+    predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique") # Same as predct_test but for unique strings only [1]
     predict_ood_main(data_path=f"{DATA_PATH}/OOD_data")
     predict_testbylang_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
     predict_testby_source_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
     embeddings_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
     other_systems_eval_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_other", mod_path=f"{DATA_PATH}/models")
     agreement_german_sources_main(data_path=f"{DATA_PATH}/OOD_data")
+
+
+# Note:
+# [1] The "test_unique" run evaluation on occs not found in training. E.g. "baker" is a common occupation and occurs multiple times.
+#     This evaluation only includes one occurrence of strings where such cases have been sorted away. 
