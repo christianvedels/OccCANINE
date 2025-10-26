@@ -801,10 +801,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7401318"
-     inkscape:cx="793.77754"
-     inkscape:cy="216.85327"
+     inkscape:cx="809.31531"
+     inkscape:cy="422.2221"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g2313"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
@@ -852,19 +852,19 @@
        transform="translate(87.518992,17.987586)"><tspan
          x="-58.765625"
          y="36.822641"
-         id="tspan106"><tspan
+         id="tspan4"><tspan
            style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan93">Character-</tspan></tspan><tspan
+           id="tspan3">Character-</tspan></tspan><tspan
          x="-58.765625"
          y="50.183786"
-         id="tspan108"><tspan
+         id="tspan6"><tspan
            style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan107">level </tspan></tspan><tspan
+           id="tspan5">level </tspan></tspan><tspan
          x="-58.765625"
          y="63.544931"
-         id="tspan110"><tspan
+         id="tspan8"><tspan
            style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan109">tokens</tspan></tspan></text>
+           id="tspan7">tokens</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text835-9"
@@ -872,24 +872,24 @@
        transform="translate(83.077132,-21.998195)"><tspan
          x="-58.765625"
          y="33.560171"
-         id="tspan112"><tspan
+         id="tspan10"><tspan
            style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan111">&quot;en[SEP]he </tspan></tspan><tspan
+           id="tspan9">&quot;en[SEP]he </tspan></tspan><tspan
          x="-58.765625"
          y="42.467634"
-         id="tspan114"><tspan
+         id="tspan12"><tspan
            style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan113">fishes and </tspan></tspan><tspan
+           id="tspan11">fishes and </tspan></tspan><tspan
          x="-58.765625"
          y="51.375097"
-         id="tspan116"><tspan
+         id="tspan14"><tspan
            style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan115">tends to his </tspan></tspan><tspan
+           id="tspan13">tends to his </tspan></tspan><tspan
          x="-58.765625"
          y="60.282561"
-         id="tspan118"><tspan
+         id="tspan16"><tspan
            style="font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan117">farm&quot;</tspan></tspan></text>
+           id="tspan15">farm&quot;</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.564999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend-8)"
        d="m 21.285344,27.321659 c 0,0 -15.3780064,21.900522 -11.5570316,31.399667 2.3367246,5.809221 16.8659036,7.108914 16.8659036,7.108914"
@@ -1271,9 +1271,9 @@
        transform="translate(181.9351,32.269166)"><tspan
          x="-58.765625"
          y="36.822641"
-         id="tspan120"><tspan
+         id="tspan18"><tspan
            style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan119">CANINE</tspan></tspan></text>
+           id="tspan17">CANINE</tspan></tspan></text>
     <text
        xml:space="preserve"
        id="text1632"
@@ -1416,16 +1416,16 @@
        transform="translate(-17.650273,-30.260871)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan122"><tspan
+         id="tspan20"><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan121">Pooler outcome </tspan></tspan><tspan
+           id="tspan19">Pooler outcome </tspan></tspan><tspan
          x="204.84161"
          y="46.537857"
-         id="tspan125"><tspan
+         id="tspan23"><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan123">from </tspan><tspan
+           id="tspan21">from </tspan><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan124">CANINE</tspan></tspan></text>
+           id="tspan22">CANINE</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1435,9 +1435,9 @@
        transform="translate(-12.078906,-15.24383)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan127"><tspan
+         id="tspan25"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan126">-0.2996</tspan></tspan></text>
+           id="tspan24">-0.2996</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1447,9 +1447,9 @@
        transform="translate(-12.086664,-8.9573912)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan129"><tspan
+         id="tspan27"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan128">-0.9365</tspan></tspan></text>
+           id="tspan26">-0.9365</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1459,9 +1459,9 @@
        transform="translate(-11.148957,17.706601)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan131"><tspan
+         id="tspan29"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan130">0.8520</tspan></tspan></text>
+           id="tspan28">0.8520</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1471,9 +1471,9 @@
        transform="translate(-11.120535,11.363213)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan133"><tspan
+         id="tspan31"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan132">0.2995</tspan></tspan></text>
+           id="tspan30">0.2995</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1483,9 +1483,9 @@
        transform="translate(-11.943483,5.019827)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan135"><tspan
+         id="tspan33"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan134">-0.2033</tspan></tspan></text>
+           id="tspan32">-0.2033</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1495,13 +1495,13 @@
        transform="translate(-10.912724,24.824131)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan139"><tspan
+         id="tspan37"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan136">768</tspan><tspan
+           id="tspan34">768</tspan><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan137">×</tspan><tspan
+           id="tspan35">×</tspan><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan138">1</tspan></tspan></text>
+           id="tspan36">1</tspan></tspan></text>
     <g
        id="g3163"
        transform="translate(-43.391688,6.1723482)">
@@ -1676,16 +1676,16 @@
          transform="translate(35.570193,37.541547)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan141"><tspan
+           id="tspan39"><tspan
              style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-             id="tspan140">Last hidden state </tspan></tspan><tspan
+             id="tspan38">Last hidden state </tspan></tspan><tspan
            x="204.84161"
            y="46.537857"
-           id="tspan144"><tspan
+           id="tspan42"><tspan
              style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-             id="tspan142">from </tspan><tspan
+             id="tspan40">from </tspan><tspan
              style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-             id="tspan143">CANINE</tspan></tspan></text>
+             id="tspan41">CANINE</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1695,13 +1695,13 @@
          transform="translate(45.595253,74.924638)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan148"><tspan
+           id="tspan46"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan145">128</tspan><tspan
+             id="tspan43">128</tspan><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan146">×</tspan><tspan
+             id="tspan44">×</tspan><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan147">768</tspan></tspan></text>
+             id="tspan45">768</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1711,9 +1711,9 @@
          transform="translate(31.484221,52.955463)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan150"><tspan
+           id="tspan48"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan149">-1.2558</tspan></tspan></text>
+             id="tspan47">-1.2558</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1723,9 +1723,9 @@
          transform="translate(53.173403,51.350438)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan152"><tspan
+           id="tspan50"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan151">...</tspan></tspan></text>
+             id="tspan49">...</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1735,9 +1735,9 @@
          transform="translate(62.083328,53.099247)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan154"><tspan
+           id="tspan52"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan153">-1.2485</tspan></tspan></text>
+             id="tspan51">-1.2485</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1747,9 +1747,9 @@
          transform="translate(31.485179,66.191554)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan156"><tspan
+           id="tspan54"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan155">-0.5696</tspan></tspan></text>
+             id="tspan53">-0.5696</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1759,9 +1759,9 @@
          transform="translate(53.174361,64.586529)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan158"><tspan
+           id="tspan56"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan157">...</tspan></tspan></text>
+             id="tspan55">...</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -1771,9 +1771,9 @@
          transform="translate(62.084285,66.335338)"><tspan
            x="204.84161"
            y="40.452438"
-           id="tspan160"><tspan
+           id="tspan58"><tspan
              style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-             id="tspan159">0.7808</tspan></tspan></text>
+             id="tspan57">0.7808</tspan></tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -1999,9 +1999,9 @@
        transform="translate(73.138865,-18.606755)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan162"><tspan
+         id="tspan60"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan161">0.0001</tspan></tspan></text>
+           id="tspan59">0.0001</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#ff0000;fill-opacity:0.69;stroke:none;stroke-width:0.264583"
@@ -2011,9 +2011,9 @@
        transform="translate(73.138865,9.7903938)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan164"><tspan
+         id="tspan62"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan163">0.8010</tspan></tspan></text>
+           id="tspan61">0.8010</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#ff0000;fill-opacity:0.690196;stroke:none;stroke-width:0.264583"
@@ -2023,9 +2023,9 @@
        transform="translate(73.030355,-4.4081879)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan166"><tspan
+         id="tspan64"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan165">0.2311</tspan></tspan></text>
+           id="tspan63">0.2311</tspan></tspan></text>
     <path
        style="fill:#b3b3b3;fill-opacity:1;stroke:none;stroke-width:0.403265;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
        id="path3728-8-4"
@@ -2126,20 +2126,20 @@
        transform="translate(32.969429,-40.071706)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan168"><tspan
+         id="tspan66"><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan167">Sigmoid </tspan></tspan><tspan
+           id="tspan65">Sigmoid </tspan></tspan><tspan
          x="204.84161"
          y="46.537857"
-         id="tspan170"><tspan
+         id="tspan68"><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan169">classifcation 
+           id="tspan67">classification 
 </tspan></tspan><tspan
          x="204.84161"
          y="52.623276"
-         id="tspan172"><tspan
+         id="tspan70"><tspan
            style="font-style:italic;font-weight:500;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan171">head</tspan></tspan></text>
+           id="tspan69">head</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -2149,14 +2149,14 @@
        transform="translate(69.455435,-35.764859)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan174"><tspan
+         id="tspan72"><tspan
            style="font-style:italic;font-weight:bold;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Bold Italic'"
-           id="tspan173">Output </tspan></tspan><tspan
+           id="tspan71">Output </tspan></tspan><tspan
          x="204.84161"
          y="46.537857"
-         id="tspan176"><tspan
+         id="tspan74"><tspan
            style="font-style:italic;font-weight:bold;font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Bold Italic'"
-           id="tspan175">probabilities</tspan></tspan></text>
+           id="tspan73">probabilities</tspan></tspan></text>
     <g
        data-mml-node="mtd"
        transform="matrix(0.00478866,0,0,-0.00478866,284.55602,57.721154)"
@@ -2189,9 +2189,9 @@
        transform="translate(73.058775,23.988962)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan178"><tspan
+         id="tspan76"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan177">0.0002</tspan></tspan></text>
+           id="tspan75">0.0002</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:42.3861;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -2201,13 +2201,13 @@
        transform="translate(72.168055,34.332103)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan182"><tspan
+         id="tspan80"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan179">1919</tspan><tspan
+           id="tspan77">1919</tspan><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan180">×</tspan><tspan
+           id="tspan78">×</tspan><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan181">1</tspan></tspan></text>
+           id="tspan79">1</tspan></tspan></text>
     <path
        style="fill:#ff0000;fill-opacity:0.690196;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.690196"
        d="m 295.70473,34.326293 h 8.98025"
@@ -2221,9 +2221,9 @@
        transform="translate(100.44005,-4.5945259)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan184"><tspan
+         id="tspan82"><tspan
            style="line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan183">61110 General Farmer</tspan></tspan></text>
+           id="tspan81">61110 General Farmer</tspan></tspan></text>
     <path
        style="fill:#ff0000;fill-opacity:0.690196;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.690196"
        d="m 295.7006,48.709252 h 8.98025"
@@ -2237,9 +2237,9 @@
        transform="translate(100.43592,9.7884338)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan186"><tspan
+         id="tspan84"><tspan
            style="line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan185">64100 Fisherman</tspan></tspan></text>
+           id="tspan83">64100 Fisherman</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.564999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Lend-8-3-3-3-9-7-6-5)"
        d="m 241.68501,106.07664 10.88503,0.0384"
@@ -2262,15 +2262,15 @@
          transform="translate(320.79912,62.294915)"><tspan
            x="-58.765625"
            y="36.170173"
-           id="tspan188"><tspan
+           id="tspan86"><tspan
              style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-             id="tspan187">Tramsformer
+             id="tspan85">Transformer
 </tspan></tspan><tspan
            x="-58.765625"
            y="48.640617"
-           id="tspan190"><tspan
+           id="tspan88"><tspan
              style="font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-             id="tspan189">Decoder</tspan></tspan></text>
+             id="tspan87">Decoder</tspan></tspan></text>
     </g>
     <text
        xml:space="preserve"
@@ -2281,15 +2281,15 @@
        transform="translate(50.116552,78.286261)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan192"><tspan
+         id="tspan90"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan191">Decoder layers: 3
+           id="tspan89">Decoder layers: 3
 </tspan></tspan><tspan
          x="204.84161"
          y="46.537857"
-         id="tspan194"><tspan
+         id="tspan92"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan193">Hidden dimensions: 768 </tspan></tspan></text>
+           id="tspan91">Hidden dimensions: 768 </tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.239654px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
        d="m 311.86178,119.11281 c 4.02177,-0.0149 8.04331,-0.0298 10.05396,2.84881 2.01066,2.87862 2.01066,8.65026 -0.16685,11.49388 -2.17751,2.84361 -6.53255,2.75935 -10.07546,2.6751 -3.5429,-0.0843 -6.27345,-0.16852 -7.65616,-1.60082 -1.3827,-1.43231 -1.41726,-4.2128 -1.45183,-6.99362"
@@ -2306,13 +2306,13 @@
        transform="matrix(1.3102586,0,0,1.3102586,49.981104,42.671082)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan198"><tspan
+         id="tspan96"><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan195">6 1 1 1 0 </tspan><tspan
-           style="fill:#000000;fill-opacity:0.70028"
-           id="tspan196">&amp;</tspan><tspan
+           id="tspan93">6 1 1 1 0 </tspan><tspan
+           style="fill:#1a1a1a"
+           id="tspan94">&amp;</tspan><tspan
            style="font-size:5.29167px;line-height:1.15;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete'"
-           id="tspan197"> 6 4 1 0 0 </tspan></tspan></text>
+           id="tspan95"> 6 4 1 0 0 </tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:5.64444px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:38.2876;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -2322,19 +2322,19 @@
        transform="translate(136.56656,85.184338)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan200"><tspan
+         id="tspan98"><tspan
            style="font-style:italic;font-weight:500;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan199">Digit by digit </tspan></tspan><tspan
+           id="tspan97">Digit by digit </tspan></tspan><tspan
          x="204.84161"
          y="46.943543"
-         id="tspan202"><tspan
+         id="tspan100"><tspan
            style="font-style:italic;font-weight:500;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan201">recurrent </tspan></tspan><tspan
+           id="tspan99">recurrent </tspan></tspan><tspan
          x="204.84161"
          y="53.434647"
-         id="tspan204"><tspan
+         id="tspan102"><tspan
            style="font-style:italic;font-weight:500;line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif Medium Italic'"
-           id="tspan203">prediction</tspan></tspan></text>
+           id="tspan101">prediction</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.264583, 0.793749;stroke-dashoffset:0;stroke-opacity:1"
        d="m 340.29261,129.84562 c -5.39172,-0.2681 -10.78373,-0.53621 -16.17604,-0.80434"
@@ -2351,9 +2351,9 @@
        transform="matrix(1.215919,0,0,1.215919,104.7139,24.791522)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan206"><tspan
+         id="tspan105"><tspan
            style="line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan205">Fisherman</tspan></tspan></text>
+           id="tspan103">Fisherman</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:5.22239px;line-height:0;font-family:sans-serif;white-space:pre;inline-size:74.3783;display:inline;fill:#ff0000;fill-opacity:0.690196;stroke:none;stroke-width:0.264583;stroke-opacity:1"
@@ -2363,9 +2363,9 @@
        transform="matrix(1.215919,0,0,1.215919,61.539947,32.175922)"><tspan
          x="204.84161"
          y="40.452438"
-         id="tspan208"><tspan
+         id="tspan107"><tspan
            style="line-height:1.15;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif'"
-           id="tspan207">General Farmer</tspan></tspan></text>
+           id="tspan106">General Farmer</tspan></tspan></text>
     <rect
        style="fill:none;fill-opacity:0.690196;stroke:#000000;stroke-width:0.297443;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.297443, 0.594885;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2022"
@@ -2573,15 +2573,20 @@
        id="path103" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:9.71959px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.529837;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="150.98598"
-       y="11.780879"
+       style="font-weight:bold;font-size:7.63344px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.416117;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="144.28072"
+       y="9.9759312"
        id="text104"><tspan
          sodipodi:role="line"
          id="tspan104"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529838;stroke-dasharray:none"
-         x="150.98598"
-         y="11.780879">&quot;fast&quot;</tspan></text>
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
+         x="144.28072"
+         y="9.9759312">Flat Decoder</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
+         x="144.28072"
+         y="19.517731"
+         id="tspan1">(&quot;fast&quot;)</tspan></text>
     <path
        style="fill:#000000;stroke:#000000;stroke-width:0.5;stroke-dasharray:0.5, 0.5;stroke-dashoffset:0;stroke-opacity:1"
        d="m 176.20014,102.23479 -11.8065,20.07593"
@@ -2589,14 +2594,19 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:9.71959px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.529837;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="154.49023"
-       y="131.74471"
-       id="text104-9"><tspan
+       style="font-weight:bold;font-size:6.6434px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.362147;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="150.13719"
+       y="127.50301"
+       id="text104-0"><tspan
          sodipodi:role="line"
-         id="tspan104-4"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.529838;stroke-dasharray:none"
-         x="154.49023"
-         y="131.74471">&quot;good&quot;</tspan></text>
+         id="tspan104-9"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.362147;stroke-dasharray:none"
+         x="150.13719"
+         y="127.50301">Sequential Decoder</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.362147;stroke-dasharray:none"
+         x="150.13719"
+         y="135.80725"
+         id="tspan1-4">(&quot;good&quot;)</tspan></text>
   </g>
 </svg>
