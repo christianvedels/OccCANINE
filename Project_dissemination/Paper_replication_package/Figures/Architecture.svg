@@ -800,11 +800,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7401318"
-     inkscape:cx="809.31531"
-     inkscape:cy="422.2221"
+     inkscape:zoom="1.4802636"
+     inkscape:cx="632.31981"
+     inkscape:cy="446.87987"
      inkscape:document-units="mm"
-     inkscape:current-layer="g2313"
+     inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
@@ -2573,19 +2573,19 @@
        id="path103" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.63344px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.416117;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="font-weight:bold;font-size:7.40833px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.416117;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        x="144.28072"
        y="9.9759312"
        id="text104"><tspan
          sodipodi:role="line"
          id="tspan104"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.40833px;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
          x="144.28072"
          y="9.9759312">Flat Decoder</tspan><tspan
          sodipodi:role="line"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.40833px;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.416117;stroke-dasharray:none"
          x="144.28072"
-         y="19.517731"
+         y="19.236343"
          id="tspan1">(&quot;fast&quot;)</tspan></text>
     <path
        style="fill:#000000;stroke:#000000;stroke-width:0.5;stroke-dasharray:0.5, 0.5;stroke-dashoffset:0;stroke-opacity:1"
@@ -2594,19 +2594,19 @@
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:6.6434px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.362147;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="150.13719"
-       y="127.50301"
+       style="font-weight:bold;font-size:7.40833px;font-family:'CMU serif';-inkscape-font-specification:'CMU serif Bold';text-align:center;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.397388;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="152.91313"
+       y="127.9522"
        id="text104-0"><tspan
          sodipodi:role="line"
          id="tspan104-9"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.362147;stroke-dasharray:none"
-         x="150.13719"
-         y="127.50301">Sequential Decoder</tspan><tspan
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.40833px;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.397388;stroke-dasharray:none"
+         x="152.91313"
+         y="127.9522">Sequential Decoder</tspan><tspan
          sodipodi:role="line"
-         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.362147;stroke-dasharray:none"
-         x="150.13719"
-         y="135.80725"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.40833px;font-family:'CMU Concrete';-inkscape-font-specification:'CMU Concrete Italic';fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.397388;stroke-dasharray:none"
+         x="152.91313"
+         y="137.21262"
          id="tspan1-4">(&quot;good&quot;)</tspan></text>
   </g>
 </svg>
