@@ -67,86 +67,102 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5, name="test"):
     # Create dir if it does not exist
     os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files", exist_ok=True)
     fname = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/obs_{name}_performance_{prediction_type}.csv"
-    if os.path.exists(fname):
+    
+    if not os.path.exists(fname):
+        
+        preds = mod(
+            df["occ1"].tolist(),
+            df["lang"].tolist(),
+            threshold=thr,
+            prediction_type=prediction_type,
+            deduplicate=True
+        )
+
+        preds_unk = mod(
+            df["occ1"].tolist(),
+            "unk",
+            threshold=thr,
+            prediction_type=prediction_type,
+            deduplicate=True
+        )
+
+        eval_engine = EvalEngine(
+            mod,
+            df,
+            preds,
+            pred_col='hisco_',
+            digits=digits
+        )
+
+        eval_engine_unk = EvalEngine(
+            mod,
+            df,
+            preds_unk,
+            pred_col='hisco_',
+            digits=digits
+        )
+
+        # Individual level metrics
+        preds[f"acc"] = eval_engine.accuracy(return_per_obs = True)
+        preds["precision"] = eval_engine.precision(return_per_obs = True)
+        preds["recall"] = eval_engine.recall(return_per_obs = True)
+        preds["f1"] = eval_engine.f1(return_per_obs = True)
+        preds["rowid"] = df.RowID
+        preds.to_csv(fname, index=False)
+
+    else:
         print(f"Skipping {fname} as predictions already exist.")
-        return
-
-    preds = mod(
-        df["occ1"].tolist(),
-        df["lang"].tolist(),
-        threshold=thr,
-        prediction_type=prediction_type,
-        deduplicate=True
-    )
-
-    preds_unk = mod(
-        df["occ1"].tolist(),
-        "unk",
-        threshold=thr,
-        prediction_type=prediction_type,
-        deduplicate=True
-    )
-
-    eval_engine = EvalEngine(
-        mod,
-        df,
-        preds,
-        pred_col='hisco_',
-        digits=digits
-    )
-
-    eval_engine_unk = EvalEngine(
-        mod,
-        df,
-        preds_unk,
-        pred_col='hisco_',
-        digits=digits
-    )
-
-    # Individual level metrics
-    preds[f"acc"] = eval_engine.accuracy(return_per_obs = True)
-    preds["precision"] = eval_engine.precision(return_per_obs = True)
-    preds["recall"] = eval_engine.recall(return_per_obs = True)
-    preds["f1"] = eval_engine.f1(return_per_obs = True)
-    preds["rowid"] = df.RowID
-    preds.to_csv(fname, index=False)
 
     for d in range(1, digits + 1):
-        eval_engine.digits = d
-        res = pd.DataFrame([{
-            "threshold": thr,
-            "accuracy": eval_engine.accuracy(),
-            "f1": eval_engine.f1(),
-            "precision": eval_engine.precision(),
-            "recall": eval_engine.recall(),
-            "n": df.shape[0],
-            "prediction_type": prediction_type,
-            "lang": "known"
-        }])
-
         # Make directory if it does not exist
         os.makedirs(f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/{name}_performance", exist_ok=True)
         # Save results to CSV
         file = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/{name}_performance/test_performance_{prediction_type}_digits_{d}.csv"
-        res.to_csv(file, index=False)
-        print(f"Results saved to {file}")
-        print(res)
+        
+        if not os.path.exists(file):
+            print(f"Skipping {file} as it already exists.")
 
-        eval_engine_unk.digits = d
-        res_unk = pd.DataFrame([{
-            "threshold": thr,
-            "accuracy": eval_engine_unk.accuracy(),
-            "f1": eval_engine_unk.f1(),
-            "precision": eval_engine_unk.precision(),
-            "recall": eval_engine_unk.recall(),
-            "n": df.shape[0],
-            "prediction_type": prediction_type,
-            "lang": "unk"
-        }])
+            eval_engine.digits = d
+            res = pd.DataFrame([{
+                "threshold": thr,
+                "accuracy": eval_engine.accuracy(),
+                "f1": eval_engine.f1(),
+                "precision": eval_engine.precision(),
+                "recall": eval_engine.recall(),
+                "n": df.shape[0],
+                "prediction_type": prediction_type,
+                "lang": "known"
+            }])
+
+            res.to_csv(file, index=False)
+            print(f"Results saved to {file}")
+            print(res)
+
+        else:
+            print(f"Skipping {file} as it already exists.")
+
         file_unk = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/{name}_performance/test_performance_{prediction_type}_unk_digits_{d}.csv"
         res_unk.to_csv(file_unk, index=False)
-        print(f"Results saved to {file_unk}")
-        print(res_unk)
+
+        if not os.path.exists(file_unk):
+        
+            eval_engine_unk.digits = d
+            res_unk = pd.DataFrame([{
+                "threshold": thr,
+                "accuracy": eval_engine_unk.accuracy(),
+                "f1": eval_engine_unk.f1(),
+                "precision": eval_engine_unk.precision(),
+                "recall": eval_engine_unk.recall(),
+                "n": df.shape[0],
+                "prediction_type": prediction_type,
+                "lang": "unk"
+            }])
+            
+            print(f"Results saved to {file_unk}")
+            print(res_unk)
+
+        else:
+            print(f"Skipping {file_unk} as it already exists.")
 
 def main(toyrun=False, data_path=r"Z:\faellesmappe\tsdj\hisco\data/Test_data\*.csv", name="test"):
     """
