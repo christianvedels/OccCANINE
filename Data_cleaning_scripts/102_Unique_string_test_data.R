@@ -66,7 +66,7 @@ foreach(f = files_test, .combine = "bind_rows") %do% {
 
 cat("\nOriginal test data rows:", n_original)
 cat("\nUnique string test data rows:", n_unique)
-cat("\nReduction:", round(100*(n_original - n_unique)/n_original,2), "%")
+cat("\nReduction:", round(100*(n_unique)/n_original,2), "%")
 
 
 
