@@ -142,8 +142,7 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5, name="test"):
             print(f"Skipping {file} as it already exists.")
 
         file_unk = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/{name}_performance/test_performance_{prediction_type}_unk_digits_{d}.csv"
-        res_unk.to_csv(file_unk, index=False)
-
+        
         if not os.path.exists(file_unk):
         
             eval_engine_unk.digits = d
@@ -158,6 +157,7 @@ def run_eval(df, mod, prediction_type, thr=0.31, digits=5, name="test"):
                 "lang": "unk"
             }])
             
+            res_unk.to_csv(file_unk, index=False)
             print(f"Results saved to {file_unk}")
             print(res_unk)
 
