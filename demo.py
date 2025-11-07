@@ -39,15 +39,6 @@ def parse_args() -> argparse.Namespace:
 
     return args
 
-def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
-    fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
-
-    with fn_keys.open() as file:
-        keys = pd.read_csv(file)
-
-    return keys
-
-
 
 def main():
     args = parse_args()
@@ -57,12 +48,12 @@ def main():
 
     # Loop through single-str example
     for example_str in args.examples:
-        occ_code, prob, occ = model.predict(
+        out = model.predict(
             example_str,
             lang=args.language,
-            get_dict=True,
             threshold=args.threshold,
-            )[0][0]
+            )
+        occ_code, prob, occ = out[out.columns[2]].iloc[0], out['conf'].iloc[0], out['occ1'].iloc[0]
 
         print(f'HISCO code: {occ_code}. Occupation: {occ}. Certainty: {prob * 100:.2f}%')
 
