@@ -496,7 +496,7 @@ class OccCANINE:
         - get_df (bool, optional): Ignored
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
         - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings' or 'greedy-top-k'. Overwrites 'behavior'. See details.
-        - k_pred (int): Maximum number of predicted occupational codes to keep
+        - k_pred (int): Maximum number of predicted occupational codes to keep or alternatively the 'k' in 'greedy-top-k' predictions. 
         - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
         - order_invariant_conf (bool): If True an order invariant confidence is computed. This takes a bit longer but - especially for cases with many observations with multiple occupations.
 
