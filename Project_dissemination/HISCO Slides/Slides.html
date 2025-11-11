@@ -124,26 +124,10 @@ class: center, inverse, middle
 #### Christian Møller Dahl, Torben Johansen, Christian Vedel
 #### University of Southern Denmark, HEDG
 
-**Twitter: @ChristianVedel,**  
 **Email: christian-vs@sam.sdu.dk**  
 **arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)**  
-**Updated 2025-09-12**
+**Updated 2025-11-11**
 
-
----
-class: middle, inverse, center
-
-.huge123[**OccCANINE**]
-
-
-&lt;img src="Figures/logo_offwhite.png" width="150px" height="150px" /&gt;
-
-
-.footnote[
-.small123[
-*Logo: Matt Curtis + Bing image*
-]
-]
 
 ---
 # Data examples
@@ -156,6 +140,33 @@ class: middle, inverse, center
 .small123[
 *Example data from Clark, Cummins Curtis (2022)*
 ]
+
+---
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+.pull-left-wide[
+# This presentation
+- We solve the problem from the previous slide
+- Introduce OccCANINE
+- New results which does not appear in current working paper
+  + Based on more training data
+  + Updated architecture + 'oil' (order-invariant-loss)
+- .red[*No new insights*]
+]
+
+--
+
+.pull-left-wide[
+### Who is this for?
+.small123[
+- Labor/economic history crowd: Here is a new tool
+- ML/NLP crowd: A new application
+- Everyone else: Here is a pipeline for dealing with messy text data
+]
+]
+
 
 ---
 # HISCO codes
@@ -215,6 +226,18 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 
 .red[christian-vs@sam.sdu.dk]
 ]
+
+---
+class: middle
+# State of the art
+
+.pull-left-wide[
+- **Rule-based &amp; dictionary methods**: Hand-crafted lookup tables, regular expressions, and intensive cleaning deliver decent accuracy but are laborious, brittle, and hard to port to new data (Patel, 2012; Gweon 2017).
+- **Classical ML pipelines**: Bag-of-words, k-NN, boosting trees, random forests on survey-specific features raise automation but still depend on heavy pre-processing and are typically tuned to one country/system/time period (Schierholz, 2020; Turrell, 2022, van der Heijden 2022).
+- **Overall**: Most existing solutions are **one-off**—built for a single survey or classification and must be rebuilt for each new context. **OccCANINE is designed as a broad, shared backbone**: multilingual, historical, and easily adapted to multiple occupational coding systems.
+]
+
+
 
 ---
 # Architecture
@@ -297,6 +320,119 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 
 
 ---
+# Training - technical details
+.pull-left[
+- We use Adam optimizer
+- Two loss functions:
+  + Binary Cross-entropy loss for 'fast' decoder
+  + Order-invariant loss (oil) for 'good' decoder
+- All runs efficiently with *teacher forcing*. I.e. we predict all digits in one go, excluding 'illegal' information. 
+]
+
+---
+# OIL: Order-Invariant loss (intuition)
+
+.pull-left[
+- Many entries contain **multiple occupations**:
+  - *"policeman and farmer"*
+  - *"he fishes and farms"*
+- These map to several valid HISCO codes:
+  - e.g. `\(61110\)` (Farmer), `\(64100\)` (Fisherman)
+
+- For the model, the **set** of codes is what matters  
+  `\(\Rightarrow\)` `\(\{61110, 64100\}\)` is correct in **any order**
+
+.red[
+Standard sequence loss is order-sensitive  
+`\(\Rightarrow\)` wrong penalty for correct but permuted outputs
+]
+
+- Note: This is trivial in the 'fast' decoder: Cross Entropy
+
+]
+
+
+--
+
+.pull-right[
+```text
+"he fishes and farms"
+
+Target codes:
+  [Farmer, Fisher]
+
+Predicted (model):
+  [Fisher, Farmer]
+
+Standard loss:
+  ❌ (wrong order)
+
+Order-invariant loss:
+  ✅ (same set)
+```
+
+#### We solve this while maintaining useful properties
+- We can take the derivative
+- Teacher forcing compatible
+- Efficient to compute
+
+] 
+
+
+
+---
+
+# Order-invariant loss (details)
+
+.small123[
+
+- Split prediction into `\(N\)` candidate code blocks, each of length `\(b\)`.
+
+- For each candidate `\(i\)` and target `\(j\)`, compute block loss
+
+`$$L_{ij} = \frac{1}{b} \sum_{\ell = 0}^{b - 1} \mathrm{CE}\big(\hat{Y}_i[\ell], Y_j[\ell]\big).$$`
+
+- Let `\(k\)` be the number of valid target codes.  
+  **Order-invariant matching across blocks:**
+  
+`$$L_{\mathrm{inv}}
+= \frac{1}{k} \sum_{j = 0}^{k - 1}
+\min_{0 \le i &lt; k} L_{ij}.$$`
+
+  Each true code is matched to its best-predicted block.
+
+- We need to promote sparcity. Let `\(\mathcal{M}_i\)` be a mask indicating if block `\(i\)` should *not* contain a valid code.
+  
+`$$L_{\mathrm{pad}}
+= \frac{1}{N} \sum_{i = 0}^{N - 1} \mathcal{M}_i L_{\mathrm{pad}}^i.$$`
+
+  Where `\(L_{\mathrm{pad}}^i\)` is 0 if block `\(i\)` predicts the 'padding' code, and CE to padding otherwise.
+
+- Final objective for the 'good' decoder:
+`$$L = L_{\mathrm{inv}} + \lambda L_{\mathrm{pad}},$$`
+  with `\(\lambda\)` tuning how hard we penalize spurious codes.
+
+]
+
+---
+# Training in practice
+.pull-left-narrow[
+- 30 days of training
+- Batch size: 512
+- Model exposed to full training data 50 times
+
+- **Note:** *Sequential Decoder* trains much faster than *Flat Decoder* - because of the fewer dimensions of output space
+]
+
+.pull-right-wide[
+.pull-right-wide[
+![Training curve](Figures/Training_curve.png)
+]
+]
+
+
+
+---
 
 # The product
 
@@ -350,6 +486,58 @@ model.predict("The train's fireman")
 
 
 ---
+# The nature of the mistakes
+.panelset[
+.panel[.panel-name[Example 1]
+.center[
+&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_marr_cert3742836.png" width="675px" height="450px" /&gt;
+]
+]
+.panel[.panel-name[Example 2]
+.center[
+&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_parish33715.png" width="675px" height="450px" /&gt;
+]
+]
+.panel[.panel-name[Example 3]
+.center[
+&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_uk_ipums2325523.png" width="675px" height="450px" /&gt;
+]
+]
+.panel[.panel-name[Example 4]
+.center[
+&lt;img src="Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.png" width="675px" height="450px" /&gt;
+]
+]
+]
+
+---
+# Differential error rates
+.pull-left-narrow[
+- Performs best for the most common HISCO codes (99% --&gt; 524 HISCO codes)
+- (As does squishy wet neural networks)
+]
+
+.pull-right-wide[
+![HISCO_count](Figures/Performance_by_hisco.png)
+]
+
+---
+name: bias
+# Bias
+
+.pull-left-narrow[
+- Potential problem: If error rates are correlated with Socio-Economic Status
+- Turns out its not
+- [Not in a regression setting either](#bias-reg)
+]
+
+.pull-right-wide[
+![SES](Figures/Performance_by_ses.png)
+]
+
+
+
+---
 # Out of distribution
 
  
@@ -366,6 +554,21 @@ See more details in the paper
 ]
 ]
 
+---
+# More OOD testing
+
+| Dataset                       | Observations |     1 |     2 |     3 |     4 |     5 |
+|-------------------------------|-------------:|------:|------:|------:|------:|------:|
+| **Panel A: Raw data**         |              |       |       |       |       |       |
+| Swedish Strikes               |        1,430 | 0.957 | 0.946 | 0.927 | 0.897 | 0.896 |
+| Dutch Wealth Tax              |          200 | 0.938 | 0.892 | 0.780 | 0.767 | 0.760 |
+| Italian Marriage Certificates |       26,287 | 0.877 | 0.866 | 0.854 | 0.835 | 0.828 |
+| German Denazification Survey  |          800 | 0.785 | 0.731 | 0.665 | 0.647 | 0.638 |
+| Danish West Indies            |      166,563 | 0.704 | 0.684 | 0.680 | 0.651 | 0.645 |
+| UK Bankruptcies               |      581,912 | 0.754 | 0.676 | 0.656 | 0.641 | 0.638 |
+| **Panel B: Removed HISCO code ‘-1’: No occupation** | | | | | | |
+| Danish West Indies            |      101,619 | 0.828 | 0.795 | 0.788 | 0.741 | 0.732 |
+| UK Bankruptcies               |      326,400 | 0.922 | 0.783 | 0.747 | 0.721 | 0.720 |
 
 ---
 
@@ -443,57 +646,6 @@ class: middle
 ]
 
 
----
-class: middle
-# Conclusion
-.pull-left[
-- Something that took weeks, months and years, now takes an afternoon
-- Enables new research 
-- Enables more time on caring about the quality of sources and their nature
-- Updated version released soon
-]
-
-.pull-right[
-**Feel free to reach out**  
-Twitter: @ChristianVedel  
-BlueSky: @christianvedel.bsky.social  
-christian-vs@sam.sdu.dk  
-
-
-See guide on YouTube: https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
-]
-
-
----
-class: middle, center
-
-# Appendix
-
----
-# The nature of the mistakes
-.panelset[
-.panel[.panel-name[Example 1]
-.center[
-&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_marr_cert3742836.png" width="675px" height="450px" /&gt;
-]
-]
-.panel[.panel-name[Example 2]
-.center[
-&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_parish33715.png" width="675px" height="450px" /&gt;
-]
-]
-.panel[.panel-name[Example 3]
-.center[
-&lt;img src="Figures/CANINE_preds_w_lang/RowID_EN_uk_ipums2325523.png" width="675px" height="450px" /&gt;
-]
-]
-.panel[.panel-name[Example 4]
-.center[
-&lt;img src="Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.png" width="675px" height="450px" /&gt;
-]
-]
-]
-
 
 
 
@@ -553,95 +705,92 @@ class: middle
 ![DK_income](Figures/Major_group.png)
 ]
 
-
 ---
-# What we are working on
-
-.pull-left[
-### Main chalenges for the 'old version'
-1. Weaker performance in some languages
-2. Weaker performance in rarer (higher human status) occupations
-2. Predicts full code rather than digits
-3. Rare cases of weird predictions in otherwise obvious cases `\(^1\)`
-4. Slow finetuning in some cases
-
-.footnote[
-.small123[
-`\(^1\)`: We always reccomend checking 200 observations manually. This is still much quicker than having to find HISCO codes for 20000 observations manually. 
-]
-]
-
-]
-
-.pull-right[
-### Development
-- New training data
-- Digit-based seq2seq architecture (predict one digit at a time)
-- More string augmentation:
-  + Adversarial training examples: Changing descriptions only slightly to make the model make wrong guesses
-  + Double translation 
-  + Random strings should always be '-1'
-- Testing 'finetunability' to OCC1950, OCCICEM, PST, ISCO68 
-- Two user end options: *'fast'* or *'good'*
-]
-
-
----
-# Differential error rates
-.pull-left-narrow[
-- Performs best for the most common HISCO codes (99% --&gt; 524 HISCO codes)
-- (As does squishy wet neural networks)
-]
-
-.pull-right-wide[
-![HISCO_count](Figures/Performance_by_hisco.png)
-]
-
----
-# Bias
-
-.pull-left-narrow[
-- Potential problem: If error rates are correlated with Socio-Economic Status
-- Turns out its not
-- Not in a regression setting either
-]
-
-.pull-right-wide[
-![SES](Figures/Performance_by_ses.png)
-]
-
----
-# Architecture
-![Arch](Figures/Architecture.png)
-
-**Summary:** Description goes in, probabilities comes out
-
+# Other applications
+- Profitt et al (2025): Uses it to assist in linking British census data
+- Bentzen et al (2024): Measure of social status to study assimiliation
+- Jayes (2025): High skilled engineers in the age age electrification in Sweden
+- Ford (2025): Early university students
+- Görges et al (2025): Occupational shifts from railways in Denmark
+- Chilosi et al (2025): Smithian Growth in Britain
+- Andesson (2025): Labour market assimilation in historical Sweden
+- Vedel (2025): First nature geography and economic development
+- Fasnacth (2025): Identity and social change
+- etc.
 
 ---
 class: middle
-# OccCANINE
+# Conclusion
 .pull-left[
-- New tool to make research using historical occupations easier
-
-- 10000 observations in minutes (rather than 27 hours)
-
-- Small language model, OccCANINE:
-  + **Input:** "En" + "He is a farmer"
-  + **Output:** HISCO code 61110 (probability=0.989589)
-  
-- Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
-
-
+- Something that took weeks, months and years, now takes an afternoon
+- Enables new research 
+- Enables more time on caring about the quality of sources and their nature
+- Updated version released soon
 ]
 
 .pull-right[
-&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=n3PxM8PkrB5esyPI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen&gt;&lt;/iframe&gt;
+**Feel free to reach out**  
+Twitter: @ChristianVedel  
+BlueSky: @christianvedel.bsky.social  
+christian-vs@sam.sdu.dk  
 
-*Youtube video on how to use it*
-https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
+
+See guide on YouTube: https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
 ]
 
+---
+class: middle, inverse, center
 
+.huge123[**OccCANINE**]
+
+
+&lt;img src="Figures/logo_offwhite.png" width="150px" height="150px" /&gt;
+
+
+.footnote[
+.small123[
+*Logo: Matt Curtis + Bing image*
+]
+]
+
+---
+class: middle
+
+# Appendix
+
+---
+name: bias-reg
+# Bias regression analysis
+.pull-left-narrow[
+- We run regressions of the form:
+`$$\text{Error}_{h} = \alpha + \beta_1 \text{SES}_{h} + \epsilon_{h}$$`
+- Where `\(h\)` is a HISCO code
+- `\(\text{Error}_{h}\)` is the error rate for HISCO `\(h\)`
+- `\(\text{SES}_{h}\)` is the average socio-economic status for HISCO `\(h\)`
+]
+
+.pull-right[
+.small123[
+|                             | Accuracy (1) | F1 score (2) | Precision (3) | Recall (4) |
+|-----------------------------|-------------:|-------------:|--------------:|-----------:|
+| **Panel A: SES and performance** |||||
+| SES value                   |   -0.0005*   |   -0.0005*   |    -0.0005*   |  -0.0005*  |
+| (SE)                        |   (0.0003)   |   (0.0003)   |    (0.0003)   |  (0.0003)  |
+| **Panel B: Controlling for training obs.** |||||
+| SES value                   |   -0.0004    |   -0.0004    |    -0.0004    |  -0.0004   |
+| (SE)                        |   (0.0003)   |   (0.0003)   |    (0.0003)   |  (0.0003)  |
+| `\(\log(n)\)`                   |    0.0045**  |    0.0046**  |     0.0044**  |   0.0049***|
+| (SE)                        |   (0.0018)   |   (0.0018)   |    (0.0018)   |  (0.0018)  |
+| Observations                |    1,055     |    1,055     |     1,055     |   1,055    |
+
+*Note* `\(*\)`: p$&lt;0.10$, `\(**\)`: p$&lt;0.05$, `\(***\)`: p$&lt;0.05$, 
+
+]
+]
+
+.footnote[
+[Back](#bias)
+]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
