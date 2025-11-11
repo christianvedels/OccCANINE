@@ -268,3 +268,118 @@ def full_search_decoder_mixer_optimized(
     # print(n_model_calls) # 4073 is equal to trie.count_nodes(): Compared to len(codes_list)*5 = 9595
 
     return results
+
+
+def _greedy_decode_with_banned_prefixes_mixer(
+    model: Seq2SeqMixerOccCANINE,
+    memory: torch.Tensor,
+    start_symbol: int,
+    code_len: int,
+    device: torch.device,
+    banned_codes_per_sample: list[list[list[int]]],  # [batch][num_banned][code_len]
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Greedy decode a fixed-length code while preventing reproduction of any banned code
+    by masking next-token choices that would continue a banned prefix.
+
+    Returns:
+        seq: (batch, 1 + code_len) tensor of token ids (incl. BOS at position 0)
+        prob_seq: (batch, 1 + code_len) tensor of step-wise probabilities (prob at BOS pos is 1.0)
+    """
+    batch_size = memory.size(0)
+    seq = torch.full((batch_size, 1), start_symbol, dtype=torch.long, device=device)
+    prob_seq = torch.ones((batch_size, 1), dtype=torch.float, device=device)
+
+    for step in range(code_len):
+        target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool)
+
+        out = model.decode(
+            memory=memory,
+            target=seq,
+            target_mask=target_mask,
+            target_padding_mask=None,
+        )[:, -1:, :]  # (batch, 1, vocab)
+
+        # Copy logits for masking
+        logits = out.clone()
+
+        # Mask next-token options that would continue towards a banned code
+        # If current prefix matches a banned code up to 'step', ban that banned token at position 'step'.
+        for b in range(batch_size):
+            banned_next: set[int] = set()
+            prefix = seq[b, 1:].tolist()  # already generated tokens (no BOS), length == step
+            for banned in banned_codes_per_sample[b]:
+                if len(banned) > step and prefix == banned[:step]:
+                    banned_next.add(int(banned[step]))
+            if banned_next:
+                logits[b, 0, list(banned_next)] = -1e9  # effectively remove these choices
+
+        probs = torch.nn.functional.softmax(logits, dim=2)
+        next_prob, next_token = torch.max(probs, dim=2)  # (batch, 1)
+
+        seq = torch.cat([seq, next_token], dim=1)
+        prob_seq = torch.cat([prob_seq, next_prob], dim=1)
+
+    return seq, prob_seq
+
+
+def top_k_decoder_mixer(
+    model: Seq2SeqMixerOccCANINE,
+    descr: torch.Tensor,
+    input_attention_mask: torch.Tensor,
+    device: torch.device,
+    start_symbol: int,
+    code_len: int,
+    k: int,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Iterative greedy top-k for Seq2SeqMixer:
+      - k times: greedy decode while banning previously found codes via prefix masks.
+    No trie; avoids full search.
+
+    Args:
+        model: mixer model with .encode and .decode.
+        descr: (batch, seq_len) input ids.
+        input_attention_mask: (batch, seq_len) attention mask.
+        device: torch device.
+        start_symbol: BOS token id.
+        code_len: number of tokens to generate (excluding BOS).
+        k: number of hypotheses to return.
+
+    Returns:
+        codes_topk: (batch, k, code_len) int tensor.
+        probs_topk: (batch, k) float tensor with product of step probabilities.
+    """
+    memory = model.encode(descr, input_attention_mask)
+    if isinstance(memory, tuple):
+        memory = memory[0]  # use seq2seq memory only
+
+    batch_size = descr.size(0)
+    k_eff = max(0, min(k,  max(1, k)))
+
+    codes_topk = torch.zeros((batch_size, k_eff, code_len), dtype=torch.long, device=device)
+    probs_topk = torch.zeros((batch_size, k_eff), dtype=torch.float, device=device)
+
+    # Keep per-sample list of banned codes (as lists of ints of length code_len)
+    banned_codes_per_sample: list[list[list[int]]] = [[] for _ in range(batch_size)]
+
+    for i in range(k_eff):
+        seq, prob_seq = _greedy_decode_with_banned_prefixes_mixer(
+            model=model,
+            memory=memory,
+            start_symbol=start_symbol,
+            code_len=code_len,
+            device=device,
+            banned_codes_per_sample=banned_codes_per_sample,
+        )
+        codes = seq[:, 1:1 + code_len]  # drop BOS
+        probs = torch.prod(prob_seq[:, 1:], dim=1)  # product of step-wise probabilities
+
+        codes_topk[:, i, :] = codes
+        probs_topk[:, i] = probs
+
+        # Add newly found codes to banned lists
+        for b in range(batch_size):
+            banned_codes_per_sample[b].append(codes[b].tolist())
+
+    return codes_topk, probs_topk
