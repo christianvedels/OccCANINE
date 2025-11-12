@@ -126,7 +126,7 @@ class: center, inverse, middle
 
 **Email: christian-vs@sam.sdu.dk**  
 **arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)**  
-**Updated 2025-11-11**
+**Updated 2025-11-12**
 
 
 ---
@@ -162,7 +162,7 @@ class: center, inverse, middle
 ### Who is this for?
 .small123[
 - Labor/economic history crowd: Here is a new tool
-- ML/NLP crowd: A new application
+- ML/NLP crowd: A new application + small novel loss function
 - Everyone else: Here is a pipeline for dealing with messy text data
 ]
 ]
@@ -312,7 +312,7 @@ class: middle
   
 - It does not know the language in 25% of cases
 
-- **New:** We generate adverse examples: Change strings until the model marginally fails *+ gibberish + translated strings*
+- We generate adverse examples: Change strings until the model marginally fails *+ gibberish + translated strings*
   
 - Training data, validation data, test data and out-of-distribution data
 ]
@@ -322,7 +322,7 @@ class: middle
 ---
 # Training - technical details
 .pull-left[
-- We use Adam optimizer
+- We use Adam optimizer (adaptive momentum optimizer)
 - Two loss functions:
   + Binary Cross-entropy loss for 'fast' decoder
   + Order-invariant loss (oil) for 'good' decoder
@@ -419,8 +419,8 @@ Order-invariant loss:
 .pull-left-narrow[
 - 30 days of training
 - Batch size: 512
+- 15.8 million training observations (occupations with HISCO codes)
 - Model exposed to full training data 50 times
-
 - **Note:** *Sequential Decoder* trains much faster than *Flat Decoder* - because of the fewer dimensions of output space
 ]
 
@@ -547,12 +547,6 @@ name: bias
 | Norwegian Student Biographies | 500 |         0.950 |    0.874 |
 
 
-.footnote[
-.small123[
-`\(^*\)` *Thanks to Bram Hilkens*  
-See more details in the paper
-]
-]
 
 ---
 # More OOD testing
