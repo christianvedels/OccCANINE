@@ -1417,6 +1417,9 @@ class OccCANINE:
                     # Create the DataFrame
                     res = pd.DataFrame(res, columns=column_names)
 
+                    if 'top-k-pos' in out.columns:
+                        res['top-k-pos'] = out['top-k-pos']
+
                     # Identify columns starting with 'prob_s2s_'
                     prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
 
