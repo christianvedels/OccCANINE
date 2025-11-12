@@ -43,6 +43,57 @@ def greedy_decode(
     return seq, prob_seq
 
 
+def mixer_greedy_decode_with_blocking(
+        model: Seq2SeqOccCANINE,
+        descr: Tensor,
+        input_attention_mask: Tensor,
+        device: torch.device,
+        max_len: int,
+        start_symbol: int,
+        blocked_entries: Tensor | None,
+        ) -> tuple[Tensor, Tensor]:
+    memory, _ = model.encode(descr, input_attention_mask)
+    batch_size = descr.size(0)
+
+    # Initialize sequence by placing BoS symbol.
+    seq = torch.ones(batch_size, 1).fill_(start_symbol).type(torch.long).to(device)
+    prob_seq = torch.ones(batch_size, 1).fill_(1.0).type(torch.long).to(device)
+
+    for i in range(max_len - 1):
+        target_mask = generate_square_subsequent_mask(seq.shape[1], device).type(torch.bool) # TODO do we need cast?
+
+        out = model.decode(
+            memory=memory,
+            target=seq,
+            target_mask=target_mask,
+            target_padding_mask=None,
+            )[:, -1:, :] # Only use the prediction for the next token in seq
+
+        if blocked_entries is not None:
+            # To avoid selecting blocked entries, force these to -inf
+            out[blocked_entries[:, (i + 1):(i + 2), :]] = -torch.inf
+
+        next_token = torch.argmax(out, dim=2).detach()
+        next_prob = torch.max(nn.functional.softmax(out, dim=2), dim=2)[0].detach()
+
+        # Extend sequence by adding prediction of next token.
+        seq = torch.cat([seq, next_token], dim=1)
+        prob_seq = torch.cat([prob_seq, next_prob], dim=1)
+
+    if blocked_entries is None:
+        shape = (batch_size, max_len, out.shape[-1])
+        blocked_entries = torch.zeros(shape, dtype=torch.bool)
+
+    # Now fill in new values to block
+    invalid = (seq == 1) & ((seq == 1).cumsum(dim=1) >= 2)
+    idx = prob_seq.masked_fill(invalid, float('inf')).argmin(dim=1)
+    chosen_tokens = seq.gather(1, idx.unsqueeze(1)).squeeze(1)
+
+    blocked_entries[:, idx, chosen_tokens] = True
+
+    return seq, prob_seq, blocked_entries
+
+
 def mixer_greedy_decode(
         model: Seq2SeqMixerOccCANINE,
         descr: Tensor,
@@ -100,6 +151,7 @@ def flat_decode_flat_model(
     logits = model.forward(descr, input_attention_mask)
 
     return logits
+
 
 def flat_decode_mixer(
         model: Seq2SeqMixerOccCANINE,
@@ -218,7 +270,7 @@ def full_search_decoder_mixer_optimized(
         start_symbol: int,
         ) -> dict:
     memory = model.encode(descr, input_attention_mask)
-    
+
     # Ensure memory is a tensor
     if isinstance(memory, tuple):
         memory = memory[0]
