@@ -495,8 +495,8 @@ class OccCANINE:
         - get_dict (bool, optional): Ignored
         - get_df (bool, optional): Ignored
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
-        - - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings' or 'greedy-top-k'. Overwrites 'behavior'. See details.
-        - k_pred (int): Maximum number of predicted occupational codes to keep or alternatively the 'k' in 'greedy-top-k' predictions. 
+        - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings' or 'greedy-top-k'. Overwrites 'behavior'. See details.
+        - k_pred (int): Maximum number of predicted occupational codes to keep or alternatively the 'k' in 'greedy-top-k' predictions.
         - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
         - order_invariant_conf (bool): If True an order invariant confidence is computed. This takes a bit longer but - especially for cases with many observations with multiple occupations.
 
@@ -519,6 +519,9 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
+        if order_invariant_conf and prediction_type == 'greedy-top-k':
+            raise ValueError('Cannot specify `order_invariant_conf = True` and `prediction_type = "greedy-top-k"` simultaneously')
+
         # Validate prediction arguments' compatability
         prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
 
@@ -755,6 +758,7 @@ class OccCANINE:
         inputs = []
         preds_s2s_raw = []
         probs_s2s_raw = []
+        top_k_position = []
 
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
@@ -781,6 +785,9 @@ class OccCANINE:
                 # Store input in its original string format
                 inputs.extend(batch['occ1'])
 
+                # Store top-k position
+                top_k_position.extend([k] * len(batch['occ1']))
+
                 # Store predictions
                 preds_s2s_raw.append(outputs_s2s)
                 probs_s2s_raw.append(probs_s2s)
@@ -796,6 +803,7 @@ class OccCANINE:
         preds = pd.DataFrame({
             'input': inputs,
             'pred_s2s': preds_s2s,
+            'top-k-pos': top_k_position,
             **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
         })
 
@@ -1403,7 +1411,8 @@ class OccCANINE:
                         res.append(row)
 
                     column_names = []
-                    for i in range(1, max_elements+1):column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
+                    for i in range(1, max_elements+1):
+                        column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
 
                     # Create the DataFrame
                     res = pd.DataFrame(res, columns=column_names)
