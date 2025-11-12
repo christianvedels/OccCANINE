@@ -69,12 +69,14 @@ def mixer_greedy_decode_with_blocking(
             target_padding_mask=None,
             )[:, -1:, :] # Only use the prediction for the next token in seq
 
+        next_probs = nn.functional.softmax(out, dim=2).detach()
+
         if blocked_entries is not None:
             # To avoid selecting blocked entries, force these to -inf
             out[blocked_entries[:, (i + 1):(i + 2), :]] = -torch.inf
 
         next_token = torch.argmax(out, dim=2).detach()
-        next_prob = torch.max(nn.functional.softmax(out, dim=2), dim=2)[0].detach()
+        next_prob = next_probs[:, 0, :].gather(1, next_token)
 
         # Extend sequence by adding prediction of next token.
         seq = torch.cat([seq, next_token], dim=1)
@@ -88,8 +90,9 @@ def mixer_greedy_decode_with_blocking(
     invalid = (seq == 1) & ((seq == 1).cumsum(dim=1) >= 2)
     idx = prob_seq.masked_fill(invalid, float('inf')).argmin(dim=1)
     chosen_tokens = seq.gather(1, idx.unsqueeze(1)).squeeze(1)
+    b = torch.arange(blocked_entries.size(0), device=blocked_entries.device)
 
-    blocked_entries[:, idx, chosen_tokens] = True
+    blocked_entries[b, idx, chosen_tokens] = True
 
     return seq, prob_seq, blocked_entries
 
