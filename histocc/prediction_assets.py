@@ -20,9 +20,6 @@ from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from unidecode import unidecode
 
-import numpy
-import torch.serialization
-
 import numpy as np
 import pandas as pd
 
@@ -62,6 +59,7 @@ from .utils.decoder import (
     mixer_greedy_decode,
     full_search_decoder_seq2seq_optimized,
     full_search_decoder_mixer_optimized,
+    mixer_greedy_decode_with_blocking,
     )
 from .seq2seq_mixer_engine import train
 from itertools import permutations
@@ -497,8 +495,8 @@ class OccCANINE:
         - get_dict (bool, optional): Ignored
         - get_df (bool, optional): Ignored
         - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
-        - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings'. Overwrites 'behavior'. See details.
-        - k_pred (int): Maximum number of predicted occupational codes to keep
+        - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings' or 'greedy-top-k'. Overwrites 'behavior'. See details.
+        - k_pred (int): Maximum number of predicted occupational codes to keep or alternatively the 'k' in 'greedy-top-k' predictions.
         - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
         - order_invariant_conf (bool): If True an order invariant confidence is computed. This takes a bit longer but - especially for cases with many observations with multiple occupations.
 
@@ -521,6 +519,9 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
+        if order_invariant_conf and prediction_type == 'greedy-top-k':
+            raise ValueError('Cannot specify `order_invariant_conf = True` and `prediction_type = "greedy-top-k"` simultaneously')
+
         # Validate prediction arguments' compatability
         prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
 
@@ -564,7 +565,7 @@ class OccCANINE:
                 unique_lang_set = set(unique_lang)
                 if len(unique_lang_set) > 1:
                     raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language. Or use `prediction_type='flat'` which does not use thresholds.")
-                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.31) 
+                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.31)
 
         # Logits not available for seq2seq or mix models or full
         if what == "logits" and prediction_type in ['seq2seq', 'mix', 'full']:
@@ -600,6 +601,8 @@ class OccCANINE:
             out, out_type, inputs = self._predict_flat(data_loader, what)
         elif prediction_type == 'greedy':
             out, out_type, inputs = self._predict_greedy(data_loader, order_invariant_conf=order_invariant_conf)
+        elif prediction_type == 'greedy-topk':
+            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred)
         elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
         elif prediction_type == 'embeddings':
@@ -614,28 +617,61 @@ class OccCANINE:
         if deduplicate:
             # If result is a DataFrame, expand rows
             if isinstance(result, pd.DataFrame):
-                # Merge the tiny prediction‐table back onto the big one
-                df_pred = result.copy()
-
-                # Splitting lang and occ1 in occ1
-                df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
-                df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
-
-                # now bring the preds back into the original order
-                result = (
-                    df_in
-                    .merge(
-                        df_pred, 
-                        left_on=["occ1","lang"], 
-                        right_on=["occ1_tmp","lang_tmp"],
-                        how="left",
-                        suffixes=("_tmp", None)
+                # For greedy-topk, each unique input produces topk rows
+                if prediction_type == 'greedy-topk':
+                    # Split the prediction table
+                    df_pred = result.copy()
+                    
+                    # Extract lang and occ1 from the input column
+                    df_pred[["lang_tmp", "occ1_tmp"]] = (
+                        df_pred["occ1"]
+                        .str.split(r"\[SEP\]", n=1, expand=True)
                     )
-                )
+                    
+                    # Merge back onto the original (non-deduplicated) input
+                    # Each original row should get all topk predictions for its (occ1, lang) pair
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1", "lang"],
+                            right_on=["occ1_tmp", "lang_tmp"],
+                            how="left",
+                            suffixes=("_original", None)
+                        )
+                        .drop(columns=["occ1_tmp", "lang_tmp"])
+                    )
+                    
+                    # Validate dimensions
+                    expected_rows = len(occ1) * k_pred
+                    if result.shape[0] != expected_rows:
+                        raise ValueError(
+                            f"Deduplication expansion failed for greedy-topk: "
+                            f"expected {expected_rows} rows but got {result.shape[0]}"
+                        )
+                else:
+                    # Merge the tiny prediction‐table back onto the big one
+                    df_pred = result.copy()
 
-                # Drop the temporary columns
-                result = result.drop(columns=["occ1_tmp", "lang_tmp"])
-                
+                    # Splitting lang and occ1 in occ1
+                    df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
+                    df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
+
+                    # now bring the preds back into the original order
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1","lang"],
+                            right_on=["occ1_tmp","lang_tmp"],
+                            how="left",
+                            suffixes=("_tmp", None)
+                        )
+                    )
+
+                    # Drop the temporary columns
+                    result = result.drop(columns=["occ1_tmp", "lang_tmp"])
+
             elif isinstance(result, np.ndarray):
                 # Wrap the array in a DataFrame so we can split the SEP column
                 df_tmp = pd.DataFrame(result)
@@ -658,13 +694,17 @@ class OccCANINE:
 
                 # Extract relevant columns
                 result = df_merged.iloc[:, 2:n_preds+2].values
-                
+
             else:
                 raise ValueError("Unsupported result type for deduplication. Only DataFrame and numpy array are supported.")
-            
-            # Test that dimensions are correct
-            if result.shape[0] != len(occ1):
-                raise ValueError("This should not happen. The number of rows in the result does not match the number of original inputs.")
+
+            # Validation for non-topk cases
+            if prediction_type != 'greedy-topk':
+                if result.shape[0] != len(occ1):
+                    raise ValueError(
+                        f"Deduplication expansion failed: "
+                        f"expected {len(occ1)} rows but got {result.shape[0]}"
+                    )
 
         # Time keeping
         end = time.time()
@@ -744,9 +784,69 @@ class OccCANINE:
         out_type = 'probs'
 
         if what == "logits":
-            out_type = 'logits' # Overwrite out_type if logits are requested            
+            out_type = 'logits' # Overwrite out_type if logits are requested
 
         return results, out_type, inputs
+
+    @torch.no_grad
+    def predict_greedy_topk(self, data_loader, topk: int = 3):
+        self.model.eval()
+
+        inputs = []
+        preds_s2s_raw = []
+        probs_s2s_raw = []
+        top_k_position = []
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+
+            # Initially do not block any entries
+            blocked_entries = None
+
+            for k in range(topk):
+                outputs = mixer_greedy_decode_with_blocking(
+                    model=self.model,
+                    descr=input_ids,
+                    input_attention_mask=attention_mask,
+                    device=self.device,
+                    max_len=data_loader.dataset.formatter.max_seq_len,
+                    start_symbol=BOS_IDX,
+                    blocked_entries=blocked_entries,
+                )
+
+                outputs_s2s = outputs[0].cpu().numpy()
+                probs_s2s = outputs[1].cpu().numpy()
+                blocked_entries = outputs[2]
+
+                # Store input in its original string format
+                inputs.extend(batch['occ1'])
+
+                # Store top-k position
+                top_k_position.extend([k] * len(batch['occ1']))
+
+                # Store predictions
+                preds_s2s_raw.append(outputs_s2s)
+                probs_s2s_raw.append(probs_s2s)
+
+        preds_s2s_raw = np.concatenate(preds_s2s_raw)
+        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+
+        preds_s2s = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            preds_s2s_raw,
+        ))
+
+        preds = pd.DataFrame({
+            'input': inputs,
+            'pred_s2s': preds_s2s,
+            'top-k-pos': top_k_position,
+            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+        })
+
+        out_type = 'greedy'
+
+        return preds, out_type, inputs
 
     @torch.no_grad()
     def _predict_greedy(self, data_loader, order_invariant_conf):
@@ -956,13 +1056,13 @@ class OccCANINE:
         out_type = 'probs'
 
         return results, out_type, inputs
-    
+
     @torch.no_grad()
     def _predict_embeddings(self, data_loader):
         """
         Returns the output from the pooler layer of the model.
         """
-        model = self.model.eval()
+        self.model.eval()
 
         # Setup
         verbose = self.verbose
@@ -1065,7 +1165,7 @@ class OccCANINE:
                 print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
 
         # Validate 'prediction_type'
-        test = prediction_type in ['flat', 'greedy', 'full']
+        test = prediction_type in ['flat', 'greedy', 'greedy-topk', 'full']
         if not test:
             raise NotImplementedError(f"prediction_type: '{prediction_type}' is not implemented")
 
@@ -1348,10 +1448,14 @@ class OccCANINE:
                         res.append(row)
 
                     column_names = []
-                    for i in range(1, max_elements+1):column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
+                    for i in range(1, max_elements+1):
+                        column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
 
                     # Create the DataFrame
                     res = pd.DataFrame(res, columns=column_names)
+
+                    if 'top-k-pos' in out.columns:
+                        res['top-k-pos'] = out['top-k-pos']
 
                     # Identify columns starting with 'prob_s2s_'
                     prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
@@ -1372,7 +1476,7 @@ class OccCANINE:
             res = out
             # Make into pandas DataFrame
             res = pd.DataFrame(res)
-            
+
             # Add input
             res.insert(0, 'occ1', inputs)
 
@@ -1405,7 +1509,7 @@ class OccCANINE:
             self,
             dataset: str | os.PathLike | pd.DataFrame,
             save_path: str | os.PathLike,
-            input_col: str,  
+            input_col: str,
             language: str,
             language_col: str | None,
             target_cols: list[str] | None = None,
@@ -1421,7 +1525,7 @@ class OccCANINE:
             seq2seq_weight: float = 0.1,
             freeze_encoder: bool = True,
             ):
-        
+
         """
         Finetunes the OccCANINE model on a given dataset.
         Parameters:
@@ -1444,7 +1548,7 @@ class OccCANINE:
         - freeze_encoder (bool): If True, freezes the encoder parameters during training. (Only the top layer will be trained)
 
         """
-        
+
         if target_cols is None:
             # Check if target_cols attribute exists and is non-empty
             if hasattr(self.formatter, "target_cols") and self.formatter.target_cols:
@@ -1458,13 +1562,13 @@ class OccCANINE:
         if isinstance(dataset, pd.DataFrame):
             # Check if the dataset has the expected columns
             for col in self.formatter.target_cols:
-                col_name = col.replace(f"{self.system}_", "code") 
+                col_name = col.replace(f"{self.system}_", "code")
 
                 # If the column does not exist, create it
                 if col_name not in dataset.columns:
                     # Use self.key to map self.system codes code
                     dataset[col_name] = [tmp_inverted_key.get(i) for i in dataset[col]]
-        
+
         # If self.system == "hisco" we need 'code' as target cols
         # TODO: This is a clumsy way to do this, but it works for now
         if self.system == "hisco":
@@ -1499,7 +1603,7 @@ class OccCANINE:
         )
 
         if self.system == "hisco": # Clumsy way to do this, but it works for now
-            dataset_train.map_code_label = None 
+            dataset_train.map_code_label = None
             dataset_val.map_code_label = None
 
         # Data loaders
