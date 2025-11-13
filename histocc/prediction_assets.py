@@ -617,27 +617,60 @@ class OccCANINE:
         if deduplicate:
             # If result is a DataFrame, expand rows
             if isinstance(result, pd.DataFrame):
-                # Merge the tiny prediction‐table back onto the big one
-                df_pred = result.copy()
-
-                # Splitting lang and occ1 in occ1
-                df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
-                df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
-
-                # now bring the preds back into the original order
-                result = (
-                    df_in
-                    .merge(
-                        df_pred,
-                        left_on=["occ1","lang"],
-                        right_on=["occ1_tmp","lang_tmp"],
-                        how="left",
-                        suffixes=("_tmp", None)
+                # For greedy-topk, each unique input produces topk rows
+                if prediction_type == 'greedy-topk':
+                    # Split the prediction table
+                    df_pred = result.copy()
+                    
+                    # Extract lang and occ1 from the input column
+                    df_pred[["lang_tmp", "occ1_tmp"]] = (
+                        df_pred["occ1"]
+                        .str.split(r"\[SEP\]", n=1, expand=True)
                     )
-                )
+                    
+                    # Merge back onto the original (non-deduplicated) input
+                    # Each original row should get all topk predictions for its (occ1, lang) pair
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1", "lang"],
+                            right_on=["occ1_tmp", "lang_tmp"],
+                            how="left",
+                            suffixes=("_original", None)
+                        )
+                        .drop(columns=["occ1_tmp", "lang_tmp"])
+                    )
+                    
+                    # Validate dimensions
+                    expected_rows = len(occ1) * k_pred
+                    if result.shape[0] != expected_rows:
+                        raise ValueError(
+                            f"Deduplication expansion failed for greedy-topk: "
+                            f"expected {expected_rows} rows but got {result.shape[0]}"
+                        )
+                else:
+                    # Merge the tiny prediction‐table back onto the big one
+                    df_pred = result.copy()
 
-                # Drop the temporary columns
-                result = result.drop(columns=["occ1_tmp", "lang_tmp"])
+                    # Splitting lang and occ1 in occ1
+                    df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
+                    df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
+
+                    # now bring the preds back into the original order
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1","lang"],
+                            right_on=["occ1_tmp","lang_tmp"],
+                            how="left",
+                            suffixes=("_tmp", None)
+                        )
+                    )
+
+                    # Drop the temporary columns
+                    result = result.drop(columns=["occ1_tmp", "lang_tmp"])
 
             elif isinstance(result, np.ndarray):
                 # Wrap the array in a DataFrame so we can split the SEP column
@@ -665,9 +698,13 @@ class OccCANINE:
             else:
                 raise ValueError("Unsupported result type for deduplication. Only DataFrame and numpy array are supported.")
 
-            # Test that dimensions are correct
-            if result.shape[0] != len(occ1):
-                raise ValueError("This should not happen. The number of rows in the result does not match the number of original inputs.")
+            # Validation for non-topk cases
+            if prediction_type != 'greedy-topk':
+                if result.shape[0] != len(occ1):
+                    raise ValueError(
+                        f"Deduplication expansion failed: "
+                        f"expected {len(occ1)} rows but got {result.shape[0]}"
+                    )
 
         # Time keeping
         end = time.time()

@@ -2,10 +2,11 @@ from histocc import OccCANINE
 
 
 EXAMPLES = [
-    ["tailor of the finest suits"],
-    ["the train's fireman"],
-    ["nurse at the local hospital"],
-    ["policeman and fisher"],
+    "tailor of the finest suits",
+    "the train's fireman",
+    "the train's fireman",
+    "nurse at the local hospital",
+    "policeman and fisher",
 ]
 
 def main():
@@ -20,9 +21,10 @@ def main():
         EXAMPLES,
         prediction_type='greedy-topk',
         order_invariant_conf=False,
+        deduplicate=True,
     )
 
-    print(out.sort_values('occ1'))
+    print(out.sort_values(['occ1', 'top-k-pos']))
 
 
 if __name__ == '__main__':
