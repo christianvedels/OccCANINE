@@ -411,11 +411,11 @@ class EvalEngine:
 
 class TopKEvalEngine(EvalEngine):
     '''
-    Evaluate the performance of a model for top-k predictions.
+    Evaluate the performance of a model for top-k predictions at each rank level (atomistically).
     
     For top-k predictions, each observation has multiple rows (one per k position).
-    This engine groups by observation and evaluates whether the true label appears
-    in any of the top-k predictions for that observation.
+    This engine evaluates performance at each rank level independently (atomistically),
+    meaning rank i only considers the predictions at position i, not cumulative top-i.
     
     model: model object (instance of OccCANINE)
     ground_truth: pd.DataFrame (original ground truth, one row per observation)
@@ -450,41 +450,76 @@ class TopKEvalEngine(EvalEngine):
         # Store original predictions for grouping
         self.predictions_topk = predicitons
         
-        # Initialize parent class with ground truth
-        # We'll override the methods to handle top-k logic
-        self.pred_col = pred_col
-        self.y_true = ground_truth.filter(regex=pred_col)
-        self.no_label = ground_truth.filter(regex=pred_col).shape[1] == 0
+        # Determine k from the data
+        self.k = int(predicitons['top-k-pos'].max() + 1)
         
-        # Get things from model
+        # Store references for reuse
+        self.pred_col = pred_col
+        self.digits = digits
+        self.ground_truth = ground_truth
+        
+        # Get things from model for formatting
         self.formatter = model.formatter
         self.block_size = model.formatter.block_size
         self.system = model.system
         self.use_within_block_sep = False
         
-        # Format ground truth
-        self.y_true = self.format(self.y_true)
+        # Format ground truth and predictions
+        y_true_formatted = self.format(ground_truth.filter(regex=pred_col))
+        y_pred_formatted = self.format(predicitons.filter(regex=pred_col))
         
         # Store ground truth with group column for easy lookup
         if group_col in ground_truth.columns:
             self.ground_truth_with_id = ground_truth[[group_col]].copy()
-            self.ground_truth_with_id = pd.concat([self.ground_truth_with_id, self.y_true], axis=1)
+            self.ground_truth_with_id = pd.concat([self.ground_truth_with_id, y_true_formatted], axis=1)
         else:
             raise ValueError(f"Ground truth must have a '{group_col}' column")
         
-        self.digits = digits
+        # Store predictions with group column and rank for easy lookup
+        self.predictions_with_id = predicitons[[group_col, 'top-k-pos']].copy()
+        self.predictions_with_id = pd.concat([self.predictions_with_id, y_pred_formatted], axis=1)
+        
+        # Check if we have labels
+        self.no_label = ground_truth.filter(regex=pred_col).shape[1] == 0
+        
+        # Create a reusable EvalEngine instance (will update y_pred and y_true as needed)
+        # Initialize with empty DataFrames but correct structure
+        empty_pred = pd.DataFrame(columns=y_pred_formatted.columns)
+        empty_true = pd.DataFrame(columns=y_true_formatted.columns)
+        
+        self.temp_engine = EvalEngine(
+            predictions=empty_pred,
+            ground_truth=empty_true,
+            pred_col=pred_col,
+            group_col=None,
+            digits=digits
+        )
+        # Set attributes directly to avoid reinitializing
+        self.temp_engine.formatter = self.formatter
+        self.temp_engine.block_size = self.block_size
+        self.temp_engine.system = self.system
+        self.temp_engine.use_within_block_sep = self.use_within_block_sep
+        self.temp_engine.no_label = self.no_label
     
-    def _get_topk_predictions_for_obs(self, obs_id):
+    def _get_topk_predictions_for_obs(self, obs_id, rank=None):
         """
-        Get all top-k predictions for a single observation.
+        Get predictions for a single observation at a specific rank.
         
         Args:
             obs_id: The identifier for the observation
+            rank (int, optional): Specific rank to get predictions for (0-indexed). If None, returns all.
             
         Returns:
-            list: All predictions across all k positions for this observation
+            list: Predictions at the specified rank (or all ranks if rank is None)
         """
         obs_preds = self.predictions_topk[self.predictions_topk[self.group_col] == obs_id]
+        
+        # Filter by specific rank if specified
+        if rank is not None:
+            obs_preds = obs_preds[obs_preds['top-k-pos'] == rank]
+        
+        # Sort by top-k-pos to ensure correct order
+        obs_preds = obs_preds.sort_values('top-k-pos')
         
         # Extract prediction columns
         pred_cols = [col for col in obs_preds.columns if col.startswith(self.pred_col)]
@@ -506,162 +541,231 @@ class TopKEvalEngine(EvalEngine):
     
     def accuracy(self, return_per_obs=False):
         """
-        Calculate the accuracy for top-k predictions.
-        An observation is correct if ANY of its top-k predictions match ANY ground truth label.
+        Calculate the accuracy for top-k predictions at each rank level (atomically).
+        Each rank is evaluated independently - only predictions at that specific rank position.
         
         Args:
-            return_per_obs (bool): If True, returns accuracy for each observation.
+            return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
             
         Returns:
-            float or list: The accuracy or list of per-observation accuracies.
+            dict or list: Dictionary mapping rank to accuracy, or flat list with one value per row in predictions.
         """
-        if self.no_label:
-            if return_per_obs:
-                return [float('NaN')] * len(self.ground_truth_with_id)
-            else:
-                return float('NaN')
-        
-        correct_predictions = 0
-        per_obs_accuracy = []
-        
-        for _, row in self.ground_truth_with_id.iterrows():
-            obs_id = row[self.group_col]
-            
-            # Get ground truth for this observation
-            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
-            y_true_i = [str(row[col]) for col in y_true_cols]
-            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
-            
-            # Get all top-k predictions for this observation
-            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
-            
-            # Calculate accuracy
-            acc = self._acc(y_true_i, y_pred_i, self.digits)
-            correct_predictions += acc
-            per_obs_accuracy.append(acc)
-        
         if return_per_obs:
-            return per_obs_accuracy
+            # Compute accuracy for each observation at each rank
+            results = []
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Iterate through observations in order
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    
+                    # Get corresponding ground truth
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute accuracy for this observation
+                    acc = self.temp_engine.accuracy(return_per_obs=True)[0]
+                    results.append(acc)
+            
+            return results
         else:
-            return correct_predictions / len(self.ground_truth_with_id)
+            # Compute mean accuracy for each rank
+            per_rank_accuracy = {}
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Collect accuracies for this rank
+                rank_accs = []
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute accuracy
+                    acc = self.temp_engine.accuracy(return_per_obs=True)[0]
+                    rank_accs.append(acc)
+                
+                per_rank_accuracy[rank+1] = np.mean(rank_accs)
+            
+            return per_rank_accuracy
     
     def precision(self, return_per_obs=False):
         """
-        Calculate the precision for top-k predictions.
+        Calculate the precision for top-k predictions at each rank level (atomically).
+        Each rank is evaluated independently - only predictions at that specific rank position.
         
         Args:
-            return_per_obs (bool): If True, returns precision for each observation.
+            return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
             
         Returns:
-            float or list: The precision or list of per-observation precisions.
+            dict or list: Dictionary mapping rank to precision, or flat list with one value per row in predictions.
         """
-        if self.no_label:
-            if return_per_obs:
-                return [float('NaN')] * len(self.ground_truth_with_id)
-            else:
-                return float('NaN')
-        
-        total_precision = 0
-        per_obs_precision = []
-        
-        for _, row in self.ground_truth_with_id.iterrows():
-            obs_id = row[self.group_col]
-            
-            # Get ground truth
-            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
-            y_true_i = [str(row[col]) for col in y_true_cols]
-            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
-            
-            # Get all top-k predictions
-            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
-            
-            # Calculate precision
-            prec = self._prec(y_true_i, y_pred_i, self.digits)
-            total_precision += prec
-            per_obs_precision.append(prec)
-        
         if return_per_obs:
-            return per_obs_precision
+            # Compute precision for each observation at each rank
+            results = []
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Iterate through observations in order
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute precision for this observation
+                    prec = self.temp_engine.precision(return_per_obs=True)[0]
+                    results.append(prec)
+            
+            return results
         else:
-            return total_precision / len(self.ground_truth_with_id)
+            # Compute mean precision for each rank
+            per_rank_precision = {}
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Collect precisions for this rank
+                rank_precs = []
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute precision
+                    prec = self.temp_engine.precision(return_per_obs=True)[0]
+                    rank_precs.append(prec)
+                
+                per_rank_precision[rank+1] = np.mean(rank_precs)
+            
+            return per_rank_precision
     
     def recall(self, return_per_obs=False):
         """
-        Calculate the recall for top-k predictions.
+        Calculate the recall for top-k predictions at each rank level (atomically).
+        Each rank is evaluated independently - only predictions at that specific rank position.
         
         Args:
-            return_per_obs (bool): If True, returns recall for each observation.
+            return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
             
         Returns:
-            float or list: The recall or list of per-observation recalls.
+            dict or list: Dictionary mapping rank to recall, or flat list with one value per row in predictions.
         """
-        if self.no_label:
-            if return_per_obs:
-                return [float('NaN')] * len(self.ground_truth_with_id)
-            else:
-                return float('NaN')
-        
-        total_recall = 0
-        per_obs_recall = []
-        
-        for _, row in self.ground_truth_with_id.iterrows():
-            obs_id = row[self.group_col]
-            
-            # Get ground truth
-            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
-            y_true_i = [str(row[col]) for col in y_true_cols]
-            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
-            
-            # Get all top-k predictions
-            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
-            
-            # Calculate recall
-            rec = self._recall(y_true_i, y_pred_i, self.digits)
-            total_recall += rec
-            per_obs_recall.append(rec)
-        
         if return_per_obs:
-            return per_obs_recall
+            # Compute recall for each observation at each rank
+            results = []
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Iterate through observations in order
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute recall for this observation
+                    rec = self.temp_engine.recall(return_per_obs=True)[0]
+                    results.append(rec)
+            
+            return results
         else:
-            return total_recall / len(self.ground_truth_with_id)
+            # Compute mean recall for each rank
+            per_rank_recall = {}
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Collect recalls for this rank
+                rank_recs = []
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute recall
+                    rec = self.temp_engine.recall(return_per_obs=True)[0]
+                    rank_recs.append(rec)
+                
+                per_rank_recall[rank+1] = np.mean(rank_recs)
+            
+            return per_rank_recall
     
     def f1(self, return_per_obs=False):
         """
-        Calculate the F1 score for top-k predictions.
+        Calculate the F1 score for top-k predictions at each rank level (atomically).
+        Each rank is evaluated independently - only predictions at that specific rank position.
         
         Args:
-            return_per_obs (bool): If True, returns F1 score for each observation.
+            return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
             
         Returns:
-            float or list: The F1 score or list of per-observation F1 scores.
+            dict or list: Dictionary mapping rank to F1, or flat list with one value per row in predictions.
         """
-        if self.no_label:
-            if return_per_obs:
-                return [float('NaN')] * len(self.ground_truth_with_id)
-            else:
-                return float('NaN')
-        
-        total_f1 = 0
-        per_obs_f1 = []
-        
-        for _, row in self.ground_truth_with_id.iterrows():
-            obs_id = row[self.group_col]
-            
-            # Get ground truth
-            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
-            y_true_i = [str(row[col]) for col in y_true_cols]
-            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
-            
-            # Get all top-k predictions
-            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
-            
-            # Calculate F1
-            f1_score = self._f1(y_true_i, y_pred_i, self.digits)
-            total_f1 += f1_score
-            per_obs_f1.append(f1_score)
-        
         if return_per_obs:
-            return per_obs_f1
+            # Compute F1 for each observation at each rank
+            results = []
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Iterate through observations in order
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute F1 for this observation
+                    f1_score = self.temp_engine.f1(return_per_obs=True)[0]
+                    results.append(f1_score)
+            
+            return results
         else:
-            return total_f1 / len(self.ground_truth_with_id)
+            # Compute mean F1 for each rank
+            per_rank_f1 = {}
+            for rank in range(self.k):
+                # Get predictions at this rank
+                rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank]
+                
+                # Collect F1 scores for this rank
+                rank_f1s = []
+                for idx, pred_row in rank_preds.iterrows():
+                    obs_id = pred_row[self.group_col]
+                    gt_row = self.ground_truth_with_id[self.ground_truth_with_id[self.group_col] == obs_id]
+                    
+                    # Update temp_engine's y_pred and y_true
+                    self.temp_engine.y_pred = pred_row.drop([self.group_col, 'top-k-pos']).to_frame().T
+                    self.temp_engine.y_true = gt_row.drop(columns=[self.group_col])
+                    
+                    # Compute F1
+                    f1_score = self.temp_engine.f1(return_per_obs=True)[0]
+                    rank_f1s.append(f1_score)
+                
+                per_rank_f1[rank+1] = np.mean(rank_f1s)
+            
+            return per_rank_f1
 
