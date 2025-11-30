@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy.stats import mode
 
 from .formatter import (
@@ -406,3 +407,261 @@ class EvalEngine:
             return 0
         else:
             return 2 * (precision * recall) / (precision + recall)
+
+
+class TopKEvalEngine(EvalEngine):
+    '''
+    Evaluate the performance of a model for top-k predictions.
+    
+    For top-k predictions, each observation has multiple rows (one per k position).
+    This engine groups by observation and evaluates whether the true label appears
+    in any of the top-k predictions for that observation.
+    
+    model: model object (instance of OccCANINE)
+    ground_truth: pd.DataFrame (original ground truth, one row per observation)
+    predictions: pd.DataFrame (top-k predictions with 'top-k-pos' column and rowid/identifier)
+    pred_col: str (prefix of the columns containing the predictions)
+    group_col: str (column name to group observations by, e.g., 'rowid')
+    '''
+
+    def __init__(self, model, ground_truth, predicitons, pred_col, group_col='rowid', digits=None):
+        """
+        Initialize the top-k evaluation metrics class.
+        
+        Args:
+            model (object): The model object containing formatter, block_size, and system attributes.
+            ground_truth (pd.DataFrame): The ground truth data (one row per observation).
+            predicitons (pd.DataFrame): The predicted data with top-k predictions (multiple rows per observation).
+            pred_col (str): The prefix of the columns to be used for predictions and ground truth.
+            group_col (str): Column name to group observations by (default: 'rowid').
+            digits (int, optional): The number of digits to use for each occupational code. Defaults to None.
+        """
+        # Store group column
+        self.group_col = group_col
+        
+        # Check if predictions have the group column
+        if group_col not in predicitons.columns:
+            raise ValueError(f"Predictions must have a '{group_col}' column to group observations")
+        
+        # Check if predictions have top-k-pos column
+        if 'top-k-pos' not in predicitons.columns:
+            raise ValueError("Predictions must have a 'top-k-pos' column for top-k evaluation")
+        
+        # Store original predictions for grouping
+        self.predictions_topk = predicitons
+        
+        # Initialize parent class with ground truth
+        # We'll override the methods to handle top-k logic
+        self.pred_col = pred_col
+        self.y_true = ground_truth.filter(regex=pred_col)
+        self.no_label = ground_truth.filter(regex=pred_col).shape[1] == 0
+        
+        # Get things from model
+        self.formatter = model.formatter
+        self.block_size = model.formatter.block_size
+        self.system = model.system
+        self.use_within_block_sep = False
+        
+        # Format ground truth
+        self.y_true = self.format(self.y_true)
+        
+        # Store ground truth with group column for easy lookup
+        if group_col in ground_truth.columns:
+            self.ground_truth_with_id = ground_truth[[group_col]].copy()
+            self.ground_truth_with_id = pd.concat([self.ground_truth_with_id, self.y_true], axis=1)
+        else:
+            raise ValueError(f"Ground truth must have a '{group_col}' column")
+        
+        self.digits = digits
+    
+    def _get_topk_predictions_for_obs(self, obs_id):
+        """
+        Get all top-k predictions for a single observation.
+        
+        Args:
+            obs_id: The identifier for the observation
+            
+        Returns:
+            list: All predictions across all k positions for this observation
+        """
+        obs_preds = self.predictions_topk[self.predictions_topk[self.group_col] == obs_id]
+        
+        # Extract prediction columns
+        pred_cols = [col for col in obs_preds.columns if col.startswith(self.pred_col)]
+        
+        # Collect all predictions
+        all_preds = []
+        for _, row in obs_preds.iterrows():
+            for col in pred_cols:
+                pred = str(row[col])
+                if pred != 'nan' and pred != ' ':
+                    # Format the prediction
+                    if len(pred) == (self.block_size - 1):
+                        pred = '0' + pred
+                    if len(pred) == 2 and pred[0] == '-':
+                        pred = pred[0] + '0' * (self.block_size - 2) + pred[1]
+                    all_preds.append(pred)
+        
+        return all_preds
+    
+    def accuracy(self, return_per_obs=False):
+        """
+        Calculate the accuracy for top-k predictions.
+        An observation is correct if ANY of its top-k predictions match ANY ground truth label.
+        
+        Args:
+            return_per_obs (bool): If True, returns accuracy for each observation.
+            
+        Returns:
+            float or list: The accuracy or list of per-observation accuracies.
+        """
+        if self.no_label:
+            if return_per_obs:
+                return [float('NaN')] * len(self.ground_truth_with_id)
+            else:
+                return float('NaN')
+        
+        correct_predictions = 0
+        per_obs_accuracy = []
+        
+        for _, row in self.ground_truth_with_id.iterrows():
+            obs_id = row[self.group_col]
+            
+            # Get ground truth for this observation
+            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
+            y_true_i = [str(row[col]) for col in y_true_cols]
+            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
+            
+            # Get all top-k predictions for this observation
+            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
+            
+            # Calculate accuracy
+            acc = self._acc(y_true_i, y_pred_i, self.digits)
+            correct_predictions += acc
+            per_obs_accuracy.append(acc)
+        
+        if return_per_obs:
+            return per_obs_accuracy
+        else:
+            return correct_predictions / len(self.ground_truth_with_id)
+    
+    def precision(self, return_per_obs=False):
+        """
+        Calculate the precision for top-k predictions.
+        
+        Args:
+            return_per_obs (bool): If True, returns precision for each observation.
+            
+        Returns:
+            float or list: The precision or list of per-observation precisions.
+        """
+        if self.no_label:
+            if return_per_obs:
+                return [float('NaN')] * len(self.ground_truth_with_id)
+            else:
+                return float('NaN')
+        
+        total_precision = 0
+        per_obs_precision = []
+        
+        for _, row in self.ground_truth_with_id.iterrows():
+            obs_id = row[self.group_col]
+            
+            # Get ground truth
+            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
+            y_true_i = [str(row[col]) for col in y_true_cols]
+            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
+            
+            # Get all top-k predictions
+            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
+            
+            # Calculate precision
+            prec = self._prec(y_true_i, y_pred_i, self.digits)
+            total_precision += prec
+            per_obs_precision.append(prec)
+        
+        if return_per_obs:
+            return per_obs_precision
+        else:
+            return total_precision / len(self.ground_truth_with_id)
+    
+    def recall(self, return_per_obs=False):
+        """
+        Calculate the recall for top-k predictions.
+        
+        Args:
+            return_per_obs (bool): If True, returns recall for each observation.
+            
+        Returns:
+            float or list: The recall or list of per-observation recalls.
+        """
+        if self.no_label:
+            if return_per_obs:
+                return [float('NaN')] * len(self.ground_truth_with_id)
+            else:
+                return float('NaN')
+        
+        total_recall = 0
+        per_obs_recall = []
+        
+        for _, row in self.ground_truth_with_id.iterrows():
+            obs_id = row[self.group_col]
+            
+            # Get ground truth
+            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
+            y_true_i = [str(row[col]) for col in y_true_cols]
+            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
+            
+            # Get all top-k predictions
+            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
+            
+            # Calculate recall
+            rec = self._recall(y_true_i, y_pred_i, self.digits)
+            total_recall += rec
+            per_obs_recall.append(rec)
+        
+        if return_per_obs:
+            return per_obs_recall
+        else:
+            return total_recall / len(self.ground_truth_with_id)
+    
+    def f1(self, return_per_obs=False):
+        """
+        Calculate the F1 score for top-k predictions.
+        
+        Args:
+            return_per_obs (bool): If True, returns F1 score for each observation.
+            
+        Returns:
+            float or list: The F1 score or list of per-observation F1 scores.
+        """
+        if self.no_label:
+            if return_per_obs:
+                return [float('NaN')] * len(self.ground_truth_with_id)
+            else:
+                return float('NaN')
+        
+        total_f1 = 0
+        per_obs_f1 = []
+        
+        for _, row in self.ground_truth_with_id.iterrows():
+            obs_id = row[self.group_col]
+            
+            # Get ground truth
+            y_true_cols = [col for col in row.index if col.startswith(self.pred_col)]
+            y_true_i = [str(row[col]) for col in y_true_cols]
+            y_true_i = [x for x in y_true_i if x != 'nan' and x != ' ']
+            
+            # Get all top-k predictions
+            y_pred_i = self._get_topk_predictions_for_obs(obs_id)
+            
+            # Calculate F1
+            f1_score = self._f1(y_true_i, y_pred_i, self.digits)
+            total_f1 += f1_score
+            per_obs_f1.append(f1_score)
+        
+        if return_per_obs:
+            return per_obs_f1
+        else:
+            return total_f1 / len(self.ground_truth_with_id)
+
