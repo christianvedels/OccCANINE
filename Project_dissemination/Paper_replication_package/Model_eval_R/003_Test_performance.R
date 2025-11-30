@@ -8,6 +8,7 @@
 library(tidyverse)
 library(foreach)
 library(knitr)
+source("Project_dissemination/Paper_replication_package/Model_eval_R/000_Functions.R")
 
 # ==== Load data ====
 files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance", full.names = TRUE)
@@ -144,3 +145,218 @@ test_performance %>%
     write_csv(
         "Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_performance_greedy_wlang.csv"
     )
+
+
+# ==== Functions ====
+# Function to create calibration curve
+create_calibration_curve = function(data, lang_filter = NULL, file_filter = NULL, title_suffix = "") {
+    # Filter by language if specified
+    if (!is.null(lang_filter)) {
+        data = data %>% filter(lang == lang_filter)
+    }
+
+    # Filter by file if specified
+    if (!is.null(file_filter)) {
+        data = data %>% filter(file == file_filter)
+    }
+
+    if(all(is.na(data$acc))) {
+        warning("No accuracy data available for the specified filters.")
+        return(NULL)
+    }
+    
+    # Create plot
+    p = data %>%
+        pivot_longer(
+            cols = c("acc", "precision", "recall", "f1"),
+            names_to = "metric",
+            values_to = "value"
+        ) %>%
+        mutate(conf = as.numeric(conf), value = as.numeric(value)) %>%
+        filter(conf <= 1) %>%  # Filter out invalid confidence values
+        ggplot(aes(x = conf, y = value)) +
+        geom_smooth() + 
+        geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
+        scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+        labs(
+            title = paste0("Calibration curve of OccCANINE predictions", title_suffix),
+            x = "Predicted confidence",
+            y = "Observed performance"
+        ) +
+        facet_wrap(~metric) +
+        theme_bw()
+    
+    return(p)
+}
+
+# Function to create production curve
+create_production_curve = function(data, lang_filter = NULL, file_filter = NULL, title_suffix = "") {
+    # Filter by language if specified
+    if (!is.null(lang_filter)) {
+        data = data %>% filter(lang == lang_filter)
+    }
+
+    # Filter by file if specified
+    if (!is.null(file_filter)) {
+        data = data %>% filter(file == file_filter)
+    }
+
+    if(all(is.na(data$acc))) {
+        warning("No accuracy data available for the specified filters.")
+        return(NULL)
+    }
+    
+    # Prepare production curve data
+    prod_df = data %>%
+        pivot_longer(
+            cols = c("acc", "precision", "recall", "f1"),
+            names_to = "metric",
+            values_to = "acc"
+        ) %>%
+        group_by(metric) %>%
+        arrange(desc(conf)) %>%
+        mutate(
+            idx = row_number(),
+            cum_correct = cumsum(acc),
+            metric_at_prop = cum_correct / idx
+        ) %>% 
+        mutate(
+            n = n(),
+            prop_pred = idx / n
+        ) %>%
+        ungroup()
+    
+    # Calculate minimum y-axis value based on mean performance
+    min_y = data %>%
+        pivot_longer(
+            cols = c("acc", "precision", "recall", "f1"),
+            names_to = "metric",
+            values_to = "acc"
+        ) %>% 
+        group_by(metric) %>%
+        summarise(value = mean(acc)) %>%
+        pull(value) %>% 
+        min()
+    
+    # Create plot
+    p = ggplot(prod_df, aes(x = prop_pred, y = metric_at_prop)) +
+        geom_line(color = "steelblue") +
+        facet_wrap(~metric) +
+        scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(min_y, 1)) +
+        labs(
+            title = paste0("Production curve by confidence threshold", title_suffix),
+            x = "Share of test set predicted (by confidence)",
+            y = "Accuracy among predicted"
+        ) +
+        theme_bw()
+    
+    return(p)
+}
+
+# ==== Performance by confidence =====
+individual_obs = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/obs_test_performance_greedy.csv", show_col_types = FALSE)
+
+# Overall calibration curve
+p1 = create_calibration_curve(individual_obs)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/Calibration_curve.png",
+    plot = p1,
+    width = dims$width,
+    height = dims$height
+)
+
+# Overall production curve
+p2 = create_production_curve(individual_obs)
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/Production_curve.png",
+    plot = p2,
+    width = dims$width,
+    height = dims$height
+)
+
+# Production curves by language
+for(l in individual_obs$lang %>% unique()) {
+    p_lang = create_production_curve(
+        individual_obs, 
+        lang_filter = l, 
+        title_suffix = paste0(" (", l, ")")
+    )
+    
+    ggsave(
+        paste0("Project_dissemination/Paper_replication_package/Figures/Production_curve_by_lang/", l, ".png"),
+        plot = p_lang,
+        width = dims$width,
+        height = dims$height
+    )
+}
+
+# Calibration curves by language
+for(l in individual_obs$lang %>% unique()) {
+    p_lang = create_calibration_curve(
+        individual_obs, 
+        lang_filter = l, 
+        title_suffix = paste0(" (", l, ")")
+    )
+    
+    ggsave(
+        paste0("Project_dissemination/Paper_replication_package/Figures/Calibration_curve_by_lang/", l, ".png"),
+        plot = p_lang,
+        width = dims$width,
+        height = dims$height
+    )
+}
+
+# ==== OOD production/calibration curves =====
+dir = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood"
+ood_files = list.files(dir)
+ood_obs = foreach(f = ood_files, .combine = "bind_rows") %do% {
+    print(f)
+    read_csv(paste0(dir, "/", f), show_col_types = FALSE, col_types = "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc") %>%
+        mutate(file = f)
+}
+
+# Production curves for OOD files
+for(f in ood_obs$file %>% unique()) {
+    p_ood = create_production_curve(
+        ood_obs, 
+        file_filter = f, 
+        title_suffix = paste0(" (OOD: ", gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/", "", f), ")")
+    )
+    
+    if(is.null(p_ood)) {
+        next
+    }
+
+    ggsave(
+        paste0("Project_dissemination/Paper_replication_package/Figures/Production_curve_ood/", gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/", "", f), ".png"),
+        plot = p_ood,
+        width = dims$width,
+        height = dims$height
+    )
+}
+
+# Calibration curves for OOD files
+for(f in ood_obs$file %>% unique()) {
+    p_ood = create_calibration_curve(
+        ood_obs, 
+        file_filter = f, 
+        title_suffix = paste0(" (OOD: ", gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/", "", f), ")")
+    )
+
+    if(is.null(p_ood)) {
+        next
+    }
+    
+    ggsave(
+        paste0("Project_dissemination/Paper_replication_package/Figures/Calibration_curve_ood/", gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_ood/", "", f), ".png"),
+        plot = p_ood,
+        width = dims$width,
+        height = dims$height
+    )
+}
+
+
+
+
