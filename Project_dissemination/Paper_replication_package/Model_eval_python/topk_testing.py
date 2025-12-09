@@ -3,8 +3,9 @@ from histocc import OccCANINE
 from histocc.eval_metrics import EvalEngine, TopKEvalEngine
 import pandas as pd
 import os
+import numpy as np
 
-def main(data_path="OOD_data", K = 20):
+def main(data_path="OOD_data", K = 20, toyrun=False):
     mod = OccCANINE()
 
     # list files
@@ -27,7 +28,11 @@ def main(data_path="OOD_data", K = 20):
         os.makedirs(os.path.dirname(fname), exist_ok=True)
 
         print(f'------> Predicting {f}')
-        data_f = pd.read_csv(f'Data/OOD_data/{f}')
+        if toyrun:
+            print("Toy run enabled: only processing first 100 rows.")
+            data_f = pd.read_csv(f'Data/OOD_data/{f}', nrows=100)
+        else:
+            data_f = pd.read_csv(f'Data/OOD_data/{f}')
 
         # If no HISCO columns, skip
         hisco_cols = [col for col in data_f.columns if col.startswith('hisco_')]
@@ -35,20 +40,21 @@ def main(data_path="OOD_data", K = 20):
             print(f"Warning: No column starting with 'hisco_' found in {f}. Skipping file.")
             continue
 
-        res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True, prediction_type='greedy-topk', k_pred = K)
+        res = mod(data_f.occ1.tolist(), lang = f[0:2].lower(), deduplicate = True, prediction_type='greedy-topk', k_pred = K, order_invariant_conf = False)
 
         # Add in rowid to match predictions with ground truth
         # Each original observation will have k_pred rows in the result
-        res["rowid"] = data_f.RowID.repeat(K).values  # Repeat each rowid K times
+        res["RowID"] = data_f.RowID.repeat(K).values  # Repeat each rowid K times
         
         # Check if 'n' in data_f
         if "n" in data_f.columns:
             res["n"] = data_f.n.repeat(K).values
         else:
             res["n"] = 1  # Default to 1 if 'n' is not present
-
+        
+        
         # Use TopKEvalEngine for evaluation
-        eval_engine = TopKEvalEngine(mod, ground_truth=data_f, predicitons=res, pred_col="hisco_", group_col="rowid")
+        eval_engine = TopKEvalEngine(mod, ground_truth=data_f, predicitons=res, pred_col="hisco_", group_col="RowID")
         
         # Get per-observation metrics as flat lists matching prediction order
         res["acc"] = eval_engine.accuracy(return_per_obs=True)
@@ -62,7 +68,7 @@ def main(data_path="OOD_data", K = 20):
             if col in data_f.columns:
                 # Create a mapping from rowid to original hisco value
                 hisco_mapping = data_f.set_index("RowID")[col]
-                res[f"{col}_original"] = res["rowid"].map(hisco_mapping)
+                res[f"{col}_original"] = res["RowID"].map(hisco_mapping)
 
         # Check if HISCO codes are present in input data
         if not any(col.startswith("hisco_") for col in data_f.columns):
@@ -71,19 +77,20 @@ def main(data_path="OOD_data", K = 20):
             res.to_csv(fname)
             continue
 
-        # Print aggregate metrics (dictionaries with rank -> metric)
-        print("\n=== Aggregate Metrics by Rank ===")
-        acc_dict = eval_engine.accuracy()
-        prec_dict = eval_engine.precision()
-        rec_dict = eval_engine.recall()
-        f1_dict = eval_engine.f1()
-        
-        for rank in sorted(acc_dict.keys()):
-            print(f"  Rank {rank}:")
-            print(f"    Acc: {acc_dict[rank]:.4f}")
-            print(f"    Precision: {prec_dict[rank]:.4f}")
-            print(f"    Recall: {rec_dict[rank]:.4f}")
-            print(f"    F1: {f1_dict[rank]:.4f}")
+        # Aggregate metrics by rank
+        for r in res['top-k-pos'].unique():
+            print(f"\n=== Rank: {r} ===")
+            # Filter res
+            res_r = res[res['top-k-pos'] == r]
+            acc_dict = np.mean(res_r['acc'])
+            prec_dict = np.mean(res_r['precision'])
+            rec_dict = np.mean(res_r['recall'])
+            f1_dict = np.mean(res_r['f1'])
+
+            print(f"  Acc: {acc_dict:.4f}")
+            print(f"  Precision: {prec_dict:.4f}")
+            print(f"  Recall: {rec_dict:.4f}")
+            print(f"  F1: {f1_dict:.4f}")
 
         # Eval digit by digit
         for digits in range(1, 6):
