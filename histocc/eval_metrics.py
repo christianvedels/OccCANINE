@@ -488,10 +488,10 @@ class TopKEvalEngine(EvalEngine):
         empty_true = pd.DataFrame(columns=y_true_formatted.columns)
         
         self.temp_engine = EvalEngine(
-            predictions=empty_pred,
+            model,
             ground_truth=empty_true,
+            predicitons=empty_pred,
             pred_col=pred_col,
-            group_col=None,
             digits=digits
         )
         # Set attributes directly to avoid reinitializing
