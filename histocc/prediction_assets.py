@@ -871,10 +871,8 @@ class OccCANINE:
         # Decoder based on model type
         if self.model_type == "mix":
             decoder = mixer_greedy_decode
-            decoder_full = full_search_decoder_mixer_optimized # Used in order invariant confidence
         elif self.model_type == "seq2seq":
             decoder = greedy_decode
-            decoder_full = full_search_decoder_seq2seq_optimized # Used in order invariant confidence
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediction")
 
@@ -902,43 +900,12 @@ class OccCANINE:
 
             # Compute order invariant confidence
             if order_invariant_conf:
-                # Location of multiple labels
-                outputs_mapped_to_label = list(map(
-                    data_loader.dataset.formatter.clean_pred,
-                    outputs[0].cpu().numpy(),
-                ))
-
-                # Generate list of codes
-                codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
-
-                order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
-
-                for i, codes_list in enumerate(codes_lists):
-
-                    len_list = len(codes_list)
-                    if len_list > 1:
-                        # Transform to machine readable representation:
-                        codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
-
-                        # Prepare subset tensors for the i-th sample
-                        input_ids_i = input_ids[i].unsqueeze(0)
-                        attention_mask_i = attention_mask[i].unsqueeze(0)
-
-                        # Run the full search decoder on the current sample
-                        outputs_order_inv = decoder_full(
-                            model = model,
-                            descr = input_ids_i,
-                            input_attention_mask = attention_mask_i,
-                            device = self.device,
-                            codes_list = codes_list_encoded,
-                            start_symbol = BOS_IDX,
-                        )
-                        # Test
-                        if outputs_order_inv.shape[1] != len_list:
-                            raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
-
-                        # Take sum of the probabilities
-                        order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
+                order_inv_probs_batch = self._compute_order_invariant_confidence(
+                    outputs_s2s=outputs_s2s,
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    data_loader=data_loader
+                )
 
             # Store input in its original string format
             inputs.extend(batch['occ1'])
@@ -1504,6 +1471,69 @@ class OccCANINE:
             pred = pred.split(symbol)
 
         return pred
+    
+    def _compute_order_invariant_confidence(self, outputs_s2s, input_ids, attention_mask, data_loader):
+        """
+        Compute order invariant confidence for predictions with multiple labels.
+        
+        For each prediction, generates all permutations of the predicted labels and 
+        sums their probabilities from the full search decoder.
+        
+        Parameters:
+        - outputs_s2s: Raw outputs from the seq2seq decoder
+        - input_ids: Batch input tensor
+        - attention_mask: Batch attention mask tensor
+        - data_loader: DataLoader containing the formatter
+        
+        Returns:
+        - List of order invariant confidence scores (one per observation in batch)
+        """
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder_full = full_search_decoder_mixer_optimized
+        elif self.model_type == "seq2seq":
+            decoder_full = full_search_decoder_seq2seq_optimized
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not support order invariant confidence")
+        
+        # Location of multiple labels
+        outputs_mapped_to_label = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            outputs_s2s,
+        ))
+
+        # Generate list of codes
+        codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
+
+        order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
+
+        for i, codes_list in enumerate(codes_lists):
+            len_list = len(codes_list)
+            if len_list > 1:
+                # Transform to machine readable representation:
+                codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
+
+                # Prepare subset tensors for the i-th sample
+                input_ids_i = input_ids[i].unsqueeze(0)
+                attention_mask_i = attention_mask[i].unsqueeze(0)
+
+                # Run the full search decoder on the current sample
+                outputs_order_inv = decoder_full(
+                    model = self.model,
+                    descr = input_ids_i,
+                    input_attention_mask = attention_mask_i,
+                    device = self.device,
+                    codes_list = codes_list_encoded,
+                    start_symbol = BOS_IDX,
+                )
+                # Test
+                if outputs_order_inv.shape[1] != len_list:
+                    raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
+
+                # Take sum of the probabilities
+                order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
+        
+        return order_inv_probs_batch
 
     def finetune(
             self,
