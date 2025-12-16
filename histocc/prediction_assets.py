@@ -519,9 +519,6 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
-        if order_invariant_conf and prediction_type == 'greedy-top-k':
-            raise ValueError('Cannot specify `order_invariant_conf = True` and `prediction_type = "greedy-top-k"` simultaneously')
-
         # Validate prediction arguments' compatability
         prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
 
@@ -602,7 +599,7 @@ class OccCANINE:
         elif prediction_type == 'greedy':
             out, out_type, inputs = self._predict_greedy(data_loader, order_invariant_conf=order_invariant_conf)
         elif prediction_type == 'greedy-topk':
-            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred)
+            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred, order_invariant_conf=order_invariant_conf)
         elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
         elif prediction_type == 'embeddings':
@@ -789,13 +786,17 @@ class OccCANINE:
         return results, out_type, inputs
 
     @torch.no_grad
-    def predict_greedy_topk(self, data_loader, topk: int = 3):
+    def predict_greedy_topk(self, data_loader, topk: int = 3, order_invariant_conf: bool = False):
         self.model.eval()
 
         inputs = []
         preds_s2s_raw = []
         probs_s2s_raw = []
         top_k_position = []
+        if order_invariant_conf:
+            order_inv_probs = []
+        else:
+            order_inv_probs = 1  # Placeholder
 
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
@@ -819,6 +820,15 @@ class OccCANINE:
                 probs_s2s = outputs[1].cpu().numpy()
                 blocked_entries = outputs[2]
 
+                # Compute order invariant confidence
+                if order_invariant_conf:
+                    order_inv_probs_batch = self._compute_order_invariant_confidence(
+                        outputs_s2s=outputs_s2s,
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
+                        data_loader=data_loader
+                    )
+
                 # Store input in its original string format
                 inputs.extend(batch['occ1'])
 
@@ -828,21 +838,34 @@ class OccCANINE:
                 # Store predictions
                 preds_s2s_raw.append(outputs_s2s)
                 probs_s2s_raw.append(probs_s2s)
+                if order_invariant_conf:
+                    order_inv_probs.append(order_inv_probs_batch)
 
         preds_s2s_raw = np.concatenate(preds_s2s_raw)
         probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        if order_invariant_conf:
+            order_inv_probs = np.concatenate(order_inv_probs)
 
         preds_s2s = list(map(
             data_loader.dataset.formatter.clean_pred,
             preds_s2s_raw,
         ))
 
-        preds = pd.DataFrame({
-            'input': inputs,
-            'pred_s2s': preds_s2s,
-            'top-k-pos': top_k_position,
-            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
-        })
+        if order_invariant_conf:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+                'order_inv_conf': order_inv_probs,
+            })
+        else:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+            })
 
         out_type = 'greedy'
 
@@ -1497,6 +1520,7 @@ class OccCANINE:
             raise TypeError(f"model_type: '{self.model_type}' does not support order invariant confidence")
         
         # Location of multiple labels
+        # TODO: This fails for unknown codes. Need to fix this.
         outputs_mapped_to_label = list(map(
             data_loader.dataset.formatter.clean_pred,
             outputs_s2s,
