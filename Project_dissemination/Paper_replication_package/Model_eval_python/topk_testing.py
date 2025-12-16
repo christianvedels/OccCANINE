@@ -77,6 +77,9 @@ def main(data_path="OOD_data", K = 20, toyrun=False):
             res.to_csv(fname)
             continue
 
+        # Save predictions
+        res.to_csv(fname)
+
         # Aggregate metrics by rank
         for r in res['top-k-pos'].unique():
             print(f"\n=== Rank: {r} ===")
@@ -92,33 +95,7 @@ def main(data_path="OOD_data", K = 20, toyrun=False):
             print(f"  Recall: {rec_dict:.4f}")
             print(f"  F1: {f1_dict:.4f}")
 
-        # Eval digit by digit
-        for digits in range(1, 6):
-            print(f"\n=== Digits: {digits} ===")
-            eval_engine_digits = TopKEvalEngine(mod, ground_truth=data_f, predicitons=res, pred_col="hisco_", group_col="rowid", digits=digits)
-            
-            # Add metrics directly as columns (flat lists)
-            res[f"acc_{digits}"] = eval_engine_digits.accuracy(return_per_obs=True)
-            res[f"precision_{digits}"] = eval_engine_digits.precision(return_per_obs=True)
-            res[f"recall_{digits}"] = eval_engine_digits.recall(return_per_obs=True)
-            res[f"f1_{digits}"] = eval_engine_digits.f1(return_per_obs=True)
-
-            # Print aggregate metrics by rank
-            acc_dict_d = eval_engine_digits.accuracy()
-            prec_dict_d = eval_engine_digits.precision()
-            rec_dict_d = eval_engine_digits.recall()
-            f1_dict_d = eval_engine_digits.f1()
-            
-            for rank in sorted(acc_dict_d.keys()):
-                print(f"  Rank {rank}:")
-                print(f"    Acc: {acc_dict_d[rank]:.4f}")
-                print(f"    Precision: {prec_dict_d[rank]:.4f}")
-                print(f"    Recall: {rec_dict_d[rank]:.4f}")
-                print(f"    F1: {f1_dict_d[rank]:.4f}")
-
-        # Save predictions
-        res.to_csv(fname)
-
+        
 if __name__ == "__main__":
     main()
 
