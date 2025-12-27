@@ -789,6 +789,8 @@ class OccCANINE:
     def predict_greedy_topk(self, data_loader, topk: int = 3, order_invariant_conf: bool = False):
         self.model.eval()
 
+        # Setup
+        verbose = self.verbose
         inputs = []
         preds_s2s_raw = []
         probs_s2s_raw = []
@@ -797,6 +799,7 @@ class OccCANINE:
             order_inv_probs = []
         else:
             order_inv_probs = 1  # Placeholder
+        total_batches = len(data_loader)
 
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
@@ -840,6 +843,9 @@ class OccCANINE:
                 probs_s2s_raw.append(probs_s2s)
                 if order_invariant_conf:
                     order_inv_probs.append(order_inv_probs_batch)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
 
         preds_s2s_raw = np.concatenate(preds_s2s_raw)
         probs_s2s_raw = np.concatenate(probs_s2s_raw)
