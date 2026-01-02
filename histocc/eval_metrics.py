@@ -481,6 +481,11 @@ class TopKEvalEngine(EvalEngine):
         # Store original index to preserve input order
         self.predictions_with_id['_original_index'] = range(len(self.predictions_with_id))
         
+        # Validate no duplicates in _original_index
+        if self.predictions_with_id['_original_index'].duplicated().any():
+            duplicates = self.predictions_with_id[self.predictions_with_id['_original_index'].duplicated(keep=False)]
+            raise ValueError(f"Duplicate values found in _original_index. This should never happen.\n{duplicates}")
+        
         # Check if we have labels
         self.no_label = ground_truth.filter(regex=pred_col).shape[1] == 0
         
@@ -541,6 +546,46 @@ class TopKEvalEngine(EvalEngine):
         
         return all_preds
     
+    def _prepare_rank_data(self, rank):
+        """
+        Prepare prediction and ground truth data for a specific rank.
+        
+        This hidden method:
+        1. Finds indices for the specified rank
+        2. Extracts columns and indices (and resets)
+        3. Tests that RowIDs match between predictions and ground truth
+        4. Tests that lengths match between predictions and ground truth
+        
+        Args:
+            rank (int): The rank position (0-indexed) to prepare data for.
+            
+        Side effects:
+            Updates self.temp_engine.y_pred and self.temp_engine.y_true
+            
+        Raises:
+            ValueError: If RowIDs don't match between predictions and ground truth
+        """
+        # 1. Find indices for this rank
+        rank_indices = self.predictions_with_id['top-k-pos'] == rank
+        
+        # 2. Extract columns and indices (and reset)
+        rank_preds = self.predictions_with_id[rank_indices].reset_index(drop=True)
+        pred_rowids = rank_preds[self.group_col]
+        self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
+        
+        # Get ground truth by index position (same order as predictions)
+        gt = self.ground_truth_with_id
+        gt_rowids = gt[self.group_col]
+        self.temp_engine.y_true = gt.drop(columns=[self.group_col]).reset_index(drop=True)
+        
+        # 3. Test that RowIDs match
+        if not pred_rowids.reset_index(drop=True).equals(gt_rowids.reset_index(drop=True)):
+            raise ValueError(f"RowID mismatch at rank {rank}. Predictions and ground truth are not aligned.")
+        
+        # 4. Test that lengths match
+        if len(self.temp_engine.y_pred) != len(self.temp_engine.y_true):
+            raise ValueError(f"Length mismatch at rank {rank}. Predictions and ground truth lengths differ.")
+    
     def accuracy(self, return_per_obs=True):
         """
         Calculate the accuracy for top-k predictions at each rank level (atomically).
@@ -553,30 +598,18 @@ class TopKEvalEngine(EvalEngine):
             dict or list: Dictionary mapping rank to accuracy, or flat list with one value per row in predictions.
         """
         
-        # Store results with their original index to preserve order
-        results_dict = {}
+        # Collect results for all ranks
+        all_accs = []
         for rank in range(self.k):
-            # Get predictions at this rank, sorted by original index
-            rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank].sort_values('_original_index')
-            
-            # Prepare batch for this rank
-            ids = rank_preds[self.group_col]
-            self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
-            gt_ordered = self.ground_truth_with_id.set_index(self.group_col).loc[ids].reset_index()
-            self.temp_engine.y_true = gt_ordered.drop(columns=[self.group_col]).reset_index(drop=True)
-
-            # Compute accuracy for this batch
+            self._prepare_rank_data(rank)
             accs = self.temp_engine.accuracy(return_per_obs=True)
+            all_accs.extend(accs)
             
-            # Store results with original indices
-            for orig_idx, acc in zip(rank_preds['_original_index'], accs):
-                results_dict[orig_idx] = acc
-            
-        # Return results in original order
+        # Return results
         if return_per_obs:
-            return [results_dict[i] for i in range(len(results_dict))]
+            return all_accs
         else:
-            return np.mean(list(results_dict.values()))
+            return np.mean(all_accs)
         
     
     def precision(self, return_per_obs=True):
@@ -591,30 +624,18 @@ class TopKEvalEngine(EvalEngine):
             dict or list: Dictionary mapping rank to precision, or flat list with one value per row in predictions.
         """
         
-        # Store results with their original index to preserve order
-        results_dict = {}
+        # Collect results for all ranks
+        all_precs = []
         for rank in range(self.k):
-            # Get predictions at this rank, sorted by original index
-            rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank].sort_values('_original_index')
-            
-            # Prepare batch for this rank
-            ids = rank_preds[self.group_col]
-            self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
-            gt_ordered = self.ground_truth_with_id.set_index(self.group_col).loc[ids].reset_index()
-            self.temp_engine.y_true = gt_ordered.drop(columns=[self.group_col]).reset_index(drop=True)
-
-            # Compute precision for this batch
+            self._prepare_rank_data(rank)
             precs = self.temp_engine.precision(return_per_obs=True)
+            all_precs.extend(precs)
             
-            # Store results with original indices
-            for orig_idx, prec in zip(rank_preds['_original_index'], precs):
-                results_dict[orig_idx] = prec
-            
-        # Return results in original order
+        # Return results
         if return_per_obs:
-            return [results_dict[i] for i in range(len(results_dict))]
+            return all_precs
         else:
-            return np.mean(list(results_dict.values()))
+            return np.mean(all_precs)
     
     def recall(self, return_per_obs=True):
         """
@@ -628,30 +649,18 @@ class TopKEvalEngine(EvalEngine):
             dict or list: Dictionary mapping rank to recall, or flat list with one value per row in predictions.
         """
         
-        # Store results with their original index to preserve order
-        results_dict = {}
+        # Collect results for all ranks
+        all_recs = []
         for rank in range(self.k):
-            # Get predictions at this rank, sorted by original index
-            rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank].sort_values('_original_index')
-            
-            # Prepare batch for this rank
-            ids = rank_preds[self.group_col]
-            self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
-            gt_ordered = self.ground_truth_with_id.set_index(self.group_col).loc[ids].reset_index()
-            self.temp_engine.y_true = gt_ordered.drop(columns=[self.group_col]).reset_index(drop=True)
-
-            # Compute recall for this batch
+            self._prepare_rank_data(rank)
             recs = self.temp_engine.recall(return_per_obs=True)
+            all_recs.extend(recs)
             
-            # Store results with original indices
-            for orig_idx, rec in zip(rank_preds['_original_index'], recs):
-                results_dict[orig_idx] = rec
-            
-        # Return results in original order
+        # Return results
         if return_per_obs:
-            return [results_dict[i] for i in range(len(results_dict))]
+            return all_recs
         else:
-            return np.mean(list(results_dict.values()))
+            return np.mean(all_recs)
     
     def f1(self, return_per_obs=True):
         """
@@ -665,28 +674,16 @@ class TopKEvalEngine(EvalEngine):
             dict or list: Dictionary mapping rank to F1, or flat list with one value per row in predictions.
         """
         
-        # Store results with their original index to preserve order
-        results_dict = {}
+        # Collect results for all ranks
+        all_f1s = []
         for rank in range(self.k):
-            # Get predictions at this rank, sorted by original index
-            rank_preds = self.predictions_with_id[self.predictions_with_id['top-k-pos'] == rank].sort_values('_original_index')
-            
-            # Prepare batch for this rank
-            ids = rank_preds[self.group_col]
-            self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
-            gt_ordered = self.ground_truth_with_id.set_index(self.group_col).loc[ids].reset_index()
-            self.temp_engine.y_true = gt_ordered.drop(columns=[self.group_col]).reset_index(drop=True)
-
-            # Compute F1 for this batch
+            self._prepare_rank_data(rank)
             f1s = self.temp_engine.f1(return_per_obs=True)
+            all_f1s.extend(f1s)
             
-            # Store results with original indices
-            for orig_idx, f1 in zip(rank_preds['_original_index'], f1s):
-                results_dict[orig_idx] = f1
-            
-        # Return results in original order
+        # Return results
         if return_per_obs:
-            return [results_dict[i] for i in range(len(results_dict))]
+            return all_f1s
         else:
-            return np.mean(list(results_dict.values()))
+            return np.mean(all_f1s)
 
