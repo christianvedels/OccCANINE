@@ -31,7 +31,7 @@ def load_data(data_path, n_obs=5000, lang=None):
     return df
 
 
-def run_topk_eval(df, mod, K=5, digits=5, name="test"):
+def run_topk_eval(df, mod, K=5, digits=5, name="test", fix_duplicate_id: bool = False):
     """
     Run top-k evaluation on test data.
 
@@ -51,57 +51,80 @@ def run_topk_eval(df, mod, K=5, digits=5, name="test"):
     
     if os.path.exists(fname):
         print(f"Skipping {fname} as predictions already exist.")
-        preds = pd.read_csv(fname)
+        return 0
     else:
         print(f"Generating top-{K} predictions...")
-        preds = mod(
-            df["occ1"].tolist(),
-            df["lang"].tolist(),
-            deduplicate=True,
-            prediction_type='greedy-topk',
-            k_pred=K,
-            order_invariant_conf=False
+
+    # RowID must be unique for (RowID -> original label) lookups.
+    # If it is not unique, attaching *_original columns is ambiguous and pandas will raise.
+    if "RowID" not in df.columns:
+        raise ValueError("Expected 'RowID' column in df")
+    df = df.copy()
+    if not df["RowID"].is_unique:
+        if not fix_duplicate_id:
+            dup = df.loc[df["RowID"].duplicated(keep=False), ["RowID"]].copy()
+            sample = dup["RowID"].value_counts().head(20)
+            raise ValueError(
+                "df['RowID'] contains duplicates, so mapping RowID -> original HISCO is ambiguous. "
+                "Fix by deduplicating df or making RowID unique, or pass fix_duplicate_id=True. "
+                f"Top duplicate RowIDs (count):\n{sample}"
+            )
+
+        # Make RowID unique by appending a within-RowID counter.
+        # This keeps the (row -> labels) mapping unambiguous for evaluation.
+        df["RowID"] = (
+            df["RowID"].astype(str)
+            + "__"
+            + df.groupby("RowID").cumcount().astype(str)
         )
 
-        # Add in rowid to match predictions with ground truth
-        # Each original observation will have K rows in the result
-        preds["RowID"] = df.RowID.repeat(K).values  # Repeat each rowid K times
-        
-        # Check if 'n' in df
-        if "n" in df.columns:
-            preds["n"] = df.n.repeat(K).values
-        else:
-            preds["n"] = 1  # Default to 1 if 'n' is not present
-        
-        # Use TopKEvalEngine for evaluation
-        eval_engine = TopKEvalEngine(
-            mod,
-            ground_truth=df,
-            predicitons=preds,
-            pred_col="hisco_",
-            group_col="RowID",
-            digits=digits
-        )
-        
-        # Get per-observation metrics as flat lists matching prediction order
-        preds["acc"] = eval_engine.accuracy(return_per_obs=True)
-        preds["precision"] = eval_engine.precision(return_per_obs=True)
-        preds["recall"] = eval_engine.recall(return_per_obs=True)
-        preds["f1"] = eval_engine.f1(return_per_obs=True)
+    preds = mod(
+        df["occ1"].tolist(),
+        df["lang"].tolist(),
+        deduplicate=True,
+        prediction_type='greedy-topk',
+        k_pred=K,
+        order_invariant_conf=False
+    )
 
-        # Original HISCO codes - add to each top-k row
-        for i in range(1, 6):
-            col = f"hisco_{i}"
-            if col in df.columns:
-                # Create a mapping from rowid to original hisco value
-                hisco_mapping = df.set_index("RowID")[col]
-                preds[f"{col}_original"] = preds["RowID"].map(hisco_mapping)
+    # Add in rowid to match predictions with ground truth
+    # Each original observation will have K rows in the result
+    preds["RowID"] = df.RowID.repeat(K).values  # Repeat each rowid K times
+    
+    # Check if 'n' in df
+    if "n" in df.columns:
+        preds["n"] = df.n.repeat(K).values
+    else:
+        preds["n"] = 1  # Default to 1 if 'n' is not present
+    
+    # Use TopKEvalEngine for evaluation
+    eval_engine = TopKEvalEngine(
+        mod,
+        ground_truth=df,
+        predicitons=preds,
+        pred_col="hisco_",
+        group_col="RowID",
+        digits=digits
+    )
+    
+    # Get per-observation metrics as flat lists matching prediction order
+    preds["acc"] = eval_engine.accuracy(return_per_obs=True)
+    preds["precision"] = eval_engine.precision(return_per_obs=True)
+    preds["recall"] = eval_engine.recall(return_per_obs=True)
+    preds["f1"] = eval_engine.f1(return_per_obs=True)
 
-        # Save predictions
-        preds.to_csv(fname, index=False)
-        print(f"Predictions saved to {fname}")
+    # Original HISCO codes - add to each top-k row
+    original_cols = ["RowID"] + [f"hisco_{i}" for i in range(1, 6) if f"hisco_{i}" in df.columns]
+    if len(original_cols) > 1:
+        originals = df[original_cols].copy()
+        originals = originals.rename(columns={c: f"{c}_original" for c in original_cols if c != "RowID"})
+        preds = preds.merge(originals, on="RowID", how="left")
 
-def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5):
+    # Save predictions
+    preds.to_csv(fname, index=False)
+    print(f"Predictions saved to {fname}")
+
+def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5, fix_duplicate_id: bool = False):
     """
     Main function to load data, get top-k predictions, and evaluate the model.
     Args:
@@ -115,13 +138,13 @@ def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5):
 
     # Load data
     if toyrun:
-        df = load_data(data_path=data_path, n_obs=1000, lang=None)
+        df = load_data(data_path=data_path, n_obs=10000, lang=None)
     else:
         # Load a larger dataset for full evaluation
         df = load_data(data_path=data_path, n_obs=1000000000000000, lang=None)
 
     # Run top-k evaluation
-    run_topk_eval(df, mod, K=K, digits=5, name=name)
+    run_topk_eval(df, mod, K=K, digits=5, name=name, fix_duplicate_id=fix_duplicate_id)
 
 
 if __name__ == "__main__":
