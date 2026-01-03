@@ -138,7 +138,7 @@ def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5, fix_
 
     # Load data
     if toyrun:
-        df = load_data(data_path=data_path, n_obs=10000, lang=None)
+        df = load_data(data_path=data_path, n_obs=100000, lang=None)
     else:
         # Load a larger dataset for full evaluation
         df = load_data(data_path=data_path, n_obs=1000000000000000, lang=None)
