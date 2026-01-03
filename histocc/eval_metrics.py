@@ -600,14 +600,34 @@ class TopKEvalEngine(EvalEngine):
         
         # Collect results for all ranks
         all_accs = []
+        ids = []
+        topk_pos_list = []
         for rank in range(self.k):
             self._prepare_rank_data(rank)
             accs = self.temp_engine.accuracy(return_per_obs=True)
             all_accs.extend(accs)
-            
+            ids = ids + self.ground_truth_with_id["RowID"].tolist()
+            topk_pos_list = topk_pos_list + [rank] * len(accs)
+        
+        # To dataframe
+        results_df = pd.DataFrame({
+            self.group_col: ids,
+            "accuracy": all_accs,
+            "top-k-pos": topk_pos_list
+        })
+
+        # Join to copy of self.predictions_with_id
+        results_df = results_df.merge(
+            self.predictions_with_id[[self.group_col, 'top-k-pos', '_original_index']],
+            on=[self.group_col, 'top-k-pos'],
+            how='left'
+        )
+        # Sort
+        results_df = results_df.sort_values(by=['_original_index'])
+
         # Return results
         if return_per_obs:
-            return all_accs
+            return results_df['accuracy'].tolist()
         else:
             return np.mean(all_accs)
         
@@ -626,14 +646,34 @@ class TopKEvalEngine(EvalEngine):
         
         # Collect results for all ranks
         all_precs = []
+        ids = []
+        topk_pos_list = []
         for rank in range(self.k):
             self._prepare_rank_data(rank)
             precs = self.temp_engine.precision(return_per_obs=True)
             all_precs.extend(precs)
-            
+            ids = ids + self.ground_truth_with_id[self.group_col].tolist()
+            topk_pos_list = topk_pos_list + [rank] * len(precs)
+        
+        # To dataframe
+        results_df = pd.DataFrame({
+            self.group_col: ids,
+            "precision": all_precs,
+            "top-k-pos": topk_pos_list
+        })
+
+        # Join to copy of self.predictions_with_id
+        results_df = results_df.merge(
+            self.predictions_with_id[[self.group_col, 'top-k-pos', '_original_index']],
+            on=[self.group_col, 'top-k-pos'],
+            how='left'
+        )
+        # Sort
+        results_df = results_df.sort_values(by=['_original_index'])
+
         # Return results
         if return_per_obs:
-            return all_precs
+            return results_df['precision'].tolist()
         else:
             return np.mean(all_precs)
     
@@ -651,14 +691,34 @@ class TopKEvalEngine(EvalEngine):
         
         # Collect results for all ranks
         all_recs = []
+        ids = []
+        topk_pos_list = []
         for rank in range(self.k):
             self._prepare_rank_data(rank)
             recs = self.temp_engine.recall(return_per_obs=True)
             all_recs.extend(recs)
-            
+            ids = ids + self.ground_truth_with_id[self.group_col].tolist()
+            topk_pos_list = topk_pos_list + [rank] * len(recs)
+        
+        # To dataframe
+        results_df = pd.DataFrame({
+            self.group_col: ids,
+            "recall": all_recs,
+            "top-k-pos": topk_pos_list
+        })
+
+        # Join to copy of self.predictions_with_id
+        results_df = results_df.merge(
+            self.predictions_with_id[[self.group_col, 'top-k-pos', '_original_index']],
+            on=[self.group_col, 'top-k-pos'],
+            how='left'
+        )
+        # Sort
+        results_df = results_df.sort_values(by=['_original_index'])
+
         # Return results
         if return_per_obs:
-            return all_recs
+            return results_df['recall'].tolist()
         else:
             return np.mean(all_recs)
     
@@ -676,14 +736,34 @@ class TopKEvalEngine(EvalEngine):
         
         # Collect results for all ranks
         all_f1s = []
+        ids = []
+        topk_pos_list = []
         for rank in range(self.k):
             self._prepare_rank_data(rank)
             f1s = self.temp_engine.f1(return_per_obs=True)
             all_f1s.extend(f1s)
-            
+            ids = ids + self.ground_truth_with_id[self.group_col].tolist()
+            topk_pos_list = topk_pos_list + [rank] * len(f1s)
+        
+        # To dataframe
+        results_df = pd.DataFrame({
+            self.group_col: ids,
+            "f1": all_f1s,
+            "top-k-pos": topk_pos_list
+        })
+
+        # Join to copy of self.predictions_with_id
+        results_df = results_df.merge(
+            self.predictions_with_id[[self.group_col, 'top-k-pos', '_original_index']],
+            on=[self.group_col, 'top-k-pos'],
+            how='left'
+        )
+        # Sort
+        results_df = results_df.sort_values(by=['_original_index'])
+
         # Return results
         if return_per_obs:
-            return all_f1s
+            return results_df['f1'].tolist()
         else:
             return np.mean(all_f1s)
 
