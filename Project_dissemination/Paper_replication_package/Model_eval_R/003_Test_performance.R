@@ -358,5 +358,118 @@ for(f in ood_obs$file %>% unique()) {
 }
 
 
+# ==== Top-k production curves (cumulative: any-of-top-k correct) ====
+
+compute_cumulative_performance = function(preds_topk, K = 5, digits = 5) {
+
+    if(!all(c("RowID", "conf", "top-k-pos") %in% names(preds_topk))) {
+        stop("Expected columns RowID, conf, and top-k-pos in top-k predictions")
+    }
+
+    # Ensure types
+    preds_topk = preds_topk %>%
+        mutate(
+            `top-k-pos` = as.numeric(`top-k-pos`),
+            conf = as.numeric(conf),
+            acc = as.numeric(acc),
+            precision = as.numeric(precision),
+            recall = as.numeric(recall),
+            f1 = as.numeric(f1)
+        )
+
+    res = foreach(k = 1:K, .combine = "bind_rows") %do% {
+        preds_topk %>%
+            filter(`top-k-pos` < k) %>%
+            group_by(RowID) %>%
+            summarise(
+                acc = max(acc, na.rm = TRUE),
+                precision = max(precision, na.rm = TRUE),
+                recall = max(recall, na.rm = TRUE),
+                f1 = max(f1, na.rm = TRUE),
+                conf = sum(conf, na.rm = TRUE),
+                k = k
+            )
+    } %>% ungroup()
+
+    return(res)
+}
+
+create_topk_production_curve = function(topk_perf, title_suffix = "") {
+    prod_df = topk_perf %>%
+        pivot_longer(
+            cols = c("acc", "precision", "recall", "f1"),
+            names_to = "metric",
+            values_to = "acc"
+        ) %>%
+        mutate(k = factor(k, levels = sort(unique(k)))) %>%
+        group_by(metric, k) %>%
+        arrange(desc(conf), .by_group = TRUE) %>%
+        mutate(
+            idx = row_number(),
+            cum_correct = cumsum(acc),
+            metric_at_prop = cum_correct / idx
+        ) %>% 
+        mutate(
+            n = n(),
+            prop_pred = idx / n
+        ) %>%
+        ungroup()
+
+    # Calculate minimum y-axis value based on mean performance
+    min_y = prod_df %>% 
+        group_by(metric) %>%
+        summarise(value = mean(acc)) %>%
+        pull(value) %>% 
+        min()
+
+    p = ggplot(prod_df, aes(x = prop_pred, y = metric_at_prop, color = k)) +
+        geom_line() +
+        scale_color_manual(values = scales::alpha(colours$red, seq(1, 0.2, length.out = nlevels(prod_df$k)))) +
+        scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+        scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(min_y, 1)) +
+        labs(
+            title = paste0("Top-k production curve (any-of-top-k correct)", title_suffix),
+            x = "Share of test set predicted (by confidence)",
+            y = "Accuracy among predicted",
+            color = "k"
+        ) +
+        facet_wrap(~metric) +
+        theme_bw()
+
+    return(p)
+}
+
+# ==== Top-k production curve (test set) =====
+topk_dir = "Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_test_top_k"
+topk_files = list.files(topk_dir, full.names = TRUE, pattern = "\\.csv$")
 
 
+# Standard test data top-k
+df_test_topk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_test_top_k/obs_test_topk_5.csv")
+
+p = df_test_topk %>%
+    compute_cumulative_performance(K = 5) %>%
+    create_topk_production_curve(title_suffix = " (Test set)")
+
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/Production_curve_topk_standard.png",
+    plot = p,
+    width = dims$width,
+    height = dims$height
+)
+
+# Unique strings test data top-k
+df_test_topk = read_csv("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_test_top_k/obs_test_unique_topk_5.csv")
+
+p = df_test_topk %>%
+    compute_cumulative_performance(K = 5) %>%
+    create_topk_production_curve(title_suffix = " (Test set - unique strings)")
+
+ggsave(
+    "Project_dissemination/Paper_replication_package/Figures/Production_curve_topk_unique.png",
+    plot = p,
+    width = dims$width,
+    height = dims$height
+)
+
+# OOD top-k
