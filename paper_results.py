@@ -6,26 +6,26 @@ from Project_dissemination.Paper_replication_package.Model_eval_python.predict_t
 from Project_dissemination.Paper_replication_package.Model_eval_python.embeddings import main as embeddings_main
 from Project_dissemination.Paper_replication_package.Model_eval_python.other_systems_eval import main as other_systems_eval_main
 from Project_dissemination.Paper_replication_package.Model_eval_python.agreement_german_sources import main as agreement_german_sources_main
-from Project_dissemination.Paper_replication_package.Model_eval_python.topk_testing import main as topk_testing_main
+from Project_dissemination.Paper_replication_package.Model_eval_python.topk_testing_ood import main as topk_testing_main
 from Project_dissemination.Paper_replication_package.Model_eval_python.topk_test import main as topk_test_main
 
 if __name__ == "__main__":
-    tr = True  # Set to True for toy run, False for full run
+    tr = False  # Set to True for toy run, False for full run
     DATA_PATH = r"Data" # Overall path to all data files for OccCANINE 
 
     # Runs all the prerequisite scripts for the paper results
-    threshold_tuning_main(toyrun=tr, data_path=f"{DATA_PATH}/Validation_data1/*.csv")
-    predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
-    predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique") # Same as predct_test but for unique strings only [1]
-    topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv", name="test", K=5) # This is vibe code. CHECK BEFORE RUNNING
-    topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique", K=5) # This is vibe code. CHECK BEFORE RUNNING
-    predict_ood_main(data_path=f"{DATA_PATH}/OOD_data")
-    topk_testing_main(data_path=f"{DATA_PATH}/OOD_data", K=5, toyrun=tr)
-    predict_testbylang_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
-    predict_testby_source_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
-    embeddings_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
-    other_systems_eval_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_other", mod_path=f"{DATA_PATH}/models")
-    agreement_german_sources_main(data_path=f"{DATA_PATH}/OOD_data")
+    # threshold_tuning_main(toyrun=tr, data_path=f"{DATA_PATH}/Validation_data1/*.csv")
+    # predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
+    # predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique") # Same as predct_test but for unique strings only [1]
+    # topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv", name="test", K=10, fix_duplicate_id=True)
+    # topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique", K=10, fix_duplicate_id=True)  # Same as topk_test but for unique strings only [1]
+    # predict_ood_main(data_path=f"{DATA_PATH}/OOD_data")
+    topk_testing_main(data_path=f"{DATA_PATH}/OOD_data", K=10, toyrun=tr)
+    # predict_testbylang_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
+    # predict_testby_source_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
+    # embeddings_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
+    # other_systems_eval_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_other", mod_path=f"{DATA_PATH}/models")
+    # agreement_german_sources_main(data_path=f"{DATA_PATH}/OOD_data")
 
 
 # Note:
