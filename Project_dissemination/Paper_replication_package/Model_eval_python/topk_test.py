@@ -143,9 +143,59 @@ def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5, fix_
         # Load a larger dataset for full evaluation
         df = load_data(data_path=data_path, n_obs=1000000000000000, lang=None)
 
+    # # Custom toydata for quick testing
+    # if toyrun:
+    #     df = pd.DataFrame({
+    #         "RowID": [
+    #             # 1, 
+    #             # 2, 
+    #             # 3, 
+    #             # 4, 
+    #             5,
+    #             6,
+    #             7
+    #         ],
+    #         "occ1": [
+    #             # "teacher",
+    #             # "carpenter",
+    #             # "nurse",
+    #             # "blacksmith",
+    #             "farmer",
+    #             "deres born",
+    #             "gaardmand og tjenestetyende"
+    #         ],
+    #         "lang": [
+    #             # "en",
+    #             # "en",
+    #             # "en",
+    #             # "en",
+    #             "en",
+    #             "da",
+    #             "da"
+    #         ],
+    #         "hisco_1": [
+    #             # "12210",
+    #             # "73120",
+    #             # "12230",
+    #             # "72110",
+    #             "61110",
+    #             "-1",
+    #             "61110"
+    #         ],
+    #         "hisco_2": [
+    #             # np.nan,
+    #             # np.nan,
+    #             # np.nan,
+    #             # np.nan,
+    #             np.nan,
+    #             np.nan,
+    #             "62120"
+    #         ]
+    #     })
+
     # Run top-k evaluation
     run_topk_eval(df, mod, K=K, digits=5, name=name, fix_duplicate_id=fix_duplicate_id)
 
 
 if __name__ == "__main__":
-    main()
+    main(toyrun=True, data_path=r"Project_dissemination/Paper_replication_package/Data/Tmp_data/*.csv", name="test", K=5, fix_duplicate_id=True)
