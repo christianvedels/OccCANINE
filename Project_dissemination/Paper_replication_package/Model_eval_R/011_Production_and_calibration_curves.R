@@ -141,6 +141,11 @@ compute_cumulative_performance = function(preds_topk, K = 5, digits = 5) {
             RowID = gsub("__$", "", RowID)
         )
 
+    # We base cumulative performance sorting by top-1 confidence
+    top_1_conf = preds_topk %>%
+        filter(`top-k-pos` == 0) %>%
+        select(RowID, conf)
+
     res = foreach(k = 1:K, .combine = "bind_rows") %do% {
         preds_topk %>%
             filter(`top-k-pos` < k) %>%
@@ -150,9 +155,13 @@ compute_cumulative_performance = function(preds_topk, K = 5, digits = 5) {
                 precision = max(precision, na.rm = TRUE),
                 recall = max(recall, na.rm = TRUE),
                 f1 = max(f1, na.rm = TRUE),
-                conf = sum(conf, na.rm = TRUE),
+                # conf = sum(conf, na.rm = TRUE), # This would not guarantee curve_k is above curve_k-1 since summing can change order
                 k = k,
                 n = n()
+            ) %>%
+            left_join(
+                top_1_conf, # Use top-1 confidence for ordering to guarantee no reshuffling of confidence ranking
+                by = "RowID" 
             )
     } %>% ungroup()
 
@@ -199,16 +208,17 @@ create_topk_production_curve = function(prod_df, reporting_freq = 1) {
     k_vals = unique(prod_df$k) %>% unique() %>% as_numeric_factor()
     
     # Combine ref and prod_df for unified color scale
-    all_levels = c(1, setdiff(levels(prod_df$k), "1"))
+    # Put 1 last in levels so k=1 is drawn on top and always visible
+    all_levels = c(setdiff(levels(prod_df$k), "1"), 1)
     
     combined_df = bind_rows(
-        ref %>% mutate(k = factor(1, levels = all_levels)),
-        prod_df %>% mutate(k = factor(k, levels = all_levels))
+        prod_df %>% mutate(k = factor(k, levels = all_levels)),
+        ref %>% mutate(k = factor(1, levels = all_levels))
     )
     
-    # Create color vector: black for k=1, red gradient for rest
-    all_k_vals = c(1, k_vals)
-    color_vals = c("black", scales::alpha(colours$red, seq(1, by = -1/length(k_vals), length.out = length(k_vals))))
+    # Create color vector: red gradient for k>1, black for k=1 (last)
+    all_k_vals = c(k_vals, 1)
+    color_vals = c(scales::alpha(colours$red, seq(1, by = -1/length(k_vals), length.out = length(k_vals))), "black")
     names(color_vals) = all_k_vals
 
     p = combined_df %>% 
@@ -463,6 +473,15 @@ hiscos = df_test_topk %>%
     ) %>%
     filter(n >= 100)
 
+df_test_topk = df_test_topk %>%
+    mutate(
+        hisco_1_original = ifelse(as.numeric(hisco_1_original) > 0, sprintf("%05d", as.numeric(hisco_1_original)), hisco_1_original),
+        hisco_2_original = ifelse(as.numeric(hisco_2_original) > 0, sprintf("%05d", as.numeric(hisco_2_original)), hisco_2_original),
+        hisco_3_original = ifelse(as.numeric(hisco_3_original) > 0, sprintf("%05d", as.numeric(hisco_3_original)), hisco_3_original),
+        hisco_4_original = ifelse(as.numeric(hisco_4_original) > 0, sprintf("%05d", as.numeric(hisco_4_original)), hisco_4_original),
+        hisco_5_original = ifelse(as.numeric(hisco_5_original) > 0, sprintf("%05d", as.numeric(hisco_5_original)), hisco_5_original)
+    )
+
 # Loop
 avg_table_by_hisco = foreach(h = hiscos$hisco_code, .combine = "bind_rows") %do% {
     df_hisco = df_test_topk %>%
@@ -480,6 +499,8 @@ avg_table_by_hisco = foreach(h = hiscos$hisco_code, .combine = "bind_rows") %do%
     res = df_hisco %>%
         compute_cumulative_performance(K = K_infered) %>%
         create_topk_production_curve(reporting_freq = 2)
+
+    res$plot
 
     unique_obs = df_hisco$RowID %>% unique()
 
@@ -680,3 +701,19 @@ avg_table_by_ood %>%
         col.names = c("Dataset", "N", "Metric", "Baseline", "Δ(k=2)", "Δ(k=5)", "Δ(k=10)")
     ) %>%
     write_file("Project_dissemination/Paper_replication_package/Tables/Average_improvement_topk_ood.txt")
+
+
+
+# NOTE (top-k production curves):
+# For each observation, top-k performance is defined as "any-of-top-k correct"
+# (i.e., metric_k = max(metric over positions 1..k)). This is monotone in k at
+# the observation level: increasing k cannot turn a correct case into incorrect.
+# However, production curves depend on *ranking* observations by a confidence
+# score. If confidence is aggregated across k (e.g., sum of top-k confidences),
+# the ranking can reshuffle as k increases, so early prefixes differ across k
+# and curves may cross. To isolate the mechanical effect of increasing k, we
+# fix the ordering using top-1 confidence for all k (left_join(top_1_conf)).
+# This guarantees a common confidence ranking across k and yields pointwise
+# non-decreasing production curves in k (up to ties / missingness).
+# In practice, users might be interested in other confidence aggregations
+# e.g. sum to reflect total confidence mass over top-k predictions.
