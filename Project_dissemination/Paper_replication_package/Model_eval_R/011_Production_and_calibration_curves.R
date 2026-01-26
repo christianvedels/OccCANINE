@@ -665,9 +665,7 @@ avg_table_by_ood = foreach(f = ood_topk_files, .combine = "bind_rows") %do% {
     # Save average improvement plot
     ggsave(
         paste0("Project_dissemination/Paper_replication_package/Figures/Average_improvement_topk_ood/", f, ".png"),
-        plot = res_avg$overall + labs(
-            title = paste0("OOD: ", gsub("predictions_", "", gsub(".csv", "", f)))
-        ),
+        plot = res_avg$overall,
         width = dims$width,
         height = dims$height
     )
