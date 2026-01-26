@@ -38,12 +38,12 @@ create_calibration_curve = function(data, lang_filter = NULL, file_filter = NULL
         mutate(conf = as.numeric(conf), value = as.numeric(value)) %>%
         filter(conf <= 1) %>%  # Filter out invalid confidence values
         ggplot(aes(x = conf, y = value)) +
-        geom_smooth() + 
+        geom_smooth(color = colours$red) + 
         geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "red") +
         scale_x_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(0, 1)) +
         scale_y_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(0, 1)) +
         labs(
-            title = paste0("Calibration curve of OccCANINE predictions", title_suffix),
+            # title = paste0("Calibration curve of OccCANINE predictions", title_suffix),
             x = "Predicted confidence",
             y = "Observed performance"
         ) +
@@ -104,12 +104,12 @@ create_production_curve = function(data, lang_filter = NULL, file_filter = NULL,
     
     # Create plot
     p = ggplot(prod_df, aes(x = prop_pred, y = metric_at_prop)) +
-        geom_line(color = "steelblue") +
+        geom_line(color = colours$red) +
         facet_wrap(~metric) +
         scale_x_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(0, 1)) +
         scale_y_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(min_y, 1)) +
         labs(
-            title = paste0("Production curve by confidence threshold", title_suffix),
+            # title = paste0("Production curve by confidence threshold", title_suffix),
             x = "Share of test set predicted (by confidence)",
             y = "Accuracy among predicted"
         ) +
@@ -471,7 +471,8 @@ hiscos = df_test_topk %>%
     mutate(
         hisco_code = ifelse(as.numeric(hisco_code) > 0, sprintf("%05d", as.numeric(hisco_code)), hisco_code)
     ) %>%
-    filter(n >= 100)
+    filter(n >= 100) %>%
+    drop_na(hisco_code)
 
 df_test_topk = df_test_topk %>%
     mutate(
@@ -484,6 +485,7 @@ df_test_topk = df_test_topk %>%
 
 # Loop
 avg_table_by_hisco = foreach(h = hiscos$hisco_code, .combine = "bind_rows") %do% {
+    # Debug at h = hiscos$hisco_code[1039]
     df_hisco = df_test_topk %>%
         rowwise() %>%
         filter(
@@ -651,9 +653,7 @@ avg_table_by_ood = foreach(f = ood_topk_files, .combine = "bind_rows") %do% {
     # Save production curve plot
     ggsave(
         paste0("Project_dissemination/Paper_replication_package/Figures/Production_curve_topk_ood/", f, ".png"),
-        plot = res$plot + labs(
-            title = paste0("OOD: ", gsub("predictions_", "", gsub(".csv", "", f)), " (n=", length(unique_obs), ")")
-        ),
+        plot = res$plot,
         width = dims$width,
         height = dims$height
     )
