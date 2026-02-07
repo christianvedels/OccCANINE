@@ -85,6 +85,17 @@ bylang_full = full_by_lang %>%
 # ==== threshold_tuning_plot ====
 options(scipen = 999) # Disable scientific notation
 threshold_tuning_plot = function(data, observation) {
+    data = data %>%
+        mutate(
+            statistic = case_when(
+                statistic == "accuracy" ~ "Accuracy",
+                statistic == "precision" ~ "Precision",
+                statistic == "recall" ~ "Recall",
+                statistic == "f1" ~ "F1 Score",
+                TRUE ~ statistic
+            )
+        )
+
   p1 = data %>%
     ggplot(aes(x = threshold, y = value, color = type)) +
     geom_line() +

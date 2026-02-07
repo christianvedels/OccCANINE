@@ -103,7 +103,17 @@ create_production_curve = function(data, lang_filter = NULL, file_filter = NULL,
         min()
     
     # Create plot
-    p = ggplot(prod_df, aes(x = prop_pred, y = metric_at_prop)) +
+    p = prod_df %>%
+        mutate(
+            metric = case_when(
+                metric == "acc" ~ "Accuracy",
+                metric == "precision" ~ "Precision",
+                metric == "recall" ~ "Recall",
+                metric == "f1" ~ "F1 Score",
+                TRUE ~ metric
+            )
+        ) %>%
+        ggplot(aes(x = prop_pred, y = metric_at_prop)) +
         geom_line(color = colours$red) +
         facet_wrap(~metric) +
         scale_x_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(0, 1)) +
@@ -111,7 +121,7 @@ create_production_curve = function(data, lang_filter = NULL, file_filter = NULL,
         labs(
             # title = paste0("Production curve by confidence threshold", title_suffix),
             x = "Share of test set predicted (by confidence)",
-            y = "Accuracy among predicted"
+            y = "Statistic"
         ) +
         theme_bw()
     
@@ -222,6 +232,15 @@ create_topk_production_curve = function(prod_df, reporting_freq = 1) {
     names(color_vals) = all_k_vals
 
     p = combined_df %>% 
+        mutate(
+            metric = case_when(
+                metric == "acc" ~ "Accuracy",
+                metric == "precision" ~ "Precision",
+                metric == "recall" ~ "Recall",
+                metric == "f1" ~ "F1 Score",
+                TRUE ~ metric
+            )
+        ) %>%
         ggplot(aes(x = prop_pred, y = metric_at_prop, color = k, group = k)) +
         geom_line() +
         scale_color_manual(values = color_vals) +
@@ -229,7 +248,7 @@ create_topk_production_curve = function(prod_df, reporting_freq = 1) {
         scale_y_continuous(labels = scales::percent_format(accuracy = 0.01)) +
         labs(
             x = "Share of test set predicted (by confidence)",
-            y = "Accuracy among predicted",
+            y = "Statistic",
             color = "k"
         ) +
         facet_wrap(~metric) +
@@ -253,9 +272,28 @@ average_improvement = function(prod_df, k_max, reporting_freq = 1) {
         filter(k == 1) %>%
         select(metric, acc) %>%
         rename(ref_acc = acc) %>%
-        right_join(prod_df_sum, by = "metric")
+        right_join(prod_df_sum, by = "metric") %>%
+        mutate(
+            metric = case_when(
+                metric == "acc" ~ "Accuracy",
+                metric == "precision" ~ "Precision",
+                metric == "recall" ~ "Recall",
+                metric == "f1" ~ "F1 Score",
+                TRUE ~ metric
+            )
+        )
 
-    p1 = prod_df_sum %>% ggplot(aes(x = k, y = acc, group = metric)) +
+    p1 = prod_df_sum %>% 
+        mutate(
+            metric = case_when(
+                metric == "acc" ~ "Accuracy",
+                metric == "precision" ~ "Precision",
+                metric == "recall" ~ "Recall",
+                metric == "f1" ~ "F1 Score",
+                TRUE ~ metric
+            )
+        ) %>%
+        ggplot(aes(x = k, y = acc, group = metric)) +
         geom_line(col = colours$red) +
         geom_point(col = colours$red) +
         labs(
@@ -265,7 +303,7 @@ average_improvement = function(prod_df, k_max, reporting_freq = 1) {
         theme_bw() + 
         facet_wrap(~metric) +
         geom_hline(data = ref, aes(yintercept = ref_acc), linetype = "dashed") + 
-        scale_y_continuous(labels = scales::percent_format(accuracy = 0.01))
+        scale_y_continuous(labels = scales::percent_format(accuracy = 0.01), limits = c(NA, 1))
 
     # Create improved table
     # Get k=1 baseline performance
