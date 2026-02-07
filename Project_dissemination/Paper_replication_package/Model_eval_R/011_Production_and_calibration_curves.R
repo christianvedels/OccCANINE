@@ -298,7 +298,7 @@ average_improvement = function(prod_df, k_max, reporting_freq = 1) {
         geom_point(col = colours$red) +
         labs(
             x = "k",
-            y = "Performance"
+            y = "Statistic"
         ) +
         theme_bw() + 
         facet_wrap(~metric) +
