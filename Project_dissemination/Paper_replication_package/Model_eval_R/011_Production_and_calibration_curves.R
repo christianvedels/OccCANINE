@@ -178,7 +178,7 @@ compute_cumulative_performance = function(preds_topk, K = 5, digits = 5) {
     return(res)
 }
 
-create_topk_production_curve = function(prod_df, reporting_freq = 1) {
+create_topk_production_curve = function(prod_df, reporting_freq = 1, to_keep_k = NULL) {
 
     prod_df = prod_df %>%
         pivot_longer(
@@ -231,7 +231,13 @@ create_topk_production_curve = function(prod_df, reporting_freq = 1) {
     color_vals = c(scales::alpha(colours$red, seq(1, by = -1/length(k_vals), length.out = length(k_vals))), "black")
     names(color_vals) = all_k_vals
 
+    if(!is.null(to_keep_k)) {
+        # Then to keep is all k
+        to_keep_k = c(1, to_keep_k)
+    }
+
     p = combined_df %>% 
+        filter(as_numeric_factor(k) %in% to_keep_k) %>%
         mutate(
             metric = case_when(
                 metric == "acc" ~ "Accuracy",
@@ -259,7 +265,7 @@ create_topk_production_curve = function(prod_df, reporting_freq = 1) {
 }
 
 
-average_improvement = function(prod_df, k_max, reporting_freq = 1) {
+average_improvement = function(prod_df, k_max, reporting_freq = 1, to_keep_k = NULL) {
     # Compute improvements overall
     prod_df_sum = prod_df %>%
         group_by(metric, k) %>%
@@ -312,8 +318,13 @@ average_improvement = function(prod_df, k_max, reporting_freq = 1) {
         select(metric, baseline = acc)
     
     # Filter k values by reporting frequency (exclude k=1 from improvements)
+    if(!is.null(to_keep_k)) {
+        # Then to keep is all k
+        to_keep_k = c(1, to_keep_k)
+    }
     improvement_df = prod_df_sum %>%
         filter(k != 1, as_numeric_factor(k) %% reporting_freq == 0) %>%
+        filter(k %in% to_keep_k) %>%
         select(metric, k, improvement) %>%
         pivot_wider(
             names_from = k,
@@ -449,7 +460,7 @@ prod_df = df_test_topk %>%
     compute_cumulative_performance(K = K_infered)
     
 res = prod_df %>%
-    create_topk_production_curve()
+    create_topk_production_curve(to_keep_k = c(2,5,10))
 
 ggsave(
     "Project_dissemination/Paper_replication_package/Figures/Production_curve_topk_standard.png",
