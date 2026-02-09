@@ -1,0 +1,16 @@
+\begin{table}
+
+\caption{String length descriptive statistics}
+\centering
+\begin{tabular}[t]{lrrrrrl}
+\toprule
+Dataset & P25 & Median & P75 & P99 & P99\_9 & Pct.\\
+\midrule
+Training & 9 & 15 & 28 & 73 & 99 & 99.98\%\\
+Validation1 & 9 & 15 & 28 & 72 & 99 & 99.97\%\\
+Validation2 & 9 & 15 & 28 & 73 & 100 & 99.98\%\\
+Test & 9 & 15 & 28 & 73 & 99 & 99.97\%\\
+All & 9 & 15 & 28 & 73 & 99 & 99.98\%\\
+\bottomrule
+\end{tabular}
+\end{table}
