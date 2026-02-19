@@ -37,6 +37,20 @@ flat_by_lang = thr_tuning_by_lang %>%
 full_by_lang = thr_tuning_by_lang %>%
     filter(grepl("full", file))
 
+# Load test data
+files = list.files("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_flat_performance", full.names = TRUE)
+test_data = tibble(file = files) %>%
+    mutate(data = map(file, ~ read_csv(.x, show_col_types = FALSE))) %>%
+    unnest(data) %>%
+    mutate(file = gsub("Project_dissemination/Paper_replication_package/Data/Intermediate_data/test_flat_performance/", "", file)) %>%
+    mutate(
+        lang = sub(".*_lang_([^\\.]+)\\.csv$", "\\1", file),
+        threshold = sub(".*_thr_([^_]+)_lang_.*$", "\\1", file),
+        threshold = as.numeric(gsub("p", ".", threshold)),
+        digits = sub(".*_digits_([^_]+)_thr_.*$", "\\1", file),
+        digits = as.numeric(gsub("d", "", digits))
+    )
+
 # ==== Data preparation ====
 overall_flat = flat_overall %>% 
     mutate(type = "With language info.") %>%
@@ -81,6 +95,43 @@ bylang_full = full_by_lang %>%
     group_by(lang, type, statistic) %>%
     mutate(best = row_number() == which.max(value)) %>%
     ungroup()
+
+
+# ==== Data warngling with test data ====
+test_data_flat = test_data %>% 
+    rename(f = file) %>%
+    mutate(
+        type = ifelse(
+            grepl("_flat_unk_digits_", f),
+            "No",
+            "Yes"
+        )
+    ) %>%
+    filter(lang == "overall") %>%
+    select(lang, threshold, accuracy, precision, recall, f1, digits, n, type) %>%
+    pivot_longer(
+        cols = c("accuracy", "precision", "recall", "f1"),
+        names_to = "statistic",
+        values_to = "value"
+    )
+
+test_data_flat_by_lang = test_data %>%
+    rename(f = file) %>%
+    mutate(
+        type = ifelse(
+            grepl("_flat_unk_digits_", f),
+            "No",
+            "Yes"
+        )
+    ) %>%
+    filter(lang != "overall") %>%
+    select(lang, threshold, accuracy, precision, recall, f1, digits, n, type) %>%
+    pivot_longer(
+        cols = c("accuracy", "precision", "recall", "f1"),
+        names_to = "statistic",
+        values_to = "value"
+    )
+    
 
 # ==== threshold_tuning_plot ====
 options(scipen = 999) # Disable scientific notation
@@ -232,18 +283,29 @@ tmp = bind_rows(tmp1, tmp2) %>%
     select(method, statistic, `Lang. info.`, threshold, value) %>%
     arrange(statistic, method, `Lang. info.`) 
 
+tmp_test = tmp %>%
+    left_join(
+        test_data_flat %>% 
+            filter(lang == "overall") %>%
+            select(threshold, value, type, statistic) %>% 
+            rename(test_value = value, `Lang. info.` = type),
+        by = c("threshold", "Lang. info.", "statistic")
+    )
+
+
 sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning_overall.txt", append = FALSE)
-print(tmp)
+print(tmp_test)
 
 cat("\nNumber of observations full:\n", tmp1$n %>% unique(), "\n")
 cat("\nNumber of observations flat:\n", tmp2$n %>% unique(), "\n")
+cat("\nNumber of observations test data:\n", test_data_flat$n %>% unique(), "\n")
 
 # Table for paper (we dropped full)
 cat("\nTable for paper (only flat):\n")
-tmp %>%
+tmp_test %>%
     filter(method == "flat") %>%
     select(-method) %>%
-    rename(Metric = statistic) %>%
+    rename(Metric = statistic, validation = value, test = test_value) %>%
     mutate(
         Metric = case_when(
             Metric == "accuracy" ~ "Accuracy",
