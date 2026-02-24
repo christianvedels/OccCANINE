@@ -69,6 +69,15 @@ def clean_hisco( # pylint: disable=C0116
     cleaned = []
 
     for idx in formatted_hisco:
+        if idx not in rev_mapping:
+            # We end here if, e.g., a BOS token has been predicted
+            # as part of a code (which should never occur). This
+            # means the code is not valid, and so the best we can
+            # return is signifying that this is not an actual code.
+            # This mainly happens in top-k prediction in cases
+            # where we are VERY far down the tail of the distribution.
+            return None
+
         cleaned.append(rev_mapping[idx])
 
     return ''.join(cleaned)
@@ -189,7 +198,12 @@ def clean_hisco_seq_blocky( # pylint: disable=C0116
         if (chunk == PAD_IDX).any():
             pass
         else:
-            chunks.append(clean_hisco(chunk, rev_mapping))
+            clean_chunk = clean_hisco(chunk, rev_mapping)
+
+            if clean_chunk is None:
+                pass
+            else:
+                chunks.append(clean_chunk)
 
         start_idx = end_idx
 

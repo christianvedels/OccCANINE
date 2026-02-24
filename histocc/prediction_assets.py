@@ -519,9 +519,6 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
-        if order_invariant_conf and prediction_type == 'greedy-top-k':
-            raise ValueError('Cannot specify `order_invariant_conf = True` and `prediction_type = "greedy-top-k"` simultaneously')
-
         # Validate prediction arguments' compatability
         prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
 
@@ -602,7 +599,7 @@ class OccCANINE:
         elif prediction_type == 'greedy':
             out, out_type, inputs = self._predict_greedy(data_loader, order_invariant_conf=order_invariant_conf)
         elif prediction_type == 'greedy-topk':
-            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred)
+            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred, order_invariant_conf=order_invariant_conf)
         elif prediction_type == 'full':
             out, out_type, inputs = self._predict_full(data_loader)
         elif prediction_type == 'embeddings':
@@ -621,13 +618,13 @@ class OccCANINE:
                 if prediction_type == 'greedy-topk':
                     # Split the prediction table
                     df_pred = result.copy()
-                    
+
                     # Extract lang and occ1 from the input column
                     df_pred[["lang_tmp", "occ1_tmp"]] = (
                         df_pred["occ1"]
                         .str.split(r"\[SEP\]", n=1, expand=True)
                     )
-                    
+
                     # Merge back onto the original (non-deduplicated) input
                     # Each original row should get all topk predictions for its (occ1, lang) pair
                     result = (
@@ -641,7 +638,7 @@ class OccCANINE:
                         )
                         .drop(columns=["occ1_tmp", "lang_tmp"])
                     )
-                    
+
                     # Validate dimensions
                     expected_rows = len(occ1) * k_pred
                     if result.shape[0] != expected_rows:
@@ -789,13 +786,20 @@ class OccCANINE:
         return results, out_type, inputs
 
     @torch.no_grad
-    def predict_greedy_topk(self, data_loader, topk: int = 3):
+    def predict_greedy_topk(self, data_loader, topk: int = 3, order_invariant_conf: bool = False):
         self.model.eval()
 
+        # Setup
+        verbose = self.verbose
         inputs = []
         preds_s2s_raw = []
         probs_s2s_raw = []
         top_k_position = []
+        if order_invariant_conf:
+            order_inv_probs = []
+        else:
+            order_inv_probs = 1  # Placeholder
+        total_batches = len(data_loader)
 
         for batch_idx, batch in enumerate(data_loader, start=1):
             input_ids = batch["input_ids"].to(self.device)
@@ -819,6 +823,15 @@ class OccCANINE:
                 probs_s2s = outputs[1].cpu().numpy()
                 blocked_entries = outputs[2]
 
+                # Compute order invariant confidence
+                if order_invariant_conf:
+                    order_inv_probs_batch = self._compute_order_invariant_confidence(
+                        outputs_s2s=outputs_s2s,
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
+                        data_loader=data_loader
+                    )
+
                 # Store input in its original string format
                 inputs.extend(batch['occ1'])
 
@@ -828,21 +841,37 @@ class OccCANINE:
                 # Store predictions
                 preds_s2s_raw.append(outputs_s2s)
                 probs_s2s_raw.append(probs_s2s)
+                if order_invariant_conf:
+                    order_inv_probs.append(order_inv_probs_batch)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
 
         preds_s2s_raw = np.concatenate(preds_s2s_raw)
         probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        if order_invariant_conf:
+            order_inv_probs = np.concatenate(order_inv_probs)
 
         preds_s2s = list(map(
             data_loader.dataset.formatter.clean_pred,
             preds_s2s_raw,
         ))
 
-        preds = pd.DataFrame({
-            'input': inputs,
-            'pred_s2s': preds_s2s,
-            'top-k-pos': top_k_position,
-            **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
-        })
+        if order_invariant_conf:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+                'order_inv_conf': order_inv_probs,
+            })
+        else:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+            })
 
         out_type = 'greedy'
 
@@ -871,10 +900,8 @@ class OccCANINE:
         # Decoder based on model type
         if self.model_type == "mix":
             decoder = mixer_greedy_decode
-            decoder_full = full_search_decoder_mixer_optimized # Used in order invariant confidence
         elif self.model_type == "seq2seq":
             decoder = greedy_decode
-            decoder_full = full_search_decoder_seq2seq_optimized # Used in order invariant confidence
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediction")
 
@@ -902,43 +929,12 @@ class OccCANINE:
 
             # Compute order invariant confidence
             if order_invariant_conf:
-                # Location of multiple labels
-                outputs_mapped_to_label = list(map(
-                    data_loader.dataset.formatter.clean_pred,
-                    outputs[0].cpu().numpy(),
-                ))
-
-                # Generate list of codes
-                codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
-
-                order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
-
-                for i, codes_list in enumerate(codes_lists):
-
-                    len_list = len(codes_list)
-                    if len_list > 1:
-                        # Transform to machine readable representation:
-                        codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
-
-                        # Prepare subset tensors for the i-th sample
-                        input_ids_i = input_ids[i].unsqueeze(0)
-                        attention_mask_i = attention_mask[i].unsqueeze(0)
-
-                        # Run the full search decoder on the current sample
-                        outputs_order_inv = decoder_full(
-                            model = model,
-                            descr = input_ids_i,
-                            input_attention_mask = attention_mask_i,
-                            device = self.device,
-                            codes_list = codes_list_encoded,
-                            start_symbol = BOS_IDX,
-                        )
-                        # Test
-                        if outputs_order_inv.shape[1] != len_list:
-                            raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
-
-                        # Take sum of the probabilities
-                        order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
+                order_inv_probs_batch = self._compute_order_invariant_confidence(
+                    outputs_s2s=outputs_s2s,
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    data_loader=data_loader
+                )
 
             # Store input in its original string format
             inputs.extend(batch['occ1'])
@@ -1124,8 +1120,6 @@ class OccCANINE:
 
         # Join each permutation with the '&' symbol
         return ["&".join(permutation) for permutation in permutations_list]
-
-
 
     def _validate_and_update_prediction_parameters(self, behavior, prediction_type: PredType | None):
         """
@@ -1504,6 +1498,70 @@ class OccCANINE:
             pred = pred.split(symbol)
 
         return pred
+
+    def _compute_order_invariant_confidence(self, outputs_s2s, input_ids, attention_mask, data_loader):
+        """
+        Compute order invariant confidence for predictions with multiple labels.
+
+        For each prediction, generates all permutations of the predicted labels and
+        sums their probabilities from the full search decoder.
+
+        Parameters:
+        - outputs_s2s: Raw outputs from the seq2seq decoder
+        - input_ids: Batch input tensor
+        - attention_mask: Batch attention mask tensor
+        - data_loader: DataLoader containing the formatter
+
+        Returns:
+        - List of order invariant confidence scores (one per observation in batch)
+        """
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder_full = full_search_decoder_mixer_optimized
+        elif self.model_type == "seq2seq":
+            decoder_full = full_search_decoder_seq2seq_optimized
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not support order invariant confidence")
+
+        # Location of multiple labels
+        # TODO: This fails for unknown codes. Need to fix this.
+        outputs_mapped_to_label = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            outputs_s2s,
+        ))
+
+        # Generate list of codes
+        codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
+
+        order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
+
+        for i, codes_list in enumerate(codes_lists):
+            len_list = len(codes_list)
+            if len_list > 1:
+                # Transform to machine readable representation:
+                codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
+
+                # Prepare subset tensors for the i-th sample
+                input_ids_i = input_ids[i].unsqueeze(0)
+                attention_mask_i = attention_mask[i].unsqueeze(0)
+
+                # Run the full search decoder on the current sample
+                outputs_order_inv = decoder_full(
+                    model = self.model,
+                    descr = input_ids_i,
+                    input_attention_mask = attention_mask_i,
+                    device = self.device,
+                    codes_list = codes_list_encoded,
+                    start_symbol = BOS_IDX,
+                )
+                # Test
+                if outputs_order_inv.shape[1] != len_list:
+                    raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
+
+                # Take sum of the probabilities
+                order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
+
+        return order_inv_probs_batch
 
     def finetune(
             self,

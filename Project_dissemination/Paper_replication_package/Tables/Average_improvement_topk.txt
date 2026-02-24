@@ -1,0 +1,17 @@
+Average improvement by top-k
+
+\begin{table}
+
+\caption{Average performance improvement across k. Baseline shows k=1 performance, k2-k10 show improvement over baseline.}
+\centering
+\begin{tabular}[t]{lrrrrrrrrrr}
+\toprule
+Metric & Baseline (k=1) & Δ (k=2) & Δ (k=3) & Δ (k=4) & Δ (k=5) & Δ (k=6) & Δ (k=7) & Δ (k=8) & Δ (k=9) & Δ (k=10)\\
+\midrule
+Accuracy & 0.961 & 0.021 & 0.023 & 0.024 & 0.025 & 0.025 & 0.025 & 0.025 & 0.026 & 0.026\\
+F1 Score & 0.963 & 0.023 & 0.025 & 0.026 & 0.027 & 0.027 & 0.027 & 0.027 & 0.028 & 0.028\\
+Precision & 0.961 & 0.021 & 0.024 & 0.024 & 0.025 & 0.025 & 0.026 & 0.026 & 0.026 & 0.027\\
+Recall & 0.967 & 0.027 & 0.029 & 0.030 & 0.030 & 0.030 & 0.031 & 0.031 & 0.031 & 0.031\\
+\bottomrule
+\end{tabular}
+\end{table}

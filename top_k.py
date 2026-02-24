@@ -20,8 +20,9 @@ def main():
     out = model.predict(
         EXAMPLES,
         prediction_type='greedy-topk',
-        order_invariant_conf=False,
+        order_invariant_conf=True,
         deduplicate=True,
+        k_pred=20,
     )
 
     print(out.sort_values(['occ1', 'top-k-pos']))

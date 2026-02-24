@@ -1,0 +1,56 @@
+============================================================
+OccCANINE Performance Benchmark Results
+============================================================
+
+Test Date: 2026-01-26 15:16:42
+Number of Observations: 10,000
+Behavior: good
+
+------------------------------------------------------------
+System Information:
+------------------------------------------------------------
+Operating System: Windows 10
+OS Version: 10.0.26200
+CPU: Intel64 Family 6 Model 158 Stepping 13, GenuineIntel
+CPU Cores (Physical): 6
+CPU Cores (Logical): 6
+CPU Frequency: 2592.0 MHz (Max: 2592.0 MHz)
+Total RAM: 31.81 GB
+GPU: Quadro T2000
+GPU Memory: 4.00 GB
+CUDA Version: 12.6
+Python Version: 3.11.12
+PyTorch Version: 2.6.0+cu126
+
+------------------------------------------------------------
+System Information:
+------------------------------------------------------------
+Operating System: Windows 10
+OS Version: 10.0.26200
+CPU: Intel64 Family 6 Model 158 Stepping 13, GenuineIntel
+CPU Cores (Physical): 6
+CPU Cores (Logical): 6
+CPU Frequency: 2592.0 MHz (Max: 2592.0 MHz)
+Total RAM: 31.81 GB
+GPU: Quadro T2000
+GPU Memory: 4.00 GB
+CUDA Version: 12.6
+Python Version: 3.11.12
+PyTorch Version: 2.6.0+cu126
+
+------------------------------------------------------------
+Inference Speed:
+------------------------------------------------------------
+  Total time: 607.91 seconds
+  Total time: 607911.26 milliseconds
+  Time per record: 60.79 ms/record
+  Throughput: 16.45 records/second
+
+------------------------------------------------------------
+Memory Usage:
+------------------------------------------------------------
+  Memory before inference: 1978.43 MB
+  Memory after inference: 1487.55 MB
+  Memory used: -490.88 MB
+
+============================================================

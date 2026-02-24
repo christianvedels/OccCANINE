@@ -132,3 +132,9 @@ print_eta = function(iter, max_iter, start_time, current_time) {
 
     cat(the_message)
 }
+
+
+# Function to convert factor to numeric
+as_numeric_factor = function(x) {
+  as.numeric(as.character(x))
+}
