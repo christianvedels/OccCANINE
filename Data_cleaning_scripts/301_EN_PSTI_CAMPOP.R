@@ -11,7 +11,7 @@ library(tidyverse)
 source("Data_cleaning_scripts/000_Functions.R")
 
 # ==== Load data ====
-data0 = read_csv("Data/Raw_data/2404_New_data/PSTI_v3/ENG_PST_STRINGS_coded01022024.csv")
+data0 = read_csv("Data/Raw_data/2404_New_data/PSTI_v3/250411_OcC_TrainingData_Updated.csv")
 
 # ==== Data cleaning ====
 # Extract both raw and standardized strings

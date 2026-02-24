@@ -1,0 +1,74 @@
+
+\begin{tabular}{lrrlrrr}
+\toprule
+Language & N val obs. & N test obs. & Statistic & Optimal threshold & Validation & Test\\
+\midrule
+ca & 32565 & 33029 & Accuracy & 0.31 & 0.997 & 0.997\\
+ca & 32565 & 33029 & F1 score & 0.30 & 0.998 & 0.998\\
+ca & 32565 & 33029 & Precision & 0.69 & 0.998 & 0.999\\
+ca & 32565 & 33029 & Recall & 0.01 & 0.999 & 0.999\\
+da & 274180 & 274557 & Accuracy & 0.41 & 0.990 & 0.990\\
+\addlinespace
+da & 274180 & 274557 & F1 score & 0.29 & 0.991 & 0.991\\
+da & 274180 & 274557 & Precision & 0.52 & 0.991 & 0.991\\
+da & 274180 & 274557 & Recall & 0.01 & 0.997 & 0.997\\
+en & 377142 & NA & Accuracy & 0.41 & 0.940 & NA\\
+en & 377142 & NA & F1 score & 0.26 & 0.945 & NA\\
+\addlinespace
+en & 377142 & NA & Precision & 0.41 & 0.941 & NA\\
+en & 377142 & NA & Recall & 0.01 & 0.983 & NA\\
+es & 433 & NA & Accuracy & 0.30 & 0.963 & NA\\
+es & 433 & NA & F1 score & 0.30 & 0.971 & NA\\
+es & 433 & NA & Precision & 0.75 & 0.977 & NA\\
+\addlinespace
+es & 433 & NA & Recall & 0.01 & 0.995 & NA\\
+fr & 14401 & NA & Accuracy & 0.32 & 0.918 & NA\\
+fr & 14401 & NA & F1 score & 0.21 & 0.932 & NA\\
+fr & 14401 & NA & Precision & 0.80 & 0.948 & NA\\
+fr & 14401 & NA & Recall & 0.01 & 0.990 & NA\\
+\addlinespace
+ge & 6681 & NA & Accuracy & 0.33 & 0.886 & NA\\
+ge & 6681 & NA & F1 score & 0.21 & 0.903 & NA\\
+ge & 6681 & NA & Precision & 0.75 & 0.918 & NA\\
+ge & 6681 & NA & Recall & 0.01 & 0.974 & NA\\
+gr & 86 & NA & Accuracy & 0.19 & 0.952 & NA\\
+\addlinespace
+gr & 86 & NA & F1 score & 0.19 & 0.965 & NA\\
+gr & 86 & NA & Precision & 0.69 & 0.967 & NA\\
+gr & 86 & NA & Recall & 0.01 & 1.000 & NA\\
+is & 1054 & NA & Accuracy & 0.20 & 0.971 & NA\\
+is & 1054 & NA & F1 score & 0.17 & 0.974 & NA\\
+\addlinespace
+is & 1054 & NA & Precision & 0.20 & 0.971 & NA\\
+is & 1054 & NA & Recall & 0.01 & 0.989 & NA\\
+it & 223 & NA & Accuracy & 0.32 & 0.998 & NA\\
+it & 223 & NA & F1 score & 0.32 & 0.999 & NA\\
+it & 223 & NA & Precision & 0.32 & 1.000 & NA\\
+\addlinespace
+it & 223 & NA & Recall & 0.01 & 1.000 & NA\\
+nl & 58795 & NA & Accuracy & 0.24 & 0.978 & NA\\
+nl & 58795 & NA & F1 score & 0.22 & 0.980 & NA\\
+nl & 58795 & NA & Precision & 0.34 & 0.979 & NA\\
+nl & 58795 & NA & Recall & 0.01 & 0.993 & NA\\
+\addlinespace
+no & 7982 & NA & Accuracy & 0.34 & 0.987 & NA\\
+no & 7982 & NA & F1 score & 0.34 & 0.988 & NA\\
+no & 7982 & NA & Precision & 0.63 & 0.988 & NA\\
+no & 7982 & NA & Recall & 0.01 & 0.996 & NA\\
+pt & 1011 & NA & Accuracy & 0.27 & 0.993 & NA\\
+\addlinespace
+pt & 1011 & NA & F1 score & 0.27 & 0.995 & NA\\
+pt & 1011 & NA & Precision & 0.45 & 0.998 & NA\\
+pt & 1011 & NA & Recall & 0.01 & 1.000 & NA\\
+se & 110995 & NA & Accuracy & 0.35 & 0.969 & NA\\
+se & 110995 & NA & F1 score & 0.21 & 0.972 & NA\\
+\addlinespace
+se & 110995 & NA & Precision & 0.52 & 0.972 & NA\\
+se & 110995 & NA & Recall & 0.01 & 0.986 & NA\\
+unk & 40906 & 41479 & Accuracy & 0.39 & 0.985 & 0.984\\
+unk & 40906 & 41479 & F1 score & 0.38 & 0.986 & 0.986\\
+unk & 40906 & 41479 & Precision & 0.39 & 0.985 & 0.984\\
+\addlinespace
+unk & 40906 & 41479 & Recall & 0.01 & 0.998 & 0.998\\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,26 @@
+\begin{table}
+
+\caption{Model performance under different training data constraints}
+\centering
+\begin{tabular}[t]{llrrrrrl}
+\toprule
+Target system & Train obs. & Test obs. & Accuracy & Precision & Recall & F1-score & Train time\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textit{\textbf{\textbackslash{}textit\{Panel A: Full training data (good decoder)\}}}}\\
+\hspace{1em}ISCO-68 & 1,000 & 1,000 & 0.938 & 0.938 & 0.992 & 0.958 & $\sim$20 days\\
+\hspace{1em}OCCICEM & 1,000 & 1,000 & 0.974 & 0.982 & 0.974 & 0.977 & $\sim$20 days\\
+\hspace{1em}OCC1950 & 1,000 & 1,000 & 0.866 & 0.866 & 0.888 & 0.875 & $\sim$20 days\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textit{\textbf{\textbackslash{}textit\{Panel B: 10,000 strings, (good decoder)\}}}}\\
+\hspace{1em}ISCO-68 & 10,000 & 1,000 & 0.829 & 0.835 & 0.881 & 0.850 & $\sim$48 hours\\
+\hspace{1em}OCCICEM & 10,000 & 1,000 & 0.854 & 0.863 & 0.854 & 0.857 & $\sim$48 hours\\
+\hspace{1em}OCC1950 & 10,000 & 1,000 & 0.806 & 0.810 & 0.824 & 0.814 & $\sim$48 hours\\
+\addlinespace[0.3em]
+\multicolumn{8}{l}{\textit{\textbf{\textbackslash{}textit\{Panel C: 10,000 strings, frozen encoder (good decoder)\}}}}\\
+\hspace{1em}ISCO-68 & 10,000 & 1,000 & 0.822 & 0.829 & 0.878 & 0.844 & $\sim$20 hours\\
+\hspace{1em}OCCICEM & 10,000 & 1,000 & 0.857 & 0.867 & 0.857 & 0.860 & $\sim$20 hours\\
+\hspace{1em}OCC1950 & 10,000 & 1,000 & 0.805 & 0.807 & 0.827 & 0.813 & $\sim$20 hours\\
+\bottomrule
+\end{tabular}
+\end{table}

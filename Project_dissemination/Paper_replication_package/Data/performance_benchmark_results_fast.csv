@@ -1,0 +1,2 @@
+n_observations,behavior,total_time_sec,total_time_ms,ms_per_record,records_per_sec,memory_before_mb,memory_after_mb,memory_used_mb
+10000,fast,101.93279385566711,101932.79385566711,10.193279385566711,98.10385472372721,1600.84375,1407.1171875,-193.7265625

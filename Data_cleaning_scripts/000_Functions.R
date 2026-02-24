@@ -4,6 +4,20 @@
 #
 # Purpose:  Contains all the functions used in data cleaning
 
+# ==== Colors ====
+colours = list(
+  black = "black",
+  blue = "#273a8f",
+  green = "#2c5c34",
+  red = "#b33d3d",
+  orange = "#DE7500"
+)
+
+dims = list(
+  width = 8,
+  height = 6
+)
+
 
 # ==== sub_scandi ====
 # Replaces all Scandinavian letters with their standard English alphabet 

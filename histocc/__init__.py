@@ -23,4 +23,4 @@ from .loss import (
     LossMixer,
 )
 from .utils import greedy_decode
-from .eval_metrics import EvalEngine
+from .eval_metrics import EvalEngine, TopKEvalEngine

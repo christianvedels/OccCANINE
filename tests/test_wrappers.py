@@ -92,7 +92,6 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
             if sample_outputs is not None:
                 with self.subTest(msg='No arguments prediction, verifying results'):
                     self.assertListEqual(
-                        # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
                         list(pred[f'{wrapper.system}_1']),
                         sample_outputs,
                     )
@@ -112,7 +111,6 @@ class AbstractTestWrapperOccCANINE(unittest.TestCase):
                 if sample_outputs is not None:
                     with self.subTest(msg=f'prediction_type={prediction_type}, verifying results'):
                         self.assertListEqual(
-                            # list(pred[f'{wrapper.system}_1'].astype(float).astype(int)),
                             list(pred[f'{wrapper.system}_1']),
                             sample_outputs,
                         )
@@ -176,14 +174,11 @@ class TestWrapperGeneralPurposeOccCANINE(AbstractTestWrapperOccCANINE):
 
     def setUp(self):
         super().setUp()
-        self.occ1950_descriptions = pd.read_csv('./Data/OCC1950_definitions.csv')
 
     def test_wrapper_occ1950(self):
         wrapper_mixer_occ1950 = self._initialize_model(
-            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-occ1950-ft-s=30000\last.bin',
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250408\mixer-occ1950-ft\last.bin',
             system='occ1950',
-            descriptions=self.occ1950_descriptions,
-            block_nodes=True,
             )
         self._run_wrapper_tests(
             wrapper_mixer_occ1950,
@@ -192,15 +187,42 @@ class TestWrapperGeneralPurposeOccCANINE(AbstractTestWrapperOccCANINE):
             )
         del wrapper_mixer_occ1950
 
+    def test_wrapper_icem(self):
+        wrapper_mixer_icem = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250408\mixer-icem-ft\last.bin',
+            system='icem',
+            )
+        self._run_wrapper_tests(
+            wrapper_mixer_icem,
+            self.sample_inputs,
+            sample_outputs=['173', '194'],
+            )
+        del wrapper_mixer_icem
+
     def test_wrapper_psti(self):
         wrapper_mixer_psti = self._initialize_model(
-            name=r'Y:\pc-to-Y\hisco\ft-exp\250130\mixer-psti-ft-s=30000\last.bin',
-            system='ptsi',
-            block_nodes=True,
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250408\mixer-psti-ft\last.bin',
+            system='psti',
             use_within_block_sep=True,
             )
-        self._run_wrapper_tests(wrapper_mixer_psti, self.sample_inputs)
+        self._run_wrapper_tests(
+            wrapper_mixer_psti,
+            self.sample_inputs,
+            sample_outputs=['1,1,0,0,3,0,0,0', '1,5,0,0,0,0,1,0'],
+            )
         del wrapper_mixer_psti
+
+    def test_wrapper_isco(self):
+        wrapper_mixer_isco = self._initialize_model(
+            name=r'Y:\pc-to-Y\hisco\ft-exp\250408\mixer-isco-ft\last.bin',
+            system='isco',
+            )
+        self._run_wrapper_tests(
+            wrapper_mixer_isco,
+            self.sample_inputs,
+            sample_outputs=['611', '641'],
+            )
+        del wrapper_mixer_isco
 
 
 class SubtestCountingTestResult(unittest.TextTestResult):

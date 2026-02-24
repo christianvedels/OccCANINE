@@ -770,7 +770,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             if self.map_code_label is not None:
                 target[self.map_code_label[str(code)]] = 1
             else:
-                target[int(code)] = 1 # column may have type str or float -> cast
+                target[int(float(code))] = 1 # column may have type str or float -> cast
 
         return target
 
