@@ -1,8 +1,10 @@
-from histocc import OccCANINE, EvalEngine
-import pandas as pd
 import glob
 import os
 import json
+
+import pandas as pd
+
+from histocc import OccCANINE, EvalEngine
 
 
 def load_data(data_path, n_obs=5000, lang=None):
