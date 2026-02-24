@@ -761,4 +761,3 @@ class TopKEvalEngine(EvalEngine):
             return results_df['f1'].tolist()
         else:
             return np.mean(all_f1s)
-

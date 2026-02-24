@@ -1,9 +1,10 @@
-from histocc import OccCANINE
-from histocc.eval_metrics import TopKEvalEngine
-import pandas as pd
 import glob
 import os
-import numpy as np
+
+import pandas as pd
+
+from histocc import OccCANINE
+from histocc.eval_metrics import TopKEvalEngine
 
 
 def load_data(data_path, n_obs=5000, lang=None):
@@ -48,7 +49,7 @@ def run_topk_eval(df, mod, K=5, digits=5, name="test", fix_duplicate_id: bool = 
     # Create dir if it does not exist
     os.makedirs("Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_test_top_k", exist_ok=True)
     fname = f"Project_dissemination/Paper_replication_package/Data/Intermediate_data/big_files/predictions_test_top_k/obs_{name}_topk_{K}.csv"
-    
+
     if os.path.exists(fname):
         print(f"Skipping {fname} as predictions already exist.")
         return 0
@@ -90,13 +91,13 @@ def run_topk_eval(df, mod, K=5, digits=5, name="test", fix_duplicate_id: bool = 
     # Add in rowid to match predictions with ground truth
     # Each original observation will have K rows in the result
     preds["RowID"] = df.RowID.repeat(K).values  # Repeat each rowid K times
-    
+
     # Check if 'n' in df
     if "n" in df.columns:
         preds["n"] = df.n.repeat(K).values
     else:
         preds["n"] = 1  # Default to 1 if 'n' is not present
-    
+
     # Use TopKEvalEngine for evaluation
     eval_engine = TopKEvalEngine(
         mod,
@@ -106,7 +107,7 @@ def run_topk_eval(df, mod, K=5, digits=5, name="test", fix_duplicate_id: bool = 
         group_col="RowID",
         digits=digits
     )
-    
+
     # Get per-observation metrics as flat lists matching prediction order
     preds["acc"] = eval_engine.accuracy(return_per_obs=True)
     preds["precision"] = eval_engine.precision(return_per_obs=True)
@@ -123,6 +124,7 @@ def run_topk_eval(df, mod, K=5, digits=5, name="test", fix_duplicate_id: bool = 
     # Save predictions
     preds.to_csv(fname, index=False)
     print(f"Predictions saved to {fname}")
+
 
 def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5, fix_duplicate_id: bool = False):
     """
@@ -142,56 +144,6 @@ def main(toyrun=False, data_path=r"Data/Test_data/*.csv", name="test", K=5, fix_
     else:
         # Load a larger dataset for full evaluation
         df = load_data(data_path=data_path, n_obs=1000000000000000, lang=None)
-
-    # # Custom toydata for quick testing
-    # if toyrun:
-    #     df = pd.DataFrame({
-    #         "RowID": [
-    #             # 1, 
-    #             # 2, 
-    #             # 3, 
-    #             # 4, 
-    #             5,
-    #             6,
-    #             7
-    #         ],
-    #         "occ1": [
-    #             # "teacher",
-    #             # "carpenter",
-    #             # "nurse",
-    #             # "blacksmith",
-    #             "farmer",
-    #             "deres born",
-    #             "gaardmand og tjenestetyende"
-    #         ],
-    #         "lang": [
-    #             # "en",
-    #             # "en",
-    #             # "en",
-    #             # "en",
-    #             "en",
-    #             "da",
-    #             "da"
-    #         ],
-    #         "hisco_1": [
-    #             # "12210",
-    #             # "73120",
-    #             # "12230",
-    #             # "72110",
-    #             "61110",
-    #             "-1",
-    #             "61110"
-    #         ],
-    #         "hisco_2": [
-    #             # np.nan,
-    #             # np.nan,
-    #             # np.nan,
-    #             # np.nan,
-    #             np.nan,
-    #             np.nan,
-    #             "62120"
-    #         ]
-    #     })
 
     # Run top-k evaluation
     run_topk_eval(df, mod, K=K, digits=5, name=name, fix_duplicate_id=fix_duplicate_id)
