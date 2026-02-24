@@ -618,13 +618,13 @@ class OccCANINE:
                 if prediction_type == 'greedy-topk':
                     # Split the prediction table
                     df_pred = result.copy()
-                    
+
                     # Extract lang and occ1 from the input column
                     df_pred[["lang_tmp", "occ1_tmp"]] = (
                         df_pred["occ1"]
                         .str.split(r"\[SEP\]", n=1, expand=True)
                     )
-                    
+
                     # Merge back onto the original (non-deduplicated) input
                     # Each original row should get all topk predictions for its (occ1, lang) pair
                     result = (
@@ -638,7 +638,7 @@ class OccCANINE:
                         )
                         .drop(columns=["occ1_tmp", "lang_tmp"])
                     )
-                    
+
                     # Validate dimensions
                     expected_rows = len(occ1) * k_pred
                     if result.shape[0] != expected_rows:
@@ -1121,8 +1121,6 @@ class OccCANINE:
         # Join each permutation with the '&' symbol
         return ["&".join(permutation) for permutation in permutations_list]
 
-
-
     def _validate_and_update_prediction_parameters(self, behavior, prediction_type: PredType | None):
         """
         Wraps all the validation and updating of 'behavior' and 'prediction_type'
@@ -1500,20 +1498,20 @@ class OccCANINE:
             pred = pred.split(symbol)
 
         return pred
-    
+
     def _compute_order_invariant_confidence(self, outputs_s2s, input_ids, attention_mask, data_loader):
         """
         Compute order invariant confidence for predictions with multiple labels.
-        
-        For each prediction, generates all permutations of the predicted labels and 
+
+        For each prediction, generates all permutations of the predicted labels and
         sums their probabilities from the full search decoder.
-        
+
         Parameters:
         - outputs_s2s: Raw outputs from the seq2seq decoder
         - input_ids: Batch input tensor
         - attention_mask: Batch attention mask tensor
         - data_loader: DataLoader containing the formatter
-        
+
         Returns:
         - List of order invariant confidence scores (one per observation in batch)
         """
@@ -1524,7 +1522,7 @@ class OccCANINE:
             decoder_full = full_search_decoder_seq2seq_optimized
         else:
             raise TypeError(f"model_type: '{self.model_type}' does not support order invariant confidence")
-        
+
         # Location of multiple labels
         # TODO: This fails for unknown codes. Need to fix this.
         outputs_mapped_to_label = list(map(
@@ -1562,7 +1560,7 @@ class OccCANINE:
 
                 # Take sum of the probabilities
                 order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
-        
+
         return order_inv_probs_batch
 
     def finetune(

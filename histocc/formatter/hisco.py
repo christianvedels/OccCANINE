@@ -74,8 +74,8 @@ def clean_hisco( # pylint: disable=C0116
             # as part of a code (which should never occur). This
             # means the code is not valid, and so the best we can
             # return is signifying that this is not an actual code.
-            # This mainly may happen in top-k prediction in cases
-            # where we are VERY far down tail of distribution.
+            # This mainly happens in top-k prediction in cases
+            # where we are VERY far down the tail of the distribution.
             return None
 
         cleaned.append(rev_mapping[idx])

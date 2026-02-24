@@ -1,11 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import mode
 
-from .formatter import (
-    hisco_blocky5,
-    construct_general_purpose_formatter
-)
 
 class EvalEngine:
     '''
@@ -412,11 +407,11 @@ class EvalEngine:
 class TopKEvalEngine(EvalEngine):
     '''
     Evaluate the performance of a model for top-k predictions at each rank level (atomistically).
-    
+
     For top-k predictions, each observation has multiple rows (one per k position).
     This engine evaluates performance at each rank level independently (atomistically),
     meaning rank i only considers the predictions at position i, not cumulative top-i.
-    
+
     model: model object (instance of OccCANINE)
     ground_truth: pd.DataFrame (original ground truth, one row per observation)
     predictions: pd.DataFrame (top-k predictions with 'top-k-pos' column and rowid/identifier)
@@ -427,7 +422,7 @@ class TopKEvalEngine(EvalEngine):
     def __init__(self, model, ground_truth, predicitons, pred_col, group_col='rowid', digits=None):
         """
         Initialize the top-k evaluation metrics class.
-        
+
         Args:
             model (object): The model object containing formatter, block_size, and system attributes.
             ground_truth (pd.DataFrame): The ground truth data (one row per observation).
@@ -438,62 +433,62 @@ class TopKEvalEngine(EvalEngine):
         """
         # Store group column
         self.group_col = group_col
-        
+
         # Check if predictions have the group column
         if group_col not in predicitons.columns:
             raise ValueError(f"Predictions must have a '{group_col}' column to group observations")
-        
+
         # Check if predictions have top-k-pos column
         if 'top-k-pos' not in predicitons.columns:
             raise ValueError("Predictions must have a 'top-k-pos' column for top-k evaluation")
-        
+
         # Store original predictions for grouping
         self.predictions_topk = predicitons
-        
+
         # Determine k from the data
         self.k = int(predicitons['top-k-pos'].max() + 1)
-        
+
         # Store references for reuse
         self.pred_col = pred_col
         self.digits = digits
         self.ground_truth = ground_truth
-        
+
         # Get things from model for formatting
         self.formatter = model.formatter
         self.block_size = model.formatter.block_size
         self.system = model.system
         self.use_within_block_sep = False
-        
+
         # Format ground truth and predictions
         y_true_formatted = self.format(ground_truth.filter(regex=pred_col))
         y_pred_formatted = self.format(predicitons.filter(regex=pred_col))
-        
+
         # Store ground truth with group column for easy lookup
         if group_col in ground_truth.columns:
             self.ground_truth_with_id = ground_truth[[group_col]].copy()
             self.ground_truth_with_id = pd.concat([self.ground_truth_with_id, y_true_formatted], axis=1)
         else:
             raise ValueError(f"Ground truth must have a '{group_col}' column")
-        
+
         # Store predictions with group column and rank for easy lookup
         self.predictions_with_id = predicitons[[group_col, 'top-k-pos']].copy()
         self.predictions_with_id = pd.concat([self.predictions_with_id, y_pred_formatted], axis=1)
         # Store original index to preserve input order
         self.predictions_with_id['_original_index'] = range(len(self.predictions_with_id))
-        
+
         # Validate no duplicates in _original_index
         if self.predictions_with_id['_original_index'].duplicated().any():
             duplicates = self.predictions_with_id[self.predictions_with_id['_original_index'].duplicated(keep=False)]
             raise ValueError(f"Duplicate values found in _original_index. This should never happen.\n{duplicates}")
-        
+
         # Check if we have labels
         self.no_label = ground_truth.filter(regex=pred_col).shape[1] == 0
-        
+
         # Create a reusable EvalEngine instance (will update y_pred and y_true as needed)
         # Initialize with empty DataFrames but correct structure
         empty_pred = pd.DataFrame(columns=y_pred_formatted.columns)
         empty_true = pd.DataFrame(columns=y_true_formatted.columns)
-        
+
         self.temp_engine = EvalEngine(
             model,
             ground_truth=empty_true,
@@ -507,30 +502,30 @@ class TopKEvalEngine(EvalEngine):
         self.temp_engine.system = self.system
         self.temp_engine.use_within_block_sep = self.use_within_block_sep
         self.temp_engine.no_label = self.no_label
-    
+
     def _get_topk_predictions_for_obs(self, obs_id, rank=None):
         """
         Get predictions for a single observation at a specific rank.
-        
+
         Args:
             obs_id: The identifier for the observation
             rank (int, optional): Specific rank to get predictions for (0-indexed). If None, returns all.
-            
+
         Returns:
             list: Predictions at the specified rank (or all ranks if rank is None)
         """
         obs_preds = self.predictions_topk[self.predictions_topk[self.group_col] == obs_id]
-        
+
         # Filter by specific rank if specified
         if rank is not None:
             obs_preds = obs_preds[obs_preds['top-k-pos'] == rank]
-        
+
         # Sort by top-k-pos to ensure correct order
         obs_preds = obs_preds.sort_values('top-k-pos')
-        
+
         # Extract prediction columns
         pred_cols = [col for col in obs_preds.columns if col.startswith(self.pred_col)]
-        
+
         # Collect all predictions
         all_preds = []
         for _, row in obs_preds.iterrows():
@@ -543,61 +538,61 @@ class TopKEvalEngine(EvalEngine):
                     if len(pred) == 2 and pred[0] == '-':
                         pred = pred[0] + '0' * (self.block_size - 2) + pred[1]
                     all_preds.append(pred)
-        
+
         return all_preds
-    
+
     def _prepare_rank_data(self, rank):
         """
         Prepare prediction and ground truth data for a specific rank.
-        
+
         This hidden method:
         1. Finds indices for the specified rank
         2. Extracts columns and indices (and resets)
         3. Tests that RowIDs match between predictions and ground truth
         4. Tests that lengths match between predictions and ground truth
-        
+
         Args:
             rank (int): The rank position (0-indexed) to prepare data for.
-            
+
         Side effects:
             Updates self.temp_engine.y_pred and self.temp_engine.y_true
-            
+
         Raises:
             ValueError: If RowIDs don't match between predictions and ground truth
         """
         # 1. Find indices for this rank
         rank_indices = self.predictions_with_id['top-k-pos'] == rank
-        
+
         # 2. Extract columns and indices (and reset)
         rank_preds = self.predictions_with_id[rank_indices].reset_index(drop=True)
         pred_rowids = rank_preds[self.group_col]
         self.temp_engine.y_pred = rank_preds.drop(columns=[self.group_col, 'top-k-pos', '_original_index']).reset_index(drop=True)
-        
+
         # Get ground truth by index position (same order as predictions)
         gt = self.ground_truth_with_id
         gt_rowids = gt[self.group_col]
         self.temp_engine.y_true = gt.drop(columns=[self.group_col]).reset_index(drop=True)
-        
+
         # 3. Test that RowIDs match
         if not pred_rowids.reset_index(drop=True).equals(gt_rowids.reset_index(drop=True)):
             raise ValueError(f"RowID mismatch at rank {rank}. Predictions and ground truth are not aligned.")
-        
+
         # 4. Test that lengths match
         if len(self.temp_engine.y_pred) != len(self.temp_engine.y_true):
             raise ValueError(f"Length mismatch at rank {rank}. Predictions and ground truth lengths differ.")
-    
+
     def accuracy(self, return_per_obs=True):
         """
         Calculate the accuracy for top-k predictions at each rank level (atomically).
         Each rank is evaluated independently -8 only predictions at that specific rank position.
-        
+
         Args:
             return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
-            
+
         Returns:
             dict or list: Dictionary mapping rank to accuracy, or flat list with one value per row in predictions.
         """
-        
+
         # Collect results for all ranks
         all_accs = []
         ids = []
@@ -608,7 +603,7 @@ class TopKEvalEngine(EvalEngine):
             all_accs.extend(accs)
             ids = ids + self.ground_truth_with_id["RowID"].tolist()
             topk_pos_list = topk_pos_list + [rank] * len(accs)
-        
+
         # To dataframe
         results_df = pd.DataFrame({
             self.group_col: ids,
@@ -630,20 +625,20 @@ class TopKEvalEngine(EvalEngine):
             return results_df['accuracy'].tolist()
         else:
             return np.mean(all_accs)
-        
-    
+
+
     def precision(self, return_per_obs=True):
         """
         Calculate the precision for top-k predictions at each rank level (atomically).
         Each rank is evaluated independently - only predictions at that specific rank position.
-        
+
         Args:
             return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
-            
+
         Returns:
             dict or list: Dictionary mapping rank to precision, or flat list with one value per row in predictions.
         """
-        
+
         # Collect results for all ranks
         all_precs = []
         ids = []
@@ -654,7 +649,7 @@ class TopKEvalEngine(EvalEngine):
             all_precs.extend(precs)
             ids = ids + self.ground_truth_with_id[self.group_col].tolist()
             topk_pos_list = topk_pos_list + [rank] * len(precs)
-        
+
         # To dataframe
         results_df = pd.DataFrame({
             self.group_col: ids,
@@ -676,19 +671,19 @@ class TopKEvalEngine(EvalEngine):
             return results_df['precision'].tolist()
         else:
             return np.mean(all_precs)
-    
+
     def recall(self, return_per_obs=True):
         """
         Calculate the recall for top-k predictions at each rank level (atomically).
         Each rank is evaluated independently - only predictions at that specific rank position.
-        
+
         Args:
             return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
-            
+
         Returns:
             dict or list: Dictionary mapping rank to recall, or flat list with one value per row in predictions.
         """
-        
+
         # Collect results for all ranks
         all_recs = []
         ids = []
@@ -699,7 +694,7 @@ class TopKEvalEngine(EvalEngine):
             all_recs.extend(recs)
             ids = ids + self.ground_truth_with_id[self.group_col].tolist()
             topk_pos_list = topk_pos_list + [rank] * len(recs)
-        
+
         # To dataframe
         results_df = pd.DataFrame({
             self.group_col: ids,
@@ -721,19 +716,19 @@ class TopKEvalEngine(EvalEngine):
             return results_df['recall'].tolist()
         else:
             return np.mean(all_recs)
-    
+
     def f1(self, return_per_obs=True):
         """
         Calculate the F1 score for top-k predictions at each rank level (atomically).
         Each rank is evaluated independently - only predictions at that specific rank position.
-        
+
         Args:
             return_per_obs (bool): If True, returns a flat list matching the order and length of the input predictions.
-            
+
         Returns:
             dict or list: Dictionary mapping rank to F1, or flat list with one value per row in predictions.
         """
-        
+
         # Collect results for all ranks
         all_f1s = []
         ids = []
@@ -744,7 +739,7 @@ class TopKEvalEngine(EvalEngine):
             all_f1s.extend(f1s)
             ids = ids + self.ground_truth_with_id[self.group_col].tolist()
             topk_pos_list = topk_pos_list + [rank] * len(f1s)
-        
+
         # To dataframe
         results_df = pd.DataFrame({
             self.group_col: ids,
