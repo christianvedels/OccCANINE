@@ -31,7 +31,7 @@ Table for paper (only flat):
 
 \begin{tabular}{llrrr}
 \toprule
-Metric & Lang. info. & threshold & validation & test\\
+Statistic & Lang. info. & threshold & validation & test\\
 \midrule
 Accuracy & No & 0.47 & 0.961 & 0.961\\
 Accuracy & Yes & 0.39 & 0.965 & 0.964\\

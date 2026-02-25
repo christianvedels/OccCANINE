@@ -12,59 +12,59 @@ da & 274180 & 274557 & Accuracy & 0.41 & 0.990 & 0.990\\
 da & 274180 & 274557 & F1 score & 0.29 & 0.991 & 0.991\\
 da & 274180 & 274557 & Precision & 0.52 & 0.991 & 0.991\\
 da & 274180 & 274557 & Recall & 0.01 & 0.997 & 0.997\\
-en & 377142 & NA & Accuracy & 0.41 & 0.940 & NA\\
-en & 377142 & NA & F1 score & 0.26 & 0.945 & NA\\
+en & 377142 & 378783 & Accuracy & 0.41 & 0.940 & 0.940\\
+en & 377142 & 378783 & F1 score & 0.26 & 0.945 & 0.945\\
 \addlinespace
-en & 377142 & NA & Precision & 0.41 & 0.941 & NA\\
-en & 377142 & NA & Recall & 0.01 & 0.983 & NA\\
-es & 433 & NA & Accuracy & 0.30 & 0.963 & NA\\
-es & 433 & NA & F1 score & 0.30 & 0.971 & NA\\
-es & 433 & NA & Precision & 0.75 & 0.977 & NA\\
+en & 377142 & 378783 & Precision & 0.41 & 0.941 & 0.941\\
+en & 377142 & 378783 & Recall & 0.01 & 0.983 & 0.983\\
+es & 433 & 427 & Accuracy & 0.30 & 0.963 & 0.954\\
+es & 433 & 427 & F1 score & 0.30 & 0.971 & 0.964\\
+es & 433 & 427 & Precision & 0.75 & 0.977 & 0.974\\
 \addlinespace
-es & 433 & NA & Recall & 0.01 & 0.995 & NA\\
-fr & 14401 & NA & Accuracy & 0.32 & 0.918 & NA\\
-fr & 14401 & NA & F1 score & 0.21 & 0.932 & NA\\
-fr & 14401 & NA & Precision & 0.80 & 0.948 & NA\\
-fr & 14401 & NA & Recall & 0.01 & 0.990 & NA\\
+es & 433 & 427 & Recall & 0.01 & 0.995 & 0.999\\
+fr & 14401 & 14528 & Accuracy & 0.32 & 0.918 & 0.917\\
+fr & 14401 & 14528 & F1 score & 0.21 & 0.932 & 0.932\\
+fr & 14401 & 14528 & Precision & 0.80 & 0.948 & 0.948\\
+fr & 14401 & 14528 & Recall & 0.01 & 0.990 & 0.990\\
 \addlinespace
-ge & 6681 & NA & Accuracy & 0.33 & 0.886 & NA\\
-ge & 6681 & NA & F1 score & 0.21 & 0.903 & NA\\
-ge & 6681 & NA & Precision & 0.75 & 0.918 & NA\\
-ge & 6681 & NA & Recall & 0.01 & 0.974 & NA\\
-gr & 86 & NA & Accuracy & 0.19 & 0.952 & NA\\
+ge & 6681 & 6720 & Accuracy & 0.33 & 0.886 & 0.881\\
+ge & 6681 & 6720 & F1 score & 0.21 & 0.903 & 0.901\\
+ge & 6681 & 6720 & Precision & 0.75 & 0.918 & 0.912\\
+ge & 6681 & 6720 & Recall & 0.01 & 0.974 & 0.971\\
+gr & 86 & 88 & Accuracy & 0.19 & 0.952 & 0.920\\
 \addlinespace
-gr & 86 & NA & F1 score & 0.19 & 0.965 & NA\\
-gr & 86 & NA & Precision & 0.69 & 0.967 & NA\\
-gr & 86 & NA & Recall & 0.01 & 1.000 & NA\\
-is & 1054 & NA & Accuracy & 0.20 & 0.971 & NA\\
-is & 1054 & NA & F1 score & 0.17 & 0.974 & NA\\
+gr & 86 & 88 & F1 score & 0.19 & 0.965 & 0.940\\
+gr & 86 & 88 & Precision & 0.69 & 0.967 & 0.930\\
+gr & 86 & 88 & Recall & 0.01 & 1.000 & 0.989\\
+is & 1054 & 1042 & Accuracy & 0.20 & 0.971 & 0.964\\
+is & 1054 & 1042 & F1 score & 0.17 & 0.974 & 0.968\\
 \addlinespace
-is & 1054 & NA & Precision & 0.20 & 0.971 & NA\\
-is & 1054 & NA & Recall & 0.01 & 0.989 & NA\\
-it & 223 & NA & Accuracy & 0.32 & 0.998 & NA\\
-it & 223 & NA & F1 score & 0.32 & 0.999 & NA\\
-it & 223 & NA & Precision & 0.32 & 1.000 & NA\\
+is & 1054 & 1042 & Precision & 0.20 & 0.971 & 0.964\\
+is & 1054 & 1042 & Recall & 0.01 & 0.989 & 0.981\\
+it & 223 & 244 & Accuracy & 0.32 & 0.998 & 0.997\\
+it & 223 & 244 & F1 score & 0.32 & 0.999 & 0.997\\
+it & 223 & 244 & Precision & 0.32 & 1.000 & 0.997\\
 \addlinespace
-it & 223 & NA & Recall & 0.01 & 1.000 & NA\\
-nl & 58795 & NA & Accuracy & 0.24 & 0.978 & NA\\
-nl & 58795 & NA & F1 score & 0.22 & 0.980 & NA\\
-nl & 58795 & NA & Precision & 0.34 & 0.979 & NA\\
-nl & 58795 & NA & Recall & 0.01 & 0.993 & NA\\
+it & 223 & 244 & Recall & 0.01 & 1.000 & 1.000\\
+nl & 58795 & 59536 & Accuracy & 0.24 & 0.978 & 0.976\\
+nl & 58795 & 59536 & F1 score & 0.22 & 0.980 & 0.979\\
+nl & 58795 & 59536 & Precision & 0.34 & 0.979 & 0.978\\
+nl & 58795 & 59536 & Recall & 0.01 & 0.993 & 0.992\\
 \addlinespace
-no & 7982 & NA & Accuracy & 0.34 & 0.987 & NA\\
-no & 7982 & NA & F1 score & 0.34 & 0.988 & NA\\
-no & 7982 & NA & Precision & 0.63 & 0.988 & NA\\
-no & 7982 & NA & Recall & 0.01 & 0.996 & NA\\
-pt & 1011 & NA & Accuracy & 0.27 & 0.993 & NA\\
+no & 7982 & 8188 & Accuracy & 0.34 & 0.987 & 0.985\\
+no & 7982 & 8188 & F1 score & 0.34 & 0.988 & 0.986\\
+no & 7982 & 8188 & Precision & 0.63 & 0.988 & 0.986\\
+no & 7982 & 8188 & Recall & 0.01 & 0.996 & 0.996\\
+pt & 1011 & 976 & Accuracy & 0.27 & 0.993 & 0.989\\
 \addlinespace
-pt & 1011 & NA & F1 score & 0.27 & 0.995 & NA\\
-pt & 1011 & NA & Precision & 0.45 & 0.998 & NA\\
-pt & 1011 & NA & Recall & 0.01 & 1.000 & NA\\
-se & 110995 & NA & Accuracy & 0.35 & 0.969 & NA\\
-se & 110995 & NA & F1 score & 0.21 & 0.972 & NA\\
+pt & 1011 & 976 & F1 score & 0.27 & 0.995 & 0.993\\
+pt & 1011 & 976 & Precision & 0.45 & 0.998 & 0.996\\
+pt & 1011 & 976 & Recall & 0.01 & 1.000 & 1.000\\
+se & 110995 & 111877 & Accuracy & 0.35 & 0.969 & 0.969\\
+se & 110995 & 111877 & F1 score & 0.21 & 0.972 & 0.972\\
 \addlinespace
-se & 110995 & NA & Precision & 0.52 & 0.972 & NA\\
-se & 110995 & NA & Recall & 0.01 & 0.986 & NA\\
+se & 110995 & 111877 & Precision & 0.52 & 0.972 & 0.972\\
+se & 110995 & 111877 & Recall & 0.01 & 0.986 & 0.986\\
 unk & 40906 & 41479 & Accuracy & 0.39 & 0.985 & 0.984\\
 unk & 40906 & 41479 & F1 score & 0.38 & 0.986 & 0.986\\
 unk & 40906 & 41479 & Precision & 0.39 & 0.985 & 0.984\\
