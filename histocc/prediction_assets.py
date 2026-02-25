@@ -6,6 +6,7 @@ Loads trained version of the models
 """
 
 
+import json
 import os
 import time
 import warnings
@@ -214,25 +215,42 @@ class OccCANINE:
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
         else:
-            if hf:
-                raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
-
-            # TODO: Move into key loading method
-            # loaded_state = torch.load(name, weights_only=True)
-            try: # TODO: Delete this try except again
-                loaded_state = torch.load(name, weights_only=True)
-            # Load with weight_only=False if error
-            except Exception as e:
-                loaded_state = torch.load(name, weights_only=False)
-                            # tmp load keys from csv TODO: Remove this again
-            if 'key' not in loaded_state.keys():
-                 # Load from dir of 'name' + 'key.csv'
-                key_path = os.path.join(os.path.dirname(name), 'key.csv')
-                key_loaded = pd.read_csv(key_path)
-                # Make dict (code to system_code)
-                key_loaded = key_loaded.set_index('system_code')['code'].to_dict()
+            _hf_mixer_models = ["OccCANINE_OCCICEM", "OccCANINE_ISCO68", "OccCANINE_OCC1950"]
+            if hf and self.name in _hf_mixer_models:
+                # Load key and optional chars from HuggingFace repo
+                from huggingface_hub import hf_hub_download
+                _key_path = hf_hub_download(
+                    repo_id=f"Christianvedel/{self.name}",
+                    filename="key.json",
+                    force_download=force_download,
+                )
+                with open(_key_path) as f:
+                    key_loaded = json.load(f)
+                try:
+                    _chars_path = hf_hub_download(
+                        repo_id=f"Christianvedel/{self.name}",
+                        filename="chars.json",
+                        force_download=force_download,
+                    )
+                    with open(_chars_path) as f:
+                        chars = json.load(f)
+                except Exception:
+                    chars = None
             else:
-                key_loaded = loaded_state['key']
+                # Load key and optional chars from local .bin file
+                try:
+                    loaded_state = torch.load(name, weights_only=True)
+                except Exception:
+                    loaded_state = torch.load(name, weights_only=False)
+                if 'key' not in loaded_state.keys():
+                    # Load from dir of 'name' + 'key.csv'
+                    key_path = os.path.join(os.path.dirname(name), 'key.csv')
+                    key_loaded = pd.read_csv(key_path)
+                    key_loaded = key_loaded.set_index('system_code')['code'].to_dict()
+                else:
+                    key_loaded = loaded_state['key']
+                chars = loaded_state.get('chars')
+
             self.key = {int(v): str(k) for k, v in key_loaded.items()} # Invert key and cast to int / str
             self.key_desc = {k: "Not provided" for k in self.key.keys()}
 
@@ -257,8 +275,8 @@ class OccCANINE:
 
             # Load general purpose formatter
             target_cols = target_cols if target_cols is not None else [f"{self.system}_{i}" for i in range(1, 5)]
-            if "chars" in loaded_state.keys():
-                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, chars=loaded_state['chars'])
+            if chars is not None:
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, chars=chars)
             else:
                 self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, use_within_block_sep=use_within_block_sep)
 
@@ -401,9 +419,12 @@ class OccCANINE:
     def _load_model(self, hf, force_download, baseline):
         # Load model from Hugging Face (only works for the old model))
         if hf:
+            _hf_mixer_models = ["OccCANINE_s2s_mix", "OccCANINE_OCCICEM", "OccCANINE_ISCO68", "OccCANINE_OCC1950"]
+            _hf_supported = ["OccCANINE", "OccCANINE_s2s"] + _hf_mixer_models
+
             # Validate model name
-            if self.name not in ["OccCANINE", "OccCANINE_s2s_mix", "OccCANINE_s2s"]:
-                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
+            if self.name not in _hf_supported:
+                raise ValueError(f"Hugging Face loading is only supported for: {', '.join(_hf_supported)}.")
 
             # Load model based on name
             if self.name == "OccCANINE":
@@ -411,7 +432,7 @@ class OccCANINE:
                 model.to(self.device)
                 model_type = "flat"
 
-            elif self.name == "OccCANINE_s2s_mix":
+            elif self.name in _hf_mixer_models:
                 model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
                 model.to(self.device)
                 model_type = "mix"
@@ -420,7 +441,7 @@ class OccCANINE:
                 model.to(self.device)
                 model_type = "seq2seq"
             else:
-                raise ValueError("Hugging Face loading is only supported for the 'OccCANINE', 'OccCANINE_s2s' and 'OccCANINE_s2s_mix' models.")
+                raise ValueError(f"Hugging Face loading is only supported for: {', '.join(_hf_supported)}.")
 
 
             return model, model_type
