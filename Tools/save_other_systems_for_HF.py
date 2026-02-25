@@ -15,6 +15,7 @@ Example use:
 """
 
 import argparse
+import json
 import os
 import sys
 
@@ -76,6 +77,20 @@ def save_model(fn_in: str, fn_out: str, seq_len: int) -> dict:
     model.load_state_dict(state_dict)
     model.save_pretrained(fn_out, config=config)
 
+    # Save key mapping so prediction_assets.py can load it when hf=True
+    if "key" in loaded:
+        key = loaded["key"]
+        # Convert any non-serialisable types (e.g. numpy int64) to plain Python
+        key = {str(k): int(v) for k, v in key.items()}
+        with open(os.path.join(fn_out, "key.json"), "w") as f:
+            json.dump(key, f)
+
+    # Save character set if present (used by formatter)
+    if "chars" in loaded:
+        chars = loaded["chars"]
+        with open(os.path.join(fn_out, "chars.json"), "w") as f:
+            json.dump(list(chars), f)
+
     return config
 
 
@@ -112,10 +127,12 @@ def main():
         print(f"  Saved OK.")
 
         if args.push_to_hub:
+            from huggingface_hub import HfApi
             hf_repo = f"Christianvedel/{m['hf_name']}"
             print(f"  Pushing to HF: {hf_repo}")
-            model = Seq2SeqMixerOccCANINE_hub.from_pretrained(m["fn_out"])
-            model.push_to_hub(hf_repo)
+            api = HfApi()
+            api.create_repo(repo_id=hf_repo, exist_ok=True)
+            api.upload_folder(folder_path=m["fn_out"], repo_id=hf_repo)
             print(f"  Push OK.")
 
         if args.test:
