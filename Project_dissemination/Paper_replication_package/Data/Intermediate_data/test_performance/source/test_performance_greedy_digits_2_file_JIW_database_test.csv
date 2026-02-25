@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9975358377129302,0.9977471490017241,0.9976892088096357,0.9980164004826078,48901,greedy,JIW_database_test.csv

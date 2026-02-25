@@ -6,35 +6,96 @@ Loads trained version of the models
 """
 
 
+import json
 import os
 import time
+import warnings
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Literal
 
 import torch
 
 from torch import nn
 from torch.optim import AdamW
+from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from unidecode import unidecode
 
 import numpy as np
 import pandas as pd
 
+from .loss import (
+    BlockOrderInvariantLoss,
+    LossMixer,
+)
 from .datasets import DATASETS
-from .model_assets import CANINEOccupationClassifier, CANINEOccupationClassifier_hub, load_tokenizer
-from .dataloader import concat_string_canine, OCCDataset, labels_to_bin, train_test_val, save_tmp, create_data_loader
-from .trainer import trainer_loop_simple, eval_model
-from .attacker import AttackerClass
+from .model_assets import (
+    CANINEOccupationClassifier,
+    CANINEOccupationClassifier_hub,
+    Seq2SeqOccCANINE,
+    Seq2SeqMixerOccCANINE,
+    Seq2SeqMixerOccCANINE_hub,
+    Seq2SeqOccCANINE_hub,
+    load_tokenizer
+    )
+from .dataloader import (
+    OccDatasetV2FromAlreadyLoadedInputs,
+    )
+from .formatter import (
+    hisco_blocky5,
+    BOS_IDX,
+    PAD_IDX,
+    construct_general_purpose_formatter,
+)
+from .utils import (
+    Averager,
+    load_states,
+    prepare_finetuning_data,
+    setup_finetuning_datasets,
+)
+from .utils.decoder import (
+    flat_decode_flat_model,
+    flat_decode_mixer,
+    greedy_decode,
+    mixer_greedy_decode,
+    full_search_decoder_seq2seq_optimized,
+    full_search_decoder_mixer_optimized,
+    mixer_greedy_decode_with_blocking,
+    )
+from .seq2seq_mixer_engine import train
+from itertools import permutations
 
+
+PredType = Literal['flat', 'greedy', 'full', 'embeddings']
+SystemType = Literal['hisco'] | str
+BehaviorType = Literal['good', 'fast']
+ModelType = Literal['flat', 'seq2seq', 'mix']
+ModelName = Literal['OccCANINE', 'OccCANINE_s2s', 'OccCANINE_s2s_mix']
+
+
+# Define a lookup table mapping languages to thresholds.
+THRESHOLD_LOOKUP = {
+    "unk": 0.31,
+    "ca": 0.3,
+    "da": 0.24,
+    "ge": 0.21,
+    "en": 0.26,
+    "es": 0.3,
+    "fr": 0.21,
+    "gr": 0.19,
+    "is": 0.17,
+    "it": 0.2,
+    "nl": 0.22,
+    "no": 0.34,
+    "pt": 0.27,
+    "se": 0.26
+}
 
 def load_keys() -> pd.DataFrame:
-    fn_keys = files('histocc').joinpath('Data/Key.csv')
+    ''' Load dictionary mapping between HISCO codes and {0, 1, ..., k} format
+    '''
+    return DATASETS['keys']()
 
-    with fn_keys.open() as file:
-        keys = pd.read_csv(file, skiprows=[1])
-
-    return keys
 
 # Get_adapted_tokenizer
 def get_adapated_tokenizer(name: str):
@@ -76,635 +137,1622 @@ def top_n_to_df(result, top_n: int) -> pd.DataFrame:
     # Define the column names
     column_names = []
     for i in range(1, top_n+1):
-        column_names.extend([f'hisco_{i}', f'prob_{i}', f'desc_{i}'])
+        column_names.extend([f'{self.system}_{i}', f'prob_{i}', f'desc_{i}'])
 
     # Return as DataFrame
     return pd.DataFrame(rows, columns=column_names)
 
 
 class OccCANINE:
-    def __init__(self, name = "CANINE", device = None, batch_size = 256, verbose = False, baseline = False, hf = True, force_download = False):
+    def __init__(
+            self,
+            name: ModelName | str = "OccCANINE_s2s_mix",
+            device: torch.device | None = None,
+            batch_size: int = 256,
+            verbose: bool = True,
+            baseline: bool = False,
+            hf: bool = True,
+            force_download: bool = False,
+            system: SystemType = "hisco",
+            # args primarily for testing purposes -- want to instantiate without loading
+            model_type: ModelType | None = None,
+            skip_load: bool = False,
+            # Args used for other systems
+            descriptions: pd.DataFrame | None = None,
+            use_within_block_sep: bool = False, # Should be True for systems with ',' between digits
+            target_cols: list[str] | None = None,
+    ):
         """
         Initializes the OccCANINE model with specified configurations.
 
         Parameters:
-        - name (str): Name of the model to load. Defaults to "CANINE". For local models, specify the model name as it appears in 'Model'.
+        - name (str): Name of the model to load. Defaults to "OccCANINE_s2s_mix". For local models, specify the model name as it appears and set 'hf' to False.
         - device (str or None): The computing device (CPU or CUDA) on which the model will run. If None, the device is auto-detected.
         - batch_size (int): The number of examples to process in each batch. This affects memory usage and processing speed.
         - verbose (bool): If True, progress updates and diagnostic information will be printed during model operations.
         - baseline (bool): If True, loads a baseline (untrained) version of CANINE. Useful for comparison studies.
         - hf (bool): If True, attempts to load the model from Hugging Face's model repository. If False, loads a local model specified by the 'name' parameter.
         - force_download (bool): If True, forces a re-download of the model from the Hugging Face's model repository even if it is already cached locally.
+        - system (str): Which encoding system is it? For now this only works for "HISCO"
+        - descriptions (pd.DataFrame): A DataFrame with two columns: 1) codes in some system 'system_code', and 2) their corresponding descriptions, 'desc'. Only used for none-HISCO predictions.
 
         Raises:
         - Exception: If 'hf' is False and a local model 'name' is not provided.
         """
 
+        # Check if model name is provided when not using Hugging Face
+        if name in ModelName.__args__ and not hf and not skip_load:
+            raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
+
+
         # Detect device
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu") if device is None else torch.device(device)
+
         if verbose:
             print(f"Using device: {self.device}")
-
-        if name == "CANINE" and not hf:
-            raise ValueError("When 'hf' is False, a specific local model 'name' must be provided.")
 
         self.name = name
         self.batch_size = batch_size
         self.verbose = verbose
 
         # Get tokenizer
-        self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256")
+        self.tokenizer = get_adapated_tokenizer("CANINE_Multilingual_CANINE_sample_size_10_lr_2e-05_batch_size_256") # Universal tokenizer
 
-        # Get key
-        self.key, self.key_desc = self._load_keys()
+        # System
+        self.system = system
+        self.use_within_block_sep = use_within_block_sep
 
-        self.model = self._load_model(hf, force_download, baseline)
+        if self.system == "hisco": # TODO: Handle other model specs
+            # Formatter
+            self.formatter = hisco_blocky5()
+
+            # Get key
+            self.key, self.key_desc = self._load_keys()
+
+            # Length of codes
+            self.code_len = 5
+
+            # List of codes formatted to fit with the output from seq2seq/mix model
+            self.codes_list = self._list_of_formatted_codes()
+        else:
+            _hf_mixer_models = ["OccCANINE_OCCICEM", "OccCANINE_ISCO68", "OccCANINE_OCC1950"]
+            if hf and self.name in _hf_mixer_models:
+                # Load key and optional chars from HuggingFace repo
+                from huggingface_hub import hf_hub_download
+                _key_path = hf_hub_download(
+                    repo_id=f"Christianvedel/{self.name}",
+                    filename="key.json",
+                    force_download=force_download,
+                )
+                with open(_key_path) as f:
+                    key_loaded = json.load(f)
+                try:
+                    _chars_path = hf_hub_download(
+                        repo_id=f"Christianvedel/{self.name}",
+                        filename="chars.json",
+                        force_download=force_download,
+                    )
+                    with open(_chars_path) as f:
+                        chars = json.load(f)
+                except Exception:
+                    chars = None
+            else:
+                # Load key and optional chars from local .bin file
+                try:
+                    loaded_state = torch.load(name, weights_only=True)
+                except Exception:
+                    loaded_state = torch.load(name, weights_only=False)
+                if 'key' not in loaded_state.keys():
+                    # Load from dir of 'name' + 'key.csv'
+                    key_path = os.path.join(os.path.dirname(name), 'key.csv')
+                    key_loaded = pd.read_csv(key_path)
+                    key_loaded = key_loaded.set_index('system_code')['code'].to_dict()
+                else:
+                    key_loaded = loaded_state['key']
+                chars = loaded_state.get('chars')
+
+            self.key = {int(v): str(k) for k, v in key_loaded.items()} # Invert key and cast to int / str
+            self.key_desc = {k: "Not provided" for k in self.key.keys()}
+
+            if descriptions is not None:
+                # Test of correct colummns are in descriptions
+                if not all([i in descriptions.columns for i in ['system_code', 'desc']]):
+                    raise ValueError("The descriptions must contain the columns 'system_code' and 'desc'")
+
+                # Desc dict
+                desc_dict = descriptions.set_index('system_code')['desc'].to_dict()
+                desc_dict = {str(k): str(v) for k, v in desc_dict.items()}
+
+                # Join on descriptions
+                self.key_desc = {k: desc_dict.get(self.key.get(k), "Not provided") for k in self.key.keys()} # Produce key_desc
+
+            # Code len as max of keys
+            key_val_tmp = list(self.key.values())
+            if self.use_within_block_sep:
+                self.code_len = max([len(i.split(",")) for i in key_val_tmp])
+            else:
+                self.code_len = max([len(i) for i in self.key.values()])
+
+            # Load general purpose formatter
+            target_cols = target_cols if target_cols is not None else [f"{self.system}_{i}" for i in range(1, 5)]
+            if chars is not None:
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, chars=chars)
+            else:
+                self.formatter = construct_general_purpose_formatter(block_size=self.code_len, target_cols=target_cols, use_within_block_sep=use_within_block_sep)
+
+            # Check if use_within_block_sep is set
+            if not use_within_block_sep:
+                if any(["," in i for i in self.key.values()]):
+                    raise ValueError("The key contains ',' in some of the codes. Please set 'use_within_block_sep' to True")
+
+            # List of codes formatted to fit with the output from seq2seq/mix model
+            self.codes_list = self._list_of_formatted_codes()
+
+        # Sanitize keys (system codes should be of self.code_len + int as keys)
+        if use_within_block_sep:
+            self.key = {int(k): str(v) for k, v in self.key.items()}
+        else:
+            self.key = {int(k): str(v).zfill(self.code_len) for k, v in self.key.items()}
+
+        self.key_desc = {int(k): str(v) for k, v in self.key_desc.items()}
+
+        # Model and model type
+        if skip_load:
+            if model_type is None:
+                raise ValueError('Must specify `model_type` if not loading weights')
+
+            self.model_type = model_type
+            self.model = self._initialize_model(model_type=model_type)
+        else:
+            if model_type is not None:
+                warnings.warn('specified model_type, but discarding argument as model leading specified; model_type will be inferred')
+
+            self.model, self.model_type = self._load_model(hf, force_download, baseline)
+
+        # Prediction type
+        self.prediction_type = None # Will be changed in any prediction
 
         # Promise for later initialization
         self.finetune_key = None
 
-    def _load_keys(self) -> Tuple[Dict[float, str], Dict[float, str]]:
-        # Load and return both the key and key with descriptions
-        key_df = DATASETS['keys']()
+        # Max seq len: Maybe don't make this an arg? Changig it to something longer would require retraining?
+        self.max_seq_len = 128
 
-        key = dict(zip(key_df.code, key_df.hisco))
-        key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
+    def __repr__(self):
+        return (
+            f"OccCANINE("
+            f"name='{self.name}', "
+            f"device='{self.device}', "
+            f"batch_size={self.batch_size}, "
+            f"verbose={self.verbose}, "
+            f"system='{self.system}', "
+            f"model_type='{self.model_type}', "
+            f"formatter='{self.formatter}')"
+        )
+
+    def __call__(self, occ1: str | list[str], *args, **kwargs):
+        return self.predict(occ1, *args, **kwargs)
+
+    def _load_keys(self, path: str | None = None) -> Tuple[Dict[float, str], Dict[float, str]]:
+
+        if path is not None:
+            key_df = pd.read_csv(path)
+
+            # Test if the df contains the right columns
+            if not all([i in key_df.columns for i in ['code', 'system_code', 'desc']]):
+                raise ValueError("The key file does not contain the right columns. It must contain 'code', 'system_code' and 'desc'")
+
+            # Produce the key and key_desc
+            key = dict(zip(key_df.code, key_df.system_code))
+            key_desc = dict(zip(key_df.code, key_df.desc))
+
+        else:
+            # Load and return both the key and key with descriptions
+            key_df = DATASETS['keys']()
+
+            key = dict(zip(key_df.code, key_df.hisco))
+            key_desc = dict(zip(key_df.code, key_df.en_hisco_text))
+
+        key = {str(k): str(v) for k, v in key.items()} # Invert key and cast to int / str
+        key_desc = {str(k): str(v) for k, v in key_desc.items()} # Invert key and cast to int / str
 
         return key, key_desc
 
+    def _list_of_formatted_codes(self, codes_list: list[str] | None = None):
+        """
+        Returns a list of formatted codes. According to the seq2seq formatter
+        """
+        # Get codes
+        if codes_list is None:
+            codes = self.key.values()
+            codes_list = list(codes)
+
+        # Formatted list of codes
+        codes_list = [str(i) for i in codes_list]
+        if not self.use_within_block_sep: # This cleaning step inserts erroneous 0 in the codes if use_within_block_sep is True
+            codes_list = [i.zfill(self.code_len) if len(i) == (self.code_len-1) else i for i in codes_list]
+        codes_list = [i for i in codes_list if i != " "]
+        codes_list = [self.formatter.transform_label(i)[1:(1+self.code_len)] for i in codes_list]
+
+        return codes_list
+
+    def _initialize_model(
+            self,
+            model_type: ModelType,
+            state_dict = None,
+            baseline = False
+            ) -> nn.Module:
+        if model_type == 'flat':
+            model = CANINEOccupationClassifier(
+                model_domain="Multilingual_CANINE",
+                n_classes = len(self.key), dropout_rate=0
+                )
+
+        elif model_type == 'seq2seq':
+            model = Seq2SeqOccCANINE(
+                model_domain='Multilingual_CANINE',
+                num_classes=self.formatter.num_classes,
+            )
+
+        elif model_type == 'mix':
+            model = Seq2SeqMixerOccCANINE(
+                model_domain='Multilingual_CANINE',
+                num_classes=self.formatter.num_classes,
+                num_classes_flat = len(self.key),
+            )
+        else:
+            raise ValueError(f"Undefined 'model_type' {model_type} requested")
+
+        # Load params to model if not baseline:
+        if baseline: # Strange but ensures backwards compatibility
+            state_dict = None
+        if state_dict is not None:
+            if model_type == 'flat':
+                model.load_state_dict(state_dict)
+            else:
+                model.load_state_dict(state_dict['model'])
+
+        model.to(self.device)
+
+        return model
+
     def _load_model(self, hf, force_download, baseline):
+        # Load model from Hugging Face (only works for the old model))
         if hf:
-            return CANINEOccupationClassifier_hub.from_pretrained("christianvedel/OccCANINE", force_download=force_download).to(self.device)
-        else:
-            model_path = f'{self.name}.bin'
-            loaded_state = torch.load(model_path, map_location=self.device)
-            model = CANINEOccupationClassifier(model_domain="Multilingual_CANINE", n_classes=len(self.key), dropout_rate=0)
-            if not baseline:
-                model.load_state_dict(loaded_state)
-            return model.to(self.device)
+            _hf_mixer_models = ["OccCANINE_s2s_mix", "OccCANINE_OCCICEM", "OccCANINE_ISCO68", "OccCANINE_OCC1950"]
+            _hf_supported = ["OccCANINE", "OccCANINE_s2s"] + _hf_mixer_models
 
-    def _encode(self, occ1, lang, concat_in):
+            # Validate model name
+            if self.name not in _hf_supported:
+                raise ValueError(f"Hugging Face loading is only supported for: {', '.join(_hf_supported)}.")
+
+            # Load model based on name
+            if self.name == "OccCANINE":
+                model = CANINEOccupationClassifier_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "flat"
+
+            elif self.name in _hf_mixer_models:
+                model = Seq2SeqMixerOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "mix"
+            elif self.name == "OccCANINE_s2s":
+                model = Seq2SeqOccCANINE_hub.from_pretrained(f"Christianvedel/{self.name}", force_download=force_download).to(self.device)
+                model.to(self.device)
+                model_type = "seq2seq"
+            else:
+                raise ValueError(f"Hugging Face loading is only supported for: {', '.join(_hf_supported)}.")
+
+
+            return model, model_type
+
+        # Load state
+        model_path = f'{self.name}'
+        try: # TODO: Delete this try except again
+            loaded_state = torch.load(model_path, weights_only = True, map_location=self.device)
+        except Exception as e:
+            loaded_state = torch.load(model_path, weights_only = False, map_location=self.device)
+
+        # Determine model type
+        model_type = self._derive_model_type(loaded_state)
+
+        # Load depending on model type
+        model = self._initialize_model(model_type=model_type, state_dict=loaded_state, baseline=baseline)
+
+        return model, model_type
+
+    def _derive_model_type(self, loaded_state):
         """
-        Encodes occupational strings into a format suitable for model input.
-
-        Parameters:
-        - occ1 (list of str): A list of occupational strings to encode.
-        - lang (str or list of str): The language(s) of the occupational strings. Can be a single language string or a list of language strings.
-        - concat_in (bool): If True, assumes that the input strings are already concatenated in the required format (e.g., occupation[SEP]language). If False, performs concatenation.
-
-        Returns:
-        - list of str: The encoded inputs ready for model processing.
+        Derives the model type 'flat', 'seq2seq' or 'mix' based on model arch
         """
 
-        if not concat_in: # Because then it is assumed that strings are already clean
-            occ1 = [occ.lower() for occ in occ1]
-            occ1 = [unidecode(occ) for occ in occ1]
+        error_message = "Model type could not be automatically identified"
 
-        # Handle singular lang
-        if isinstance(lang, str):
-            lang = [lang]
-            lang = [lang[0] for i in occ1]
+        # Determine model type
+        if len(loaded_state) > 100: # If very long it is probably the old
+            # OLD CASE:
+            loaded_state_keys = loaded_state.keys()
+            if 'basemodel.pooler.dense.bias' in loaded_state_keys:
+                model_type = 'flat'
+            else:
+                raise NotImplementedError(error_message)
+        elif len(loaded_state) < 10:
+            # NEW CASE
+            model_dict_keys = loaded_state['model'].keys()
 
-        # Define input
-        if concat_in:
-            inputs = occ1
+            if 'linear_decoder.bias' in model_dict_keys:
+                model_type = 'mix'
+            elif 'decoder.head.weight' in model_dict_keys:
+                model_type = 'seq2seq'
+            else:
+                raise NotImplementedError(error_message)
         else:
-            inputs = [concat_string_canine(occ, l) for occ, l in zip(occ1, lang)]
+            raise NotImplementedError(error_message)
 
-        return inputs
 
-    def predict(self, occ1, lang = "unk", what = "pred", threshold = 0.22, concat_in = False, get_dict = False, get_df = True):
+        return model_type
+
+    def predict(
+            self,
+            occ1: str | list[str],
+            lang: str = "unk",
+            what: str = "pred",
+            threshold: float | None = None,
+            behavior: BehaviorType = "good",
+            prediction_type: PredType | None = None,
+            k_pred: int = 5,
+            deduplicate: bool = False,
+            order_invariant_conf: bool = True,
+    ):
         """
         Makes predictions on a batch of occupational strings.
 
         Parameters:
-        - occ1 (list of str): A list of occupational strings to predict.
-        - lang (str, optional): The language of the occupational strings. Defaults to "unk" (unknown).
-        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
-        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.22. Which is generally optimal for F1.
-        - concat_in (bool, optional): Specifies if the input is already concatenated in the format [occupation][SEP][language]. Defaults to False.
-        - get_dict (bool, optional): If True and 'what' is an integer, returns a list of dictionaries with predictions instead of a DataFrame. Defaults to False.
-        - get_df (bool, optional): If True and 'what' equals "pred", returns predictions in a DataFrame format. Defaults to True.
+        - occ1 (list or str): A list of occupational strings to predict.
+        - lang (str or list, optional): The language(s) of the occupational strings. Defaults to "unk" (unknown).
+        - what (str or int, optional): Specifies what to return. Options are "logits", "probs", "pred", "bin", "embeddings". Defaults to "pred".
+        - threshold (float, optional): The prediction threshold for binary classification tasks. Defaults to 0.31. Which is generally optimal for F1.
+        - concat_in (bool, optional): Ignored
+        - get_dict (bool, optional): Ignored
+        - get_df (bool, optional): Ignored
+        - behavior (str): Simple argument to set prediction arguments. Should prediction be "good" or "fast"? Defaults to "good".  See details.
+        - prediction_type (str): Either 'flat', 'greedy', 'full', 'embeddings' or 'greedy-top-k'. Overwrites 'behavior'. See details.
+        - k_pred (int): Maximum number of predicted occupational codes to keep or alternatively the 'k' in 'greedy-top-k' predictions.
+        - deduplicate (bool): If True, deduplicate (occ1, lang) pairs before prediction, but return results for all original inputs.
+        - order_invariant_conf (bool): If True an order invariant confidence is computed. This takes a bit longer but - especially for cases with many observations with multiple occupations.
+
+        **Details.**
+        *behavior*
+        When 'fast' is chosen, the prediction will be based on a simple 'flat' decoder with one output neuron per possible class.
+        When 'good' is chosen, the prediction will be based on a seq2seq transformer decoder.
+        The 'good' option is in the order of 5-10 times slower than the 'fast' option but performance is worse.
+        See the paper for more details https://arxiv.org/abs/2402.13604
+
+        *prediction_type*
+        The output from the CANINE transformer model needs to be turned into predictions. This option allows you to pick how you want this to happen.
+        'flat' is the simplest. This takes the pooled output and feeds it into a single layer of output neurons with one output for each HISCO code.
+        'greedy' runs the seq2seq transformer decoder in a greedy fashion. I.e. picking the most likely digit at each step.
+        'full' evaluates all possible digit combinations through the seq2seq decoder and returns a probability of each of all the possible HISCO codes.
+        Some 'prediction_type' options are not available for certain model types. This method will throw an error in those cases.
+
+        More about the 'full' prediction type in self._predict_full
 
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
+        # Validate prediction arguments' compatability
+        prediction_type = self._validate_and_update_prediction_parameters(behavior, prediction_type)
+
+        # Handle list vs str
+        if isinstance(occ1, str):
+            occ1 = [occ1]
+
+        # Handle lang as list or str
+        if isinstance(lang, str):
+            lang_list = [lang] * len(occ1)
+        else:
+            lang_list = list(lang)
+            if len(lang_list) != len(occ1):
+                raise ValueError("If lang is a list, it must have the same length as occ1.")
+
+        # Clean string
+        occ1_clean = self._prep_str(occ1)
+
+        if deduplicate:
+            df_in = pd.DataFrame({
+                "occ1": occ1_clean,
+                "lang": lang_list
+            })
+            # Dop duplicates
+            df_unique = df_in.drop_duplicates().reset_index(drop=True)
+            unique_occ1 = df_unique["occ1"].tolist()
+            unique_lang =  df_unique["lang"].tolist()
+            if self.verbose:
+                print(f"Deduplicated {len(occ1)} inputs to {df_unique.shape[0]} unique pairs.")
+        else:
+            df_unique = None
+            unique_occ1 = occ1_clean
+            unique_lang = lang_list
+
+        # Only override the threshold if the user did not specify one.
+        if prediction_type in ['flat', 'full']:
+            if what == 'probs':
+                pass
+            elif threshold is None:
+                # Take unique of lang. If multiple lang throw not implemented error
+                unique_lang_set = set(unique_lang)
+                if len(unique_lang_set) > 1:
+                    raise NotImplementedError("Language based thresholds for multiple languages. Instead you can run this separately for each language. Or use `prediction_type='flat'` which does not use thresholds.")
+                threshold = THRESHOLD_LOOKUP.get(list(unique_lang_set)[0], 0.31)
+
+        # Logits not available for seq2seq or mix models or full
+        if what == "logits" and prediction_type in ['seq2seq', 'mix', 'full']:
+            raise ValueError("Logits are not available for seq2seq or mix models or full prediction type. Use 'probs' or 'pred' instead.")
+
+        # Data loader
+        dataset = OccDatasetV2FromAlreadyLoadedInputs(
+            inputs = unique_occ1,
+            lang = unique_lang,
+            fname_index=1, # Dummy argument
+            formatter = self.formatter,
+            tokenizer = self.tokenizer,
+            max_input_len=128,
+            training=False,
+        )
+
+        data_loader = DataLoader(
+            dataset,
+            batch_size=self.batch_size,
+            shuffle=False
+            )
+
+        # Handle embeddings as output - this should also modify the prediction_type
+        if what == "embeddings":
+            # Set prediction type to 'flat' for embeddings
+            prediction_type = 'embeddings'
+
+        # Timing
+        start = time.time()
+
+        # Run prediction type
+        if prediction_type == 'flat':
+            out, out_type, inputs = self._predict_flat(data_loader, what)
+        elif prediction_type == 'greedy':
+            out, out_type, inputs = self._predict_greedy(data_loader, order_invariant_conf=order_invariant_conf)
+        elif prediction_type == 'greedy-topk':
+            out, out_type, inputs = self.predict_greedy_topk(data_loader, topk=k_pred, order_invariant_conf=order_invariant_conf)
+        elif prediction_type == 'full':
+            out, out_type, inputs = self._predict_full(data_loader)
+        elif prediction_type == 'embeddings':
+            out, out_type, inputs = self._predict_embeddings(data_loader)
+        else:
+            raise ValueError(f'Unsupported prediction type {prediction_type}, must be one of {PredType}')
+
+        # Return format
+        result = self._format(out, out_type, what, inputs, unique_lang[0] if unique_lang else "unk", threshold, k_pred, order_invariant_conf)
+
+        # If deduplicate, expand results to match original input order
+        if deduplicate:
+            # If result is a DataFrame, expand rows
+            if isinstance(result, pd.DataFrame):
+                # For greedy-topk, each unique input produces topk rows
+                if prediction_type == 'greedy-topk':
+                    # Split the prediction table
+                    df_pred = result.copy()
+
+                    # Extract lang and occ1 from the input column
+                    df_pred[["lang_tmp", "occ1_tmp"]] = (
+                        df_pred["occ1"]
+                        .str.split(r"\[SEP\]", n=1, expand=True)
+                    )
+
+                    # Merge back onto the original (non-deduplicated) input
+                    # Each original row should get all topk predictions for its (occ1, lang) pair
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1", "lang"],
+                            right_on=["occ1_tmp", "lang_tmp"],
+                            how="left",
+                            suffixes=("_original", None)
+                        )
+                        .drop(columns=["occ1_tmp", "lang_tmp"])
+                    )
+
+                    # Validate dimensions
+                    expected_rows = len(occ1) * k_pred
+                    if result.shape[0] != expected_rows:
+                        raise ValueError(
+                            f"Deduplication expansion failed for greedy-topk: "
+                            f"expected {expected_rows} rows but got {result.shape[0]}"
+                        )
+                else:
+                    # Merge the tiny prediction‐table back onto the big one
+                    df_pred = result.copy()
+
+                    # Splitting lang and occ1 in occ1
+                    df_pred["lang_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[0])
+                    df_pred["occ1_tmp"] = df_pred["occ1"].apply(lambda x: x.split("[SEP]")[1])
+
+                    # now bring the preds back into the original order
+                    result = (
+                        df_in
+                        .merge(
+                            df_pred,
+                            left_on=["occ1","lang"],
+                            right_on=["occ1_tmp","lang_tmp"],
+                            how="left",
+                            suffixes=("_tmp", None)
+                        )
+                    )
+
+                    # Drop the temporary columns
+                    result = result.drop(columns=["occ1_tmp", "lang_tmp"])
+
+            elif isinstance(result, np.ndarray):
+                # Wrap the array in a DataFrame so we can split the SEP column
+                df_tmp = pd.DataFrame(result)
+                n_preds = df_tmp.shape[1]
+
+                # Split your "lang[SEP]occ1" strings into two helper cols
+                df_tmp[["lang_tmp", "occ1_tmp"]] = (
+                    pd.Series(inputs)
+                    .str
+                    .split(r"\[SEP\]", n=1, expand=True)
+                )
+
+                # Merge back onto the full input DataFrame
+                df_merged = df_in.merge(
+                    df_tmp,
+                    left_on=["occ1", "lang"],
+                    right_on=["occ1_tmp", "lang_tmp"],
+                    how="left",
+                )
+
+                # Extract relevant columns
+                result = df_merged.iloc[:, 2:n_preds+2].values
+
+            else:
+                raise ValueError("Unsupported result type for deduplication. Only DataFrame and numpy array are supported.")
+
+            # Validation for non-topk cases
+            if prediction_type != 'greedy-topk':
+                if result.shape[0] != len(occ1):
+                    raise ValueError(
+                        f"Deduplication expansion failed: "
+                        f"expected {len(occ1)} rows but got {result.shape[0]}"
+                    )
+
+        # Time keeping
+        end = time.time()
+
+        if self.verbose:
+            self._end_message(start, end, occ1)
+
+        # Return
+        return result
+
+    def _predict_flat(self, data_loader, what = "pred"):
+        """
+        Makes predictions on a batch of occupational strings.
+
+        Parameters:
+        - data_loader (DataLoader)
+
+        Returns:
+        - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
+        """
+        model = self.model.eval()
 
         # Handle list vs str
         if isinstance(occ1, str):
             occ1 = [occ1]
 
         # Setup
-        inputs = self._encode(occ1, lang, concat_in)
-        batch_size = self.batch_size
         verbose = self.verbose
         results = []
-        total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
+        inputs = []
+        total_batches = len(data_loader)
 
-        # Timing
-        start = time.time()
+        batch_time = Averager()
+        batch_time_data = Averager()
 
-        # Fix get dict conditionally
-        if get_dict:
-            get_df = False
-
-        if get_df and what=="pred":
-            what0 = what
-            what = 5 # This is the easiest way of handling this
-
-        for batch_num, i in enumerate(range(0, len(inputs), batch_size), 1):
-
-            batch_inputs = inputs[i:i + batch_size]
-
-            # Tokenize the batch of inputs
-            batch_tokenized = self.tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
-
-            batch_input_ids = batch_tokenized['input_ids'].to(self.device)
-            batch_attention_mask = batch_tokenized['attention_mask'].to(self.device)
-
-            with torch.no_grad():
-                output = self.model(batch_input_ids, batch_attention_mask)
-
-            # === Housekeeping ====
-            if batch_num % 1 == 0 and verbose:
-                print(f"\rProcessed batch {batch_num} out of {total_batches} batches", end = "")
-
-            # === Return what to return ====
-            # breakpoint()
-            batch_logits = output
-            if what == "logits":
-                results.append(batch_logits)
-            elif what == "probs":
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                results.append(batch_predicted_probs)
-            elif what == "pred":
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    labels = [[self.key[i], prob, self.key_desc[i]] for i, prob in enumerate(probs) if prob > threshold]
-                    results.append(labels)
-            elif isinstance(what, (int, float)):
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    # Get the indices of the top 5 predictions
-                    top5_indices = np.argsort(probs)[-what:][::-1]
-
-                    # Create a list of tuples containing label and probability for the top 5 predictions
-                    labels = [(self.key[i], probs[i], self.key_desc[i]) for i in top5_indices]
-                    results.append(labels)
-            elif what == "bin":
-                # Return binary matrix with cols equal to codes
-                batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
-                for probs in batch_predicted_probs:
-                    bin_out = [1 if prob > threshold else 0 for prob in probs]
-                    results.append(bin_out)
-            elif what == "tokens":
-                results.append(batch_input_ids)
-            else:
-                raise ValueError("'what' incorrectly specified")
-
-        # Clean results
-        if what == "bin":
-            results = np.array(results)
-
-        if what == "probs":
-            results = np.concatenate(results, axis=0)
-
-        if isinstance(what, (int, float)):
-            if not get_dict:
-                results = top_n_to_df(results, what)
-            
-        if isinstance(what, (int, float)) and what0 == "pred":
-            print("\nPrediction done. Cleaning results.")
-        
-            # Vectorized operation to mask predictions below the threshold
-            for j in range(1, what + 1):
-                prob_column = f"prob_{j}"
-                mask = results[prob_column] <= threshold
-                results.loc[mask, [f"hisco_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
-        
-            # First, ensure "hisco_1" is of type string to avoid mixing data types
-            results["hisco_1"] = results["hisco_1"].astype(str)
-            results["hisco_1"].fillna("-1", inplace=True)
-            
-            results.insert(0, 'inputs', inputs)
-
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
         end = time.time()
 
-        if verbose:
-            dif_time = end - start
-            m, s = divmod(dif_time, 60)
-            h, m = divmod(m, 60)
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = flat_decode_mixer
+        elif self.model_type == "flat":
+            decoder = flat_decode_flat_model
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the flat prediciton")
 
-            try:
-                # Assuming occ1 is a DataFrame
-                nobs = occ1.shape[0]
-            except AttributeError:
-                # Fallback if occ1 does not have a .shape attribute, use len() instead
-                nobs = len(occ1)
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
 
-            print(f"Produced HISCO codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
-
-            saved_time = nobs*10 - dif_time
-            m, s = divmod(saved_time, 60)
-            h, m = divmod(m, 60)
-
-            print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
-            print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
-
-        return results
-
-    def forward_base(self, occ1, lang = "unk", concat_in = False):
-        """
-        This method prints returns the forward pass of the underlying transformer model
-
-        occ1:           List of occupational strings
-        lang:           Language (defaults to unknown)
-        concat_in:      Is the input already concated? E.g. [occ1][SEP][lang]
-        """
-        inputs = self._encode(occ1, lang, concat_in)
-        batch_size = self.batch_size
-        verbose = self.verbose
-        results = []
-        total_batches = (len(inputs) + batch_size - 1) // batch_size  # Calculate the total number of batches
-
-        for batch_num, i in enumerate(range(0, len(inputs), batch_size), 1):
-
-            batch_inputs = inputs[i:i + batch_size]
-
-            # Tokenize the batch of inputs
-            batch_tokenized = self.tokenizer(batch_inputs, padding=True, truncation=True, return_tensors='pt')
-
-            batch_input_ids = batch_tokenized['input_ids'].to(self.device)
-            batch_attention_mask = batch_tokenized['attention_mask'].to(self.device)
+            batch_time_data.update(time.time() - end)
 
             with torch.no_grad():
-                res_i = self.model.basemodel(batch_input_ids, batch_attention_mask)
+                output = decoder(
+                    model = model,
+                    descr = input_ids,
+                    input_attention_mask = attention_mask
+                    )
 
-            results.append(res_i["pooler_output"])
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
 
-            # === Housekeeping ====
-            if batch_num % 1 == 0 and verbose:
-                print(f"\rProcessed batch {batch_num} out of {total_batches} batches", end = "")
+            batch_time.update(time.time() - end)
 
-        results = torch.cat(results, axis=0).cpu().detach().numpy()
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
 
-        print("\n")
-        return results
+            end = time.time()
 
-    def _process_data(self, data_df, label_cols, batch_size, model_domain = "Multilingual_CANINE", alt_prob = 0.2, insert_words = True, testval_fraction = 0.1, new_labels = True, verbose = False):
-        """
-        Processes the input data for training or validation.
+            batch_logits = output
+            if what == "logits":
+                results.append(batch_logits.cpu().numpy())
+                continue
 
-        This internal method prepares the data for the model by converting labels to numeric codes, merging with a key DataFrame, handling missing values, tokenizing the text, and creating data loaders for training and validation.
+            batch_predicted_probs = torch.sigmoid(batch_logits).cpu().numpy()
+            results.append(batch_predicted_probs)
 
-        Parameters
-        ----------
-        data_df : pd.DataFrame
-            The input data containing text and labels.
-        label_cols : list of str
-            The column names in data_df that contain the labels.
-        batch_size : int
-            The size of the batch to be used in data loaders.
-        model_domain : str, optional
-            The domain of the model to be used. Defaults to "Multilingual_CANINE".
-        alt_prob : float, optional
-            The probability of using alternative tokens (data augmentation). Defaults to 0.2.
-        insert_words : bool, optional
-            Whether to insert words as a part of data augmentation. Defaults to True.
-        testval_fraction : float, optional
-            The fraction of data to be used for validation. Defaults to 0.1.
-        new_labels : bool, optional
-            If True, the method generates a new key based on the unique labels in the input data and updates data processing accordingly. Defaults to False.
-        verbose : bool, optional
-            Whether to print out the training progress. Defaults to True.
+        results = np.concatenate(results)
 
-        Returns
-        -------
-        dict
-            A dictionary containing training and validation data loaders, and the tokenizer.
-        """
-        if new_labels:
-            # Generate a new key based on the unique labels in the label columns
-            unique_labels = pd.unique(data_df[label_cols].values.ravel('K'))
-            key = {label: idx for idx, label in enumerate(unique_labels)}
-            self.key = key
+        out_type = 'probs'
 
-            # Convert the new key dictionary to a DataFrame for joining
-            key_df = pd.DataFrame(list(self.key.items()), columns=['Hisco', 'Code']) # Yes it is not HISCO, but if we just call it that everything runs
+        if what == "logits":
+            out_type = 'logits' # Overwrite out_type if logits are requested
 
-            if verbose:
-                print(f"Produced new key for {len(unique_labels)} possible labels")
+        return results, out_type, inputs
+
+    @torch.no_grad
+    def predict_greedy_topk(self, data_loader, topk: int = 3, order_invariant_conf: bool = False):
+        self.model.eval()
+
+        # Setup
+        verbose = self.verbose
+        inputs = []
+        preds_s2s_raw = []
+        probs_s2s_raw = []
+        top_k_position = []
+        if order_invariant_conf:
+            order_inv_probs = []
         else:
-            # breakpoint()
-            key = self.key
+            order_inv_probs = 1  # Placeholder
+        total_batches = len(data_loader)
 
-            # # Remove na items
-            # items = list(key.items())
-            # items.pop(0)
-            # key = dict(items)
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
 
-            # Convert the key dictionary to a DataFrame for joining
-            key_df = pd.DataFrame(list(key.items()), columns=['Code', 'Hisco'])
-            # Convert 'Hisco' in key_df to numeric (float), as it's going to be merged with numeric columns
-            key_df['Hisco'] = pd.to_numeric(key_df['Hisco'], errors='coerce')
-            # Ensure the label columns are numeric and have the same type as the key
-            for col in label_cols:
-                data_df[col] = pd.to_numeric(data_df[col], errors='coerce')
+            # Initially do not block any entries
+            blocked_entries = None
 
-            self.finetune_key = key
+            for k in range(topk):
+                outputs = mixer_greedy_decode_with_blocking(
+                    model=self.model,
+                    descr=input_ids,
+                    input_attention_mask=attention_mask,
+                    device=self.device,
+                    max_len=data_loader.dataset.formatter.max_seq_len,
+                    start_symbol=BOS_IDX,
+                    blocked_entries=blocked_entries,
+                )
 
-        # Define expected code column names
-        expected_code_cols = [f'code{i}' for i in range(1, 6)]
+                outputs_s2s = outputs[0].cpu().numpy()
+                probs_s2s = outputs[1].cpu().numpy()
+                blocked_entries = outputs[2]
 
-        # Drop code1 to code5 from data_df if they exist
-        data_df = data_df.drop(columns=expected_code_cols, errors='ignore')
+                # Compute order invariant confidence
+                if order_invariant_conf:
+                    order_inv_probs_batch = self._compute_order_invariant_confidence(
+                        outputs_s2s=outputs_s2s,
+                        input_ids=input_ids,
+                        attention_mask=attention_mask,
+                        data_loader=data_loader
+                    )
 
-        # Initialize an empty DataFrame to store the label codes
-        label_codes = pd.DataFrame(index=data_df.index)
+                # Store input in its original string format
+                inputs.extend(batch['occ1'])
 
-        # Iterate over each label column and perform left join with the key
-        for i, col in enumerate(label_cols, start=1):
-            # Perform the left join
-            merged_df = pd.merge(data_df[[col]], key_df, left_on=col, right_on='Hisco', how='left')
+                # Store top-k position
+                top_k_position.extend([k] * len(batch['occ1']))
 
-            # Assign the 'Code' column from the merged DataFrame to label_codes
-            label_codes[f'code{i}'] = merged_df['Code']
+                # Store predictions
+                preds_s2s_raw.append(outputs_s2s)
+                probs_s2s_raw.append(probs_s2s)
+                if order_invariant_conf:
+                    order_inv_probs.append(order_inv_probs_batch)
 
-        # Ensure label_codes has columns code1 to code5, filling missing ones with NaN
-        label_codes = label_codes.reindex(columns=expected_code_cols, fill_value=np.nan)
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
 
-        # Handle missing values by ensuring they are NaN
-        label_codes = label_codes.apply(pd.to_numeric, errors='coerce')
+        preds_s2s_raw = np.concatenate(preds_s2s_raw)
+        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        if order_invariant_conf:
+            order_inv_probs = np.concatenate(order_inv_probs)
 
-        # Concatenate label_codes with data_df
-        data_df = pd.concat([data_df, label_codes], axis=1)
+        preds_s2s = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            preds_s2s_raw,
+        ))
+
+        if order_invariant_conf:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+                'order_inv_conf': order_inv_probs,
+            })
+        else:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                'top-k-pos': top_k_position,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+            })
+
+        out_type = 'greedy'
+
+        return preds, out_type, inputs
+
+    @torch.no_grad()
+    def _predict_greedy(self, data_loader, order_invariant_conf):
+        model = self.model.eval()
+
+        inputs = []
+
+        preds_s2s_raw = []
+        probs_s2s_raw = []
+        if order_invariant_conf:
+            order_inv_probs = []
+        else:
+            order_inv_probs = 1 # Placeholder
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = mixer_greedy_decode
+        elif self.model_type == "seq2seq":
+            decoder = greedy_decode
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediction")
+
+        # Setup
+        verbose = self.verbose
+        total_batches = len(data_loader)
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+
+            batch_time_data.update(time.time() - end)
+
+            outputs = decoder(
+                model = model,
+                descr = input_ids,
+                input_attention_mask = attention_mask,
+                device = self.device,
+                max_len = data_loader.dataset.formatter.max_seq_len,
+                start_symbol = BOS_IDX,
+                )
+
+            outputs_s2s = outputs[0].cpu().numpy()
+            probs_s2s = outputs[1].cpu().numpy()
+
+            # Compute order invariant confidence
+            if order_invariant_conf:
+                order_inv_probs_batch = self._compute_order_invariant_confidence(
+                    outputs_s2s=outputs_s2s,
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    data_loader=data_loader
+                )
+
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+
+            # Store predictions
+            preds_s2s_raw.append(outputs_s2s)
+            probs_s2s_raw.append(probs_s2s)
+            if order_invariant_conf:
+                order_inv_probs.append(order_inv_probs_batch)
+
+            batch_time.update(time.time() - end)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+
+            end = time.time()
+
+        preds_s2s_raw = np.concatenate(preds_s2s_raw)
+        probs_s2s_raw = np.concatenate(probs_s2s_raw)
+        if order_invariant_conf:
+            order_inv_probs = np.concatenate(order_inv_probs)
+
+        preds_s2s = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            preds_s2s_raw,
+        ))
+
+        if order_invariant_conf:
+
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+                'order_inv_conf': order_inv_probs,
+            })
+        else:
+            preds = pd.DataFrame({
+                'input': inputs,
+                'pred_s2s': preds_s2s,
+                **{f'prob_s2s_{i}': probs_s2s_raw[:, i] for i in range(probs_s2s_raw.shape[1])},
+            })
+
+        out_type = 'greedy'
+
+        return preds, out_type, inputs
+
+    @torch.no_grad()
+    def _predict_full(self, data_loader):
+        """
+        This is the full prediction type. This takes all the codes in self.key and runs it through a seq2seq
+        decoder. As such this in the order of 330 times slower than the typical the greedy decoder. But with
+        the benefit that a probability of each code is returned.
+
+        This rather larger increase in eval time is because the method requires, that we run all of the 1910
+        HISCO codes through something akin to the greedy decoder. We achieve some speedup by only running the
+        decoder on 5 digits.
+        """
+        model = self.model.eval()
+
+        inputs = []
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder = full_search_decoder_mixer_optimized
+        elif self.model_type == "seq2seq":
+            decoder = full_search_decoder_seq2seq_optimized
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not work with the greedy prediciton")
+
+        # Setup
+        verbose = self.verbose
+        total_batches = len(data_loader)
+        results = []
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+
+            batch_time_data.update(time.time() - end)
+
+            output = decoder(
+                model = model,
+                descr = input_ids,
+                input_attention_mask = attention_mask,
+                device = self.device,
+                codes_list = self.codes_list,
+                start_symbol = BOS_IDX,
+                )
+
+
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+
+            # Store predictions
+            output_np = output.cpu().numpy()
+            results.append(output_np)
+
+
+            batch_time.update(time.time() - end)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+
+            end = time.time()
+
+        results = np.concatenate(results)
+
+        out_type = 'probs'
+
+        return results, out_type, inputs
+
+    @torch.no_grad()
+    def _predict_embeddings(self, data_loader):
+        """
+        Returns the output from the pooler layer of the model.
+        """
+        self.model.eval()
+
+        # Setup
+        verbose = self.verbose
+        results = []
+        inputs = []
+        total_batches = len(data_loader)
+
+        batch_time = Averager()
+        batch_time_data = Averager()
+
+        # Need to initialize first "end time", as this is
+        # calculated at bottom of batch loop
+        end = time.time()
+
+        for batch_idx, batch in enumerate(data_loader, start=1):
+            input_ids = batch["input_ids"].to(self.device)
+            attention_mask = batch["attention_mask"].to(self.device)
+
+            batch_time_data.update(time.time() - end)
+
+            with torch.no_grad():
+                output = self.model.encode(input_ids, attention_mask)
+
+            # If mixer its a tuple and then it is the second element which is relevant
+            if isinstance(output, tuple):
+                output = output[1]
+
+            # Store input in its original string format
+            inputs.extend(batch['occ1'])
+
+            batch_time.update(time.time() - end)
+
+            if batch_idx % 1 == 0 and verbose:
+                print(f'\rFinished prediction for batch {batch_idx} of {total_batches}', end = "")
+
+            end = time.time()
+
+            results.append(output.cpu().numpy())
+
+        results = np.concatenate(results)
+
+        out_type = 'emb'
+
+        return results, out_type, inputs
+
+    def _output_permutations(self, output):
+        """
+        This function takes an output from the model with multiple labels
+        and returns the permutations of the labels.
+        This is used to compute the order invariant confidence.
+        """
+
+        output = output.split("&")
+        if(len(output) == 1):
+            return [output]
+
+        # Generate all permutations of the output list
+        permutations_list = list(permutations(output))
+
+        # Join each permutation with the '&' symbol
+        return ["&".join(permutation) for permutation in permutations_list]
+
+    def _validate_and_update_prediction_parameters(self, behavior, prediction_type: PredType | None):
+        """
+        Wraps all the validation and updating of 'behavior' and 'prediction_type'
+        and makes sure that they are compatible with 'self.model_type'
+
+        Parameters:
+        - behavior (str): Chosen behavior (see docstring of '.predict()')
+        - prediction_type (str or None): Chosen prediction type (see docstring of '.predict()')
+
+        Returns:
+        - Possibly updated 'prediction_type'
+        """
+
+        # Validate 'behavior'
+        test = behavior in ['good', 'fast']
+        if not test:
+            raise NotImplementedError(f"behavior: '{behavior}' is not implemented")
+
+        # Validate 'behavior'
+        test = self._behavior_compatible(behavior)
+
+        if not test:
+            raise NotImplementedError(f"behavior: '{behavior}' is not implemented for the loaded model, which has model type: '{self.model_type}'. Please specify different model in initialization or change 'behavior'.")
+
+        # Set 'prediction_type' based on 'behavior'
+        # If 'prediction_type' is not None then that prediction type overwrites
+        if prediction_type is not None:
+            pass # Change nothing
+        else:
+            if behavior == "fast":
+                prediction_type = "flat"
+            if behavior == "good":
+                prediction_type = "greedy"
+
+            if self.verbose:
+                print(f"Based on behavior = '{behavior}', prediction_type was automatically set to '{prediction_type}'")
+
+        # Validate 'prediction_type'
+        test = prediction_type in ['flat', 'greedy', 'greedy-topk', 'full']
+        if not test:
+            raise NotImplementedError(f"prediction_type: '{prediction_type}' is not implemented")
+
+        # Validate prediction type is compatible with model type
+        test = self._prediction_type_compatible(prediction_type)
+
+        if not test:
+            raise NotImplementedError(f"There is not implemented solution for handling: prediction_type: '{prediction_type}' togehter with model_type: '{self.model_type}'")
+
+        self.prediction_type = prediction_type
+
+        return prediction_type
+
+    def _prediction_type_compatible(self, prediction_type: PredType):
+        """
+        Makes sure that the chosen combination of prediction type and model type
+        are compatible
+
+        Parameters:
+        - prediction_type (str): Prediction type: 'flat', 'greedy', 'full'
+
+        """
+        if self.model_type == "mix":
+            res = True # Then all prediction types are possible
+        elif self.model_type == "seq2seq":
+            if prediction_type in ['greedy', 'full']: # Valid types for seq2seq
+                res = True
+            else:
+                res = False
+        elif self.model_type == "flat":
+            if prediction_type in ['flat']: # Valid types for flat
+                res = True
+            else:
+                res = False
+        else:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'prediction_type' was used but somehow passed the first
+                check.
+                """
+                )
+
+        return res
+
+    def _behavior_compatible(self, behavior):
+        """
+        Makes sure that the chosen combination of prediction type and model type
+        are compatible
+
+        Parameters:
+        - behavior (str): Behavior type: 'good' or 'fast'
+
+        """
+        if not behavior in ['good', 'fast']:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'behavior' was used but somehow passed the first
+                check.
+                """
+                )
+
+        if self.model_type == "mix":
+            res = True # Then all prediction types are possible
+        elif self.model_type == "seq2seq":
+            if behavior in ['good']: # Valid types for seq2seq
+                res = True
+            else:
+                res = False
+        elif self.model_type == "flat":
+            if behavior in ['fast']: # Valid types for flat
+                res = True
+            else:
+                res = False
+        else:
+            raise NotImplementedError(
+                """
+                This should not be possible. You did something weird to end up here.
+                An invalid 'behavior' was used but somehow passed the first
+                check.
+                """
+                )
+
+        return res
+
+    def _prep_str(self, occ1):
+        """
+        Prepares occupational strings into a format suitable for model input.
+
+        Parameters:
+        - occ1 (list of str): A list of occupational strings to encode.
+
+        Returns:
+        - list of str: Strings which are cleaned form non standard characters and in lower case
+        """
+
+        occ1 = [str(occ) for occ in occ1]
+        occ1 = [occ.lower() for occ in occ1]
+        occ1 = [unidecode(occ) for occ in occ1]
+
+        return occ1
+
+    def _end_message(self, start, end, inputs):
+        dif_time = end - start
+        m, s = divmod(dif_time, 60)
+        h, m = divmod(m, 60)
 
         try:
-            _ = labels_to_bin(label_codes, max_value = np.max(key_df["Code"]+1))
-        except Exception:
-            raise Exception("Was not able to convert to binary representation")
+            # Assuming occ1 is a DataFrame
+            nobs = inputs.shape[0]
+        except AttributeError:
+            # Fallback if occ1 does not have a .shape attribute, use len() instead
+            nobs = len(inputs)
 
-        # Tokenizer
-        tokenizer = self.tokenizer
+        print(f"\nProduced {self.system} codes for {nobs} observations in {h:.0f} hours, {m:.0f} minutes and {s:.3f} seconds.")
 
-        # Define attakcer instance
-        attacker = AttackerClass(data_df)
+        saved_time = nobs * 10 - dif_time
+        m, s = divmod(saved_time, 60)
+        h, m = divmod(m, 60)
 
-        # Split data
-        df_train, df_val = train_test_val(data_df, verbose=False, testval_fraction = testval_fraction, test_size = 0)
+        print("Estimated hours saved compared to human labeller (assuming 10 seconds per label):")
+        print(f" ---> {h:.0f} hours, {m:.0f} minutes and {s:.0f} seconds")
 
-        # To use later
-        n_obs_train = df_train.shape[0]
-        n_obs_val = df_val.shape[0]
+        print("")
+        print("If the time saved is valuable for you, please cite our paper:")
+        self.citation()
 
-        # Print split sizes
-        print(f"{n_obs_train} observations will be used in training.")
-        print(f"{n_obs_val} observations will be used in validation.")
+    def citation(self, BibTex = False):
+        if BibTex:
+            print("@article{dahl2024breakinghisco,")
+            print("  title={Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE},")
+            print("  author={Christian Møller Dahl and Torben Johansen and Christian Vedel},")
+            print("  year={2024}")
+            print("  eprint={2402.13604},")
+            print("  archivePrefix={arXiv},")
+            print("  primaryClass={cs.CL},")
+            print("  url={https://arxiv.org/abs/2402.13604},")
+            print("}")
+        else:
+            print("Dahl, C. M., Johansen, T., & Vedel, C. (2024). Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE. arXiv preprint arXiv:2402.13604.")
+            print("URL: https://arxiv.org/abs/2402.13604")
+            print("")
+            print("(You can get a BibTex citation by calling 'mod.citation(BibTex = True)')")
 
-        # Save tmp files
-        save_tmp(df_train, df_val, df_test = df_val, path = "Data/Tmp_finetune") # FIXME avoid hardcoded paths
-
-        # File paths for the index files
-        train_index_path = "Data/Tmp_finetune/Train_index.txt" # FIXME avoid hardcoded paths
-        val_index_path = "Data/Tmp_finetune/Val_index.txt" # FIXME avoid hardcoded paths
-
-        # Calculate number of classes
-        n_classes = len(key)
-
-        # Instantiating OCCDataset with index file paths
-        ds_train = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_train_attack = OCCDataset(df_path="Data/Tmp_finetune/Train.csv", n_obs=n_obs_train, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=train_index_path, alt_prob=alt_prob, insert_words=insert_words, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-        ds_val = OCCDataset(df_path="Data/Tmp_finetune/Val.csv", n_obs=n_obs_val, tokenizer=tokenizer, attacker=attacker, max_len=128, n_classes=n_classes, index_file_path=val_index_path, alt_prob=0, insert_words=False, model_domain=model_domain, unk_lang_prob = 0) # FIXME avoid hardcoded paths
-
-        # Data loaders
-        data_loader_train, data_loader_train_attack, data_loader_val, _ = create_data_loader(
-            ds_train, ds_train_attack, ds_val, ds_val, # DS val twice as dummy to make it run
-            batch_size = batch_size
-            )
-
-        return {
-            'data_loader_train': data_loader_train,
-            'data_loader_train_attack': data_loader_train_attack,
-            'data_loader_val': data_loader_val,
-            'tokenizer': self.tokenizer
-        }
-
-
-    def _train_model(self, processed_data, model_name, epochs, only_train_final_layer, verbose = True, verbose_extra = False, new_labels = False, save_model = True, save_path = '../OccCANINE/Finetuned/'):
+    def _format(
+            self,
+            out,
+            out_type: str,
+            what: str,
+            inputs,
+            lang: str,
+            threshold: float,
+            k_pred: int,
+            order_invariant_conf: bool = True,
+    ):
         """
-        Trains the model with the provided processed data.
+        Formats preditions based on out, out_type and 'what'
 
-        This internal method sets up the optimizer, scheduler, and loss function, and initiates the training loop. It also handles layer freezing for transfer learning, if specified.
+        Parameters:
+        - out: Model output
+        - out_type: What is the output type? "greedy" or "probs"
+        - what (str or int, optional): Specifies what to return. Options are "probs", "pred", "bin", or an integer [n] to return top [n] predictions. Defaults to "pred".
+        - inputs (list): The original occupational strings used for prediction.
+        - threshold (float): threshold to use (only relevant if out_type == "probs")
+        - k_pred (int): Maximum number of predicted occupational codes to keep
+        - order_invariant_conf (bool): If True an order invariant confidence is computed.
 
-        Parameters
-        ----------
-        processed_data : dict
-            The dictionary containing training and validation data loaders, and the tokenizer.
-        model_name : str
-            The name of the model to be used for saving.
-        epochs : int
-            The number of epochs for training.
-        only_train_final_layer : bool
-            Whether to train only the final layer of the model.
-        verbose : bool, optional
-            Whether to print out the training progress. Defaults to True.
-        verbose_extra : bool, optional
-            Whether to print extra details during training. Defaults to False.
-        new_labels : bool, optional
-            Whether new labels should be used. Defaults to false
-        save_model : bool, optional
-            Should the finetuned model be saved? Defaults to false
-
-        Returns
-        -------
-        tuple
-            A tuple containing the training history and the trained model.
+        Returns:
+        - Depends on the 'what' parameter.
         """
 
-        if new_labels:
-            n_classes = len(self.key)
-            self.model.out = nn.Linear(in_features=self.model.out.in_features, out_features=n_classes)
+        if out_type == "probs":
 
-            # Ensure the model is set to the correct device again
-            self.model = self.model.to(self.device)
+            if what == "probs":
+                # Unnest
+                res = np.vstack(out)
 
-        optimizer = AdamW(self.model.parameters(), lr=2*10**-5)
-        total_steps = len(processed_data['data_loader_train']) * epochs
-        scheduler = get_linear_schedule_with_warmup(
-            optimizer,
-            num_warmup_steps=0,
-            num_training_steps=total_steps
-        )
+                # Validate shape
+                assert res.shape[0] == len(inputs), "N rows in inputs should equal N rows in output"
+                assert res.shape[1] == len(self.key), "N cols should equal number of entries in self.key"
 
-        # Set the loss function
-        loss_fn = nn.BCEWithLogitsLoss().to(self.device)
+            elif what == "pred":
+                res = []
+                for row in out:
+                    topk_indices = np.argsort(row)[-k_pred:][::-1]
+                    row = [[self.key[i], row[i], self.key_desc[i]] for i in topk_indices]
+                    row = [item for sublist in row for item in sublist] # Flatten list
+                    res.append(row)
 
-        # Freeze layers
-        if only_train_final_layer:
-            # Freeze all layers initially
-            for param in self.model.parameters():
-                param.requires_grad = False
+                column_names = []
+                for i in range(1, k_pred+1):
+                    column_names.extend([f'{self.system}_{i}', f'prob_{i}', f'desc_{i}'])
 
-            # Unfreeze the final layers (self.out in CANINEOccupationClassifier)
-            for param in self.model.out.parameters():
-                param.requires_grad = True
+                res = pd.DataFrame(res, columns=column_names)
 
+                # Vectorized operation to mask predictions below the threshold
+                for j in range(1, k_pred + 1):
+                    prob_column = f"prob_{j}"
+                    mask = res[prob_column] <= threshold
+                    res.loc[mask, [f"{self.system}_{j}", f"desc_{j}", f"prob_{j}"]] = [float("NaN"), "No pred", float("NaN")]
 
-        val_acc, val_loss = eval_model(
-            self.model,
-            processed_data['data_loader_val'],
-            loss_fn = loss_fn,
-            device = self.device,
-            )
+                # First, ensure "hisco_1" is of type string to avoid mixing data types
+                res[f"{self.system}_1"] = res[f"{self.system}_1"].astype(str)
 
-        print("----------")
-        if verbose:
-            print(f"Intital performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
+                res.insert(0, 'occ1', inputs)
 
-        history, model = trainer_loop_simple(
-            self.model,
-            epochs = epochs,
-            model_name = model_name,
-            data = processed_data,
-            loss_fn = loss_fn,
-            optimizer = optimizer,
-            device = self.device,
-            scheduler = scheduler,
-            verbose = verbose,
-            verbose_extra  = verbose_extra,
-            attack_switch = True,
-            initial_loss = val_loss,
-            save_model = save_model,
-            save_path = save_path
-            )
+            elif what == "bin":
+                # Unnest
+                res = np.vstack(out)
 
-        # == Load best model ==
-        # breakpoint()
-        # Load state
-        if save_model:
-            model_path = save_path + model_name+'.bin'
-            if not os.path.isfile(model_path):
-                print("Model did not improve in training. Realoding original model")
-                model_path = self.name+'.bin'
+                # Validate shape
+                assert res.shape[0] == len(inputs), "N rows in inputs should equal N rows in output"
+                assert res.shape[1] == len(self.key), "N cols should equal number of entries in self.key"
+                # Create matrix of zeros
+                res = np.zeros((len(inputs), len(self.key)))
+                for i, row in enumerate(out):
+                    topk_indices = np.argsort(row)[-k_pred:][::-1]
+                    for j in topk_indices:
+                        if row[j] >= threshold:
+                            res[i, j] = 1
+                res = pd.DataFrame(res, columns=[f"{self.system}_{self.key[i]}" for i in range(len(self.key))])
 
-            # Load the model state
-            loaded_state = torch.load(model_path)
+            else:
+                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
 
-            # If-lookup for model
-            config = {
-                "model_domain": "Multilingual_CANINE",
-                "n_classes": len(self.finetune_key),
-                "dropout_rate": 0,
-                "model_type": "canine"
-            }
+        elif out_type == "greedy":
+            if what == "probs":
+                raise ValueError("Probs cannot be computed for 'greedy' prediction_type. Use 'full' prediction_type instead")
 
-            model = CANINEOccupationClassifier_hub(config)
-            # breakpoint()
-            model.load_state_dict(loaded_state)
-            model.to(self.device)
-            self.model = model
+            elif what in ["pred", "bin"]:
+                sepperate_preds = [self._split_str_s2s(i) for i in out.pred_s2s]
+                max_elements = max(len(item) if isinstance(item, list) else 1 for item in sepperate_preds)
 
-            print("Loaded best version of model")
+                # Create an empty list to store the processed data
+                processed_data = []
 
-        val_acc, val_loss = eval_model(
-            self.model,
-            processed_data['data_loader_val'],
-            loss_fn = loss_fn,
-            device = self.device,
-            )
+                # Process the data
+                for item in sepperate_preds:
+                    if isinstance(item, list):
+                        # If the item is a list, unpack its elements and pad with NaN if necessary
+                        processed_data.append(item + [np.nan] * (max_elements - len(item)))
+                    else:
+                        # If the item is not a list, append it with NaN for the remaining columns
+                        processed_data.append([item] + [np.nan] * (max_elements - 1))
 
-        print("----------")
-        if verbose:
-            print(f"Final performance:\nValidation acc: {val_acc}; Validation loss: {val_loss}")
+                # Invert key
+                inv_key = dict(map(reversed, self.key.items()))
 
-        return history, model
+                if what == "bin":
+                    # Create a binary matrix
+                    res_bin = np.zeros((len(inputs), len(self.key)))
+                    # Iterate through the processed data and fill the binary matrix
+                    for i, item in enumerate(processed_data):
+                        for sub_item in item:
+                            if sub_item in inv_key:
+                                res_bin[i, inv_key[sub_item]] = 1
+
+                    res = res_bin
+                    res = pd.DataFrame(res, columns=[f"{self.system}_{self.key[i]}" for i in range(len(self.key))])
+
+                elif what == "pred":
+
+                    res = []
+                    # Insert description
+                    for item in processed_data:
+                        codes = []
+                        for sub_item in item:
+                            try:
+                                if sub_item in inv_key:
+                                    codes.append(inv_key[sub_item])
+                                else:
+                                    codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+                            except (ValueError, TypeError):
+                                # Handle the case where sub_item cannot be cast to float
+                                codes.append(f'u{sub_item}')  # Add 'u' to ensure being able to pick it up in cleaning below
+
+                        row = [[self.key[i], self.key_desc[i]] if i in self.key else [i[1:], "Unknown code"] for i in codes]
+                        row = [item for sublist in row for item in sublist] # Flatten list
+                        res.append(row)
+
+                    column_names = []
+                    for i in range(1, max_elements+1):
+                        column_names.extend([f'{self.system}_{i}', f'desc_{i}'])
+
+                    # Create the DataFrame
+                    res = pd.DataFrame(res, columns=column_names)
+
+                    if 'top-k-pos' in out.columns:
+                        res['top-k-pos'] = out['top-k-pos']
+
+                    # Identify columns starting with 'prob_s2s_'
+                    prob_cols = [col for col in out.columns if col.startswith('prob_s2s_')]
+
+                    # Multiply these columns row-wise
+                    res['conf'] = out[prob_cols].prod(axis=1)
+                    if order_invariant_conf:
+                        # Use order invariant if it is >0
+                        order_inv_conf = out.order_inv_conf.fillna(0)
+                        res['conf'] = np.where(order_inv_conf > 0, order_inv_conf, res['conf'])
+
+                    # Add input
+                    res.insert(0, 'occ1', out.input)
+
+                return res
+
+        elif what == "embeddings":
+            res = out
+            # Make into pandas DataFrame
+            res = pd.DataFrame(res)
+
+            # Add input
+            res.insert(0, 'occ1', inputs)
+
+        elif what == "logits":
+            if out_type == "logits":
+                res = out
+                # Make into pandas DataFrame
+                res = pd.DataFrame(res)
+
+                # Add input
+                res.insert(0, 'occ1', inputs)
+            else:
+                raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
+
+        else:
+            raise ValueError(f"'what' ('{what}') did not match any output for 'out_type' ('{out_type}')")
+
+        return res
+
+    def _split_str_s2s(self, pred: str, symbol: str = "&"):
+        """
+        Splits predicted str if necessary
+        """
+        if symbol in pred:
+            pred = pred.split(symbol)
+
+        return pred
+
+    def _compute_order_invariant_confidence(self, outputs_s2s, input_ids, attention_mask, data_loader):
+        """
+        Compute order invariant confidence for predictions with multiple labels.
+
+        For each prediction, generates all permutations of the predicted labels and
+        sums their probabilities from the full search decoder.
+
+        Parameters:
+        - outputs_s2s: Raw outputs from the seq2seq decoder
+        - input_ids: Batch input tensor
+        - attention_mask: Batch attention mask tensor
+        - data_loader: DataLoader containing the formatter
+
+        Returns:
+        - List of order invariant confidence scores (one per observation in batch)
+        """
+        # Decoder based on model type
+        if self.model_type == "mix":
+            decoder_full = full_search_decoder_mixer_optimized
+        elif self.model_type == "seq2seq":
+            decoder_full = full_search_decoder_seq2seq_optimized
+        else:
+            raise TypeError(f"model_type: '{self.model_type}' does not support order invariant confidence")
+
+        # Location of multiple labels
+        # TODO: This fails for unknown codes. Need to fix this.
+        outputs_mapped_to_label = list(map(
+            data_loader.dataset.formatter.clean_pred,
+            outputs_s2s,
+        ))
+
+        # Generate list of codes
+        codes_lists = [self._output_permutations(i) for i in outputs_mapped_to_label]
+
+        order_inv_probs_batch = [float(0) for i in range(len(outputs_s2s))]
+
+        for i, codes_list in enumerate(codes_lists):
+            len_list = len(codes_list)
+            if len_list > 1:
+                # Transform to machine readable representation:
+                codes_list_encoded = self._list_of_formatted_codes(codes_list = codes_list)
+
+                # Prepare subset tensors for the i-th sample
+                input_ids_i = input_ids[i].unsqueeze(0)
+                attention_mask_i = attention_mask[i].unsqueeze(0)
+
+                # Run the full search decoder on the current sample
+                outputs_order_inv = decoder_full(
+                    model = self.model,
+                    descr = input_ids_i,
+                    input_attention_mask = attention_mask_i,
+                    device = self.device,
+                    codes_list = codes_list_encoded,
+                    start_symbol = BOS_IDX,
+                )
+                # Test
+                if outputs_order_inv.shape[1] != len_list:
+                    raise ValueError(f"outputs_order_inv.shape[1] != len_list: {outputs_order_inv.shape[1]} != {len_list}")
+
+                # Take sum of the probabilities
+                order_inv_probs_batch[i] = float(outputs_order_inv.sum(axis=1).cpu().numpy()[0])
+
+        return order_inv_probs_batch
 
     def finetune(
             self,
-            data_df,
-            label_cols,
-            batch_size="Default",
-            epochs=3,
-            attack=True,
-            save_name = "finetuneCANINE",
-            only_train_final_layer = False,
-            verbose = True,
-            verbose_extra = False,
-            test_fraction = 0.1,
-            new_labels = False,
-            save_model = True,
-            save_path = "Finetuned/"
+            dataset: str | os.PathLike | pd.DataFrame,
+            save_path: str | os.PathLike,
+            input_col: str,
+            language: str,
+            language_col: str | None,
+            target_cols: list[str] | None = None,
+            save_interval: int = 1000,
+            log_interval: int = 10,
+            eval_interval: int = 100,
+            drop_bad_labels: bool = True,
+            allow_codes_shorter_than_block_size: bool = True,
+            share_val: float = 0.1,
+            learning_rate: float = 2e-05,
+            num_epochs: int = 3,
+            warmup_steps: int = 500,
+            seq2seq_weight: float = 0.1,
+            freeze_encoder: bool = True,
             ):
+
         """
-        Fine-tunes the model on the provided dataset.
+        Finetunes the OccCANINE model on a given dataset.
+        Parameters:
+        - dataset (str or pd.DataFrame): Path to the dataset file or a pandas DataFrame containing the data. If pd.DataFrame, make sure all columns are strings.
+        - save_path (str): Path to save the finetuned model and other artifacts.
+        - input_col (str): Name of the column containing the occupational strings.
+        - language (str): Language of the occupational strings.
+        - language_col (str or None): Name of the column containing the language information. If None, no language information is used.
+        - target_cols (list of str or None): List of target columns to predict. If None, it will use the `target_cols` attribute of the self.formatter.
+        - save_interval (int): Interval for saving the model state.
+        - log_interval (int): Interval for logging training progress.
+        - eval_interval (int): Interval for evaluating the model on the validation set.
+        - drop_bad_labels (bool): If True, rows with bad labels will be dropped from the dataset.
+        - allow_codes_shorter_than_block_size (bool): If True, allows codes shorter than the block size.
+        - share_val (float): Proportion of the dataset to use for validation.
+        - learning_rate (float): Learning rate for the optimizer.
+        - num_epochs (int): Number of epochs to train the model.
+        - warmup_steps (int): Number of warmup steps for the learning rate scheduler.
+        - seq2seq_weight (float): Weight for the seq2seq loss in the mixed loss function.
+        - freeze_encoder (bool): If True, freezes the encoder parameters during training. (Only the top layer will be trained)
 
-        This method orchestrates the fine-tuning process by processing the data, training the model, and handling the batch size specifications. It also allows for data augmentation and control over verbosity during training.
-
-        Parameters
-        ----------
-        data_df : pd.DataFrame
-            DataFrame containing the training data. Must include:
-                - 'occ1', the occupational description
-                - columns with labels specified in 'label_cols'
-                - 'lang', a column of the language of each label
-        label_cols : list of str
-            Names of the columns in data_df that contain the labels.
-        batch_size : int or "Default", optional
-            Batch size for training. If "Default", the class-specified batch size is used. Defaults to "Default".
-        epochs : int, optional
-            Number of epochs for training. Defaults to 3.
-        attack : bool, optional
-            Indicates whether data augmentation should be used in training. Defaults to True.
-        save_name : str, optional
-            The name under which the trained model is to be saved. Defaults to "finetuneCANINE".
-        only_train_final_layer : bool, optional
-            Whether to train only the final layer of the model. Defaults to False.
-        verbose : bool, optional
-            Should updates be printed. Defaults to True
-        verbose_extra : bool, optional
-            Whether to print additional information during training. Defaults to False.
-        test_fraction : float, optional
-            The fraction of the dataset to be used for testing. Defaults to 0.1.
-        new_labels : bool, optional
-            Whether the labels are a new system of labeling. Defaults to False.
-        save_model : bool, optional
-            Whether the finetuned model should be saved.
-        save_path : str, optional
-            Where should the model be saved?
-
-        Returns
-        -------
-        None
         """
 
-        print("======================================")
-        print("==== Started finetuning procedure ====")
-        print("======================================")
+        if target_cols is None:
+            # Check if target_cols attribute exists and is non-empty
+            if hasattr(self.formatter, "target_cols") and self.formatter.target_cols:
+                target_cols = self.formatter.target_cols
+            else:
+                raise ValueError("No target_cols specified and self.formatter.target_cols is empty or missing. Please specify target_cols.")
+        self.formatter.target_cols = target_cols
 
-        # Make sure 'Finetuned' dir exist
-        if not os.path.exists(save_path):
-            # Create the directory
-            os.makedirs(save_path)
+        # If code1, ... code5 are missing, in datasets then insert it in the case of HISCO (if its pd.DataFrame)
+        tmp_inverted_key = {v: k for k, v in self.key.items()}
+        if isinstance(dataset, pd.DataFrame):
+            # Check if the dataset has the expected columns
+            for col in self.formatter.target_cols:
+                col_name = col.replace(f"{self.system}_", "code")
 
-        # Handle batch_size
-        if batch_size=="Default":
-            batch_size = self.batch_size
+                # If the column does not exist, create it
+                if col_name not in dataset.columns:
+                    # Use self.key to map self.system codes code
+                    dataset[col_name] = [tmp_inverted_key.get(i) for i in dataset[col]]
 
-        # Load and process the data
-        processed_data = self._process_data(
-            data_df, label_cols, batch_size=batch_size,
-            testval_fraction = test_fraction,
-            new_labels = new_labels,
-            verbose = verbose
+        # If self.system == "hisco" we need 'code' as target cols
+        # TODO: This is a clumsy way to do this, but it works for now
+        if self.system == "hisco":
+            # Check if the dataset has the expected columns
+            new_target_cols = []
+            for col in self.formatter.target_cols:
+                col_name = col.replace(f"{self.system}_", "code")
+                new_target_cols.append(col_name)
+            self.formatter.target_cols = new_target_cols
+
+        # Data prep
+        prepare_finetuning_data( # TODO this will save a keys-file, which is NOT the one we'll be using
+            dataset=dataset,
+            input_col=input_col,
+            formatter=self.formatter,
+            save_path=save_path,
+            share_val=share_val,
+            language=language,
+            language_col=language_col,
+            drop_bad_rows=drop_bad_labels,
+            allow_codes_shorter_than_block_size=allow_codes_shorter_than_block_size,
+        )
+
+        # Load datasets
+        dataset_train, dataset_val = setup_finetuning_datasets(
+            target_cols=self.formatter.target_cols,
+            save_path=save_path,
+            formatter=self.formatter,
+            tokenizer=self.tokenizer,
+            num_classes_flat=len(self.key),
+            map_code_label={v: k for k, v in self.key.items()}, # We need the reverse mapping to produce IDXs from codes
+        )
+
+        if self.system == "hisco": # Clumsy way to do this, but it works for now
+            dataset_train.map_code_label = None
+            dataset_val.map_code_label = None
+
+        # Data loaders
+        data_loader_train = DataLoader(
+            dataset_train,
+            batch_size=self.batch_size,
+            shuffle=True,
+            )
+        data_loader_val = DataLoader(
+            dataset_val,
+            batch_size=self.batch_size,
+            shuffle=False,
             )
 
-        # Training the model
-        self._train_model(
-            processed_data, model_name = save_name, epochs = epochs, only_train_final_layer=only_train_final_layer,
-            verbose_extra = verbose_extra,
-            new_labels = new_labels,
-            save_model = save_model,
-            save_path = save_path
-            )
+        if freeze_encoder:
+            for param in self.model.encoder.parameters():
+                param.requires_grad = False
 
-        print("Finetuning completed successfully.")
+            optimizer = AdamW([param for name, param in self.model.named_parameters() if not name.startswith("encoder.")], lr=learning_rate)
+        else:
+            optimizer = AdamW(self.model.parameters(), lr=learning_rate)
+
+        total_steps = len(data_loader_train) * num_epochs
+        scheduler = get_linear_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=warmup_steps,
+            num_training_steps=total_steps,
+        )
+
+        # Setup mixed loss
+        loss_fn_seq2seq = BlockOrderInvariantLoss(
+            pad_idx=PAD_IDX,
+            nb_blocks=self.formatter.max_num_codes,
+            block_size=self.formatter.block_size,
+        )
+        loss_fn_linear = torch.nn.BCEWithLogitsLoss()
+        loss_fn = LossMixer(
+            loss_fn_seq2seq=loss_fn_seq2seq,
+            loss_fn_linear=loss_fn_linear,
+            seq2seq_weight=seq2seq_weight,
+        ).to(self.device)
+
+        # Load states
+        current_step = load_states(
+            save_dir=save_path,
+            model=self.model,
+            optimizer=optimizer,
+            scheduler=scheduler,
+        )
+
+        train(
+            model=self.model,
+            data_loaders={
+                'data_loader_train': data_loader_train,
+                'data_loader_val': data_loader_val,
+            },
+            loss_fn=loss_fn,
+            optimizer=optimizer,
+            device=self.device,
+            scheduler=scheduler,
+            save_dir=save_path,
+            total_steps=total_steps,
+            current_step=current_step,
+            log_interval=log_interval,
+            eval_interval=eval_interval,
+            save_interval=save_interval
+        )
+
+        # TODO: We should save the model here - relevant for small sample finetuning, where default save_interval is not met frequently enough

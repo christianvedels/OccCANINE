@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9840177358989468,0.9872315578193519,0.9847337699967501,0.992934800739881,269773,greedy,DK_census_test.csv

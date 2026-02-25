@@ -87,44 +87,18 @@ xaringanExtra::use_progress_bar(color = "#808080", location = "top")
 ```
 
 
-
+.huge123[
 # Breaking the HISCO Barrier: 
 ## *Automatic Occupational Standardization with OccCANINE*
-### Christian Møller-Dahl, Torben Johansen, Christian Vedel
-### University of Southern Denmark, HEDG
-
-#### Twitter: @ChristianVedel,
-#### Email: christian-vs@sam.sdu.dk
-#### arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
-#### Updated `r Sys.Date()` 
-
-
----
-class: middle, inverse, center
-
-.huge123[**OccCANINE**]
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="150px", out.width="150px"}
-knitr::include_graphics("Figures/logo_offwhite.png")
-```
-
-
-.footnote[
-.small123[
-*Logo: Matt Curtis + Bing image*
-]
 ]
 
----
-class: middle
-# Hvad kan man bruge det til?
+#### Christian Møller Dahl, Torben Johansen, Christian Vedel
+#### University of Southern Denmark, HEDG
 
-.pull-left[
-- **Direkte applikation:** Vi har nu beskæftigelsesdata på individ-niveau helt tilbage til 1787
-- **Indirekte:** Vi har en sprogmodel, der forstår noget *substantielt/semantisk* om beskæftigelser (nemmere end at lære det udenad)
-- **Analogi:** Meget offentlig data indeholder fritekst-felter. Man kan gøre lignende for at systematisere det.
-]
+**Email: christian-vs@sam.sdu.dk**  
+**arXiv: [arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)**  
+**Updated `r Sys.Date()`**
+
 
 ---
 # Data examples
@@ -138,7 +112,7 @@ library(tidyverse)
 # Danish:
 # tmp = readxl::read_excel("CopenhagenBurials_05_manual_check.xlsx", skip = 1)
 suppressWarnings({
-  tmp = read_csv("../../Data/Validation_data/DK_census_val.csv", col_types = "c")
+  tmp = read_csv("../../histocc/Data/TOYDATA.csv", col_types = "c")
 })
 rownames(tmp) = NULL
 
@@ -146,8 +120,7 @@ set.seed(20)
 tmp = tmp %>%
   distinct() %>% 
   select(occ1) %>%
-  filter(nchar(occ1) > 30) %>% 
-  sample_n(500) %>% 
+  filter(nchar(occ1) > 25) %>% 
   rename(`Raw entry` = occ1)
 
 DT::datatable(
@@ -157,6 +130,26 @@ DT::datatable(
 
 
 ```
+
+.small123[
+*Example data from Clark, Cummins Curtis (2022)*
+]
+
+---
+<br>
+<br>
+<br>
+<br>
+.pull-left-wide[
+# This presentation
+- We solve the problem from the previous slide
+- Introduce OccCANINE
+- New results (which does not appear in current working paper)
+  + Based on more training data
+  + Updated architecture + 'oil' (order-invariant-loss)
+- .red[*No new insights*]
+]
+
 
 ---
 # HISCO codes
@@ -168,55 +161,6 @@ DT::datatable(
 ```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="709px"}
 knitr::include_graphics("Figures/HISCO structure.png")
 ```
-
-
----
-class: middle
-# OccCANINE
-.pull-left[
-- New tool to make research using historical occupations easier
-
-- 10000 observations in 27 seconds (rather than 27 hours)
-
-- Language model, OccCANINE:
-  + **Input:** "En" + "He is a farmer"
-  + **Output:** HISCO code 61110 (probability=0.989589)
-  
-- Everything is free, open source, wrapped up in a simple python library and available at [github.com/christianvedels/OccCANINE](https://github.com/christianvedels/OccCANINE)
-]
-
-.pull-right[
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BF_oNe-sABQ?si=n3PxM8PkrB5esyPI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-*Youtube video on how to use it*
-https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
-]
-
----
-### Open questions:
-- The role of technology and change of technology
-- The dynamics of income inequality 
-- Social mobility 
-- Returns to education
-
-
-### Barriers:
-
-.pull-left-narrow[
-**Type A:**
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px", out.width="300px"}
-knitr::include_graphics("Figures/TypeA.png")
-```
-
-]
-
-
-.pull-right[
-.red[**Type B:**]
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="300px"}
-knitr::include_graphics("Figures/TypeB.webp")
-```
-]
 
 
 
@@ -237,9 +181,8 @@ class: middle
 - Augment input during training
 
 .red[
-~10k HISCO codes in 27 seconds  
-~100k HISCO codes in 5 min.  
-~1 million HISCO codes in 45 min.  
+~10k HISCO codes in minutes
+~1 million HISCO codes in a few hours  
 $\rightarrow$ **All with high precision and recall**
 
 ]
@@ -251,11 +194,38 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 ]
 
 ???
-- Fairly simple neural network
+- *Small* language model
 - Transformer architecture: CANINE
 - Character level: fairly robust to typos, spelling mistakes, and changing spelling conventions
 - Finetuned to predict HISCO codes
 - **Really fast**
+
+
+
+
+--
+.pull-right-narrow[
+.red[**Please send us some data. We owe you HISCO codes in return**]
+
+
+.red[christian-vs@sam.sdu.dk]
+]
+
+---
+class: middle
+# State of the art
+
+.pull-left-wide[
+- **Rule-based & dictionary methods**: Hand-crafted lookup tables, regular expressions, and intensive cleaning deliver decent accuracy but are laborious, brittle, and hard to port to new data (Patel, 2012; Gweon 2017).
+- **Classical ML pipelines**: Bag-of-words, k-NN, boosting trees, random forests on survey-specific features raise automation but still depend on heavy pre-processing and are typically tuned to one country/system/time period (Schierholz, 2020; Turrell, 2022, van der Heijden 2022).
+- **Overall**: Most existing solutions are **one-off**—built for a single survey or classification and must be rebuilt for each new context. **OccCANINE is designed as a broad, shared backbone**: multilingual, historical, and easily adapted to multiple occupational coding systems.
+]
+
+
+
+---
+# Architecture
+![Arch2](Figures/Architecture2.png)
 
 ---
 ## Thanks to data contributors
@@ -290,15 +260,113 @@ Canine: Pre-training an Efficient Tokenization-Free Encoder for Language Represe
 ]
 ]
 
+.pull-right-narrow[
+- A lot of researchers have solved the task of turning strings into HISCO codes
+- We simply make their work generalizable
 
+- I couldn't fit everyone, and people still send us data
+- Please send us your data at christian-vs@sam.sdu.dk 
+]
+
+---
+# OIL: Order-Invariant loss (intuition)
+
+.pull-left[
+- Many entries contain **multiple occupations**:
+  - *"policeman and farmer"*
+  - *"he fishes and farms"*
+- These map to several valid HISCO codes:
+  - e.g. $61110$ (Farmer), $64100$ (Fisherman)
+
+- For the model, the **set** of codes is what matters  
+  $\Rightarrow$ $\{61110, 64100\}$ is correct in **any order**
+
+.red[
+Standard sequence loss is order-sensitive  
+$\Rightarrow$ wrong penalty for correct but permuted outputs
+]
+
+]
 
 --
-.pull-right-narrow[
-.red[**Please send us some data. We owe you HISCO codes in return**]
+
+.pull-right[
+```text
+"he fishes and farms"
+
+Target codes:
+  [Farmer, Fisher]
+
+Predicted (model):
+  [Fisher, Farmer]
+
+Standard loss:
+  ❌ (wrong order)
+
+Order-invariant loss:
+  ✅ (same set)
+```
+
+#### We solve this while maintaining useful properties
+- We can take the derivative
+- Teacher forcing compatible
+- Efficient to compute
+
+] 
 
 
-.red[christian-vs@sam.sdu.dk]
+
+---
+# How to train a generalizable solution?
+.pull-left[
+### Two principal solutions:
+1. Learn every title character by character
+2. Learn the concept of a specific occupation (like a human)
+
+.red[
+- We try to push it towards the second type of solution
 ]
+
+]
+
+.pull-right[
+### How?
+.small123[
+- Random string augmentations:
+  + "he is a farmer" $\rightarrow$ "ht s a frmer"
+  
+- Dropout:
+  + We disable 10% of neural pathways randomly during training
+  
+- We make synthetic combinations
+  + "he is a fisher" + "carpenter" $\rightarrow$ "he is a fisher **and** carpenter"
+  
+- It does not know the language in 25% of cases
+
+- We generate adverse examples: Change strings until the model marginally fails *+ gibberish + translated strings*
+  
+- Training data, validation data, test data and out-of-distribution data
+]
+]
+
+
+
+---
+# Training in practice
+.pull-left-narrow[
+- 30 days of training
+- Batch size: 512
+- 15.8 million training observations (occupations with HISCO codes)
+- Model exposed to full training data 50 times
+- **Note:** *Sequential Decoder* trains much faster than *Flat Decoder* - because of the fewer dimensions of output space
+]
+
+.pull-right-wide[
+.pull-right-wide[
+![Training curve](Figures/Training_curve.png)
+]
+]
+
 
 
 ---
@@ -334,11 +402,90 @@ rbind(
 
 ```
 
+
+
+---
+# Test data performance (1/2)
+| Decoder | Statistic | **Digits** |   |   |   |   |
+|---------|-----------|-----------|---|---|---|---|
+|         |           | 1 | 2 | 3 | 4 | 5 |
+| *good*  | accuracy  | 0.977 | 0.968 | 0.964 | 0.961 | 0.960 |
+|         | precision | 0.978 | 0.968 | 0.964 | 0.961 | 0.960 |
+|         | recall    | 0.982 | 0.974 | 0.971 | 0.967 | 0.967 |
+|         | f1        | 0.979 | 0.970 | 0.966 | 0.963 | 0.963 |
+| *fast*  | accuracy  | 0.979 | 0.971 | 0.967 | 0.964 | 0.964 |
+|         | precision | 0.980 | 0.972 | 0.968 | 0.965 | 0.965 |
+|         | recall    | 0.983 | 0.979 | 0.976 | 0.973 | 0.973 |
+|         | f1        | 0.981 | 0.974 | 0.971 | 0.968 | 0.967 |
+
+
 .footnote[
-***See '[PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)' or [colab](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb)***
+.small123[
+*Based on 1M test observations*
+]
+]
+
+---
+# Test data performance (2/2) 
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/Performance_by_lang_greedy.png")
+```
+
+
+
+---
+# Differential error rates
+.pull-left-narrow[
+- Performs best for the most common HISCO codes (99% --> 524 HISCO codes)
+- (As does squishy wet neural networks)
+]
+
+.pull-right-wide[
+![HISCO_count](Figures/Performance_by_hisco.png)
+]
+
+---
+name: bias
+# Bias
+
+.pull-left-narrow[
+- Potential problem: If error rates are correlated with Socio-Economic Status
+- Turns out its not
+- [Not in a regression setting either](#bias-reg)
+]
+
+.pull-right-wide[
+![SES](Figures/Performance_by_ses.png)
 ]
 
 
+
+---
+# Out of distribution (manually validated)
+
+ 
+| Dataset                       |   n |   substantial |   strict |
+|-------------------------------|----:|--------------:|---------:|
+| Copenhagen Burial Records     | 367 |         0.962 |    0.890 |
+| Norwegian Student Biographies | 500 |         0.950 |    0.874 |
+
+
+
+---
+# More OOD testing (already labelled data)
+
+| Dataset                       | Observations |     1 |     2 |     3 |     4 |     5 |
+|-------------------------------|-------------:|------:|------:|------:|------:|------:|
+| **Panel A: Raw data**         |              |       |       |       |       |       |
+| Swedish Strikes               |        1,430 | 0.957 | 0.946 | 0.927 | 0.897 | 0.896 |
+| Dutch Wealth Tax              |          200 | 0.938 | 0.892 | 0.780 | 0.767 | 0.760 |
+| Italian Marriage Certificates |       26,287 | 0.877 | 0.866 | 0.854 | 0.835 | 0.828 |
+| German Denazification Survey  |          800 | 0.785 | 0.731 | 0.665 | 0.647 | 0.638 |
+| Danish West Indies            |      166,563 | 0.704 | 0.684 | 0.680 | 0.651 | 0.645 |
+| UK Bankruptcies               |      581,912 | 0.754 | 0.676 | 0.656 | 0.641 | 0.638 |
+| **Panel B: Removed HISCO code ‘-1’: No occupation** | | | | | | |
+| Danish West Indies            |      101,619 | 0.828 | 0.795 | 0.788 | 0.741 | 0.732 |
+| UK Bankruptcies               |      326,400 | 0.922 | 0.783 | 0.747 | 0.721 | 0.720 |
 
 ---
 ```{r include=FALSE, message=FALSE, warning=FALSE}
@@ -365,7 +512,7 @@ p2d_wolang_base = loadR2("Figures/CANINE baseline (wo. lang)Interactive_tsne_2d.
 p2d_wolang = loadR2("Figures/CANINE finetuned (wo. lang)Interactive_tsne_2d.Rdata")
 ```
 
-# The advantage of OccCANINE as a language model
+# What does OccCANINE 'see'?
 .pull-left-narrow[
 - The model learns to understand occupational structures *semantically*
 - *This is evident from the the embeddings: 768 dimensions reduced to 2*
@@ -389,113 +536,151 @@ p2d_wlang %>% layout(autosize = F, width = 500, height = 400)
 ]
 ]
 ]
+
 ---
-# Test data performance (1/2)
-| Statistic | Lang. info. | Value | Optimal thr. |
-|-----------|-------------|-------|--------------|
-| Accuracy  | No          | 0.930 | 0.46         |
-| Accuracy  | Yes         | 0.935 | 0.45         |
-| F1 score  | No          | 0.956 | 0.20         |
-| F1 score  | Yes         | 0.960 | 0.22         |
-| Precision | No          | 0.951 | 0.37         |
-| Precision | Yes         | 0.955 | 0.40         |
-| Recall    | No          | 0.986 | 0.01         |
-| Recall    | Yes         | 0.987 | 0.01         |
+class: middle
+
+# Demonstration
+
+.pull-left-narrow[
+- Everything is open source.
+- You can use our method with basic Python-skills
+- Most functionalities demonstrated here: [colab](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb)
+]
+
+
+.pull-right-wide[
+<iframe width="560" height="315" src="https://www.youtube.com/embed/d8dR5-clJeQ?si=R6mPJ0Yn2KGXKy-B" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+]
+
+---
+# Other systems: What about ...
+.pull-left-narrow[
+... OCC1950 (US censuses)  
+... OCCICEM (UK censuses)  
+... ISCO-68  
+... and so on?
+
+**Our solution also applies to those cases with finetuning**
+]
+
+--
+
+.pull-right-wide[
+#### Panel A: Full training data
+*~20 days of finetuning - millions of observations*
+
+| Target system | Accuracy | F1-score |
+|---------------|----------|----------|
+| ISCO-68       |    0.938 |    0.958 |
+| OCCICEM       |    0.974 |    0.977 |
+| OCC1950       |    0.866 |    0.875 |
+
+#### Panel B: Small scale training
+*~20 .red123[hours] of finetuning - 10.000 observations*
+
+| Target system | Accuracy | F1-score |
+|---------------|----------|----------|
+| ISCO-68       |    0.822 |    0.844 |
+| OCCICEM       |    0.857 |    0.860 |
+| OCC1950       |    0.805 |    0.813 |
+]
+
+
+
+
+
+---
+# Other applications
+- Profitt et al (2025): Uses it to assist in linking British census data
+- Bentzen et al (2024): Measure of social status to study assimiliation
+- Jayes (2025): High skilled engineers in the age age electrification in Sweden
+- Ford (2025): Early university students
+- Görges et al (2025): Occupational shifts from railways in Denmark
+- Chilosi et al (2025): Smithian Growth in Britain
+- Andesson (2025): Labour market assimilation in historical Sweden
+- Vedel (2025): First nature geography and economic development
+- Fasnacth (2025): Identity and social change
+- etc.
+
+$\rightarrow$ *Open source - we're still developing.*
+
+---
+class: middle
+# Conclusion
+.pull-left[
+- Something that took weeks, months and years, now takes an afternoon
+- Enables new research 
+- Enables more time on caring about the quality of sources and their nature
+- Updated version released soon
+]
+
+.pull-right[
+**Feel free to reach out**  
+Twitter: @ChristianVedel  
+BlueSky: @christianvedel.bsky.social  
+christian-vs@sam.sdu.dk  
+
+
+See guide on YouTube: https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
+]
+
+---
+class: middle, inverse, center
+
+.huge123[**OccCANINE**]
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="150px", out.width="150px"}
+knitr::include_graphics("Figures/logo_offwhite.png")
+```
+
 
 .footnote[
 .small123[
-*Based on 1 million test observations*
+*Logo: Matt Curtis + Bing image*
 ]
 ]
 
 ---
-# Test data performance (2/2) 
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
-knitr::include_graphics("Figures/Performance_by_language.png")
-```
+class: middle
+
+# Appendix
 
 ---
-# The nature of the mistakes
-.panelset[
-.panel[.panel-name[Example 1]
-.center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
-knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_marr_cert3742836.png")
-```
-]
-]
-.panel[.panel-name[Example 2]
-.center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
-knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_parish33715.png")
-```
-]
-]
-.panel[.panel-name[Example 3]
-.center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
-knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_uk_ipums2325523.png")
-```
-]
-]
-.panel[.panel-name[Example 4]
-.center[
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
-knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.png")
-```
-]
-]
+name: bias-reg
+# Bias regression analysis
+.pull-left-narrow[
+- We run regressions of the form:
+$$\text{Error}_{h} = \alpha + \beta_1 \text{SES}_{h} + \epsilon_{h}$$
+- Where $h$ is a HISCO code
+- $\text{Error}_{h}$ is the error rate for HISCO $h$
+- $\text{SES}_{h}$ is the average socio-economic status for HISCO $h$
 ]
 
----
-# Out of distribution
+.pull-right[
+.small123[
+|                             | Accuracy (1) | F1 score (2) | Precision (3) | Recall (4) |
+|-----------------------------|-------------:|-------------:|--------------:|-----------:|
+| **Panel A: SES and performance** |||||
+| SES value                   |   -0.0005*   |   -0.0005*   |    -0.0005*   |  -0.0005*  |
+| (SE)                        |   (0.0003)   |   (0.0003)   |    (0.0003)   |  (0.0003)  |
+| **Panel B: Controlling for training obs.** |||||
+| SES value                   |   -0.0004    |   -0.0004    |    -0.0004    |  -0.0004   |
+| (SE)                        |   (0.0003)   |   (0.0003)   |    (0.0003)   |  (0.0003)  |
+| $\log(n)$                   |    0.0045**  |    0.0046**  |     0.0044**  |   0.0049***|
+| (SE)                        |   (0.0018)   |   (0.0018)   |    (0.0018)   |  (0.0018)  |
+| Observations                |    1,055     |    1,055     |     1,055     |   1,055    |
 
-| Dataset                   | N checked | Accuracy | Exact agreement | Subst. agreement |
-|---------------------------|-----------|----------|-----------------|------------------|
-| Copenhagen Burial Records | 200       | 0.950    | -               | -                |
-| Training Ship Data        | 200       | 0.985    | 0.820           | 0.965            |
-| Swedish Strikes           | 200       | 0.945    | 0.805           | 0.935            |
-| Dutch Familiegeld         | 200       | 0.925    | 0.670           | 0.925            |
+*Note* $*$: p$<0.10$, $**$: p$<0.05$, $***$: p$<0.05$, 
 
+]
+]
 
 .footnote[
-.small123[
-$^*$ *Thanks to Bram Hilkens*  
-See more details in the paper
-]
+[Back](#bias)
 ]
 
-
----
-# Differential error rates
-.pull-left-narrow[
-- Performs best for the most common HISCO codes (99% --> 524 HISCO codes)
-- (As does squishy wet neural networks)
-]
-
-.pull-right-wide[
-![HISCO_count](Figures/Performance_by_hisco.png)
-]
-
----
-# Bias
-
-.pull-left-narrow[
-- Potential problem: If error rates are correlated with Socio-Economic Status
-- Turns out its not
-- Not in a regression setting either
-]
-
-.pull-right-wide[
-![SES](Figures/Performance_by_ses.png)
-]
-
-
----
-# Architecture
-![Arch](Figures/Architecture.png)
-
-**Summary:** Description goes in, probabilities comes out
 
 ---
 # Application 1: Copenhagen Burial Records 
@@ -619,76 +804,131 @@ class: middle
 ]
 
 ---
-# Application 2: Danish Census data (1787-1901)
+# Training - technical details
+.pull-left[
+- We use Adam optimizer (adaptive momentum optimizer)
+- Two loss functions:
+  + Binary Cross-entropy loss for 'fast' decoder
+  + Order-invariant loss (oil) for 'good' decoder
+- All runs efficiently with *teacher forcing*. I.e. we predict all digits in one go, excluding 'illegal' information. 
+]
+
+---
+# OIL: Order-Invariant loss (intuition)
 
 .pull-left[
-- We can proxy for income by looking at the average income of each occupation.
-- For now based on 1915 average incomes
-- Extensions possble
+- Many entries contain **multiple occupations**:
+  - *"policeman and farmer"*
+  - *"he fishes and farms"*
+- These map to several valid HISCO codes:
+  - e.g. $61110$ (Farmer), $64100$ (Fisherman)
 
+- For the model, the **set** of codes is what matters  
+  $\Rightarrow$ $\{61110, 64100\}$ is correct in **any order**
 
-**How do we turn 1915 incomes into HISCO-code-level incomes?** $\rightarrow$ ***Also use OccCANINE***
-
-$$
-\mathbb{E}(w_i|h_j)=\sum_i^N w_i \frac{\overset{OccCANINE}{\overbrace{Pr(h_j|w_i)}}\overset{Prior}{\overbrace{Pr(w_i)}}}{\underset{Normalization / Evidence}{\underbrace{Pr(h_j)}}}
-$$
+.red[
+Standard sequence loss is order-sensitive  
+$\Rightarrow$ wrong penalty for correct but permuted outputs
 ]
+
+- Note: This is trivial in the 'fast' decoder: Cross Entropy
+
+]
+
+
+--
 
 .pull-right[
-![1915](Figures/TableX_example.png)
-]
+```text
+"he fishes and farms"
 
----
-# Danish Economic History in three bullets
-.pull-left[
-- When was the economic take-off in Denmark?
-- Latter half of 19th century (Henriksen, 2006)
-- Wages: From among the poorest to being among the richest in the period 1850-1900 (Khaustova, Sharp, 2015)
-- **But how much of this is driven by occupational shifts?**
-  + *Answer*: Some of it was
-]
+Target codes:
+  [Farmer, Fisher]
 
-.pull-right-narrow[
-![DK_hist](Figures/DK_EH.webp)
-*I've heard the creameries also played a role (Lampe & Sharp, 2019)*
-]
+Predicted (model):
+  [Fisher, Farmer]
 
+Standard loss:
+  ❌ (wrong order)
 
----
-# Application 2: Danish Census data (1787-1901)
+Order-invariant loss:
+  ✅ (same set)
+```
 
-.pull-left-wide[
-![DK_income](Figures/DK_occ_income.png)
-]
+#### We solve this while maintaining useful properties
+- We can take the derivative
+- Teacher forcing compatible
+- Efficient to compute
 
-.pull-right-narrow[
-- Stable (occupational) incomes until mid 1800s
-- Sharp shift upwards
-- People started taking jobs that (eventually) would pay more 
+] 
 
-]
 
 
 ---
-class: middle
-# Conclusion
-.pull-left[
-- Something that took weeks, months and years, now takes an afternoon
-- Enables new research 
-- Enables more time on caring about the quality of sources and their nature
 
-- We will further train ***OccCANINE*** during the summer $\rightarrow$ *please share data*
+# Order-invariant loss (details)
+
+.small123[
+
+- Split prediction into $N$ candidate code blocks, each of length $b$.
+
+- For each candidate $i$ and target $j$, compute block loss
+
+$$L_{ij} = \frac{1}{b} \sum_{\ell = 0}^{b - 1} \mathrm{CE}\big(\hat{Y}_i[\ell], Y_j[\ell]\big).$$
+
+- Let $k$ be the number of valid target codes.  
+  **Order-invariant matching across blocks:**
+  
+$$L_{\mathrm{inv}}
+= \frac{1}{k} \sum_{j = 0}^{k - 1}
+\min_{0 \le i < k} L_{ij}.$$
+
+  Each true code is matched to its best-predicted block.
+
+- We need to promote sparcity. Let $\mathcal{M}_i$ be a mask indicating if block $i$ should *not* contain a valid code.
+  
+$$L_{\mathrm{pad}}
+= \frac{1}{N} \sum_{i = 0}^{N - 1} \mathcal{M}_i L_{\mathrm{pad}}^i.$$
+
+  Where $L_{\mathrm{pad}}^i$ is 0 if block $i$ predicts the 'padding' code, and CE to padding otherwise.
+
+- Final objective for the 'good' decoder:
+$$L = L_{\mathrm{inv}} + \lambda L_{\mathrm{pad}},$$
+  with $\lambda$ tuning how hard we penalize spurious codes.
 
 ]
 
-.pull-right[
-**Feel free to reach out**  
-Twitter: @ChristianVedel  
-christian-vs@sam.sdu.dk  
 
-
-See guide on YouTube: https://youtu.be/BF_oNe-sABQ?si=Ef1YrkK43Ln_IHJS
+---
+# The nature of the mistakes
+.panelset[
+.panel[.panel-name[Example 1]
+.center[
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_marr_cert3742836.png")
+```
 ]
-
-
+]
+.panel[.panel-name[Example 2]
+.center[
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_parish33715.png")
+```
+]
+]
+.panel[.panel-name[Example 3]
+.center[
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_EN_uk_ipums2325523.png")
+```
+]
+]
+.panel[.panel-name[Example 4]
+.center[
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.height="450px", out.width="675px"}
+knitr::include_graphics("Figures/CANINE_preds_w_lang/RowID_DK_census1787182508.png")
+```
+]
+]
+]
 

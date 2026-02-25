@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9643234672304439,0.9647639182522905,0.9643234672304439,0.9656448202959831,1892,greedy,DK_orsted_test.csv

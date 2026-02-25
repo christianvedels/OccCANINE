@@ -1,0 +1,284 @@
+Code	Label																						
+000	Accountants and auditors	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+001	Actors and actresses	X	X	X	X	X	X	X	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+002	Airplane pilots and navigators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+003	Architects	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+004	Artists and art teachers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+005	Athletes	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X
+006	Authors	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+007	Chemists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+008	Chiropractors	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+009	Clergymen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+010	College presidents and deans	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	X	X	X	X
+012	Agricultural sciences	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	·	X	·	·	·	·
+013	Biological sciences	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	·	·	·	·
+014	Chemistry	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	·	X	·	·	·
+015	Economics	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	·	·	·	·	·	·	·
+016	Engineering	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	·	·	·	·	·	·
+017	Geology and geophysics	·	·	·	·	·	·	·	·	·	·	·	X	X	·	·	·	·	·	X	X	·	·
+018	Mathematics	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	·	X	X	X	X	X
+019	Medical sciences	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	·	·	·	X	·
+023	Physics	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	·	·	·	·
+024	Psychology	·	·	·	·	·	·	·	X	X	X	X	X	X	·	·	·	·	·	·	·	·	·
+025	Statistics	·	·	·	·	·	·	·	·	·	·	·	X	X	·	·	·	·	·	·	·	·	·
+026	Natural science (n.e.c.)	·	·	·	·	·	·	·	X	X	X	X	X	X	·	·	·	·	·	X	·	X	·
+027	Social sciences (n.e.c.)	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	X	X	X	·
+028	Non-scientific subjects	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+029	Subject not specified	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+031	Dancers and dancing teachers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+032	Dentists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+033	Designers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+034	Dietitians and nutritionists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+035	Draftsmen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+036	Editors and reporters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+041	Engineers, aeronautical	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	·	·	·	·	·	·
+042	Engineers, chemical	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+043	Engineers, civil	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+044	Engineers, electrical	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+045	Engineers, industrial	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+046	Engineers, mechanical	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+047	Engineers, metallurgical, metallurgists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+048	Engineers, mining	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	·
+049	Engineers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	·
+051	Entertainers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+052	Farm and home management advisors	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	·	·	·	X	·
+053	Foresters and conservationists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+054	Funeral directors and embalmers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+055	Lawyers and judges	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+056	Librarians	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+057	Musicians and music teachers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+058	Nurses, professional	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+059	Nurses, student professional	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	·	·	·	·
+061	Agricultural scientists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+062	Biological scientists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+063	Geologists and geophysicists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	·	·
+067	Mathematicians	·	·	·	·	·	·	X	X	X	X	X	X	X	·	X	·	X	X	·	·	·	·
+068	Physicists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+069	Miscellaneous natural scientists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	·	·	X	·
+070	Optometrists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+071	Osteopaths	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	·	·	·	·
+072	Personnel and labor relations workers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+073	Pharmacists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+074	Photographers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+075	Physicians and surgeons	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+076	Radio operators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+077	Recreation and group workers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	·	·	·
+078	Religious workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+079	Social and welfare workers, except group	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+081	Economists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	·	·	·	·	·	·
+082	Psychologists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+083	Statisticians and actuaries	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	·	·	·	·
+084	Miscellaneous social scientists	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	·	·	·
+091	Sports instructors and officials	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+092	Surveyors	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+093	Teachers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+094	Technicians, medical and dental	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+095	Technicians, testing	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+096	Technicians (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+097	Therapists and healers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+098	Veterinarians	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+099	Professional, technical and kindred workers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+100	Farmers (owners and tenants)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+123	Farm managers	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+200	Buyers and department heads, store	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	·
+201	Buyers and shippers, farm products	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+203	Conductors, railroad	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+204	Credit men	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	·	·	·	·
+205	Floormen and floor managers, store	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	·	·	·	·
+210	Inspectors, public administration	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+230	Managers and superintendents, building	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+240	Officers, pilots, pursers and engineers, ship	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+250	Officials and administrators (n.e.c.), public administration	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+260	Officials, lodge, society, union, etc.	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	·	·	·
+270	Postmasters	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+280	Purchasing agents and buyers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+290	Managers, officials, and proprietors (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+300	Agents (n.e.c.)	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+301	Attendants and assistants, library	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	·	·
+302	Attendants, physician's and dentist's office	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+304	Baggagemen, transportation	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X
+305	Bank tellers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+310	Bookkeepers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+320	Cashiers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+321	Collectors, bill and account	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+322	Dispatchers and starters, vehicle	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	·	·
+325	Express messengers and railway mail clerks	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	·
+335	Mail carriers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+340	Messengers and office boys	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+341	Office machine operators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+342	Shipping and receiving clerks	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+350	Stenographers, typists, and secretaries	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+360	Telegraph messengers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	·	X
+365	Telegraph operators	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+370	Telephone operators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+380	Ticket, station, and express agents	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+390	Clerical and kindred workers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+400	Advertising agents and salesmen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+410	Auctioneers	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+420	Demonstrators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+430	Hucksters and peddlers	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+450	Insurance agents and brokers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+460	Newsboys	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+470	Real estate agents and brokers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+480	Stock and bond salesmen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+490	Salesmen and sales clerks (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+500	Bakers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+501	Blacksmiths	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+502	Bookbinders	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+503	Boilermakers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+504	Brickmasons, stonemasons, and tile setters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+505	Cabinetmakers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+510	Carpenters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+511	Cement and concrete finishers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	·
+512	Compositors and typesetters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+513	Cranemen, derrickmen, and hoistmen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+514	Decorators and window dressers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	·	X	·	X
+515	Electricians	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+520	Electrotypers and stereotypers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+521	Engravers, except photoengravers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+522	Excavating, grading, and road machinery operators	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	·	·	·
+523	Foremen (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+524	Forgemen and hammermen	·	·	·	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+525	Furriers	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+530	Glaziers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+531	Heat treaters, annealers, temperers	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+532	Inspectors, scalers, and graders, log and lumber	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+533	Inspectors (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+534	Jewelers, watchmakers, goldsmiths, and silversmiths	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+535	Job setters, metal	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+540	Linemen and servicemen, telegraph, telephone, and power	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·
+541	Locomotive engineers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+542	Locomotive firemen	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+543	Loom fixers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+544	Machinists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+545	Mechanics and repairmen, airplane	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·	·
+550	Mechanics and repairmen, automobile	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+551	Mechanics and repairmen, office machine	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	·	·	·	·
+552	Mechanics and repairmen, radio and television	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	·	·	·	·	·	·
+553	Mechanics and repairmen, railroad and car shop	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	·	·
+554	Mechanics and repairmen (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+555	Millers, grain, flour, feed, etc.	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+560	Millwrights	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+561	Molders, metal	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+562	Motion picture projectionists	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+563	Opticians and lens grinders and polishers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+564	Painters, construction and maintenance	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+565	Paperhangers	·	·	·	·	X	X	X	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X
+570	Pattern and model makers, except paper	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+571	Photoengravers and lithographers	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+572	Piano and organ tuners and repairmen	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+573	Plasterers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+574	Plumbers and pipe fitters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+575	Pressmen and plate printers, printing	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+580	Rollers and roll hands, metal	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+581	Roofers and slaters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+582	Shoemakers and repairers, except factory	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+583	Stationary engineers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+584	Stone cutters and stone carvers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+585	Structural metal workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+590	Tailors and tailoresses	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+591	Tinsmiths, coppersmiths, and sheet metal workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+592	Tool makers, and die makers and setters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+593	Upholsterers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+594	Craftsmen and kindred workers (n.e.c.)	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	X	X	X	X
+595	Members of the armed services	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+600	Apprentice auto mechanics	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	·	·	·	·	·
+601	Apprentice bricklayers and masons	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	X	X	X	·
+602	Apprentice carpenters	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+603	Apprentice electricians	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+604	Apprentice machinists and toolmakers	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+605	Apprentice mechanics, except auto	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	X	X	X	·
+610	Apprentice plumbers and pipe fitters	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+611	Apprentices, building trades (n.e.c.)	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+612	Apprentices, metalworking trades (n.e.c.)	·	·	·	·	·	·	·	X	X	X	X	X	X	·	X	X	X	X	X	X	X	·
+613	Apprentices, printing trades	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+614	Apprentices, other specified trades	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+615	Apprentices, trade not specified	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+620	Asbestos and insulation workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·
+621	Attendants, auto service and parking	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+622	Blasters and powdermen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X
+623	Boatmen, canalmen, and lock keepers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+624	Brakemen, railroad	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+625	Bus drivers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+630	Chainmen, rodmen, and axmen, surveying	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+631	Conductors, bus and street railway	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+632	Deliverymen and routemen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+633	Dressmakers and seamstresses, except factory	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+634	Dyers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+635	Filers, grinders, and polishers, metal	X	X	X	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+640	Fruit, nut, and vegetable graders, and packers, except factory	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	·	·
+641	Furnacemen, smeltermen and pourers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+642	Heaters, metal	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+643	Laundry and dry cleaning operatives	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+644	Meat cutters, except slaughter and packing house	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+645	Milliners	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+650	Mine operatives and laborers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+660	Motormen, mine, factory, logging camp, etc.	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	·	·	·	·
+661	Motormen, street, subway, and elevated railway	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	·	X	X	·
+662	Oilers and greaser, except auto	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+670	Painters, except construction or maintenance	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+671	Photographic process workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X
+672	Power station operators	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·	·	·
+673	Sailors and deck hands	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+674	Sawyers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+675	Spinners, textile	·	·	·	·	·	·	·	·	·	·	·	X	X	·	X	X	X	X	X	X	X	X
+680	Stationary firemen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+681	Switchmen, railroad	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+682	Taxicab drivers and chauffers	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+683	Truck and tractor drivers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+684	Weavers, textile	·	·	·	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	X	X	X	X
+685	Welders and flame cutters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+690	Operative and kindred workers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+700	Housekeepers, private household	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+710	Laundresses, private household	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+720	Private household workers (n.e.c.)	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+730	Attendants, hospital and other institution	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+731	Attendants, professional and personal service (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+732	Attendants, recreation and amusement	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X
+740	Barbers, beauticians, and manicurists	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+750	Bartenders	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+751	Bootblacks	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·
+752	Boarding and lodging house keepers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+753	Charwomen and cleaners	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+754	Cooks, except private household	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+760	Counter and fountain workers	·	·	·	X	X	X	X	X	X	X	X	X	X	·	X	X	X	X	·	·	·	·
+761	Elevator operators	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	·	·	·
+762	Firemen, fire protection	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·
+763	Guards, watchmen, and doorkeepers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+764	Housekeepers and stewards, except private household	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+770	Janitors and sextons	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+771	Marshals and constables	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X
+772	Midwives	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	X	X	X	·
+773	Policemen and detectives	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+780	Porters	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+781	Practical nurses	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+782	Sheriffs and bailiffs	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+783	Ushers, recreation and amusement	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	·	X	·
+784	Waiters and waitresses	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+785	Watchmen (crossing) and bridge tenders	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+790	Service workers, except private household (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+810	Farm foremen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+820	Farm laborers, wage workers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+830	Farm laborers, unpaid family workers	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	·	·	·	·	·
+840	Farm service laborers, self-employed	·	·	·	·	·	·	·	·	·	X	X	X	X	·	X	X	X	X	X	X	X	X
+910	Fishermen and oystermen	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+920	Garage laborers and car washers and greasers	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	·	·	·	·	·
+930	Gardeners, except farm and groundskeepers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+940	Longshoremen and stevedores	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+950	Lumbermen, raftsmen, and woodchoppers	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+960	Teamsters	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X	·	·	·	·	·
+970	Laborers (n.e.c.)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X
+979	Not yet classified	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·
+980	Keeps house/housekeeping at home/housewife	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	·
+981	Imputed keeping house (1850-1900)	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	·
+982	Helping at home/helps parents/housework	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	·
+983	At school/student	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X
+984	Retired	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X
+985	Unemployed/without occupation	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·
+986	Invalid/disabled w/ no occupation reported	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X
+987	Inmate	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X
+990	New Worker	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·
+991	Gentleman/lady/at leisure	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·	·
+995	Other non-occupational response	·	·	·	·	·	·	·	·	·	·	·	·	·	·	X	X	X	X	X	X	X	X
+997	Occupation missing/unknown	·	·	·	·	·	·	·	·	·	·	·	X	X	X	·	·	·	·	·	·	·	·
+999	N/A (blank)	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	X	·	X	X

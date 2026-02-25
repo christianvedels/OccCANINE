@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.949124945066715,0.9624432707758099,0.9492608472466891,0.9888829800984555,90261,greedy,SE_swedpop_test.csv

@@ -1,0 +1,46 @@
+# A tibble: 16 × 6
+   method statistic `Lang. info.` threshold value test_value
+   <chr>  <chr>     <chr>             <dbl> <dbl>      <dbl>
+ 1 flat   accuracy  No                 0.47 0.961      0.961
+ 2 flat   accuracy  Yes                0.39 0.965      0.964
+ 3 full   accuracy  No                 0.32 0.883      0.961
+ 4 full   accuracy  Yes                0.29 0.885      0.964
+ 5 flat   f1        No                 0.28 0.965      0.965
+ 6 flat   f1        Yes                0.26 0.968      0.968
+ 7 full   f1        No                 0.3  0.909      0.965
+ 8 full   f1        Yes                0.29 0.912      0.967
+ 9 flat   precision No                 0.47 0.963      0.962
+10 flat   precision Yes                0.41 0.966      0.966
+11 full   precision No                 0.35 0.955      0.962
+12 full   precision Yes                0.39 0.957      0.966
+13 flat   recall    No                 0.01 0.989      0.989
+14 flat   recall    Yes                0.01 0.990      0.990
+15 full   recall    No                 0.01 0.907      0.989
+16 full   recall    Yes                0.01 0.907      0.990
+
+Number of observations full:
+ 10000 
+
+Number of observations flat:
+ 926454 
+
+Number of observations test data:
+ 931474 
+
+Table for paper (only flat):
+
+\begin{tabular}{llrrr}
+\toprule
+Statistic & Lang. info. & threshold & validation & test\\
+\midrule
+Accuracy & No & 0.47 & 0.961 & 0.961\\
+Accuracy & Yes & 0.39 & 0.965 & 0.964\\
+F1 score & No & 0.28 & 0.965 & 0.965\\
+F1 score & Yes & 0.26 & 0.968 & 0.968\\
+Precision & No & 0.47 & 0.963 & 0.962\\
+\addlinespace
+Precision & Yes & 0.41 & 0.966 & 0.966\\
+Recall & No & 0.01 & 0.989 & 0.989\\
+Recall & Yes & 0.01 & 0.990 & 0.990\\
+\bottomrule
+\end{tabular}

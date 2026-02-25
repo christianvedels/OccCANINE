@@ -1,0 +1,284 @@
+system_code,desc
+000,Accountants and auditors
+001,Actors and actresses
+002,Airplane pilots and navigators
+003,Architects
+004,Artists and art teachers
+005,Athletes
+006,Authors
+007,Chemists
+008,Chiropractors
+009,Clergymen
+010,College presidents and deans
+012,Agricultural sciences
+013,Biological sciences
+014,Chemistry
+015,Economics
+016,Engineering
+017,Geology and geophysics
+018,Mathematics
+019,Medical sciences
+023,Physics
+024,Psychology
+025,Statistics
+026,Natural science (n.e.c.)
+027,Social sciences (n.e.c.)
+028,Non-scientific subjects
+029,Subject not specified
+031,Dancers and dancing teachers
+032,Dentists
+033,Designers
+034,Dietitians and nutritionists
+035,Draftsmen
+036,Editors and reporters
+041,"Engineers, aeronautical"
+042,"Engineers, chemical"
+043,"Engineers, civil"
+044,"Engineers, electrical"
+045,"Engineers, industrial"
+046,"Engineers, mechanical"
+047,"Engineers, metallurgical, metallurgists"
+048,"Engineers, mining"
+049,Engineers (n.e.c.)
+051,Entertainers (n.e.c.)
+052,Farm and home management advisors
+053,Foresters and conservationists
+054,Funeral directors and embalmers
+055,Lawyers and judges
+056,Librarians
+057,Musicians and music teachers
+058,"Nurses, professional"
+059,"Nurses, student professional"
+061,Agricultural scientists
+062,Biological scientists
+063,Geologists and geophysicists
+067,Mathematicians
+068,Physicists
+069,Miscellaneous natural scientists
+070,Optometrists
+071,Osteopaths
+072,Personnel and labor relations workers
+073,Pharmacists
+074,Photographers
+075,Physicians and surgeons
+076,Radio operators
+077,Recreation and group workers
+078,Religious workers
+079,"Social and welfare workers, except group"
+081,Economists
+082,Psychologists
+083,Statisticians and actuaries
+084,Miscellaneous social scientists
+091,Sports instructors and officials
+092,Surveyors
+093,Teachers (n.e.c.)
+094,"Technicians, medical and dental"
+095,"Technicians, testing"
+096,Technicians (n.e.c.)
+097,Therapists and healers (n.e.c.)
+098,Veterinarians
+099,"Professional, technical and kindred workers (n.e.c.)"
+100,Farmers (owners and tenants)
+123,Farm managers
+200,"Buyers and department heads, store"
+201,"Buyers and shippers, farm products"
+203,"Conductors, railroad"
+204,Credit men
+205,"Floormen and floor managers, store"
+210,"Inspectors, public administration"
+230,"Managers and superintendents, building"
+240,"Officers, pilots, pursers and engineers, ship"
+250,"Officials and administrators (n.e.c.), public administration"
+260,"Officials, lodge, society, union, etc."
+270,Postmasters
+280,Purchasing agents and buyers (n.e.c.)
+290,"Managers, officials, and proprietors (n.e.c.)"
+300,Agents (n.e.c.)
+301,"Attendants and assistants, library"
+302,"Attendants, physician's and dentist's office"
+304,"Baggagemen, transportation"
+305,Bank tellers
+310,Bookkeepers
+320,Cashiers
+321,"Collectors, bill and account"
+322,"Dispatchers and starters, vehicle"
+325,Express messengers and railway mail clerks
+335,Mail carriers
+340,Messengers and office boys
+341,Office machine operators
+342,Shipping and receiving clerks
+350,"Stenographers, typists, and secretaries"
+360,Telegraph messengers
+365,Telegraph operators
+370,Telephone operators
+380,"Ticket, station, and express agents"
+390,Clerical and kindred workers (n.e.c.)
+400,Advertising agents and salesmen
+410,Auctioneers
+420,Demonstrators
+430,Hucksters and peddlers
+450,Insurance agents and brokers
+460,Newsboys
+470,Real estate agents and brokers
+480,Stock and bond salesmen
+490,Salesmen and sales clerks (n.e.c.)
+500,Bakers
+501,Blacksmiths
+502,Bookbinders
+503,Boilermakers
+504,"Brickmasons, stonemasons, and tile setters"
+505,Cabinetmakers
+510,Carpenters
+511,Cement and concrete finishers
+512,Compositors and typesetters
+513,"Cranemen, derrickmen, and hoistmen"
+514,Decorators and window dressers
+515,Electricians
+520,Electrotypers and stereotypers
+521,"Engravers, except photoengravers"
+522,"Excavating, grading, and road machinery operators"
+523,Foremen (n.e.c.)
+524,Forgemen and hammermen
+525,Furriers
+530,Glaziers
+531,"Heat treaters, annealers, temperers"
+532,"Inspectors, scalers, and graders, log and lumber"
+533,Inspectors (n.e.c.)
+534,"Jewelers, watchmakers, goldsmiths, and silversmiths"
+535,"Job setters, metal"
+540,"Linemen and servicemen, telegraph, telephone, and power"
+541,Locomotive engineers
+542,Locomotive firemen
+543,Loom fixers
+544,Machinists
+545,"Mechanics and repairmen, airplane"
+550,"Mechanics and repairmen, automobile"
+551,"Mechanics and repairmen, office machine"
+552,"Mechanics and repairmen, radio and television"
+553,"Mechanics and repairmen, railroad and car shop"
+554,Mechanics and repairmen (n.e.c.)
+555,"Millers, grain, flour, feed, etc."
+560,Millwrights
+561,"Molders, metal"
+562,Motion picture projectionists
+563,Opticians and lens grinders and polishers
+564,"Painters, construction and maintenance"
+565,Paperhangers
+570,"Pattern and model makers, except paper"
+571,Photoengravers and lithographers
+572,Piano and organ tuners and repairmen
+573,Plasterers
+574,Plumbers and pipe fitters
+575,"Pressmen and plate printers, printing"
+580,"Rollers and roll hands, metal"
+581,Roofers and slaters
+582,"Shoemakers and repairers, except factory"
+583,Stationary engineers
+584,Stone cutters and stone carvers
+585,Structural metal workers
+590,Tailors and tailoresses
+591,"Tinsmiths, coppersmiths, and sheet metal workers"
+592,"Tool makers, and die makers and setters"
+593,Upholsterers
+594,Craftsmen and kindred workers (n.e.c.)
+595,Members of the armed services
+600,Apprentice auto mechanics
+601,Apprentice bricklayers and masons
+602,Apprentice carpenters
+603,Apprentice electricians
+604,Apprentice machinists and toolmakers
+605,"Apprentice mechanics, except auto"
+610,Apprentice plumbers and pipe fitters
+611,"Apprentices, building trades (n.e.c.)"
+612,"Apprentices, metalworking trades (n.e.c.)"
+613,"Apprentices, printing trades"
+614,"Apprentices, other specified trades"
+615,"Apprentices, trade not specified"
+620,Asbestos and insulation workers
+621,"Attendants, auto service and parking"
+622,Blasters and powdermen
+623,"Boatmen, canalmen, and lock keepers"
+624,"Brakemen, railroad"
+625,Bus drivers
+630,"Chainmen, rodmen, and axmen, surveying"
+631,"Conductors, bus and street railway"
+632,Deliverymen and routemen
+633,"Dressmakers and seamstresses, except factory"
+634,Dyers
+635,"Filers, grinders, and polishers, metal"
+640,"Fruit, nut, and vegetable graders, and packers, except factory"
+641,"Furnacemen, smeltermen and pourers"
+642,"Heaters, metal"
+643,Laundry and dry cleaning operatives
+644,"Meat cutters, except slaughter and packing house"
+645,Milliners
+650,Mine operatives and laborers
+660,"Motormen, mine, factory, logging camp, etc."
+661,"Motormen, street, subway, and elevated railway"
+662,"Oilers and greaser, except auto"
+670,"Painters, except construction or maintenance"
+671,Photographic process workers
+672,Power station operators
+673,Sailors and deck hands
+674,Sawyers
+675,"Spinners, textile"
+680,Stationary firemen
+681,"Switchmen, railroad"
+682,Taxicab drivers and chauffers
+683,Truck and tractor drivers
+684,"Weavers, textile"
+685,Welders and flame cutters
+690,Operative and kindred workers (n.e.c.)
+700,"Housekeepers, private household"
+710,"Laundresses, private household"
+720,Private household workers (n.e.c.)
+730,"Attendants, hospital and other institution"
+731,"Attendants, professional and personal service (n.e.c.)"
+732,"Attendants, recreation and amusement"
+740,"Barbers, beauticians, and manicurists"
+750,Bartenders
+751,Bootblacks
+752,Boarding and lodging house keepers
+753,Charwomen and cleaners
+754,"Cooks, except private household"
+760,Counter and fountain workers
+761,Elevator operators
+762,"Firemen, fire protection"
+763,"Guards, watchmen, and doorkeepers"
+764,"Housekeepers and stewards, except private household"
+770,Janitors and sextons
+771,Marshals and constables
+772,Midwives
+773,Policemen and detectives
+780,Porters
+781,Practical nurses
+782,Sheriffs and bailiffs
+783,"Ushers, recreation and amusement"
+784,Waiters and waitresses
+785,Watchmen (crossing) and bridge tenders
+790,"Service workers, except private household (n.e.c.)"
+810,Farm foremen
+820,"Farm laborers, wage workers"
+830,"Farm laborers, unpaid family workers"
+840,"Farm service laborers, self-employed"
+910,Fishermen and oystermen
+920,Garage laborers and car washers and greasers
+930,"Gardeners, except farm and groundskeepers"
+940,Longshoremen and stevedores
+950,"Lumbermen, raftsmen, and woodchoppers"
+960,Teamsters
+970,Laborers (n.e.c.)
+979,Not yet classified
+980,Keeps house/housekeeping at home/housewife
+981,Imputed keeping house (1850-1900)
+982,Helping at home/helps parents/housework
+983,At school/student
+984,Retired
+985,Unemployed/without occupation
+986,Invalid/disabled w/ no occupation reported
+987,Inmate
+990,New Worker
+991,Gentleman/lady/at leisure
+995,Other non-occupational response
+997,Occupation missing/unknown
+999,N/A (blank)

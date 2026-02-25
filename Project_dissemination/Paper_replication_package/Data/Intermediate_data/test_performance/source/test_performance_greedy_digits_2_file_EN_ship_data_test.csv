@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9614492753623188,0.9637359098228668,0.9678260869565217,0.9619323671497585,5175,greedy,EN_ship_data_test.csv

@@ -1,5 +1,5 @@
 # Getting started
-- See [Colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE.
+- See the [demonstration notebook](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb) for a demonstration of OccCANINE.
 - **New to Python?** You can use the above notebook from a webbrowser or install python on your own system via this link: [Miniconda](https://docs.anaconda.com/free/miniconda/miniconda-install/)
 - To use the model, follow the below setup guide.
 
@@ -9,7 +9,10 @@ conda create -n hisco python=3.11 numpy pandas scikit-learn matplotlib seaborn
 conda activate hisco
 conda install pytorch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 pytorch-cuda=12.1 -c pytorch -c nvidia
 pip install unidecode transformers
+conda install sentencepiece
 ```
+
+Note: For pytorch installation please make sure cuda version and pytorch corresponds. See: https://pytorch.org/. You can check your local cuda version by running `nvcc --version`
 
 ### Optionally verify PyTorch installation
 ```
@@ -23,13 +26,13 @@ First clone the repository locally:
 git clone https://github.com/christianvedels/OccCANINE.git
 ```
 
-Us pip install to install `histocc`.
+Use pip install to install `histocc`.
 ```
 pip install path/to/cloned/repo
 ```
 
 ## Predict HISCO codes
-You are now ready to use OccCANINE for automatic HISCO codes. 
+You are now ready to use OccCANINE for automatic HISCO codes.
 
 To obtain HISCO codes for a dataset `example.csv`, which has a column `occ1` with occupational descriptions you can run the following to get a csv `output.csv` with HISCO codes:
 
@@ -52,10 +55,10 @@ You can specify any of the 13 languages in which it was trained on. Here is a fu
 + French: "fr"
 + Norwegian: "no"
 + Icelandic: "is"
-+ Portugese: "pt"
-+ German: "ge/de"
++ Portuguese: "pt"
++ German: "ge"
 + Spanish: "es"
 + Italian: "it"
 + Greek: "gr"
 
-Of course, OccCANINE has many options to tinker with. To get started writing a full script to handle your specific need we recommend starting with: [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)
+Of course, OccCANINE has many options to tinker with. To get started we recommend the [demonstration notebook](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb).

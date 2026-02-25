@@ -1,0 +1,2 @@
+threshold,accuracy,f1,precision,recall,n,prediction_type,file
+0.31,0.9485820302146832,0.9496421945401534,0.94950967399947,0.950834879406308,3773,greedy,GE_occupational_census_test.csv

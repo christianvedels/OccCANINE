@@ -1,0 +1,19 @@
+
+Test set performance by language and prediction type
+ ---> This is just used to check the maximum value of the boost from knowing the language
+ ---> (This is the reason it is not a latex table)
+# A tibble: 56 × 7
+       n prediction_type lang  stat      lang_info_yes lang_info_no    dif
+   <dbl> <chr>           <chr> <chr>             <dbl>        <dbl>  <dbl>
+ 1  8188 greedy          no    Precision         0.987        0.958 0.0291
+ 2  8188 greedy          no    Accuracy          0.987        0.958 0.0289
+ 3  8188 greedy          no    F1 score          0.987        0.959 0.0282
+ 4  8188 greedy          no    Recall            0.987        0.960 0.0266
+ 5   427 greedy          es    Accuracy          0.966        0.943 0.0234
+ 6   427 greedy          es    Precision         0.966        0.943 0.0234
+ 7   427 greedy          es    F1 score          0.966        0.943 0.0230
+ 8   427 greedy          es    Recall            0.966        0.944 0.0222
+ 9    88 greedy          gr    Accuracy          0.938        0.920 0.0170
+10    88 greedy          gr    Recall            0.938        0.920 0.0170
+# ℹ 46 more rows
+# ℹ Use `print(n = ...)` to see more rows

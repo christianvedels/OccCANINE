@@ -1,0 +1,25 @@
+\begin{table}
+
+\caption{Data summary}
+\centering
+\begin{tabular}[t]{llll}
+\toprule
+Language & Observations & Percent & Source\\
+\midrule
+en & 7,557,637 & 40.76\% & \\
+da & 5,484,860 & 29.58\% & \\
+se & 2,219,798 & 11.97\% & \\
+nl & 1,176,694 & 6.35\% & \\
+unk & 818,657 & 4.41\% & \\
+ca & 652,031 & 3.52\% & \\
+fr & 286,767 & 1.55\% & \\
+no & 160,387 & 0.86\% & \\
+ge & 131,260 & 0.71\% & \\
+is & 20,459 & 0.11\% & \\
+pt & 19,409 & 0.10\% & \\
+es & 8,701 & 0.05\% & \\
+it & 4,525 & 0.02\% & \\
+gr & 1,735 & 0.01\% & \\
+\bottomrule
+\end{tabular}
+\end{table}

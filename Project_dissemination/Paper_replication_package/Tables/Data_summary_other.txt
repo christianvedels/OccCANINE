@@ -1,0 +1,14 @@
+\begin{table}
+
+\caption{Data summary}
+\centering
+\begin{tabular}[t]{llrlll}
+\toprule
+Shorthand name & Observations & Unique strings (training) & Language & Percent & Source\\
+\midrule
+EN\_ISCO68\_IPUMS\_UK & 95,734,605 & 9838971 & en & 48.40\% & \\
+EN\_OCCICEM\_IPUMS\_UK & 79,946,726 & 4478633 & en & 40.42\% & \\
+EN\_OCC1950\_IPUMS\_US & 22,129,941 & 588871 & en & 11.19\% & \\
+\bottomrule
+\end{tabular}
+\end{table}
