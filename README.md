@@ -1,3 +1,5 @@
+> This is a branch with an old version of OccCANINE originally released in April 2024. See 'main' for the most recent version.
+
 Breaking the HISCO Barrier: Automatic Occupational Standardization with OccCANINE
 =====================
 *Christian Møller Dahl, Torben Johansen, Christian Vedel,*
