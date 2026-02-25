@@ -10,11 +10,8 @@ Paper: [https://arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
 
 Huggingface: [Christianvel/OccCANINE](https://huggingface.co/Christianvedel/OccCANINE)
 
-Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/refs/heads/update_paper/Project_dissemination/HISCO%20Slides/Slides.html#1)
+Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/refs/heads/main/Project_dissemination/HISCO%20Slides/Slides.html#1)
 
-How to use OccCANINE: [YouTube video](https://youtu.be/BF_oNe-sABQ?si=uEgNYLtPGNYAXCDK)
-
-Ultra-short demo: [YouTube short demo](https://youtu.be/d8dR5-clJeQ)
 
 <details>
   <summary>How to cite (click to expand)</summary>
@@ -36,10 +33,10 @@ Ultra-short demo: [YouTube short demo](https://youtu.be/d8dR5-clJeQ)
 
 Getting started
 --------
-- See the [colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE
+- See the [demonstration notebook](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb) for a demonstration of OccCANINE
 - A step-by-step installation guide can be found in [GETTING_STARTED.md](https://github.com/christianvedels/OccCANINE/blob/main/GETTING_STARTED.md)
 - Run `python predict.py --fn-in path/to/input/data.csv --col occ1 --fn-out path/to/output/data.csv --language [lang]` in the command line to get HISCO codes for all the descriptions found in the `occ1` column in the inputted data. See [predict.py](https://github.com/christianvedels/OccCANINE/blob/main/predict.py) for details.
-- To see a simple script which reads data and uses OccCANINE to obtain HISCO codes see  [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py).
+- To see a demonstration of OccCANINE obtaining HISCO codes see [demonstration.ipynb](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb).
 
 Overview
 --------
@@ -51,7 +48,9 @@ Structure
 
 *   **Data\_cleaning\_scripts**: Contains R scripts for processing raw data from 'Data/Raw\_data' into a format suitable for training, which is then stored in 'Data/Training\_data', 'Data/Validation\_data', and 'Data/Test\_data'.
 *   **histocc**: Contains Python scripts for training OccCANINE and using the already finetuned version of it.
-*   **Model_evaluation_scripts**: Contains a mix of R and Python scripts which generates model evaluation statistics and plots of these, which are found in the associated paper.
+*   **Project\_dissemination/Paper\_replication\_package**: Contains a mix of R and Python scripts which generate model evaluation statistics and plots, along with all tables and figures found in the associated paper.
+*   **Tools**: Utility scripts for data preparation, model hub upload, and other one-off tasks.
+*   **training\_documentation**: Markdown notes documenting training runs and experiment settings.
 
 histocc folder
 -------------
@@ -64,23 +63,27 @@ The histocc folder contains all the code used for training and application of Oc
 *   **dataLoader.py**: Defines how data is loaded and fed to the model in training.
 *   **prediction_assets.py**: Functions and classes to use OccCANINE. This also contains the 'OccCANINE' class, which serves as the main user interface in most cases.
 
-Model_evaluation_scripts folder
+Paper replication package
 -------------
-The Model_evaluation_scripts folder contains all the code used to generate the model evaluation results shown in the paper. 
+All code used to generate the model evaluation results shown in the paper is located in `Project_dissemination/Paper_replication_package/`. See the [README](https://github.com/christianvedels/OccCANINE/blob/main/Project_dissemination/Paper_replication_package/README.md) there for full details.
 
-### Python scripts
-*   **n001_Predict_eval.py**: Runs predictions on 1 million validation observations.
-*   **n002_Copenhagen_burial.py**: Runs predictions on 200 observations from the Copenhagen Burial Records from [Link Lives](https://www.rigsarkivet.dk/udforsk/link-lives-data/)
-*   **n003_Training_ship_data.py**: Runs predictions on 200 observations of parent's occupations from the [Indefatigable training ship](https://reshare.ukdataservice.ac.uk/853251/)
-*   **n004_Dutch_familiegeld.py**: Runs predictions on 200 observations of occupations in the Dutch familiegeld 
-*   **n005_Swedish_strikes.py**: Runs predictions on 200 observations of the profession of [Swedish strikes]([https://reshare.ukdataservice.ac.uk/853251/](https://hdl.handle.net/10622/TAVJXR))
+### Python scripts (`Model_eval_python/`)
+*   **predict_test.py**: Runs predictions on test data.
+*   **predict_testbylang.py**: Runs predictions broken down by language.
+*   **threshold_tuning.py**: Tunes per-language decision thresholds.
+*   **topk_test.py**: Evaluates top-k performance on test data.
+*   **predict_ood.py**: Runs predictions on out-of-distribution data.
+*   **performance_benchmark.py**: Benchmarks inference speed.
+*   **embeddings.py**: Generates embeddings for visualisation.
 
-### R scripts
+### R scripts (`Model_eval_R/`)
 *   **000_Functions.R**: Contains functions used in evaluation.
-*   **001_Generate_eval_stats.R**: Generates accuracy, precision, etc. for validation data across various subgroups.
-*   **002_Nature_of_mistakes.R**: Returns plots and statistics which generate insights into the nature of mistakes, when OccCANINE disagrees with the validaiton data.
-*   **101_Eval_illustrations.R**: Generates most of the illustrations and statistics shown in the paper.
-*   **102_Embeddings_visualisation.R**: This makes the embedding t-sne illustrations.
+*   **001_Descriptive_stats.R**: Generates descriptive statistics for the data.
+*   **002_Threshold_tuning.R**: Plots and analyses threshold tuning results.
+*   **003_Test_performance.R**: Generates overall test performance statistics and figures.
+*   **004_Test_performance_by_lang.R**: Performance broken down by language.
+*   **005_OOD_performance.R**: Out-of-distribution performance plots.
+*   **999_main.R**: Runs all R evaluation scripts in order.
 
 Data Cleaning
 -------------

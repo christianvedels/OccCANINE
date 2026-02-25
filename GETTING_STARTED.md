@@ -1,5 +1,5 @@
 # Getting started
-- See [Colab notebook](https://github.com/christianvedels/OccCANINE/blob/main/OccCANINE_colab.ipynb) for a demonstration of OccCANINE.
+- See the [demonstration notebook](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb) for a demonstration of OccCANINE.
 - **New to Python?** You can use the above notebook from a webbrowser or install python on your own system via this link: [Miniconda](https://docs.anaconda.com/free/miniconda/miniconda-install/)
 - To use the model, follow the below setup guide.
 
@@ -61,4 +61,4 @@ You can specify any of the 13 languages in which it was trained on. Here is a fu
 + Italian: "it"
 + Greek: "gr"
 
-Of course, OccCANINE has many options to tinker with. To get started writing a full script to handle your specific need we recommend starting with: [PREDICT_HISCOs.py](https://github.com/christianvedels/OccCANINE/blob/main/PREDICT_HISCOs.py)
+Of course, OccCANINE has many options to tinker with. To get started we recommend the [demonstration notebook](https://github.com/christianvedels/OccCANINE/blob/main/demonstration.ipynb).
