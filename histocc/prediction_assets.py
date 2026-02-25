@@ -214,9 +214,6 @@ class OccCANINE:
             # List of codes formatted to fit with the output from seq2seq/mix model
             self.codes_list = self._list_of_formatted_codes()
         else:
-            if hf:
-                raise ValueError("Hugging Face loading is only supported for the 'HISCO' system. Please set 'hf' to False and provide a local model name.")
-
             # TODO: Move into key loading method
             # loaded_state = torch.load(name, weights_only=True)
             try: # TODO: Delete this try except again
