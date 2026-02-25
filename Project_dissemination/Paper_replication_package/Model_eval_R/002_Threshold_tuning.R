@@ -183,33 +183,33 @@ n_obs_full = overall_full$n %>% unique()
 p1 = threshold_tuning_plot(overall_flat, observation = n_obs_flat)
 p2 = threshold_tuning_plot(overall_full, observation = n_obs_full)
 
-ggsave(
-    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png", 
-    p1, 
-    width = dims$width, 
-    height = dims$height,
-    dpi = 600
-)
-ggsave(
-    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.pdf", 
-    p1, 
-    width = dims$width, 
-    height = dims$height,
-    dpi = 600
-)
+# ggsave(
+#     "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.png", 
+#     p1, 
+#     width = dims$width, 
+#     height = dims$height,
+#     dpi = 600
+# )
+# ggsave(
+#     "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat.pdf", 
+#     p1, 
+#     width = dims$width, 
+#     height = dims$height,
+#     dpi = 600
+# )
 
-ggsave(
-    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.png", 
-    p2, 
-    width = dims$width, 
-    height = dims$height
-)
-ggsave(
-    "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.pdf", 
-    p2, 
-    width = dims$width, 
-    height = dims$height
-)
+# ggsave(
+#     "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.png", 
+#     p2, 
+#     width = dims$width, 
+#     height = dims$height
+# )
+# ggsave(
+#     "Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full.pdf", 
+#     p2, 
+#     width = dims$width, 
+#     height = dims$height
+# )
 
 # ==== Plot by language ====
 foreach(l = unique(bylang_flat$lang)) %do% {
@@ -223,18 +223,18 @@ foreach(l = unique(bylang_flat$lang)) %do% {
 
   p = threshold_tuning_plot(data, observation = n_l)
   
-  ggsave(
-    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".png"), 
-    p, 
-    width = dims$width, 
-    height = dims$height
-  )
-  ggsave(
-    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".pdf"), 
-    p, 
-    width = dims$width, 
-    height = dims$height
-  )
+#   ggsave(
+#     paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".png"), 
+#     p, 
+#     width = dims$width, 
+#     height = dims$height
+#   )
+#   ggsave(
+#     paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_flat/threshold_tuning_flat_", l, ".pdf"), 
+#     p, 
+#     width = dims$width, 
+#     height = dims$height
+#   )
 }
 
 foreach(l = unique(bylang_full$lang)) %do% {
@@ -248,18 +248,18 @@ foreach(l = unique(bylang_full$lang)) %do% {
 
   p = threshold_tuning_plot(data, observation = n_l)
   
-  ggsave(
-    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".png"), 
-    p, 
-    width = dims$width, 
-    height = dims$height
-  )
-  ggsave(
-    paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".pdf"), 
-    p, 
-    width = dims$width, 
-    height = dims$height
-  )
+#   ggsave(
+#     paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".png"), 
+#     p, 
+#     width = dims$width, 
+#     height = dims$height
+#   )
+#   ggsave(
+#     paste0("Project_dissemination/Paper_replication_package/Figures/threshold_tuning_full/threshold_tuning_full_", l, ".pdf"), 
+#     p, 
+#     width = dims$width, 
+#     height = dims$height
+#   )
 }
 
 # ==== Print tables of best thresholds overall ====
@@ -305,13 +305,13 @@ cat("\nTable for paper (only flat):\n")
 tmp_test %>%
     filter(method == "flat") %>%
     select(-method) %>%
-    rename(Metric = statistic, validation = value, test = test_value) %>%
+    rename(Statistic = statistic, validation = value, test = test_value) %>%
     mutate(
-        Metric = case_when(
-            Metric == "accuracy" ~ "Accuracy",
-            Metric == "precision" ~ "Precision",
-            Metric == "recall" ~ "Recall",
-            Metric == "f1" ~ "F1 score"
+        Statistic = case_when(
+            Statistic == "accuracy" ~ "Accuracy",
+            Statistic == "precision" ~ "Precision",
+            Statistic == "recall" ~ "Recall",
+            Statistic == "f1" ~ "F1 score"
         ),
     ) %>%
     knitr::kable(, 
@@ -349,13 +349,47 @@ res = x1 %>% bind_rows(x2, x3, x4) %>%
     drop_na(lang, n) %>%
     arrange(data, method, type, lang, statistic)
 
+# test_data_flat_by_lang
+res = res %>%
+    filter(type == "With language info.") %>%
+    filter(method == "flat") %>%
+    left_join(
+        test_data_flat_by_lang %>% 
+            rename(n_test = n) %>%
+            select(threshold, value, type, statistic, lang, n_test) %>% 
+            rename(test_value = value) %>%
+            filter(type == "Yes") %>%
+            select(-type),
+        by = c("threshold", "statistic", "lang")
+    )
+
 # If several, pick the first
 res1 = res %>%
     group_by(method, data, type, lang, statistic) %>%
     slice(1) %>%
     ungroup() %>%
     filter(type == "With language info.") %>%
-    select(-type)
+    select(-type) %>%
+    rename(Statistic = statistic, validation = value, test = test_value) %>%
+    mutate(
+        Statistic = case_when(
+            Statistic == "accuracy" ~ "Accuracy",
+            Statistic == "precision" ~ "Precision",
+            Statistic == "recall" ~ "Recall",
+            Statistic == "f1" ~ "F1 score"
+        ),
+    ) %>%
+    filter(method == "flat") %>%
+    select(-method) %>%
+    select(lang, n, n_test, Statistic, threshold, validation, test) %>%
+    rename(
+    Language = lang,
+    `N val obs.` = n,
+    `N test obs.` = n_test,
+    `Optimal threshold` = threshold,
+    Validation = validation,
+    Test = test
+    )
 
 # Print to Tables/threshold_tuning.txt
 sink("Project_dissemination/Paper_replication_package/Tables/threshold_tuning.txt", append = FALSE)
