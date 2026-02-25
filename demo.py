@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
 
     return args
 
+
 def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
     fn_keys = files('histocc').joinpath('Data/TOYDATA.csv')
 
@@ -46,7 +47,6 @@ def load_toydata() -> pd.DataFrame: # TODO probably move fn within OccCANINE
         keys = pd.read_csv(file)
 
     return keys
-
 
 
 def main():
@@ -57,14 +57,17 @@ def main():
 
     # Loop through single-str example
     for example_str in args.examples:
-        occ_code, prob, occ = model.predict(
+        print(f'Occupation description: {example_str}')
+
+        result = model.predict(
             example_str,
             lang=args.language,
             get_dict=True,
             threshold=args.threshold,
-            )[0][0]
+            )[0]
 
-        print(f'HISCO code: {occ_code}. Occupation: {occ}. Certainty: {prob * 100:.2f}%')
+        for occ_code, prob, occ in result:
+            print(f'    HISCO code: {occ_code}. Occupation: {occ}. Certainty: {prob * 100:.2f}%')
 
     # Predict on toy dataset if filename for output specified
     if args.toy_dataset_fn_out is None:

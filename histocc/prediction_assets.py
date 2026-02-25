@@ -745,6 +745,10 @@ class OccCANINE:
         """
         model = self.model.eval()
 
+        # Handle list vs str
+        if isinstance(occ1, str):
+            occ1 = [occ1]
+
         # Setup
         verbose = self.verbose
         results = []
