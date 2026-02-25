@@ -26,7 +26,7 @@ First clone the repository locally:
 git clone https://github.com/christianvedels/OccCANINE.git
 ```
 
-Us pip install to install `histocc`.
+Use pip install to install `histocc`.
 ```
 pip install path/to/cloned/repo
 ```
@@ -55,7 +55,7 @@ You can specify any of the 13 languages in which it was trained on. Here is a fu
 + French: "fr"
 + Norwegian: "no"
 + Icelandic: "is"
-+ Portugese: "pt"
++ Portuguese: "pt"
 + German: "ge"
 + Spanish: "es"
 + Italian: "it"
