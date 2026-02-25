@@ -8,7 +8,7 @@ Welcome to the GitHub repository for OccCANINE, a tool designed to transform occ
 
 Paper: [https://arxiv.org/abs/2402.13604](https://arxiv.org/abs/2402.13604)
 
-Huggingface: [Christianvel/OccCANINE](https://huggingface.co/Christianvedel/OccCANINE)
+Huggingface: [Christianvedel/OccCANINE_s2s_mix](https://huggingface.co/Christianvedel/OccCANINE_s2s_mix)
 
 Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/OccCANINE/refs/heads/main/Project_dissemination/HISCO%20Slides/Slides.html#1)
 
@@ -25,7 +25,7 @@ Slides: [Breaking the HISCO Barrier](https://raw.githack.com/christianvedels/Occ
       year={2024},
       eprint={2402.13604},
       archivePrefix={arXiv},
-      primaryClass={cs.CL}
+      primaryClass={cs.CL},
       url={https://arxiv.org/abs/2402.13604}
   }
   ```
