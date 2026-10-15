@@ -456,7 +456,7 @@ class OCCDataset(Dataset):
             cat_sequence = concat_string(occ1, lang)
 
         # Encoded format to be returned
-        encoding = self.tokenizer.encode_plus(
+        encoding = self.tokenizer(
             cat_sequence,
             add_special_tokens=True,
             padding = 'max_length',
@@ -575,7 +575,7 @@ class OccDatasetV2(Dataset):
         input_seq = self._prepare_input(occ_descr, lang)
 
         # Encode input sequence
-        encoded_input_seq = self.tokenizer.encode_plus(
+        encoded_input_seq = self.tokenizer(
             input_seq,
             add_special_tokens=True,
             padding='max_length',
@@ -790,7 +790,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
         input_seq = self._prepare_input(occ_descr, lang)
 
         # Encode input sequence
-        encoded_input_seq = self.tokenizer.encode_plus(
+        encoded_input_seq = self.tokenizer(
             input_seq,
             add_special_tokens=True,
             padding='max_length',
@@ -883,7 +883,7 @@ class OccDatasetV2FromAlreadyLoadedInputs(OccDatasetV2): # TODO: Check with Torb
         input_seq = self._prepare_input(occ_descr, lang)
 
         # Encode input sequence
-        encoded_input_seq = self.tokenizer.encode_plus(
+        encoded_input_seq = self.tokenizer(
             input_seq,
             add_special_tokens=True,
             padding='max_length',

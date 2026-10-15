@@ -743,11 +743,7 @@ class OccCANINE:
         Returns:
         - Depends on the 'what' parameter. Can be logits, probabilities, predictions, a binary matrix, or a DataFrame containing the predicted classes and probabilities.
         """
-        model = self.model.eval()
-
-        # Handle list vs str
-        if isinstance(occ1, str):
-            occ1 = [occ1]
+        self.model.eval()
 
         # Setup
         verbose = self.verbose
@@ -778,7 +774,7 @@ class OccCANINE:
 
             with torch.no_grad():
                 output = decoder(
-                    model = model,
+                    model = self.model,
                     descr = input_ids,
                     input_attention_mask = attention_mask
                     )
@@ -904,7 +900,7 @@ class OccCANINE:
 
     @torch.no_grad()
     def _predict_greedy(self, data_loader, order_invariant_conf):
-        model = self.model.eval()
+        self.model.eval()
 
         inputs = []
 
@@ -941,7 +937,7 @@ class OccCANINE:
             batch_time_data.update(time.time() - end)
 
             outputs = decoder(
-                model = model,
+                model = self.model,
                 descr = input_ids,
                 input_attention_mask = attention_mask,
                 device = self.device,
@@ -1017,7 +1013,7 @@ class OccCANINE:
         HISCO codes through something akin to the greedy decoder. We achieve some speedup by only running the
         decoder on 5 digits.
         """
-        model = self.model.eval()
+        self.model.eval()
 
         inputs = []
 
@@ -1048,7 +1044,7 @@ class OccCANINE:
             batch_time_data.update(time.time() - end)
 
             output = decoder(
-                model = model,
+                model = self.model,
                 descr = input_ids,
                 input_attention_mask = attention_mask,
                 device = self.device,
