@@ -733,3 +733,88 @@ check_all_in_dir = function(dir, verbose = FALSE){
   res = all(res)
   return(res)
 }
+
+
+# ==== upsample_parametrized ====
+# Upsamples to frequency of \frac{\alpha}{K}, where \alpha is a parameter and K is the number of classes
+# alpha = 1 would mean each class is equally represented
+# alpha = 0.1 means each class is represented at 10% of the average class (if all classes were equally represented)
+# alpha = 0 means no upsampling
+
+# x:     Data to upsample
+# alpha: Parameter
+upsample_parametrized = function(x, alpha = 0.1, verbose = FALSE, K_codes_in_system = 1919){
+  # Error if alpha is too high
+  if(alpha >= 1){
+    stop("Alpha must be < 1")
+  }
+
+  K = K_codes_in_system
+  target_freq = alpha/K
+  target_n = ceiling(target_freq * NROW(x))
+
+  if(verbose) cat("\n\nTarget number of samples:", target_n, "\n\n")
+  
+  # Upsample each class if needed
+  x_upsampled = x %>% 
+    group_by(hisco_1) %>% 
+    group_split() %>% 
+    map_df(function(df){
+      n = NROW(df)
+      if(n < target_n){
+        if(verbose) cat("Upsampling class", df$hisco_1[1], "from", n, "to", target_n, "       \r")
+        df = sample_n(df, target_n, replace = TRUE)
+      }
+      return(df)
+    }) %>% 
+    bind_rows() %>% 
+    ungroup()
+
+  cat(
+    "\nFinal number of samples:", 
+    NROW(x), "-->", NROW(x_upsampled), 
+    "-- Added:", NROW(x_upsampled) - NROW(x), 
+    paste0("(", round(100*(NROW(x_upsampled) - NROW(x))/NROW(x), 2), "%)"),
+    "\n\n"
+  )
+
+  return(x_upsampled)
+}
+
+
+# ==== reweight_train ====
+# Reweights training data. Only to be used on the training split (after the
+# train/val/test split), so that validation and test data are unaffected.
+# 1. Drops rows with any of 'drop_codes' in hisco_1, ..., hisco_5
+# 2. Identical rows (same occ1, lang and HISCO codes) occurring k times are 
+#    kept ceiling(k^p) times. p = 1: unchanged, p = 0.5: sqrt(k), p = 0: once
+# 3. Upsamples rare codes with upsample_parametrized() (alpha = 0: no upsampling)
+
+# x:          Training data
+# p:          Down-weighting parameter in [0, 1]
+# alpha:      Upsampling parameter, see upsample_parametrized()
+# drop_codes: HISCO codes to drop (NULL: none)
+reweight_train = function(x, p = 1, alpha = 0, drop_codes = NULL, verbose = FALSE){
+  if(p < 0 | p > 1){
+    stop("p must be in [0, 1]")
+  }
+
+  if(length(drop_codes) > 0){
+    x = x %>% 
+      filter(!if_any(paste0("hisco_", 1:5), ~ .x %in% as.character(drop_codes)))
+  }
+
+  if(p < 1){
+    # Rows are kept in their existing (random) order, so the first ceiling(k^p) are a random subset
+    x = x %>% 
+      group_by(across(all_of(c("occ1", "lang", paste0("hisco_", 1:5))))) %>% 
+      filter(row_number() <= ceiling(n()^p)) %>% 
+      ungroup()
+  }
+
+  if(alpha > 0){
+    x = upsample_parametrized(x, alpha = alpha, verbose = verbose)
+  }
+
+  return(x)
+}
