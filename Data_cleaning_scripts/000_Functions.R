@@ -18,6 +18,56 @@ dims = list(
   height = 6
 )
 
+VALID_LANGUAGES = c(
+    'da', # Danish
+    'en', # English
+    'nl', # Dutch
+    'se', # Swedish
+    'no', # Norwegian
+    'fr', # French
+    'ca', # Catalan
+    'es', # Spanish
+    'pt', # Portuguese
+    'gr', # Greek
+    'unk', # Unknown
+    'ge', # German
+    'is', # Icelandic
+    'unk', # Unknown
+    'it', # Italian
+    "sq", # Albanian
+    "be", # Belarusian
+    "pl", # Polish
+    "lt", # Lithuanian
+    "sr", # Serbian
+    "tr", # Turkish
+    'In_data' # In_data
+  )
+
+
+  AND_LOOKUP = c(
+    'da' = "og", # Danish
+    'en' = "and", # English
+    'nl' = "en", # Dutch
+    'se' = "och", # Swedish
+    'no' = "og", # Norwegian
+    'fr' = "et", # French
+    'ca' = "i", # Catalan
+    'es' = "y", # Spanish
+    'pt' = "e", # Portuguese
+    'gr' = "kai", # Greek
+    'unk' = "and", # Unknown
+    'ge' = "und", # German
+    'is' = "og", # Icelandic
+    'unk' = "and", # Unknown
+    'it' = "e", # Italian
+    "sq" = "dhe", # Albanian
+    "be" = "i", # Belarusian
+    "pl" = "i", # Polish
+    "lt" = "ir", # Lithuanian
+    "sr" = "i", # Serbian
+    "tr" = "ve" # Turkish
+    )
+
 
 # ==== sub_scandi ====
 # Replaces all Scandinavian letters with their standard English alphabet 
@@ -231,7 +281,7 @@ ensure_path_exists = function(file_path) {
 
 Save_train_val_test = function(x, Name, language = NA, dir = "standard"){
   # Throw error if incorrect language
-  valid_languages = c('da', 'en', 'nl', 'se', 'no', 'fr', 'ca', 'es', 'pt', 'gr', 'unk', 'ge', 'is', 'unk', 'it', 'In_data')
+  valid_languages = VALID_LANGUAGES
   if(!language %in% valid_languages){
     stop("Provide correct language")
   }
@@ -381,6 +431,14 @@ translate = function(x, key){
 Combinations = function(x, and = "and"){
   require(foreach)
   set.seed(20)
+
+  if(and == ""){
+    # Use AND_LOOKUP
+    and = AND_LOOKUP[unique(x$lang)]
+    if(length(and) != 1){
+      stop("Language not recognized in AND_LOOKUP or multiple languages found")
+    }
+  }
 
   # Initiating empty frame
   results = foreach(i = seq(10), .combine = "bind_rows") %do% x

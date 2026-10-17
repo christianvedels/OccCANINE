@@ -275,6 +275,18 @@ x = pipeline(
   lang = "In_data"
 )
 
+x = pipeline(
+  "Data/Tmp_data/Mosaic_data.Rdata",
+  "Mosaic_data",
+  lang = "In_data"
+)
+
+x = pipeline(
+  "Data/Tmp_data/Leeuwen_data.Rdata",
+  "Leeuwen_data",
+  lang = "In_data"
+)
+
 # ==== Training data stats ====
 summary0 = Data_summary(out = c("plain", "data"))
 summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")
