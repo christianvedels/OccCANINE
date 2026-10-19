@@ -18,9 +18,9 @@ if __name__ == "__main__":
     # Runs all the prerequisite scripts for the paper results
     # threshold_tuning_main(toyrun=tr, data_path=f"{DATA_PATH}/Validation_data1/*.csv")
     # predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")
-    # predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings_paper/*.csv", name="test_unique") # Same as predct_test but for unique strings only [1]
+    # predict_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique") # Same as predct_test but for unique strings only [1]
     # topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv", name="test", K=10, fix_duplicate_id=True)
-    # topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings_paper/*.csv", name="test_unique", K=10, fix_duplicate_id=True)  # Same as topk_test but for unique strings only [1]
+    # topk_test_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data_unique_strings/*.csv", name="test_unique", K=10, fix_duplicate_id=True)  # Same as topk_test but for unique strings only [1]
     # predict_ood_main(data_path=f"{DATA_PATH}/OOD_data")
     # topk_testing_main(data_path=f"{DATA_PATH}/OOD_data", K=10, toyrun=tr)
     # predict_testbylang_main(toyrun=tr, data_path=f"{DATA_PATH}/Test_data/*.csv")

@@ -41,11 +41,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--no-occ-labels', type=str, nargs="*", default=[-1])
 
     parser.add_argument('--model-path', default="OccCANINE_s2s_mix")
-    parser.add_argument('--model-local', type=bool, default=False)
+    parser.add_argument('--model-local', action=argparse.BooleanOptionalAction, default=False)  # --model-local / --no-model-local
     parser.add_argument('--model-system', type=str, default="hisco")
-    parser.add_argument('--model-use-within-block-sep', type=bool, default=False)
+    parser.add_argument('--model-use-within-block-sep', action=argparse.BooleanOptionalAction, default=False)
 
-    parser.add_argument('--class-balance', type=bool, default=True)
+    parser.add_argument('--class-balance', action=argparse.BooleanOptionalAction, default=True)  # Turn off with --no-class-balance
 
     parser.add_argument('--methods', type=str, nargs='+', default=['attack', '2xtranslate', 'translate', 'gibberish'],
                         help="Specify which methods to run: 'attack', '2xtranslate', 'translate', 'gibberish'")
@@ -95,7 +95,7 @@ def main():
             occupation_classifier=model,
             toyload=args.toyload,
             double_translate=True,
-            sample_size=args.num_adv_simple,
+            sample_size=args.num_adv_double_trans,
             n_max=args.n_max,
             n_trans=args.n_trans,
             class_balance=args.class_balance
