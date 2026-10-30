@@ -45,6 +45,12 @@ lang_mapping = { # OccCANINE --> facebook/m2m100_418M: Table A1 --> Table 1
     'no': 'no',  # Norwegian
     'pt': 'pt',  # Portuguese
     'se': 'sv',  # Swedish
+    'sq': 'sq',  # Albanian
+    'be': 'be',  # Belarusian
+    'pl': 'pl',  # Polish
+    'lt': 'lt',  # Lithuanian
+    'sr': 'sr',  # Serbian
+    'tr': 'tr',  # Turkish
     'unk': 'unk', # Unknown
 }
 
@@ -446,18 +452,15 @@ def generate_random_strings(num_strings, system = 'hisco', no_occ_labels = [-1],
     Parameters:
     num_strings (int): Number of random strings to generate.
     no_occ_label (str): Label to assign to the generated strings. Default is "-1".
-    lang (str): Language to assign to the generated strings. If None, a random valid language is chosen.
+    langs (iterable of strings): Collection of languages (possible just one) to randomly choose from.
 
     Returns:
     pd.DataFrame: DataFrame containing random strings, label -1, and a random valid language.
     """
     random_strings = [generate_advanced_gibberish() for _ in range(num_strings)]
 
-    if lang is not None:
-        valid_languages = [lang for lang in lang_mapping.keys() if lang != 'unk']
-        random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
-    else:
-        random_langs = [lang for _ in range(num_strings)]
+    valid_languages = [lang for lang in langs if lang != 'unk']
+    random_langs = [random.choice(valid_languages) for _ in range(num_strings)]
 
     no_occ_label = [random.choice(no_occ_labels) for _ in range(num_strings)]
 

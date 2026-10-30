@@ -23,31 +23,29 @@ import pandas as pd
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data-path', type=str, default="Data/Training_data")
+    parser.add_argument('--data-path', type=str, default="Data/Training_data_v2")  # Reweighted training data (see Data_cleaning_scripts/101)
     parser.add_argument('--file', type=str, default=None)  # Path to file with data to be translated. If None, the script will use the data_path and load all files in it.
     parser.add_argument('--storage-path', type=str, default="Data/Adversarial_data_other")
 
     parser.add_argument('--n-max', type=int, default=20)
     parser.add_argument('--n-trans', type=int, default=1)
 
-    parser.add_argument('--num-adv-simple', type=int, default=200000)
-    parser.add_argument('--num-adv-double-trans', type=int, default=100000)
-    parser.add_argument('--num-trans', type=int, default=200000)
-    parser.add_argument('--num-rand', type=int, default=100000)
+    parser.add_argument('--num-adv-simple', type=int, default=200_000)
+    parser.add_argument('--num-adv-double-trans', type=int, default=100_000)
+    parser.add_argument('--num-trans', type=int, default=200_000)
+    parser.add_argument('--num-rand', type=int, default=100_000)
 
-    parser.add_argument('--toyload', type=bool, default=False)  # Can be used to load some data quickly for debugging
-
-    parser.add_argument('--task', type=str, default=None, choices=['2xtranslate', 'attack', 'translate', 'gibberish'])
+    parser.add_argument('--toyload', action='store_true', default=False)  # Can be used to load some data quickly for debugging
 
     parser.add_argument('--lang', type=str, default=None)
     parser.add_argument('--no-occ-labels', type=str, nargs="*", default=[-1])
 
     parser.add_argument('--model-path', default="OccCANINE_s2s_mix")
-    parser.add_argument('--model-local', type=bool, default=False)
+    parser.add_argument('--model-local', action=argparse.BooleanOptionalAction, default=False)  # --model-local / --no-model-local
     parser.add_argument('--model-system', type=str, default="hisco")
-    parser.add_argument('--model-use-within-block-sep', type=bool, default=False)
+    parser.add_argument('--model-use-within-block-sep', action=argparse.BooleanOptionalAction, default=False)
 
-    parser.add_argument('--class-balance', type=bool, default=True)
+    parser.add_argument('--class-balance', action=argparse.BooleanOptionalAction, default=True)  # Turn off with --no-class-balance
 
     parser.add_argument('--methods', type=str, nargs='+', default=['attack', '2xtranslate', 'translate', 'gibberish'],
                         help="Specify which methods to run: 'attack', '2xtranslate', 'translate', 'gibberish'")
@@ -61,7 +59,7 @@ def main():
     args = parse_args()
 
     # Load model
-    model = OccCANINE(args.model_path, hf=not args.model_local, system=args.model_system, use_within_block_sep=args.model_use_within_block_sep)
+    model = OccCANINE(args.model_path, hf=not args.model_local, system=args.model_system, use_within_block_sep=args.model_use_within_block_sep, batch_size=2048)
 
     # Langs
     if args.lang:
@@ -97,7 +95,7 @@ def main():
             occupation_classifier=model,
             toyload=args.toyload,
             double_translate=True,
-            sample_size=args.num_adv_simple,
+            sample_size=args.num_adv_double_trans,
             n_max=args.n_max,
             n_trans=args.n_trans,
             class_balance=args.class_balance
@@ -142,6 +140,7 @@ def main():
         merged_results = pd.concat(all_results, ignore_index=True)
         merged_results.to_csv(args.storage_path + "/merged_results.csv", index=False)
         print(f"Merged results saved to {args.storage_path}/merged_results.csv")
+
 
 if __name__ == '__main__':
     main()

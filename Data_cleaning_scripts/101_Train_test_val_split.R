@@ -1,5 +1,5 @@
 # Train test and validation split
-# Updated:    2024-07-02
+# Updated:    2026-10-17
 # Auhtors:    Christian Vedel [christian-vs@sam.sdu.dk],
 #
 # Purpose:    Splits all clean tmp files into training, test and validation
@@ -40,15 +40,22 @@ pipeline = function(x, name, lang){
   
   cat("\nLoading", x)
   x = loadRData(x)
-  
+
+  # NOTE: Nothing that changes the rows may happen before the split below.
+  # It would change the train/val/test split. Reweighting is done on the
+  # training split only (see 'Reweighted training data' at the end).
   if(name %in% c("EN_uk_ipums", "EN_us_ipums")){
-    # These are downsampled to not dominate training
-    x = x %>% 
-      select(-RowID) %>% 
-      distinct() %>% 
+    # These are downsampled to not dominate training. 'n_raw' keeps the number
+    # of raw observations behind each distinct row, so that frequent strings
+    # can be weighted up again after the split (see reweight_train).
+    # add_count() keeps the row order, so the split is unaffected.
+    x = x %>%
+      select(-RowID) %>%
+      add_count(across(everything()), name = "n_raw") %>%
+      distinct() %>%
       mutate(RowID = 1:n())
   }
-  
+
   load("Data/Manual_data/Random_sequence_long.Rdata")
   set.seed(20)
   
@@ -58,7 +65,7 @@ pipeline = function(x, name, lang){
     sample_frac(1) %>%
     mutate(split = train_test_split[1:n()]) %>%
     Validate_split() %>%
-    Keep_only_relevant()
+    Keep_only_relevant(other_to_keep = "n_raw") # n_raw only exists for some sources
   
   cat("\nSaving data")
   x %>% 
@@ -272,8 +279,49 @@ x = pipeline(
   lang = "In_data"
 )
 
+x = pipeline(
+  "Data/Tmp_data/Mosaic_data.Rdata",
+  "Mosaic_data",
+  lang = "In_data"
+)
 
+x = pipeline(
+  "Data/Tmp_data/Leeuwen_data.Rdata",
+  "Leeuwen_data",
+  lang = "In_data"
+)
 
 # ==== Training data stats ====
 summary0 = Data_summary(out = c("plain", "data"))
 summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")
+
+# ==== Reweighted training data (Training_data_v2) ====
+# Reweighting is applied to each training file separately, after the split
+# above. Validation and test data are therefore identical to the unweighted data.
+# Identical strings occurring k times (counting n_raw for rows collapsed before the split)
+# are kept ceiling(k^p) times. Sources not listed: p = 1 (unchanged)
+P_REWEIGHT = c(EN_marr_cert = 0.5, EN_uk_ipums = 0.5, EN_us_ipums = 0.5)
+ALPHA_UPSAMPLE = 0.1                    # Upsampling of rare codes (see upsample_parametrized)
+DROP_CODES = list(EN_marr_cert = 99910) # Overused "Labourer"
+
+dir.create("Data/Training_data_v2", showWarnings = FALSE)
+files = list.files("Data/Training_data")
+count = 0
+foreach(f = files) %do% {
+  set.seed(20) # By file, so each file is reproducible on its own
+  name = str_remove(f, "_train\\.csv$")
+  p = ifelse(name %in% names(P_REWEIGHT), P_REWEIGHT[name], 1)
+
+  data = read_csv(paste0("Data/Training_data/", f), col_types = cols(.default = "c"), progress = FALSE, trim_ws = FALSE)
+  cat("\nReweighting", f, "(p =", p, ")\n")
+
+  data_v2 = data %>%
+    reweight_train(p = p, alpha = ALPHA_UPSAMPLE, drop_codes = DROP_CODES[[name]], verbose = TRUE) %>%
+    sample_frac(1) # Scramble rows
+
+  count = count + NROW(data_v2)
+  cat("Rows:", NROW(data), "-->", NROW(data_v2), "| Total so far:", round(count/1e6, 2), "million\n")
+
+  write_csv(data_v2, paste0("Data/Training_data_v2/", f))
+  return(NULL)
+}

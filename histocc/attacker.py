@@ -32,12 +32,15 @@ class AttackerClass:
             alt_prob: float = 0.8,
             n_trans: int = 3,
             df: pd.DataFrame | None = None,
+            word_freq_table: pd.DataFrame | None = None,
     ):
         """
         Initializes the AttackerClass with a DataFrame.
 
         Parameters:
         df (pd.DataFrame): A DataFrame containing text data in a column named 'occ1'.
+        word_freq_table (pd.DataFrame): A DataFrame with two columns, "word" and "freq",
+        from which to draw random words. If this is applied, the argument df is ignored.
         """
 
         self.alt_prob = alt_prob
@@ -53,9 +56,18 @@ class AttackerClass:
             self.add_leading_trailing_characters,
         ]
 
+        if word_freq_table is not None:
+            # Always use frequency table when available
+            df = None
+
         if df is not None:
             all_text = ' '.join(item for item in df['occ1'].unique())
             self.word_list = list(set(all_text.split()))
+            self.transformations.append(self.insert_random_word)
+
+        self.word_freq_table = word_freq_table
+
+        if self.word_freq_table is not None:
             self.transformations.append(self.insert_random_word)
 
     @staticmethod
@@ -186,12 +198,17 @@ class AttackerClass:
         str: The sentence with a random word inserted.
         """
         occ_as_word_list = sentence.split()
-        random_word = random.choice(self.word_list)
+
+        if self.word_freq_table is not None:
+            random_word = self.word_freq_table.sample(n=1, weights='freq')['word'].iloc[0]
+        else:
+            random_word = random.choice(self.word_list)
+
         insert_index = random.randint(0, len(occ_as_word_list))
         occ_as_word_list.insert(insert_index, random_word)
 
         return " ".join(occ_as_word_list)
-    
+
     @staticmethod
     def add_leading_trailing_characters(sentence: str, nchars = 20) -> str:
         """
@@ -208,21 +225,21 @@ class AttackerClass:
         str: The sentence with added leading and trailing random characters.
         """
         characters = string.ascii_lowercase + ' ' # All lowercase + space
-        
+
         if random.random() > 0.5:
             leading_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
         else:
             leading_chars = ''
-        
+
         if random.random() > 0.5:
             trailing_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
         else:
             trailing_chars = ''
-        
+
         if leading_chars == '' and trailing_chars == '':
             leading_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
             trailing_chars = ''.join(random.choices(characters, k=random.randint(1, nchars)))
-        
+
         return leading_chars + ' ' + sentence + ' ' + trailing_chars
 
     def apply_transformations(self, sentence: str, n_trans: int) -> str:

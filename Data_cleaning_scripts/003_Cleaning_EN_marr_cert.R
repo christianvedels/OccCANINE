@@ -142,13 +142,20 @@ data1 = data1 %>%
   mutate(hisco_1 = as.character(hisco_1))
 
 # ==== Get combinations ====
-set.seed(20)
-combinations = data1 %>% 
-  filter(hisco_2 == " ", hisco_1 != "-1") %>% 
-  sample_n(100000) %>% 
-  Combinations("and")
+# The train/val/test split used in the paper was made without these
+# combinations. Including them changes the split (verified 2026-10-17: without
+# them, the split in 101 reproduces the paper's split exactly).
+INCLUDE_COMBINATIONS = FALSE
 
-data1 = data1 %>% bind_rows(combinations) 
+if(INCLUDE_COMBINATIONS){
+  set.seed(20)
+  combinations = data1 %>%
+    filter(hisco_2 == " ", hisco_1 != "-1") %>%
+    sample_n(100000) %>%
+    Combinations("and")
+
+  data1 = data1 %>% bind_rows(combinations)
+}
 
 # ==== Encode with key ====
 load("Data/Key.Rdata")

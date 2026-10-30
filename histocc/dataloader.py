@@ -498,6 +498,7 @@ class OccDatasetV2(Dataset):
             n_trans: int = 3,
             unk_lang_prob: float = 0.25,
             data: pd.DataFrame | None = None,
+            word_freq_table: pd.DataFrame | None = None,
     ):
         self.fname_data = fname_data
         self.formatter = formatter
@@ -510,6 +511,7 @@ class OccDatasetV2(Dataset):
             alt_prob=alt_prob,
             n_trans=n_trans,
             df=data,
+            word_freq_table=word_freq_table,
         )
 
         self.colnames: pd.Index = pd.read_csv(fname_data, nrows=1).columns
@@ -712,6 +714,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             unk_lang_prob: float = 0.25,
             target_cols: str | list[str] = 'hisco',
             map_code_label: dict[str, int] | None = None,
+            word_freq_table: pd.DataFrame | None = None,
     ):
         if isinstance(target_cols, str):
             target_cols = self.map_type_target_cols_default[target_cols]
@@ -737,6 +740,7 @@ class OccDatasetMixerInMemMultipleFiles(OccDatasetV2):
             n_trans=n_trans,
             unk_lang_prob=unk_lang_prob,
             data=self.frame[['occ1']],
+            word_freq_table=word_freq_table,
         )
 
         self.target_cols = target_cols

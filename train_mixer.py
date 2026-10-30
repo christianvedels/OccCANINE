@@ -11,6 +11,8 @@ from transformers import (
     CanineTokenizer,
 )
 
+import pandas as pd
+
 from histocc import (
     OccDatasetMixerInMemMultipleFiles,
     load_tokenizer,
@@ -25,6 +27,8 @@ from histocc.formatter import (
     BlockyHISCOFormatter,
     BlockyOCC1950Formatter,
     PAD_IDX,
+    BlockyFormatter,
+    construct_general_purpose_formatter,
 )
 from histocc.utils import wandb_init, load_states
 
@@ -40,10 +44,12 @@ except ImportError:
 MAP_FORMATTER = {
     'hisco': hisco_blocky5,
     'occ1950': occ1950_blocky2,
+    'gpf': construct_general_purpose_formatter,
 }
 MAP_NB_CLASSES = {
     'hisco': 1919,
     'occ1950': 1000, # FIMXE
+    'gpf': 1919, # FIXME
 }
 
 def parse_args() -> argparse.Namespace:
@@ -58,6 +64,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--train-data', type=str, default=None, nargs='+')
     parser.add_argument('--val-data', type=str, default=None, nargs='+')
     parser.add_argument('--target-col-naming', type=str, default='hisco')
+
+    # Args for general purpose formatter
+    parser.add_argument('--target-cols', type=str, nargs='+', default=None, help='List of column names with labels')
+    parser.add_argument('--block-size', type=int, default=5, help='Maximum number of characters in target (e.g., this is 5 for the HISCO system)')
+    parser.add_argument('--use-within-block-sep', action='store_true', default=False, help='Whether to use "," as a separator for tokens WITHIN a code. Useful for, e.g., PSTI')
 
     # Logging parameters
     parser.add_argument('--log-interval', type=int, default=100, help='Number of steps between reporting training stats')
@@ -85,6 +96,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--augmentation-prob', type=float, default=0.3)
     parser.add_argument('--unk-lang-prob', type=float, default=0.25)
 
+    # Word frequency look-up for input augmentation
+    parser.add_argument('--fn-word-freq', type=str, default=None, help='Filename for 2-column .csv-file ("word", "freq") to use for input string augmentation random word insertions.')
+
     args = parser.parse_args()
 
     if args.log_wandb and not has_wandb:
@@ -97,10 +111,15 @@ def parse_args() -> argparse.Namespace:
 
 def setup_datasets(
         args: argparse.Namespace,
-        formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter,
+        formatter: BlockyHISCOFormatter | BlockyOCC1950Formatter | BlockyFormatter,
         tokenizer: CanineTokenizer,
         num_classes_flat: int,
 ) -> tuple[OccDatasetMixerInMemMultipleFiles, OccDatasetMixerInMemMultipleFiles]:
+    if args.fn_word_freq is not None:
+        word_freq_table = pd.read_csv(args.fn_word_freq, converters={'word': lambda x: x}) # Ensure 'nan' is not treated as NaN
+    else:
+        word_freq_table = None
+
     dataset_train = OccDatasetMixerInMemMultipleFiles(
         fnames_data=args.train_data,
         formatter=formatter,
@@ -112,6 +131,7 @@ def setup_datasets(
         n_trans=args.num_transformations,
         unk_lang_prob=args.unk_lang_prob,
         target_cols=args.target_col_naming,
+        word_freq_table=word_freq_table,
     )
 
     dataset_val = OccDatasetMixerInMemMultipleFiles(
@@ -127,6 +147,21 @@ def setup_datasets(
     return dataset_train, dataset_val
 
 
+def setup_formatter(args: argparse.Namespace) -> BlockyFormatter | BlockyHISCOFormatter:
+    formatter_fn = MAP_FORMATTER[args.formatter]
+
+    if args.formatter == 'gpf':
+        formatter = formatter_fn(
+            block_size=args.block_size,
+            target_cols=args.target_cols,
+            use_within_block_sep=args.use_within_block_sep,
+        )
+    else:
+        formatter = formatter_fn()
+
+    return formatter
+
+
 def main():
     args = parse_args()
 
@@ -140,7 +175,7 @@ def main():
         )
 
     # Target-side tokenization
-    formatter = MAP_FORMATTER[args.formatter]()
+    formatter = setup_formatter(args)
     num_classes_flat = MAP_NB_CLASSES[args.formatter]
 
     # Input-side tokenization
@@ -177,7 +212,7 @@ def main():
 
     model = Seq2SeqMixerOccCANINE(
         model_domain='Multilingual_CANINE',
-        num_classes=formatter.num_classes,
+        num_classes=formatter.num_classes, # FIXME potentially breaks to extract from formatter
         num_classes_flat=num_classes_flat,
         dropout_rate=args.dropout,
         decoder_dim_feedforward=args.decoder_dim_feedforward,
@@ -195,7 +230,7 @@ def main():
     loss_fn_seq2seq = BlockOrderInvariantLoss(
         pad_idx=PAD_IDX,
         nb_blocks=formatter.max_num_codes,
-        block_size=formatter.code_len,
+        block_size=formatter.block_size,
     )
     loss_fn_linear = torch.nn.BCEWithLogitsLoss()
     loss_fn = LossMixer(
