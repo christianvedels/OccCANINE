@@ -821,7 +821,8 @@ upsample_parametrized = function(x, alpha = 0.1, verbose = FALSE, K_codes_in_sys
       n = NROW(df)
       if(n < target_n){
         if(verbose) cat("Upsampling class", df$hisco_1[1], "from", n, "to", target_n, "       \r")
-        df = sample_n(df, target_n, replace = TRUE)
+        # Keep all original rows and add resampled ones up to target_n
+        df = bind_rows(df, sample_n(df, target_n - n, replace = TRUE))
       }
       return(df)
     }) %>% 
@@ -844,8 +845,9 @@ upsample_parametrized = function(x, alpha = 0.1, verbose = FALSE, K_codes_in_sys
 # Reweights training data. Only to be used on the training split (after the
 # train/val/test split), so that validation and test data are unaffected.
 # 1. Drops rows with any of 'drop_codes' in hisco_1, ..., hisco_5
-# 2. Identical rows (same occ1, lang and HISCO codes) occurring k times are 
-#    kept ceiling(k^p) times. p = 1: unchanged, p = 0.5: sqrt(k), p = 0: once
+# 2. Identical rows (same occ1, lang and HISCO codes) with k raw observations
+#    are kept ceiling(k^p) times. p = 1: raw frequency, p = 0.5: sqrt(k), p = 0: once.
+#    k counts 'n_raw' for rows collapsed before the split (e.g. IPUMS), otherwise 1 per row.
 # 3. Upsamples rare codes with upsample_parametrized() (alpha = 0: no upsampling)
 
 # x:          Training data
@@ -862,13 +864,28 @@ reweight_train = function(x, p = 1, alpha = 0, drop_codes = NULL, verbose = FALS
       filter(!if_any(paste0("hisco_", 1:5), ~ .x %in% as.character(drop_codes)))
   }
 
-  if(p < 1){
-    # Rows are kept in their existing (random) order, so the first ceiling(k^p) are a random subset
-    x = x %>% 
-      group_by(across(all_of(c("occ1", "lang", paste0("hisco_", 1:5))))) %>% 
-      filter(row_number() <= ceiling(n()^p)) %>% 
-      ungroup()
+  # Number of raw observations behind each row. Sources collapsed to distinct
+  # rows before the split (e.g. IPUMS) carry this in 'n_raw'; otherwise 1.
+  if(!"n_raw" %in% names(x)){
+    x$n_raw = 1
   }
+
+  # Each group of identical strings (k raw observations in total) gets ceiling(k^p) rows:
+  # - fewer than the rows available: the first ones are kept (rows are in random order)
+  # - more than the rows available (collapsed rows): the rows are repeated
+  x = x %>%
+    mutate(n_raw = as.numeric(n_raw)) %>%
+    group_by(across(all_of(c("occ1", "lang", paste0("hisco_", 1:5))))) %>%
+    mutate(
+      .i = row_number(),
+      .n = n(),
+      .target = ceiling(sum(n_raw)^p)
+    ) %>%
+    ungroup() %>%
+    mutate(.copies = pmax(0, ceiling((.target - .i + 1) / .n)))
+
+  x = x[rep(seq_len(NROW(x)), x$.copies), ] %>%
+    select(-n_raw, -.i, -.n, -.target, -.copies)
 
   if(alpha > 0){
     x = upsample_parametrized(x, alpha = alpha, verbose = verbose)

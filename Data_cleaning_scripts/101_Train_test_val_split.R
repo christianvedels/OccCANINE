@@ -45,9 +45,13 @@ pipeline = function(x, name, lang){
   # It would change the train/val/test split. Reweighting is done on the
   # training split only (see 'Reweighted training data' at the end).
   if(name %in% c("EN_uk_ipums", "EN_us_ipums")){
-    # These are downsampled to not dominate training
+    # These are downsampled to not dominate training. 'n_raw' keeps the number
+    # of raw observations behind each distinct row, so that frequent strings
+    # can be weighted up again after the split (see reweight_train).
+    # add_count() keeps the row order, so the split is unaffected.
     x = x %>%
       select(-RowID) %>%
+      add_count(across(everything()), name = "n_raw") %>%
       distinct() %>%
       mutate(RowID = 1:n())
   }
@@ -61,7 +65,7 @@ pipeline = function(x, name, lang){
     sample_frac(1) %>%
     mutate(split = train_test_split[1:n()]) %>%
     Validate_split() %>%
-    Keep_only_relevant()
+    Keep_only_relevant(other_to_keep = "n_raw") # n_raw only exists for some sources
   
   cat("\nSaving data")
   x %>% 
@@ -294,19 +298,21 @@ summary0[[1]] %>% write_csv2("Data/Summary_data/Data_summary.csv")
 # ==== Reweighted training data (Training_data_v2) ====
 # Reweighting is applied to each training file separately, after the split
 # above. Validation and test data are therefore identical to the unweighted data.
-P_REWEIGHT = c(EN_marr_cert = 0.5)      # Repeated rows kept ceiling(k^p) times. Sources not listed: p = 1 (unchanged)
+# Identical strings occurring k times (counting n_raw for rows collapsed before the split)
+# are kept ceiling(k^p) times. Sources not listed: p = 1 (unchanged)
+P_REWEIGHT = c(EN_marr_cert = 0.5, EN_uk_ipums = 0.5, EN_us_ipums = 0.5)
 ALPHA_UPSAMPLE = 0.1                    # Upsampling of rare codes (see upsample_parametrized)
 DROP_CODES = list(EN_marr_cert = 99910) # Overused "Labourer"
 
-set.seed(20)
 dir.create("Data/Training_data_v2", showWarnings = FALSE)
 files = list.files("Data/Training_data")
 count = 0
 foreach(f = files) %do% {
+  set.seed(20) # By file, so each file is reproducible on its own
   name = str_remove(f, "_train\\.csv$")
   p = ifelse(name %in% names(P_REWEIGHT), P_REWEIGHT[name], 1)
 
-  data = read_csv(paste0("Data/Training_data/", f), col_types = cols(.default = "c"), progress = FALSE)
+  data = read_csv(paste0("Data/Training_data/", f), col_types = cols(.default = "c"), progress = FALSE, trim_ws = FALSE)
   cat("\nReweighting", f, "(p =", p, ")\n")
 
   data_v2 = data %>%
